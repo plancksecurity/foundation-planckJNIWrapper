@@ -2,3 +2,6 @@ syntax: glob
 
 *.class
 *.jar
+
+org_pEp_*.h
+
