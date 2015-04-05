@@ -15,7 +15,7 @@ org_pEp_jniadapter_AbstractEngine.o: org_pEp_jniadapter_AbstractEngine.h org_pEp
 $(LIBRARY): org_pEp_jniadapter_AbstractEngine.o throw_pEp_exception.o jniutils.o
 	ar -r $@ *.o
 
-.PHONY: clean generate distclean
+.PHONY: clean distclean
 
 clean:
 	rm -f $(JAR) $(LIBRARY)
