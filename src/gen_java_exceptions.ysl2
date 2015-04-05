@@ -8,7 +8,7 @@ tstylesheet {
         | 
         | public class pEpException extends Exception { }
 
-        apply "namespace/enum", 0;
+        apply "namespace/enum[@name='pEp_status']", 0;
     }
 
     function "exception" {
