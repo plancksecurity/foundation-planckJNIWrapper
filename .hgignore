@@ -2,6 +2,7 @@ syntax: glob
 
 *.class
 *.jar
+*.swp
 
 org_pEp_*.h
 

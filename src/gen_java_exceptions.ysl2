@@ -1,0 +1,57 @@
+include yslt.yml2
+
+tstylesheet {
+    function "UCASE" {
+        param "text";
+
+        value "translate($text, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')";
+    }
+
+    function "lcase" {
+        param "text";
+
+        value "translate($text, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')";
+    }
+
+    function "CamelCase" {
+        param "text";
+
+        choose {
+            when "contains($text, '-')" {
+                const "tokens", "str:tokenize($text, '-')";
+                for "$tokens" {
+                    choose {
+                        when ".='pEp'" > pEp
+                        otherwise {
+                            call "UCASE" with "text", "substring(., 1, 1)";
+                            call "lcase" with "text", "substring(., 2)";
+                        }
+                    }
+                }
+            }
+            otherwise | unsupported
+        }
+    }
+
+    template "/" {
+        | package org.pEp.jniadapter;
+        | 
+        | public class pEpException extends Exception { }
+
+        apply "namespace/enum", 0;
+    }
+
+    function "exception" {
+        param "name";
+
+        document("org/pEp/jniadapter/{$name}.java") {
+            | package org.pEp.jniadapter;
+            |
+            | class «$name» extends pEpException { }
+        }
+    }
+
+    template "enum" for "*" call "exception"
+        with "name" call "CamelCase" with "text", "name(.)";
+}
+

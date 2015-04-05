@@ -1,0 +1,49 @@
+decl namespace @name;
+decl enum @name;
+
+namespace pEp {
+    enum pEp_status {
+        pEp_status_ok									> 0
+
+        pEp_init_cannot_load_gpgme						> 0x0110
+        pEp_init_gpgme_init_failed						> 0x0111
+
+        pEp_init_sqlite3_without_mutex					> 0x0120
+        pEp_init_cannot_open_db							> 0x0121
+        pEp_init_cannot_open_system_db					> 0x0122
+        
+        pEp_key_not_found						        > 0x0201
+        pEp_key_has_ambig_name					        > 0x0202
+        pEp_get_key_failed						        > 0x0203
+        
+        pEp_cannot_find_identity						> 0x0301
+        pEp_cannot_set_person							> 0x0381
+        pEp_cannot_set_pgp_keypair						> 0x0382
+        pEp_cannot_set_identity							> 0x0383
+        
+        pEp_unencrypted									> 0x0400
+        pEp_verified									> 0x0401
+        pEp_decrypted									> 0x0402
+        pEp_decrypted_and_verified						> 0x0403
+        pEp_decrypt_wrong_format						> 0x0404
+        pEp_decrypt_no_key								> 0x0405
+        pEp_decrypt_signature_does_not_match			> 0x0406
+        pEp_verify_no_key                               > 0x0407
+        pEp_verified_and_trusted                        > 0x0408
+        pEp_cannot_decrypt_unknown						> 0x04ff
+
+        pEp_safeword_not_found							> 0x0501
+
+        pEp_cannot_create_key                           > 0x0601
+        pEp_cannot_send_key                             > 0x0602
+
+        pEp_commit_failed								> 0xff01
+
+        pEp_cannot_create_temp_file                     > -5
+        pEp_illegal_value                               > -4
+        pEp_buffer_too_small                            > -3
+        pEp_out_of_memory								> -2
+        pEp_unknown_error								> -1
+    };
+};
+
