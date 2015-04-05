@@ -21,7 +21,7 @@ tstylesheet {
         }
     }
 
-    template "enum" for "*" call "exception"
+    template "enum" for "*[text()!=0]" call "exception"
         with "name" call "CamelCase" with "text", "name(.)";
 }
 
