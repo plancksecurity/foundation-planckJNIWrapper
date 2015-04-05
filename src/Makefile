@@ -3,27 +3,25 @@ JAR=jniadapter.jar
 
 all: $(JAR) $(LIBRARY)
 
-JAVASOURCE=$(wildcard org/pEp/jniadapter/*.java) org/pEp/jniadapter/pEpException.java
-
-$(JAR): $(JAVASOURCE)
-	javac $<
+$(JAR): org/pEp/jniadapter/pEpException.java
+	javac org/pEp/jniadapter/*.java
 	jar cf $@ org/pEp/jniadapter/*.class
 
-org_pEp_jniadapter_Engine.h: org/pEp/jniadapter/Engine.java
-	javah org.pEp.jniadapter.Engine
+org_pEp_jniadapter_AbstractEngine.h: org/pEp/jniadapter/Engine.java
+	javah org.pEp.jniadapter.AbstractEngine
 
-org_pEp_jniadapter_Engine.o: org_pEp_jniadapter_Engine.h org_pEp_jniadapter_Engine.cc throw_pEp_exception.hh
+org_pEp_jniadapter_AbstractEngine.o: org_pEp_jniadapter_AbstractEngine.h org_pEp_jniadapter_AbstractEngine.cc throw_pEp_exception.hh jniutils.hh
 
-$(LIBRARY): org_pEp_jniadapter_Engine.o throw_pEp_exception.o
-	ar -r $@ $<
+$(LIBRARY): org_pEp_jniadapter_AbstractEngine.o throw_pEp_exception.o jniutils.o
+	ar -r $@ *.o
 
 .PHONY: clean generate distclean
 
 clean:
 	rm -f $(JAR) $(LIBRARY)
-	rm -f org_pEp_jniadapter_Engine.o
-	rm -f org_pEp_jniadapter_Engine.h
+	rm -f *.o
 	rm -f *.class
+	rm -f org_pEp_jniadapter_*.h
 	rm -f org/pEp/jniadapter/*.class
 	rm -f org/pEp/jniadapter/pEp*.java
 	rm -f throw_pEp_exception.*

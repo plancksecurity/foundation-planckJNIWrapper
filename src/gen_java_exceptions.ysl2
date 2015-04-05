@@ -14,7 +14,7 @@ tstylesheet {
     function "exception" {
         param "name";
 
-        document("org/pEp/jniadapter/{$name}.java") {
+        document "org/pEp/jniadapter/{$name}.java", "text" {
             | package org.pEp.jniadapter;
             |
             | class «$name» extends pEpException { }
