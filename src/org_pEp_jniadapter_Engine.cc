@@ -5,45 +5,10 @@
 #include <assert.h>
 #include <pEp/pEpEngine.h>
 
+#include "throw_pEp_exception.hh"
+
 namespace pEp {
     namespace JNIAdapter {
-        jint throw_pEp_Exception(JNIEnv *env, PEP_STATUS status)
-        {
-            jclass ex;
-            const char *ex_name;
-
-            switch (status) {
-                case PEP_INIT_CANNOT_LOAD_GPGME:
-                    ex_name = "org/pEp/jniadapter/InitCannotLoadGPGME";
-                    break;
-                case PEP_INIT_GPGME_INIT_FAILED:
-                    ex_name = "org/pEp/jniadapter/GPGMEInitFailed";
-                    break;
-                case PEP_INIT_SQLITE3_WITHOUT_MUTEX:
-                    ex_name = "org/pEp/jniadapter/SQLite3WithoutMutex";
-                    break;
-                case PEP_INIT_CANNOT_OPEN_DB:
-                    ex_name = "org/pEp/jniadapter/InitCannotOpenDB";
-                    break;
-                case PEP_INIT_CANNOT_OPEN_SYSTEM_DB:
-                    ex_name = "org/pEp/jniadapter/InitCannotOpenSystemDB";
-                    break;
-                default:
-                    assert(0);
-                    ex_name = "Exception";
-            }
-
-            ex = env->FindClass(ex_name);
-            assert(ex);
-
-            if (ex == NULL) {
-                ex = env->FindClass("java/lang/NoClassDefFoundError");
-                assert(ex);
-            }
-
-            return env->ThrowNew(ex, ex_name);
-        }
-
         jfieldID getFieldID(
                 JNIEnv *env,
                 const char *classname,
