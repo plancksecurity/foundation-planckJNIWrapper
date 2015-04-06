@@ -5,17 +5,17 @@ abstract class AbstractEngine implements AutoCloseable {
         System.loadLibrary("pEpJNI");
     }
 
-    protected native void init() throws pEpException;
-    protected native void release();
+    private native void init() throws pEpException;
+    private native void release();
 
     private long handle;
-    protected long getHandle() { return handle; }
+    final protected long getHandle() { return handle; }
 
     public AbstractEngine() throws pEpException {
         init();
     }
 
-    public void close() {
+    final public void close() {
         release();
     }
 }

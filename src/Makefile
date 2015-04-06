@@ -3,7 +3,7 @@ JAR=jniadapter.jar
 
 all: $(JAR) $(LIBRARY)
 
-$(JAR): org/pEp/jniadapter/pEpException.java
+$(JAR): org/pEp/jniadapter/pEpException.java org/pEp/jniadapter/AbstractEngine.java org/pEp/jniadapter/Engine.java
 	javac org/pEp/jniadapter/*.java
 	jar cf $@ org/pEp/jniadapter/*.class
 
