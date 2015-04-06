@@ -24,12 +24,16 @@ clean:
 	rm -f org_pEp_jniadapter_*.h
 	rm -f org/pEp/jniadapter/*.class
 	rm -f org/pEp/jniadapter/pEp*.java
+	rm -f org/pEp/jniadapter/Engine.java
 	rm -f throw_pEp_exception.*
 
 org/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2
 	yml2proc -y gen_java_exceptions.ysl2 $< -o $@
 
-throw_pEp_exception.cc throw_pEp_exception.hh: pEp.yml2 gen_throw_pEp_exception.ysl2
+org/pEp/jniadapter/Engine.java : pEp.yml2 gen_java_Engine.ysl2 types_java.ysl2
+	yml2proc -y gen_java_Engine.ysl2 $< -o $@
+
+throw_pEp_exception.cc throw_pEp_exception.hh: pEp.yml2 gen_throw_pEp_exception.ysl2 textutils.ysl2
 	yml2proc -y gen_throw_pEp_exception.ysl2 $< -o throw_pEp_exception.cc
 
 throw_pEp_exception.o: throw_pEp_exception.cc throw_pEp_exception.hh

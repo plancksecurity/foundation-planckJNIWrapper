@@ -1,5 +1,7 @@
 decl namespace @name;
 decl enum @name;
+decl interface @name;
+decl method @name;
 
 namespace pEp {
     enum pEp_status {
@@ -44,6 +46,21 @@ namespace pEp {
         pEp_buffer_too_small                            > -3
         pEp_out_of_memory								> -2
         pEp_unknown_error								> -1
+    };
+
+    interface message_api {
+        method encrypt_message(
+                in message src,
+                in stringlist extra,
+                creates message dst,
+                in pEp_enc_format enc_format
+            );
+        
+        method decrypt_message(
+                in message src,
+                in pEp_MIME_format mime,
+                creates message dst
+            );
     };
 };
 

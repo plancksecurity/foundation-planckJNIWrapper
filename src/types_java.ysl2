@@ -1,0 +1,12 @@
+include ./textutils.ysl2
+
+function "toJava" {
+    param "type";
+
+    choose {
+        when "string" > String
+        when "stringlist" > String[]
+        otherwise call "CamelCase" with "text", "$type";
+    }
+}
+

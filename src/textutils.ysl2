@@ -12,21 +12,16 @@ function "lcase" {
 
 function "CamelCase" {
     param "text";
+    const "tokens", "str:tokenize($text, '-')";
 
-    choose {
-        when "contains($text, '-')" {
-            const "tokens", "str:tokenize($text, '-')";
-            for "$tokens" {
-                choose {
-                    when ".='pEp'" > pEp
-                    otherwise {
-                        call "UCASE" with "text", "substring(., 1, 1)";
-                        call "lcase" with "text", "substring(., 2)";
-                    }
-                }
+    for "$tokens" {
+        choose {
+            when ".='pEp'" > pEp
+            otherwise {
+                call "UCASE" with "text", "substring(., 1, 1)";
+                call "lcase" with "text", "substring(., 2)";
             }
         }
-        otherwise | unsupported
     }
 }
 
