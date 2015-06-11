@@ -15,9 +15,14 @@ org_pEp_jniadapter_AbstractEngine.h: org/pEp/jniadapter/AbstractEngine.java
 org_pEp_jniadapter_Engine.h: org/pEp/jniadapter/Engine.java
 	javah org.pEp.jniadapter.Engine
 
+org_pEp_jniadapter_MimeMessage.h: org/pEp/jniadapter/MimeMessage.java
+	javah org.pEp.jniadapter.MimeMessage
+
 org_pEp_jniadapter_AbstractEngine.o: org_pEp_jniadapter_AbstractEngine.h org_pEp_jniadapter_AbstractEngine.cc throw_pEp_exception.hh jniutils.hh
 
-$(LIBRARY): org_pEp_jniadapter_AbstractEngine.o throw_pEp_exception.o jniutils.o
+%.o: %.cc %.h jniutils.hh
+
+$(LIBRARY): org_pEp_jniadapter_AbstractEngine.o org_pEp_jniadapter_Engine.o org_pEp_jniadapter_MimeMessage.o throw_pEp_exception.o jniutils.o
 	ar -r $@ *.o
 
 org/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2

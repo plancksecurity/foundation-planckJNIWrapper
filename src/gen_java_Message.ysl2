@@ -55,8 +55,9 @@ public class MimeMessage {
 
     template "entry"
         ||
-        public native †@type «@name»();
-        public native void «@name»(†@type value);
+        public native †@type ©@name();
+        public native void ©@name(†@type value);
+
         ||
 }
 

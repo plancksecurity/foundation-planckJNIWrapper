@@ -1,6 +1,7 @@
 decl namespace @name;
 decl enum @name;
 decl interface @name;
+decl exception @name;
 decl method @name;
 decl struct @name;
 decl entry @type @name;
