@@ -53,13 +53,43 @@ namespace pEp {
                 in message src,
                 in stringlist extra,
                 creates message dst,
-                in pEp_enc_format enc_format
+                in encformat enc_format
             );
         
         method decrypt_message(
                 in message src,
-                creates message dst
+                creates message dst,
+                creates stringlist keylist,
+                returns Color color
             );
+
+        method outgoing_message_color(
+                in message msg,
+                returns Color color
+            );
+    };
+
+    struct message {
+        direction dir;
+        string id;
+        string shortmsg;
+        string longmsg;
+        string longmsg_formatted;
+        bloblist attachments;
+        timestamp sent;
+        timestamp recv;
+        identity from;
+        identitylist to;
+        identity recv_by;
+        identitylist cc;
+        identitylist bcc;
+        identitylist reply_to;
+        stringlist in_reply_to;
+        stringlist references;
+        stringlist keywords;
+        string comments;
+        stringpairlist opt_fields;
+        encformat enc_format;
     };
 };
 

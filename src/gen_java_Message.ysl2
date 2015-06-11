@@ -1,0 +1,60 @@
+include yslt.yml2
+
+tstylesheet {
+    template "/namespace[@name='pEp']" apply "struct", 0;
+
+    template "struct"
+||
+package org.pEp.jniadapter;
+
+import java.util.Date;
+
+public class MimeMessage {
+    public enum TextFormat {
+        plain (0),
+        html (1),
+        other (255);
+
+        public final int value;
+
+        TextFormat(int value) {
+            this.value = value;
+        }
+    }
+
+    public enum Direction {
+        incoming (0),
+        outgoing (1);
+
+        public final int value;
+
+        Direction(int value) {
+            this.value = value;
+        }
+    }
+
+    public enum EncFormat {
+        none (0),
+        pieces (1),
+        S_MIME (2),
+        PGP_MIME (3),
+        PEP (4);
+
+        public final int value;
+
+        EncFormat(int value) {
+            this.value = value;
+        }
+    }
+
+    ``apply "entry";
+}
+||
+
+    template "entry"
+        ||
+        public native †@type «@name»();
+        public native void «@name»(†@type value);
+        ||
+}
+

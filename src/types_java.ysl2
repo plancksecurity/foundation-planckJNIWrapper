@@ -7,10 +7,11 @@ function "toJava" {
         when "$type='stringlist'" > String[]
         when "$type='string'" > String
         when "$type='message'" > MimeMessage
-        when "$type='pEp-identity'" > Identity
+        when "$type='identity'" > Identity
         when "$type='identity-list'" > Identity[]
         when "$type='timestamp'" > Date
-        when "$type='pEp-enc-format'" > MimeMessage.EncFormat
+        when "$type='encformat'" > MimeMessage.EncFormat
+        when "$type='bloblist'" > Blob[]
         otherwise call "CamelCase" with "text", "$type";
     }
 }
