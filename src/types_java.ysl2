@@ -6,6 +6,11 @@ function "toJava" {
     choose {
         when "string" > String
         when "stringlist" > String[]
+        when "message" > MimeMessage
+        when "pEp-identity" > Identity
+        when "identity_list" > Identity[]
+        when "timestamp" > Date
+        when "pEp_enc_format" > MimeMessage.EncFormat
         otherwise call "CamelCase" with "text", "$type";
     }
 }

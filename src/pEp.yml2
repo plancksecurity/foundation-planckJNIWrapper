@@ -34,7 +34,7 @@ namespace pEp {
         pEp_verified_and_trusted                        > 0x0408
         pEp_cannot_decrypt_unknown						> 0x04ff
 
-        pEp_safeword_not_found							> 0x0501
+        pEp_trustword_not_found							> 0x0501
 
         pEp_cannot_create_key                           > 0x0601
         pEp_cannot_send_key                             > 0x0602
@@ -58,7 +58,6 @@ namespace pEp {
         
         method decrypt_message(
                 in message src,
-                in pEp_MIME_format mime,
                 creates message dst
             );
     };

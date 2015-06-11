@@ -6,7 +6,7 @@ tstylesheet {
     template "/"
         ||
         package org.pEp.jniadapter;
-        
+
         final public class Engine extends AbstractEngine {
             public Engine() throws pEpException { }
 
