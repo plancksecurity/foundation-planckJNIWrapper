@@ -4,14 +4,16 @@ function "toJava" {
     param "type";
 
     choose {
-        when "string" > String
-        when "stringlist" > String[]
-        when "message" > MimeMessage
-        when "pEp-identity" > Identity
-        when "identity_list" > Identity[]
-        when "timestamp" > Date
-        when "pEp_enc_format" > MimeMessage.EncFormat
+        when "$type='stringlist'" > String[]
+        when "$type='string'" > String
+        when "$type='message'" > MimeMessage
+        when "$type='pEp-identity'" > Identity
+        when "$type='identity-list'" > Identity[]
+        when "$type='timestamp'" > Date
+        when "$type='pEp-enc-format'" > MimeMessage.EncFormat
         otherwise call "CamelCase" with "text", "$type";
     }
 }
+
+define operator "†([$@]?[a-zA-Z0-9_]+)" as call "toJava" with "type", "%1";
 

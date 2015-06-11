@@ -4,7 +4,7 @@ decl interface @name;
 decl method @name;
 
 namespace pEp {
-    enum pEp_status {
+    exception pEp_status {
         pEp_status_ok									> 0
 
         pEp_init_cannot_load_gpgme						> 0x0110

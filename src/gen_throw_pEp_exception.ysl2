@@ -35,7 +35,7 @@ tstylesheet {
                     const char *ex_name;
         
                     switch (status) {
-                        `` apply "enum/*[text()!=0]", 4, mode=case
+                        `` apply "exception/*[text()!=0]", 4, mode=case
                         default:
                             assert(0);
                             ex_name = "Exception";
