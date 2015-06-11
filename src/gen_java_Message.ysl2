@@ -1,9 +1,11 @@
 include yslt.yml2
 
 tstylesheet {
+    include ./types_java.ysl2
+
     template "/namespace[@name='pEp']" apply "struct", 0;
 
-    template "struct"
+    template "struct[@name='message']"
 ||
 package org.pEp.jniadapter;
 

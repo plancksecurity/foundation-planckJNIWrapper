@@ -8,10 +8,12 @@ function "toJava" {
         when "$type='string'" > String
         when "$type='message'" > MimeMessage
         when "$type='identity'" > Identity
-        when "$type='identity-list'" > Identity[]
+        when "$type='identitylist'" > Identity[]
         when "$type='timestamp'" > Date
         when "$type='encformat'" > MimeMessage.EncFormat
         when "$type='bloblist'" > Blob[]
+        when "$type='stringpairlist'" > Pair<String, String>[]
+
         otherwise call "CamelCase" with "text", "$type";
     }
 }

@@ -2,6 +2,8 @@ decl namespace @name;
 decl enum @name;
 decl interface @name;
 decl method @name;
+decl struct @name;
+decl entry @type @name;
 
 namespace pEp {
     exception pEp_status {
@@ -70,26 +72,26 @@ namespace pEp {
     };
 
     struct message {
-        direction dir;
-        string id;
-        string shortmsg;
-        string longmsg;
-        string longmsg_formatted;
-        bloblist attachments;
-        timestamp sent;
-        timestamp recv;
-        identity from;
-        identitylist to;
-        identity recv_by;
-        identitylist cc;
-        identitylist bcc;
-        identitylist reply_to;
-        stringlist in_reply_to;
-        stringlist references;
-        stringlist keywords;
-        string comments;
-        stringpairlist opt_fields;
-        encformat enc_format;
+        entry direction dir;
+        entry string id;
+        entry string shortmsg;
+        entry string longmsg;
+        entry string longmsg_formatted;
+        entry bloblist attachments;
+        entry timestamp sent;
+        entry timestamp recv;
+        entry identity from;
+        entry identitylist to;
+        entry identity recv_by;
+        entry identitylist cc;
+        entry identitylist bcc;
+        entry identitylist reply_to;
+        entry stringlist in_reply_to;
+        entry stringlist references;
+        entry stringlist keywords;
+        entry string comments;
+        entry stringpairlist opt_fields;
+        entry encformat enc_format;
     };
 };
 
