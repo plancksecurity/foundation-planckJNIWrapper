@@ -1,6 +1,7 @@
 package org.pEp.jniadapter;
 
 import java.util.ArrayList;
+import java.util.Vector;
 import java.io.UnsupportedEncodingException; import java.text.Normalizer;
 
 abstract class AbstractEngine implements AutoCloseable { static {
@@ -51,7 +52,16 @@ abstract class AbstractEngine implements AutoCloseable { static {
 
         return result;
     }
-       
+
+    public static Vector<Pair<byte[], byte[]>> toUTF8(Vector<Pair<String, String>> list) {
+        Vector<Pair<byte[], byte[]>> result = new Vector<Pair<byte[], byte[]>>(list.size());
+
+        for (int i=0; i<list.size(); i++)
+            result.set(i, toUTF8(list.get(i)));
+
+        return result;
+    }
+
     public static String toUTF16(byte[] utf8) {
         try {
             return new String(utf8, "UTF-8");
@@ -76,6 +86,15 @@ abstract class AbstractEngine implements AutoCloseable { static {
 
         result.first = toUTF16(pair.first);
         result.second = toUTF16(pair.second);
+
+        return result;
+    }
+
+    public static Vector<Pair<String, String>> toUTF16(Vector<Pair<byte[], byte[]>> list) {
+        Vector<Pair<String, String>> result = new Vector<Pair<String, String>>(list.size());
+
+        for (int i=0; i<list.size(); i++)
+            result.set(i, toUTF16(list.get(i)));
 
         return result;
     }

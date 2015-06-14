@@ -12,10 +12,12 @@ tstylesheet {
             package org.pEp.jniadapter;
 
             import java.util.ArrayList;
+            import java.util.Vector;
 
             final public class «$cname» extends AbstractEngine {
                 public «$cname»() throws pEpException { }
-                `` apply "namespace/interface/method";
+
+                `` apply "interface|method"
             }
             ||
     }
@@ -27,13 +29,13 @@ tstylesheet {
             package org.pEp.jniadapter;
 
             import java.util.ArrayList;
+            import java.util.Vector;
             import java.util.Date;
             import java.util.HashMap;
 
             public class «$cname» {
                 `` apply "enum"
                 `` apply "*[name(.)!='enum']", mode=entry
-
             }
             ||
     }
@@ -76,15 +78,32 @@ tstylesheet {
     }
 
     template "*", mode=entry {
-        const "type", "name(.)";
-        const "name", "name(*[position()=1])";
+        const "type" call "toJava" with "type", "name(.)";
+        const "itype" call "toIntermediate" with "type", "name(.)";
+        const "name" call "toJava" with "type", "name(*[position()=1])";
 
-        ||
-        private native †$type _©$name();
-        private native void _©$name(†$type value);
+        choose {
+            when "$itype != $type"
+            ||
+            private native «$itype» _get«$name»();
+            private native void _set«$name»(«$itype» value);
+            public «$type» get«$name»() {
+                return AbstractEngine.toUTF16(_get«$name»());
+            }
+            public void set«$name»(«$type» value) {
+                _set«$name»(AbstractEngine.toUTF8(value));
+            }
 
-        ||
+            ||
+            otherwise
+            ||
+            public native «$itype» get«$name»();
+            public native void set«$name»(«$itype» value);
+
+            ||
+        }
     }
+
     template "*", mode=value | «name(.)» («.»)`if "position()!=last()" > , `
 }
 
