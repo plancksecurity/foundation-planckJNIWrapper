@@ -11,7 +11,7 @@ function "toC" {
         when "$type='timestamp'" > timestamp
         when "$type='EncFormat'" > PEP_enc_format
         when "$type='bloblist'" > bloblist_t
-        when "$type='stringpairlist'" > stringpairlist
+        when "$type='stringpairlist'" > stringpairlist_t
 
         otherwise value "$type";
     }
