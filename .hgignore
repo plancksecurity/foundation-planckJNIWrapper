@@ -15,7 +15,7 @@ org/pEp/jniadapter/pEp*.java
 throw_pEp_exception.*
 Color.java
 Engine.java
-MimeMessage.java
+Message.java
 
 # ignore vim workspace
 
