@@ -11,6 +11,8 @@ tstylesheet {
         ||
         #include "org_pEp_jniadapter_«$jname».h"
 
+        `` apply "*[name(.)!='enum']", mode=entry with "class" call "CamelCase" with "text", "@name";
+        }
         ||
     }
 
@@ -20,6 +22,16 @@ tstylesheet {
         ||
         #include "org_pEp_jniadapter_«$jname».h"
 
+        ||
+    }
+
+    template "*", mode=entry {
+        param "class";
+        const "ctype" call "toC" with "type", "name(.)";
+        ||
+        JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_«$class»_getDir(JNIEnv *env, jobject obj) {
+            
+        }
         ||
     }
 }
