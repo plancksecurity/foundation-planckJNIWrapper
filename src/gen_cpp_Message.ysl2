@@ -1,10 +1,26 @@
 include yslt.yml2
 
 tstylesheet {
-    template "/namespace[@name='pEp']" apply "struct", 0;
+    include ./types_c.ysl2
 
-    template "struct[@name='message']" {
-        
+    template "/namespace[@name='pEp']" apply "struct|interface", 0;
+
+    template "struct" {
+        const "jname" call "CamelCase" with "text", "@name";
+        document("org_pEp_jniadapter_{$jname}.cc", "text")
+        ||
+        #include "org_pEp_jniadapter_«$jname».h"
+
+        ||
+    }
+
+    template "interface" {
+        const "jname" call "CamelCase" with "text", "@name";
+        document("org_pEp_jniadapter_{$jname}.cc", "text")
+        ||
+        #include "org_pEp_jniadapter_«$jname».h"
+
+        ||
     }
 }
 
