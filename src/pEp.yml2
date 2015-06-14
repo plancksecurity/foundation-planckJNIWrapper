@@ -4,7 +4,6 @@ decl interface @name;
 decl exception @name;
 decl method @name;
 decl struct @name;
-decl entry @type @name;
 
 namespace pEp {
     exception pEp_status {
@@ -51,7 +50,7 @@ namespace pEp {
         pEp_unknown_error								> -1
     };
 
-    interface message_api {
+    interface Engine {
         method encrypt_message(
                 in message src,
                 in stringlist extra,
@@ -73,26 +72,45 @@ namespace pEp {
     };
 
     struct message {
-        entry direction dir;
-        entry string id;
-        entry string shortmsg;
-        entry string longmsg;
-        entry string longmsg_formatted;
-        entry bloblist attachments;
-        entry timestamp sent;
-        entry timestamp recv;
-        entry identity from;
-        entry identitylist to;
-        entry identity recv_by;
-        entry identitylist cc;
-        entry identitylist bcc;
-        entry identitylist reply_to;
-        entry stringlist in_reply_to;
-        entry stringlist references;
-        entry stringlist keywords;
-        entry string comments;
-        entry stringpairlist opt_fields;
-        entry encformat enc_format;
+        enum TextFormat {
+            plain       > 0
+            html        > 1
+            other       > 255
+        }
+
+        enum Direction {
+            incoming    > 0
+            outgoing    > 1
+        }
+
+        enum EncFormat {
+            none        > 0
+            pieces      > 1
+            SMIME       > 2
+            PGPMIME     > 3
+            PEP         > 4
+        }
+
+         direction dir;
+         string id;
+         string shortmsg;
+         string longmsg;
+         string longmsg_formatted;
+         bloblist attachments;
+         timestamp sent;
+         timestamp recv;
+         identity from;
+         identitylist to;
+         identity recv_by;
+         identitylist cc;
+         identitylist bcc;
+         identitylist reply_to;
+         stringlist in_reply_to;
+         stringlist references;
+         stringlist keywords;
+         string comments;
+         stringpairlist opt_fields;
+         encformat enc_format;
     };
 };
 

@@ -4,19 +4,33 @@ function "toJava" {
     param "type";
 
     choose {
-        when "$type='stringlist'" > String[]
+        when "$type='stringlist'" > ArrayList<String>
         when "$type='string'" > String
         when "$type='message'" > MimeMessage
         when "$type='identity'" > Identity
-        when "$type='identitylist'" > Identity[]
+        when "$type='identitylist'" > ArrayList<Identity>
         when "$type='timestamp'" > Date
         when "$type='encformat'" > MimeMessage.EncFormat
-        when "$type='bloblist'" > Blob[]
-        when "$type='stringpairlist'" > Pair<String, String>[]
+        when "$type='bloblist'" > ArrayList<Blob>
+        when "$type='stringpairlist'" > ArrayList<Pair<String, String>>
+        when "$type='message'" > MimeMessage
 
         otherwise call "CamelCase" with "text", "$type";
     }
 }
 
+function "toIntermediate" {
+    param "type";
+
+    choose {
+        when "$type='stringlist'" > ArrayList<byte[]>
+        when "$type='stringpairlist'" > ArrayList<Pair<byte[], byte[]>>
+        when "$type='string'" > byte[]
+
+        otherwise call "toJava" with "type", "$type";
+    }
+}
+
 define operator "†([$@]?[a-zA-Z0-9_]+)" as call "toJava" with "type", "%1";
+define operator "¡([$@]?[a-zA-Z0-9_]+)" as call "toIntermediate" with "type", "%1";
 

@@ -3,61 +3,88 @@ include yslt.yml2
 tstylesheet {
     include ./types_java.ysl2
 
-    template "/namespace[@name='pEp']" apply "struct", 0;
+    template "/namespace[@name='pEp']" apply "struct|interface", 0;
 
-    template "struct[@name='message']"
-||
-package org.pEp.jniadapter;
+    template "interface" {
+        const "cname" call "toJava" with "type", "@name";
+        document("org/pEp/jniadapter/{$cname}.java", "text")
+            ||
+            package org.pEp.jniadapter;
 
-import java.util.Date;
+            import java.util.ArrayList;
 
-public class MimeMessage {
-    public enum TextFormat {
-        plain (0),
-        html (1),
-        other (255);
-
-        public final int value;
-
-        TextFormat(int value) {
-            this.value = value;
-        }
+            final public class «$cname» extends AbstractEngine {
+                public «$cname»() throws pEpException { }
+                `` apply "namespace/interface/method";
+            }
+            ||
     }
 
-    public enum Direction {
-        incoming (0),
-        outgoing (1);
+    template "struct" {
+        const "cname" call "toJava" with "type", "@name";
+        document("org/pEp/jniadapter/{$cname}.java", "text")
+            ||
+            package org.pEp.jniadapter;
 
-        public final int value;
+            import java.util.ArrayList;
+            import java.util.Date;
+            import java.util.HashMap;
 
-        Direction(int value) {
-            this.value = value;
-        }
+            public class «$cname» {
+                `` apply "enum"
+                `` apply "*[name(.)!='enum']", mode=entry
+
+            }
+            ||
     }
 
-    public enum EncFormat {
-        none (0),
-        pieces (1),
-        S_MIME (2),
-        PGP_MIME (3),
-        PEP (4);
-
-        public final int value;
-
-        EncFormat(int value) {
-            this.value = value;
-        }
-    }
-
-    ``apply "entry";
-}
-||
-
-    template "entry"
+    template "enum"
         ||
-        public native †@type ©@name();
-        public native void ©@name(†@type value);
+        public enum «@name» {
+            `` apply "*", mode=value
+            ;
+
+            public final int value;
+            public static final HashMap<Integer, «@name»> tag =
+                    new HashMap<Integer, «@name»>();
+
+            «@name»(int value) {
+                this.value = value;
+                fill(value);
+            }
+
+            private void fill(int value) {
+                tag.put(value, this);
+            }
+        }
 
         ||
+
+    template "method"
+        ||
+        public native void «@name»(
+        `` apply "parm", 2
+            ) throws pEpException;`if "position()!=last()" > \n`
+        ||
+
+    template "parm" {
+        const "dir", "name(*[1])";
+        const "type", "name(*[2])";
+        const "name", "name(*[3])";
+
+        | `call "toJava" with "type", "$type"` «translate($name,'-','_')»`if "position()!=last()" > ,`
+    }
+
+    template "*", mode=entry {
+        const "type", "name(.)";
+        const "name", "name(*[position()=1])";
+
+        ||
+        private native †$type _©$name();
+        private native void _©$name(†$type value);
+
+        ||
+    }
+    template "*", mode=value | «name(.)» («.»)`if "position()!=last()" > , `
 }
 

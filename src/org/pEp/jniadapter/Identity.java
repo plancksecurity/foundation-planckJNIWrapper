@@ -7,9 +7,14 @@ public class Identity {
     public String username;
     CommType comm_type;
     public String lang;
-    private boolean me;
+    public boolean me;
 
-    public Identity() { this.me = false; }
-    public Identity(boolean me) { this.me = me; }
+    public Identity() {
+        this.me = false;
+    }
+
+    public Identity(boolean me) {
+        this.me = me;
+    }
 }
 
