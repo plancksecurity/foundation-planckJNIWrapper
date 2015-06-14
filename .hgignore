@@ -13,6 +13,9 @@ syntax: glob
 org_pEp_*.h
 org/pEp/jniadapter/pEp*.java
 throw_pEp_exception.*
+Color.java
+Engine.java
+MimeMessage.java
 
 # ignore vim workspace
 
