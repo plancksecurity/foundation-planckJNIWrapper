@@ -50,12 +50,30 @@ namespace pEp {
         pEp_unknown_error								> -1
     };
 
+    enum color {
+        pEp_rating_undefined > 0
+        pEp_rating_cannot_decrypt > 1
+        pEp_rating_have_no_key > 2
+        pEp_rating_unencrypted > 3
+        pEp_rating_unreliable > 4
+        pEp_rating_reliable > 5
+        pEp_rating_yellow > 5
+        pEp_rating_trusted > 6
+        pEp_rating_green > 6
+        pEp_rating_trusted_and_anonymized > 7
+        pEp_rating_fully_anonymous > 8
+
+        pEp_rating_under_attack > -1
+        pEp_rating_red > -1
+        pEp_rating_b0rken > -2
+    };
+
     interface Engine {
         method encrypt_message(
                 in message src,
                 in stringlist extra,
                 creates message dst,
-                in encformat enc_format
+                in EncFormat enc_format
             );
         
         method decrypt_message(
@@ -110,7 +128,7 @@ namespace pEp {
          stringlist keywords;
          string comments;
          stringpairlist opt_fields;
-         encformat enc_format;
+         EncFormat enc_format;
     };
 };
 

@@ -3,7 +3,7 @@ include yslt.yml2
 tstylesheet {
     include ./types_java.ysl2
 
-    template "/namespace[@name='pEp']" apply "struct|interface", 0;
+    template "/namespace[@name='pEp']" apply "struct|interface|enum", 0;
 
     template "interface" {
         const "cname" call "toJava" with "type", "@name";
@@ -34,23 +34,36 @@ tstylesheet {
             import java.util.HashMap;
 
             public class «$cname» {
-                `` apply "enum"
+                `` apply "enum", mode=inner
                 `` apply "*[name(.)!='enum']", mode=entry
             }
             ||
     }
 
-    template "enum"
+    template "enum" {
+        const "jname" call "toJava" with "type", "@name";
+        document("org/pEp/jniadapter/{$jname}.java", "text")
+            ||
+            package org.pEp.jniadapter;
+
+            import java.util.HashMap;
+            
+            `` apply ".", 0, mode=inner
+            ||
+    }
+
+    template "enum", mode=inner {
+        const "jname" call "CamelCase" with "text", "@name";
         ||
-        public enum «@name» {
+        public enum «$jname» {
             `` apply "*", mode=value
             ;
 
             public final int value;
-            public static final HashMap<Integer, «@name»> tag =
-                    new HashMap<Integer, «@name»>();
+            public static final HashMap<Integer, «$jname»> tag =
+                    new HashMap<Integer, «$jname»>();
 
-            «@name»(int value) {
+            «$jname»(int value) {
                 this.value = value;
                 fill(value);
             }
@@ -61,6 +74,7 @@ tstylesheet {
         }
 
         ||
+    }
 
     template "method"
         ||
@@ -104,6 +118,9 @@ tstylesheet {
         }
     }
 
-    template "*", mode=value | «name(.)» («.»)`if "position()!=last()" > , `
+    template "*", mode=value {
+        const "name" call "toJava" with "type", "name(.)";
+        | «$name» («.»)`if "position()!=last()" > , `
+    }
 }
 

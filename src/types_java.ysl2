@@ -10,7 +10,7 @@ function "toJava" {
         when "$type='identity'" > Identity
         when "$type='identitylist'" > ArrayList<Identity>
         when "$type='timestamp'" > Date
-        when "$type='encformat'" > MimeMessage.EncFormat
+        when "$type='EncFormat'" > MimeMessage.EncFormat
         when "$type='bloblist'" > ArrayList<Blob>
         when "$type='stringpairlist'" > Vector<Pair<String, String>>
         when "$type='message'" > MimeMessage

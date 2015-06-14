@@ -47,5 +47,6 @@ clean:
 	rm -f org/pEp/jniadapter/pEp*.java
 	rm -f org/pEp/jniadapter/Engine.java
 	rm -f org/pEp/jniadapter/MimeMessage.java
+	rm -f org/pEp/jniadapter/Color.java
 	rm -f throw_pEp_exception.*
 
