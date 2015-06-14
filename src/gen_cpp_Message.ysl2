@@ -1,6 +1,10 @@
 include yslt.yml2
 
 tstylesheet {
-    template "/";
+    template "/namespace[@name='pEp']" apply "struct", 0;
+
+    template "struct[@name='message']" {
+        
+    }
 }
 
