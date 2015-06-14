@@ -7,17 +7,53 @@ tstylesheet {
 
     template "struct" {
         const "jname" call "CamelCase" with "text", "@name";
+
         document("org_pEp_jniadapter_{$jname}.cc", "text")
         ||
+        #include <exception>
+        #include <stdint.h>
+        #include <assert.h>
+        #include <pEp/«@name».h>
+
+        #include "jniutils.hh"
         #include "org_pEp_jniadapter_«$jname».h"
 
-        `` apply "*[name(.)!='enum']", mode=entry with "class" call "CamelCase" with "text", "@name";
+        using namespace pEp::JNIAdapter;
+
+        JNIEXPORT jlong JNICALL
+                Java_org_pEp_jniadapter_«$jname»_init(JNIEnv *env, jobject obj) {
+            ::«@name» * _obj = ::new_«@name»(PEP_dir_incoming);
+            // BUG: test for out of memory missing
+            return (jlong) (int64_t) (intptr_t) _obj;
         }
+
+        JNIEXPORT void JNICALL
+                Java_org_pEp_jniadapter_«$jname»_release(JNIEnv *env, jobject obj, jlong value) {
+            ::«@name» *_obj = (::«@name» *) (intptr_t) (int64_t) value;
+            ::free_«@name»(_obj);
+        }
+
+        static ::message *ptr(JNIEnv *env, jobject me) {
+            jfieldID handle;
+
+            try {
+                handle = getFieldID(env, "org/pEp/jniadapter/«$jname»", "handle", "J");
+            }
+            catch (std::exception& ex) {
+                assert(0);
+                return NULL;
+            }
+
+            return (::«@name» *) (intptr_t) (int64_t) env->GetLongField(me, handle);
+        }
+
+        `` apply "*[name(.)!='enum']", 0, mode=entry with "class" call "CamelCase" with "text", "@name";
         ||
     }
 
     template "interface" {
         const "jname" call "CamelCase" with "text", "@name";
+
         document("org_pEp_jniadapter_{$jname}.cc", "text")
         ||
         #include "org_pEp_jniadapter_«$jname».h"
@@ -27,11 +63,28 @@ tstylesheet {
 
     template "*", mode=entry {
         param "class";
+        const "_class" call "lcase" with "text", "$class";
         const "ctype" call "toC" with "type", "name(.)";
+        const "jname" call "CamelCase" with "text", "name(*[1])";
+        const "cname" call "lcase" with "text", "name(*[1])";
+
         ||
-        JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_«$class»_getDir(JNIEnv *env, jobject obj) {
-            
+        JNIEXPORT jobject JNICALL
+                Java_org_pEp_jniadapter_«$class»_get«$jname»(JNIEnv *env, jobject obj) {
+            «$_class» *_obj = ptr(env, obj);
+            jobject result = NULL;
+
+            _obj->«$cname»;
+            return result;
         }
+
+        JNIEXPORT void JNICALL
+                Java_org_pEp_jniadapter_Message_set«$jname»(JNIEnv *env, jobject obj, jobject value) {
+            «$_class» *_obj = ptr(env, obj);   
+            «$ctype» *_value;
+            _obj->«$cname»;
+        }
+
         ||
     }
 }

@@ -33,7 +33,20 @@ tstylesheet {
             import java.util.Date;
             import java.util.HashMap;
 
-            public class «$cname» {
+            public class «$cname» implements AutoCloseable {
+                private final long handle;
+
+                native long init();
+                native void release(long handle);
+
+                public «$cname»() {
+                    handle = init();
+                }
+
+                public final void close() {
+                    release(handle);
+                }
+
                 `` apply "enum", mode=inner
                 `` apply "*[name(.)!='enum']", mode=entry
             }

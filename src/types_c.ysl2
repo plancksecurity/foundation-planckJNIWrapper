@@ -5,13 +5,14 @@ function "toC" {
 
     choose {
         when "$type='stringlist'" > stringlist_t
-        when "$type='string'" > char *
+        when "$type='string'" > char
         when "$type='identity'" > pEp_identity
-        when "$type='identitylist'" > identity_list_t
+        when "$type='identitylist'" > identity_list
         when "$type='timestamp'" > timestamp
         when "$type='EncFormat'" > PEP_enc_format
         when "$type='bloblist'" > bloblist_t
-        when "$type='stringpairlist'" > stringpairlist_t
+        when "$type='stringpairlist'" > stringpair_list_t
+        when "$type='direction'" > PEP_direction
 
         otherwise value "$type";
     }
