@@ -1,0 +1,21 @@
+include ./textutils.ysl2
+
+function "toC" {
+    param "type";
+
+    choose {
+        when "$type='stringlist'" > stringlist_t
+        when "$type='string'" > char *
+        when "$type='identity'" > pEp_identity
+        when "$type='identitylist'" > identity_list_t
+        when "$type='timestamp'" > timestamp
+        when "$type='EncFormat'" > PEP_enc_format
+        when "$type='bloblist'" > bloblist_t
+        when "$type='stringpairlist'" > stringpairlist
+
+        otherwise value "$type";
+    }
+}
+
+define operator "√([$@]?[a-zA-Z0-9_]+)" as call "toC" with "type", "%1";
+
