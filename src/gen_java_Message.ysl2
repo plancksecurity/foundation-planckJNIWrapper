@@ -72,9 +72,12 @@ tstylesheet {
             `` apply "*", mode=value
             ;
 
+            static class Management {
+                public static final HashMap<Integer, «$jname»> tag =
+                        new HashMap<Integer, «$jname»>();
+            }
+
             public final int value;
-            public static final HashMap<Integer, «$jname»> tag =
-                    new HashMap<Integer, «$jname»>();
 
             «$jname»(int value) {
                 this.value = value;
@@ -82,7 +85,7 @@ tstylesheet {
             }
 
             private void fill(int value) {
-                tag.put(value, this);
+                Management.tag.put(value, this);
             }
         }
 
