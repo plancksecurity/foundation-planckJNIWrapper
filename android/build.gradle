@@ -1,0 +1,109 @@
+// Android pEp JNI adapter Aar gradle build script
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.1.0'
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    
+    sourceSets {
+        main {
+
+            manifest.srcFile 'AndroidManifest.xml'
+
+            // where to find generated Java source
+            java.srcDirs = ['../src']
+
+            // disable automatic ndk-build call, which ignore our Android.mk
+            jni.srcDirs = []
+            jniLibs.srcDir 'src/main/libs'
+
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // call source generation makefile target
+    task genSources(type:Exec) {
+        workingDir '../src'
+        commandLine 'make', 'gensource'
+    }
+
+    // unzip some of the dependencies 
+    task unzipDeps(type: Copy) {
+        from zipTree(file('../../pEpEngine/android/pEpEngine-android-1.zip'))
+        from zipTree(file('../../libetpan/build-android/libetpan-android-1.zip'))
+        from zipTree(file('../../libetpan/build-android/dependencies/openssl/openssl-android-1.zip'))
+        from zipTree(file('../../libetpan/build-android/dependencies/cyrus-sasl/cyrus-sasl-android-1.zip'))
+        into file("${buildDir}")
+    }
+
+    // call regular ndk-build(.cmd) script from app directory
+    task jniBuild(type: Exec) {
+        commandLine getNdkBuildCmd(), 'V=1'
+    }
+    jniBuild.dependsOn genSources
+    jniBuild.dependsOn unzipDeps
+
+    // Ensure this is done before java build
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn jniBuild
+    }
+
+    task cleanNative(type: Exec) {
+        commandLine getNdkBuildCmd(), 'clean'
+    }
+
+    clean.dependsOn cleanNative
+
+}
+
+def getNdkDir() {
+    if (System.env.ANDROID_NDK_ROOT != null)
+        return System.env.ANDROID_NDK_ROOT
+
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    def ndkdir = properties.getProperty('ndk.dir', null)
+    if (ndkdir == null)
+        throw new GradleException("NDK location not found. Define location with ndk.dir in the local.properties file or with an ANDROID_NDK_ROOT environment variable.")
+
+    return ndkdir
+}
+
+def getNdkBuildCmd() {
+    def ndkbuild = getNdkDir() + "/ndk-build"
+    if (Os.isFamily(Os.FAMILY_WINDOWS))
+        ndkbuild += ".cmd"
+
+    return ndkbuild
+}
+
+

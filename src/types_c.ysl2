@@ -12,7 +12,7 @@ function "toC" {
         when "$type='EncFormat'" > PEP_enc_format
         when "$type='bloblist'" > bloblist_t
         when "$type='stringpairlist'" > stringpair_list_t
-        when "$type='direction'" > PEP_direction
+        when "$type='direction'" > PEP_msg_direction
 
         otherwise value "$type";
     }

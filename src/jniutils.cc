@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <typeinfo>
 #include <assert.h>
+#include <string>
 
 namespace pEp {
     namespace JNIAdapter {
@@ -30,7 +31,7 @@ namespace pEp {
                 jclass ex = env->FindClass("java/lang/NoSuchFieldError");
                 assert(ex);
                 env->ThrowNew(ex, fieldname);
-                throw std::invalid_argument(fieldname);
+                throw std::invalid_argument(std::string(fieldname));
             }
 
             return field;

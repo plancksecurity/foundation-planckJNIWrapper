@@ -1,11 +1,25 @@
 LIBRARY=libpEpJNI.a
 JAR=jniadapter.jar
-
 include Makefile.conf
 
 all: $(JAR) $(LIBRARY)
 
-$(JAR): org/pEp/jniadapter/pEpException.java org/pEp/jniadapter/AbstractEngine.java  org/pEp/jniadapter/Message.java org/pEp/jniadapter/Engine.java
+JAVA_SOURCES=org/pEp/jniadapter/pEpException.java \
+			 org/pEp/jniadapter/AbstractEngine.java \
+			 org/pEp/jniadapter/Message.java \
+			 org/pEp/jniadapter/Engine.java
+
+C_SOURCES=org_pEp_jniadapter_Engine.cc \
+		  org_pEp_jniadapter_Engine.h \
+		  org_pEp_jniadapter_Message.cc \
+		  org_pEp_jniadapter_Message.h \
+		  throw_pEp_exception.cc \
+		  throw_pEp_exception.hh \
+		  org_pEp_jniadapter_AbstractEngine.h
+
+gensource: $(JAVA_SOURCES) $(C_SOURCES)
+
+$(JAR): $(JAVA_SOURCES)
 	javac org/pEp/jniadapter/*.java
 	jar cf $@ org/pEp/jniadapter/*.class
 
