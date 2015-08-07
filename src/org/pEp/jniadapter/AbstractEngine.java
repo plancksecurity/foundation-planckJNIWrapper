@@ -2,13 +2,16 @@ package org.pEp.jniadapter;
 
 import java.util.ArrayList;
 import java.util.Vector;
-import java.io.UnsupportedEncodingException; import java.text.Normalizer;
+import java.io.UnsupportedEncodingException;
+import java.text.Normalizer;
 
-abstract class AbstractEngine implements AutoCloseable { static {
-    System.loadLibrary("pEpJNI"); }
+abstract class AbstractEngine implements AutoCloseable {
+    static {
+        System.loadLibrary("pEpJNI");
+    }
 
-    private native void init() throws pEpException; private native void
-        release();
+    private native void init() throws pEpException;
+    private native void release();
 
     private long handle;
 
