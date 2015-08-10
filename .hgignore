@@ -11,6 +11,7 @@ syntax: glob
 # ignore generated files
 
 org_pEp_*.h
+org_pEp_*.cc
 org/pEp/jniadapter/pEp*.java
 throw_pEp_exception.*
 Color.java
@@ -21,3 +22,9 @@ Message.java
 
 ws
 
+# ignore android build
+
+android/build
+android/libs
+android/obj
+android/.gradle
