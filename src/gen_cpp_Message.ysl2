@@ -33,7 +33,7 @@ tstylesheet {
             ::free_«@name»(_obj);
         }
 
-        static ::message *ptr(JNIEnv *env, jobject me) {
+        static ::«@name» *ptr(JNIEnv *env, jobject me) {
             jfieldID handle;
 
             try {
