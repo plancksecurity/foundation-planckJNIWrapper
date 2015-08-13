@@ -26,6 +26,9 @@ function "toIntermediate" {
         when "$type='stringlist'" > ArrayList<byte[]>
         when "$type='stringpairlist'" > Vector<Pair<byte[], byte[]>>
         when "$type='string'" > byte[]
+        when "$type='identity'" > _Identity
+        when "$type='identitylist'" > ArrayList<_Identity>
+        when "$type='bloblist'" > ArrayList<_Blob>
 
         otherwise call "toJava" with "type", "$type";
     }

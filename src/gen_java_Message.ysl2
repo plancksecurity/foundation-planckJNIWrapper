@@ -108,11 +108,45 @@ tstylesheet {
     }
 
     template "*", mode=entry {
+        const "ctype", "name(.)";
         const "type" call "toJava" with "type", "name(.)";
         const "itype" call "toIntermediate" with "type", "name(.)";
         const "name" call "toJava" with "type", "name(*[position()=1])";
 
         choose {
+            when "$ctype = 'identity'"
+            ||
+            private native «$itype» _get«$name»();
+            private native void _set«$name»(«$itype» value);
+            public «$type» get«$name»() {
+                return new «$type»(_get«$name»());
+            }
+            public void set«$name»(«$type» value) {
+                _set«$name»(new «$itype»(value));
+            }
+            
+            ||
+
+            when "$ctype = 'identitylist' or $ctype = 'bloblist'"
+            ||
+            `` const "ename", "substring-before(substring-after($type, '<'), '>')";
+            private native «$itype» _get«$name»();
+            private native void _set«$name»(«$itype» value);
+            public «$type» get«$name»() {
+                «$type» list = new «$type»();
+                for (_«$ename» i : _get«$name»())
+                    list.add(new «$ename»(i));
+                return list;
+            }
+            public void set«$name»(«$type» value) {
+                «$itype» list = new «$itype»();
+                for («$ename» i : value)
+                    list.add(new _«$ename»(i));
+                _set«$name»(list);
+            }
+            
+            ||
+
             when "$itype != $type"
             ||
             private native «$itype» _get«$name»();
@@ -125,6 +159,20 @@ tstylesheet {
             }
 
             ||
+
+            when "../enum[@name=$ctype]"
+            ||
+            private native int _get«$name»();
+            public «$itype» get«$name»() {
+                return «$itype».Management.tag.get(_get«$name»());
+            }
+            private native void _set«$name»(int value);
+            public void set«$name»(«$itype» value) {
+                _set«$name»(value.value);
+            }
+
+            ||
+
             otherwise
             ||
             public native «$itype» get«$name»();

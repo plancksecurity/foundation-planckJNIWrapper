@@ -96,7 +96,7 @@ namespace pEp {
             other       > 255
         }
 
-        enum Direction {
+        enum direction {
             incoming    > 0
             outgoing    > 1
         }

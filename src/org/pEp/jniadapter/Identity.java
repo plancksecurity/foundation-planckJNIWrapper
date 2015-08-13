@@ -16,5 +16,15 @@ public class Identity {
     public Identity(boolean me) {
         this.me = me;
     }
+
+    public Identity(_Identity i) {
+        address = AbstractEngine.toUTF16(i.address);
+        fpr = AbstractEngine.toUTF16(i.address);
+        user_id = AbstractEngine.toUTF16(i.address);
+        username = AbstractEngine.toUTF16(i.address);
+        comm_type = i.comm_type;
+        lang = AbstractEngine.toUTF16(i.address);
+        me = i.me;
+    }
 }
 
