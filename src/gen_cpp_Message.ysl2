@@ -3,7 +3,7 @@ include yslt.yml2
 tstylesheet {
     include ./types_c.ysl2
 
-    template "/namespace[@name='pEp']" apply "struct|interface", 0;
+    template "/namespace[@name='pEp']" apply "struct", 0;
 
     template "struct" {
         const "jname" call "CamelCase" with "text", "@name";
@@ -11,6 +11,7 @@ tstylesheet {
         document("org_pEp_jniadapter_{$jname}.cc", "text")
         ||
         #include <exception>
+        #include <new>
         #include <stdint.h>
         #include <assert.h>
         #include <pEp/«@name».h>
@@ -18,74 +19,112 @@ tstylesheet {
         #include "jniutils.hh"
         #include "org_pEp_jniadapter_«$jname».h"
 
+        using namespace std;
+
+        namespace pEp {
+            namespace JNIAdapter {
+                static ::«@name» *«@name»_ptr(JNIEnv *env, jobject me) {
+                    jfieldID handle;
+
+                    try {
+                        handle = getFieldID(env, "org/pEp/jniadapter/«$jname»", "handle", "J");
+                    }
+                    catch (std::exception& ex) {
+                        assert(0);
+                        return NULL;
+                    }
+
+                    return (::«@name» *) (intptr_t) (int64_t) env->GetLongField(me, handle);
+                }
+            };
+        };
+
+        extern "C" {
+
         using namespace pEp::JNIAdapter;
 
         JNIEXPORT jlong JNICALL
                 Java_org_pEp_jniadapter_«$jname»_init(JNIEnv *env, jobject obj) {
             ::«@name» * _obj = ::new_«@name»(PEP_dir_incoming);
-            // BUG: test for out of memory missing
+            if (!_obj) {
+                outOfMemory(env);
+                return (jlong) 0;
+            }
             return (jlong) (int64_t) (intptr_t) _obj;
         }
 
         JNIEXPORT void JNICALL
                 Java_org_pEp_jniadapter_«$jname»_release(JNIEnv *env, jobject obj, jlong value) {
-            ::«@name» *_obj = (::«@name» *) (intptr_t) (int64_t) value;
-            ::free_«@name»(_obj);
+            if (value) {
+                ::«@name» *_obj = (::«@name» *) (intptr_t) (int64_t) value;
+                ::free_«@name»(_obj);
+            }
         }
 
-        static ::«@name» *ptr(JNIEnv *env, jobject me) {
-            jfieldID handle;
-
-            try {
-                handle = getFieldID(env, "org/pEp/jniadapter/«$jname»", "handle", "J");
-            }
-            catch (std::exception& ex) {
-                assert(0);
-                return NULL;
-            }
-
-            return (::«@name» *) (intptr_t) (int64_t) env->GetLongField(me, handle);
-        }
-
-        `` apply "*[name(.)!='enum']", 0, mode=entry with "class" call "CamelCase" with "text", "@name";
-        ||
-    }
-
-    template "interface" {
-        const "jname" call "CamelCase" with "text", "@name";
-
-        document("org_pEp_jniadapter_{$jname}.cc", "text")
-        ||
-        #include "org_pEp_jniadapter_«$jname».h"
+        `` apply "*[name(.)!='enum']", 0, mode=entry with "name", "@name", with "class" call "CamelCase" with "text", "@name";
+        } // extern "C"
 
         ||
     }
 
     template "*", mode=entry {
+        param "name";
         param "class";
-        const "_class" call "lcase" with "text", "$class";
         const "ctype" call "toC" with "type", "name(.)";
         const "jname" call "CamelCase" with "text", "name(*[1])";
         const "cname" call "lcase" with "text", "name(*[1])";
+        const "type", "name(.)";
 
         ||
-        JNIEXPORT jobject JNICALL
+        JNIEXPORT `call "jni_type" with "type", "name(.)"` JNICALL
                 Java_org_pEp_jniadapter_«$class»_get«$jname»(JNIEnv *env, jobject obj) {
-            «$_class» *_obj = ptr(env, obj);
-            jobject result = NULL;
-
-            _obj->«$cname»;
-            return result;
+            «$name» *_obj = «$name»_ptr(env, obj);
+        ||
+        choose {
+            when "../enum[@name=$type]"
+                |> return (jint) _obj->«$cname»;
+            otherwise
+                |> return from_«$type»(env, _obj->«$cname»);
+        }
+        ||
         }
 
         JNIEXPORT void JNICALL
-                Java_org_pEp_jniadapter_Message_set«$jname»(JNIEnv *env, jobject obj, jobject value) {
-            «$_class» *_obj = ptr(env, obj);   
-            «$ctype» *_value;
-            _obj->«$cname»;
+                Java_org_pEp_jniadapter_Message_set«$jname»(JNIEnv *env, jobject obj, `call "jni_type" with "type", "name(.)"` value) {
+            «$name» *_obj = «$name»_ptr(env, obj);   
+        ||
+        choose {
+            when "../enum[@name=$type]"
+                |> _obj->«$cname» = («$ctype») (int) value;
+            when "$type = 'string'" {
+                |> free(_obj->«$cname»);
+                |> _obj->«$cname» = to_«$type»(env, value);
+            }
+            otherwise {
+                const "free" choose {
+                    when "$ctype = 'pEp_identity'" > identity
+                    when "contains($ctype, '_t')" value "substring-before($ctype, '_t')";
+                    otherwise value "$ctype";
+                }
+
+                |> free_«$free»(_obj->«$cname»);
+                |> _obj->«$cname» = to_«$type»(env, value);
+            }
+        }
+        ||
         }
 
         ||
+    }
+
+    function "jni_type" {
+        param "type";
+
+        choose {
+            when "../enum[@name=$type]" > jint
+            when "$type = 'string'" > jbyteArray
+            otherwise > jobject
+        }
     }
 }
 
