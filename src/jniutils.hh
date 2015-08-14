@@ -57,7 +57,7 @@ namespace pEp {
         timestamp *to_timestamp(JNIEnv *env, jobject date);
 
         jobject from_identity(JNIEnv *env, pEp_identity *ident);
-        pEp_identity *to_identity(JNIEnv *env, jobject ident);
+        pEp_identity *to_identity(JNIEnv *env, jobject obj);
 
         jobject from_identitylist(JNIEnv *env, identity_list *il);
         identity_list *to_identitylist(JNIEnv *env, jobject obj);

@@ -275,6 +275,88 @@ namespace pEp {
             time_t t = (time_t) callLongMethod(env, date, "getTime");
             return new_timestamp(t);
         }
+
+        static void _setStringField(JNIEnv *env, const char *classname,
+                jobject obj, const char *name, const char *value)
+        {
+            if (value) {
+                jfieldID fieldID = getFieldID(env, classname, name, "[B");
+                env->SetObjectField(obj, fieldID,
+                        reinterpret_cast<jobject>(from_string(env, value)));
+            }
+        }
+
+        jobject from_identity(JNIEnv *env, pEp_identity *ident)
+        {
+            static const char *classname = "org/pEp/jniadapter/_Identity";
+            jclass clazz = findClass(env, classname);
+            jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
+            assert(constructor);
+            jobject obj = env->NewObject(clazz, constructor);
+            
+            if (ident) {
+                _setStringField(env, classname, obj, "address", ident->address);
+                _setStringField(env, classname, obj, "fpr", ident->fpr);
+                _setStringField(env, classname, obj, "user_id", ident->user_id);
+                _setStringField(env, classname, obj, "username", ident->username);
+
+                jfieldID comm_type_id = getFieldID(env, classname, "comm_type", "I");
+                env->SetIntField(obj, comm_type_id, (jint) (int) ident->comm_type);
+
+                _setStringField(env, classname, obj, "lang", ident->lang);
+
+                jfieldID me_id = getFieldID(env, classname, "me", "Z");
+                env->SetBooleanField(obj, me_id, (jboolean) ident->me);
+            }
+
+            return obj;
+        }
+
+        char *_getStringField(JNIEnv *env, const char *classname, jobject obj,
+                const char *name)
+        {
+            jfieldID fieldID = getFieldID(env, classname, name, "[B");
+            jbyteArray field =
+                reinterpret_cast<jbyteArray>(env->GetObjectField(obj,
+                            fieldID));
+            return to_string(env, field);
+        }
+
+        pEp_identity *to_identity(JNIEnv *env, jobject obj)
+        {
+            static const char *classname = "org/pEp/jniadapter/_Identity";
+            pEp_identity *ident = new_identity(NULL, NULL, NULL, NULL);
+
+            ident->address = _getStringField(env, classname, obj, "address");
+            ident->fpr = _getStringField(env, classname, obj, "fpr");
+            ident->user_id = _getStringField(env, classname, obj, "user_id");
+            ident->username = _getStringField(env, classname, obj, "username");
+
+            jfieldID comm_type_id = getFieldID(env, classname, "comm_type", "I");
+            ident->comm_type = (PEP_comm_type) (int) env->GetIntField(obj, comm_type_id);
+
+            char *lang = _getStringField(env, classname, obj, "lang");
+            if (lang && lang[0]) {
+                ident->lang[0] = lang[0];
+                ident->lang[1] = lang[1];
+            }
+            free(lang);
+
+            jfieldID me_id = getFieldID(env, classname, "me", "Z");
+            ident->me = (bool) env->GetBooleanField(obj, me_id);
+
+            return ident;
+        }
+
+        jobject from_identitylist(JNIEnv *env, identity_list *il)
+        {
+
+        }
+
+        identity_list *to_identitylist(JNIEnv *env, jobject obj)
+        {
+
+        }
     };
 };
 

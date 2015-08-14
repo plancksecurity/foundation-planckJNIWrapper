@@ -1,5 +1,7 @@
 package org.pEp.jniadapter;
 
+import java.util.HashMap;
+
 public enum CommType {
     PEP_ct_unknown (0),
 
@@ -58,10 +60,20 @@ public enum CommType {
     PEP_ct_confirmed_enc_anon (0xc0),           // generic
 	PEP_ct_pEp (0xff);
 
+    static class Management {
+        public static final HashMap<Integer, CommType> tag =
+                new HashMap<Integer, CommType>();
+    }
+
     public final int value;
 
     CommType(int value) {
         this.value = value;
+        fill(value);
+    }
+
+    private void fill(int value) {
+        Management.tag.put(value, this);
     }
 }
 

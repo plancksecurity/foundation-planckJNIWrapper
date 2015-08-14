@@ -22,7 +22,7 @@ public class Identity {
         fpr = AbstractEngine.toUTF16(i.address);
         user_id = AbstractEngine.toUTF16(i.address);
         username = AbstractEngine.toUTF16(i.address);
-        comm_type = i.comm_type;
+        comm_type = CommType.Management.tag.get(i.comm_type);
         lang = AbstractEngine.toUTF16(i.address);
         me = i.me;
     }
