@@ -90,7 +90,7 @@ tstylesheet {
         }
 
         JNIEXPORT void JNICALL
-                Java_org_pEp_jniadapter_Message_set«$jname»(JNIEnv *env, jobject obj, `call "jni_type" with "type", "name(.)"` value) {
+                Java_org_pEp_jniadapter_«$class»_set«$jname»(JNIEnv *env, jobject obj, `call "jni_type" with "type", "name(.)"` value) {
             «$name» *_obj = «$name»_ptr(env, obj);   
         ||
         choose {
