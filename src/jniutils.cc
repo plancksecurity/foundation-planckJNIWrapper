@@ -350,12 +350,117 @@ namespace pEp {
 
         jobject from_identitylist(JNIEnv *env, identity_list *il)
         {
+            jclass clazz = findClass(env, "java/util/ArrayList");
+            jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
+            assert(constructor);
+            jobject obj = env->NewObject(clazz, constructor);
+            assert(obj);
 
+            identity_list *_il;
+            for (_il = il; _il && _il->ident; _il = _il->next) {
+                jobject o = from_identity(env, _il->ident);
+                callBooleanMethod(env, obj, "add", o);
+            }
+
+            return obj;
         }
 
         identity_list *to_identitylist(JNIEnv *env, jobject obj)
         {
+            jint size = callIntMethod(env, obj, "size");
+            if (size == 0)
+                return NULL;
 
+            identity_list *il = new_identity_list(NULL);
+            identity_list *_il;
+            jint i;
+            for (_il = il, i = 0; i < (int) size; i++) {
+                jobject o = callObjectMethod(env, obj, "get", i);
+                pEp_identity* ident = to_identity(env, o);
+                _il = identity_list_add(_il, ident);
+            }
+
+            return il;
+        }
+
+        jobject _from_blob(JNIEnv *env, bloblist_t *b)
+        {
+            static const char *classname = "org/pEp/jniadapter/_Blob";
+            jclass clazz = findClass(env, classname);
+            jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
+            assert(constructor);
+            jobject obj = env->NewObject(clazz, constructor);
+            
+            jfieldID fieldID = getFieldID(env, classname, "data", "[B");
+            jboolean isCopy;
+            jbyteArray _data = env->NewByteArray((jsize) b->size);
+            jbyte *_b = env->GetByteArrayElements(_data, &isCopy);
+            memcpy((char *)_b, b->value, b->size);
+            env->ReleaseByteArrayElements(_data, _b, 0);
+
+            _setStringField(env, classname, obj, "mime_type", b->mime_type);
+            _setStringField(env, classname, obj, "filename", b->filename);
+
+            return obj;
+        }
+
+        jobject from_bloblist(JNIEnv *env, bloblist_t *bl)
+        {
+            jclass clazz = findClass(env, "java/util/ArrayList");
+            jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
+            assert(constructor);
+            jobject obj = env->NewObject(clazz, constructor);
+            assert(obj);
+
+            bloblist_t *_bl;
+            for (_bl = bl; _bl && _bl->value; _bl = _bl->next) {
+                jobject o = _from_blob(env, _bl);
+                callBooleanMethod(env, obj, "add", o);
+            }
+
+            return obj;
+        }
+
+        bloblist_t *to_bloblist(JNIEnv *env, jobject obj)
+        {
+            jint size = callIntMethod(env, obj, "size");
+            if (size == 0)
+                return NULL;
+
+            static const char *classname = "org/pEp/jniadapter/_Blob";
+            jclass clazz = findClass(env, classname);
+            jfieldID data_id = getFieldID(env, classname, "data", "[B");
+
+            bloblist_t *bl = new_bloblist(NULL, 0, NULL, NULL);
+            bloblist_t *_bl;
+            jint i;
+            for (_bl = bl, i = 0; i < (int) size; i++) {
+                jobject o = callObjectMethod(env, obj, "get", i);
+                char *mime_type = _getStringField(env, classname, o,
+                        "mime_type");
+                char *filename = _getStringField(env, classname, o,
+                        "filename");
+
+                jbyteArray _data =
+                    reinterpret_cast<jbyteArray>(env->GetObjectField(o,
+                                data_id));
+                
+                size_t size = (size_t) env->GetArrayLength(_data);
+                char *b = (char *) malloc(size);
+                assert(b);
+
+                jboolean isCopy;
+                jbyte *_b = env->GetByteArrayElements(_data, &isCopy);
+                memcpy(b, _b, size);
+                env->ReleaseByteArrayElements(_data, _b, JNI_ABORT);
+
+                _bl = bloblist_add(_bl, b, size, mime_type, filename);
+
+                free(mime_type);
+                free(filename);
+            }
+
+            return bl;
         }
     };
 };
