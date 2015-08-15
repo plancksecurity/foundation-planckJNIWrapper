@@ -72,8 +72,7 @@ namespace pEp {
         method encrypt_message(
                 in message src,
                 in stringlist extra,
-                creates message dst,
-                in EncFormat enc_format
+                creates message dst
             );
         
         method decrypt_message(

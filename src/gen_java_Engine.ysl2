@@ -1,0 +1,181 @@
+include yslt.yml2
+
+tstylesheet {
+    include ./types_java.ysl2
+
+    template "/namespace[@name='pEp']" apply "interface", 0;
+
+    template "interface" {
+        const "cname" call "toJava" with "type", "@name";
+        document("org/pEp/jniadapter/{$cname}.java", "text")
+            ||
+            package org.pEp.jniadapter;
+
+            import java.util.Vector;
+
+            final public class «$cname» extends AbstractEngine {
+                public «$cname»() throws pEpException { }
+
+                `` apply "method"
+            }
+            ||
+    }
+
+    function "returnJava" {
+        const "returning", "count(parm/creates|parm/returns)";
+        const "returntype" call "toJava" with "type", "name(parm[creates|returns]/*[2])";
+
+        choose {
+            when "$returning = 0" > void
+            when "$returning = 1" > «$returntype»
+            otherwise > «@name»_Return
+        }
+    }
+
+    function "returnInter" {
+        const "returning", "count(parm/creates|parm/returns)";
+        const "returntype" call "toIntermediate" with "type", "name(parm[creates|returns]/*[2])";
+
+        choose {
+            when "$returning = 0" > void
+            when "$returning = 1" > «$returntype»
+            otherwise > _«@name»_Return
+        }
+    }
+
+    template "method" {
+        const "convert", "count(parm/stringlist|parm/stringpairlist|parm/string|parm/identity|parm/identitylist|parm/bloblist) > 0";
+        const "singlereturn", "count(parm/creates|parm/returns) = 1";
+        const "multireturn", "count(parm/creates|parm/returns) > 1";
+
+        if "$convert" {
+            if "$multireturn"
+            ||
+            private class _«@name»_Return {
+            `` apply "parm[creates|returns]", 1, mode=intermediate with "public", 1;
+            }
+
+            ||
+            ||
+            private native `call "returnInter"` _«@name»(
+            `` apply "parm[in]", 2, mode=intermediate
+                ) throws pEpException;
+
+            ||
+        }
+
+        if "$multireturn"
+        ||
+        public class «@name»_Return {
+        `` apply "parm[creates|returns]", 1, mode=java with "public", 1;
+        }
+
+        ||
+        ||
+        public `if "not($convert)" > native ``call "returnJava"` «@name»(
+        `` apply "parm[in]", 2, mode=java
+            ) throws pEpException`if "not($convert)" > ;`
+        {
+            `` apply "parm", mode=convertIn;
+            `if "$singlereturn or $multireturn" call "returnInter", copy "' _result = '"`_«@name»(`apply "parm[in]", mode=call`);
+            `` if "$singlereturn" |> return _result;
+            `` if "$multireturn" apply ".", mode=multireturn with "convert", "$convert";
+        }
+
+        ||
+    }
+
+    template "method", mode=multireturn {
+        param "convert";
+
+        choose {
+            when "$convert"
+                ||
+
+                «@name»_Return result = new «@name»_Return();
+                `` apply "parm[creates|returns]", 0, mode=convertOut;
+
+                return result;
+                ||
+            otherwise | return _result;
+        }
+    }
+
+    template "parm", mode=java {
+        param "public", 0;
+        const "dir", "name(*[1])";
+        const "type", "name(*[2])";
+        const "name", "name(*[3])";
+
+        indent(0);
+
+        if "$public" > public 
+        > †$type «translate($name,'-','_')»
+        choose {
+            when "$public" > ;
+            otherwise if "position()!=last()" > ,
+        }
+        > \n
+    }
+
+    template "parm", mode=intermediate {
+        param "public", 0;
+        const "dir", "name(*[1])";
+        const "type", "name(*[2])";
+        const "name", "name(*[3])";
+
+        indent(0);
+
+        if "$public" > public 
+        > ¡$type «translate($name,'-','_')»
+        choose {
+            when "$public" > ;
+            otherwise if "position()!=last()" > ,
+        }
+        > \n
+    }
+
+    template "parm", mode=convertIn {
+        const "dir", "name(*[1])";
+        const "type", "name(*[2])";
+        const "name" call "lcase" with "text", "name(*[3])";
+
+        if "$dir = 'in'" choose {
+            when "$type = 'string'" | ¡$type _«$name» = AbstractEngine.toUTF8(«$name»);
+            when "$type = 'stringlist'"
+                ||
+                Vector<byte[]> _«$name» = new Vector<byte[]>();
+                for (String s : «$name») {
+                    _«$name».add(AbstractEngine.toUTF8(s);
+                }
+                ||
+        }
+    }
+
+    template "parm", mode=convertOut {
+        const "dir", "name(*[1])";
+        const "type", "name(*[2])";
+        const "name" call "lcase" with "text", "name(*[3])";
+
+        if "$dir != 'in'" choose {
+            when "$type = 'string'" | †$type «$name» = AbstractEngine.toUTF16(_«$name»);
+            when "$type = 'stringlist'"
+                ||
+                Vector<String> result.«$name» = new Vector<String>();
+                for (byte[] a : _result._«$name») {
+                    result.«$name».add(AbstractEngine.toUTF16(a);
+                }
+                ||
+            otherwise | result.«$name» = _result.«$name»;
+        }
+    }
+
+    template "parm", mode=call {
+        const "type", "name(*[2])";
+        const "name" call "lcase" with "text", "name(*[3])";
+
+        if "$type = 'string' or $type = 'stringlist'" > _
+        > «$name»`if "position()!=last()" > , `
+    }
+}
+

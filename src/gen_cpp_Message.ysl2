@@ -116,15 +116,5 @@ tstylesheet {
 
         ||
     }
-
-    function "jni_type" {
-        param "type";
-
-        choose {
-            when "../enum[@name=$type]" > jint
-            when "$type = 'string'" > jbyteArray
-            otherwise > jobject
-        }
-    }
 }
 

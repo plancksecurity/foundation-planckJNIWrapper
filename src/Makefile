@@ -42,11 +42,17 @@ $(LIBRARY): org_pEp_jniadapter_AbstractEngine.o org_pEp_jniadapter_Engine.o org_
 org/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2
 	yml2proc -y gen_java_exceptions.ysl2 $< -o $@
 
-org/pEp/jniadapter/Engine.java org/pEp/jniadapter/Message.java : pEp.yml2 gen_java_Message.ysl2 types_java.ysl2
+org/pEp/jniadapter/Message.java: pEp.yml2 gen_java_Message.ysl2 types_java.ysl2
 	yml2proc -y gen_java_Message.ysl2 $<
 
-org_pEp_jniadapter_Engine.cc org_pEp_jniadapter_Message.cc : pEp.yml2 gen_cpp_Message.ysl2 types_c.ysl2
+org_pEp_jniadapter_Message.cc: pEp.yml2 gen_cpp_Message.ysl2 types_c.ysl2
 	yml2proc -y gen_cpp_Message.ysl2 $<
+
+org/pEp/jniadapter/Engine.java: pEp.yml2 gen_java_Engine.ysl2 types_java.ysl2
+	yml2proc -y gen_java_Engine.ysl2 $<
+
+org_pEp_jniadapter_Engine.cc: pEp.yml2 gen_cpp_Engine.ysl2 types_c.ysl2
+	yml2proc -y gen_cpp_Engine.ysl2 $<
 
 throw_pEp_exception.cc throw_pEp_exception.hh: pEp.yml2 gen_throw_pEp_exception.ysl2 textutils.ysl2
 	yml2proc -y gen_throw_pEp_exception.ysl2 $< -o throw_pEp_exception.cc

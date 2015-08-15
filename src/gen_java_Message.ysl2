@@ -3,24 +3,7 @@ include yslt.yml2
 tstylesheet {
     include ./types_java.ysl2
 
-    template "/namespace[@name='pEp']" apply "struct|interface|enum", 0;
-
-    template "interface" {
-        const "cname" call "toJava" with "type", "@name";
-        document("org/pEp/jniadapter/{$cname}.java", "text")
-            ||
-            package org.pEp.jniadapter;
-
-            import java.util.ArrayList;
-            import java.util.Vector;
-
-            final public class «$cname» extends AbstractEngine {
-                public «$cname»() throws pEpException { }
-
-                `` apply "interface|method"
-            }
-            ||
-    }
+    template "/namespace[@name='pEp']" apply "struct|enum", 0;
 
     template "struct" {
         const "cname" call "toJava" with "type", "@name";
@@ -28,7 +11,6 @@ tstylesheet {
             ||
             package org.pEp.jniadapter;
 
-            import java.util.ArrayList;
             import java.util.Vector;
             import java.util.Date;
             import java.util.HashMap;
@@ -90,21 +72,6 @@ tstylesheet {
         }
 
         ||
-    }
-
-    template "method"
-        ||
-        public native void «@name»(
-        `` apply "parm", 2
-            ) throws pEpException;`if "position()!=last()" > \n`
-        ||
-
-    template "parm" {
-        const "dir", "name(*[1])";
-        const "type", "name(*[2])";
-        const "name", "name(*[3])";
-
-        | `call "toJava" with "type", "$type"` «translate($name,'-','_')»`if "position()!=last()" > ,`
     }
 
     template "*", mode=entry {
