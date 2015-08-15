@@ -146,7 +146,7 @@ tstylesheet {
                 ||
                 Vector<byte[]> _«$name» = new Vector<byte[]>();
                 for (String s : «$name») {
-                    _«$name».add(AbstractEngine.toUTF8(s);
+                    _«$name».add(AbstractEngine.toUTF8(s));
                 }
                 ||
         }
@@ -163,7 +163,7 @@ tstylesheet {
                 ||
                 Vector<String> result.«$name» = new Vector<String>();
                 for (byte[] a : _result._«$name») {
-                    result.«$name».add(AbstractEngine.toUTF16(a);
+                    result.«$name».add(AbstractEngine.toUTF16(a));
                 }
                 ||
             otherwise | result.«$name» = _result.«$name»;
