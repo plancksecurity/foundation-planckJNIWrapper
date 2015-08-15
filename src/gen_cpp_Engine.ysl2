@@ -1,7 +1,9 @@
 include yslt.yml2
 
 tstylesheet {
+    include ./textutils.ysl2
     include ./types_c.ysl2
+    include ./types_java.ysl2
 
     template "/namespace[@name='pEp']" apply "interface", 0;
 
@@ -23,6 +25,9 @@ tstylesheet {
 
     template "method" {
         const "mangled" call "mangle";
+        const "rettype", "name(parm[creates|returns]/*[2])";
+        const "retname", "name(parm[creates|returns]/*[3])";
+        const "jtype" call "toJavaDeclare" with "type", "$rettype";
 
         ||
         JNIEXPORT jobject JNICALL «$mangled»(
@@ -40,28 +45,57 @@ tstylesheet {
         ||
 
         choose {
-            when "count(parm[returns|creates]) > 1"
-                ||
-                    jclass clazz = findClass(env, "org/pEp/jniadapter/_«@name»_Return");
-                ||
+            when "count(parm[returns|creates]) > 1" {
+                apply "parm[returns|creates]", mode=return {
+                    with "retname", "'result'";
+                }
 
-            when "count(parm[returns|creates]) = 1" {
-                const "jtype" call "CamelCase" with "text", "name(parm[creates|returns]/*[2])";
-                ||
-                    jclass clazz = findClass(env, "org/pEp/jniadapter/«$jtype»");
-                ||
+            }
+
+            when "count(parm[returns|creates]) = 1" choose {
+                when "$rettype = 'Color'" apply "parm[returns|creates]", mode=return {
+                    with "name", "'result'";
+                    with "jtype", "$jtype";
+                    with "jnitype", "'jint'";
+                    with "retname", "$retname";
+                    with "sig", "'(I)V'";
+                }
+
+                when "$rettype = 'message'" apply "parm[returns|creates]", mode=return {
+                    with "name", "'result'";
+                    with "jtype", "$jtype";
+                    with "jnitype", "'jlong'";
+                    with "retname", "$retname";
+                    with "sig", "'(J)V'";
+                }
+
+                otherwise error | # not implemented: return type "«$rettype»"
             }
         }
 
         ||
-            jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
-            assert(constructor);
-            jobject result = env->NewObject(clazz, constructor);
-
             return result;
         }
 
         ||
+    }
+
+    template "parm", mode=return {
+        param "jtype" call "toJavaDeclare" with "type", "name(*[2])";
+        param "name", "concat(name(*[3]), '_')";
+        param "jnitype";
+        param "retname";
+        param "sig", "'()V'";
+
+        ||
+        jclass clazz_«$name» = findClass(env, "org/pEp/jniadapter/«$jtype»");
+        jmethodID constructor_«$name» = env->GetMethodID(clazz_«$name», "<init>", "«$sig»");
+        assert(constructor_«$name»);
+        ||
+        indent(0);
+        > jobject «$name» = env->NewObject(clazz_«$name», constructor_«$name»
+        if "$jnitype" > , («$jnitype») _«$retname»
+        > );\n\n
     }
 
     template "parm", mode=in {

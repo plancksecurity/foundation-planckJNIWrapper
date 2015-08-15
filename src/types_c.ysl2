@@ -1,5 +1,3 @@
-include ./textutils.ysl2
-
 function "toC" {
     param "type";
 

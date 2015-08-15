@@ -1,6 +1,7 @@
 include yslt.yml2
 
 tstylesheet {
+    include ./textutils.ysl2
     include ./types_java.ysl2
 
     template "/namespace[@name='pEp']" apply "interface", 0;

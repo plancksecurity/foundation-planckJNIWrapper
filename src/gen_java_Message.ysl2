@@ -1,6 +1,7 @@
 include yslt.yml2
 
 tstylesheet {
+    include ./textutils.ysl2
     include ./types_java.ysl2
 
     template "/namespace[@name='pEp']" apply "struct|enum", 0;
@@ -17,13 +18,17 @@ tstylesheet {
             import java.util.HashMap;
 
             public class «$cname» implements AutoCloseable {
-                private final long handle;
+                private long handle;
 
                 native long init();
                 native void release(long handle);
 
                 public «$cname»() {
                     handle = init();
+                }
+
+                private «$cname»(long h) {
+                    handle = h;
                 }
 
                 public final void close() {

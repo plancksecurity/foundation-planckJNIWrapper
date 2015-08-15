@@ -1,6 +1,7 @@
 include yslt.yml2
 
 tstylesheet {
+    include ./textutils.ysl2
     include ./types_c.ysl2
 
     template "/namespace[@name='pEp']" apply "struct", 0;
