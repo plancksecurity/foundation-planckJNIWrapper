@@ -8,17 +8,21 @@ tstylesheet {
     template "interface" document("org_pEp_jniadapter_{@name}.cc", "text")
         ||
         #include <assert.h>
+        #include <pEp/message_api.h>
         #include "org_pEp_jniadapter_«@name».h"
         #include "jniutils.hh"
 
         using namespace pEp::JNIAdapter;
 
+        extern "C" {
+
         `` apply "method", 0
+        } // extern "C"
+
         ||
 
     template "method" {
         const "mangled" call "mangle";
-        const "jtype" call "CamelCase" with "text", "name(parm[creates|returns]/*[2])";
 
         ||
         JNIEXPORT jobject JNICALL «$mangled»(
@@ -26,13 +30,26 @@ tstylesheet {
                 jobject obj`apply "parm[in]", mode=sig`
             )
         {
+            PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+
+            `` apply "parm[in]", mode=in
+            `` apply "parm[creates|returns]", mode=out
+
+            PEP_STATUS status = ::«@name»(session`apply "parm", mode=call``if "@name = 'encrypt_message'" > , PEP_enc_PEP`);
+
         ||
 
         choose {
             when "count(parm[returns|creates]) > 1"
-                |> jclass clazz = findClass(env, "org/pEp/jniadapter/_«@name»_Return");
+                ||
+                    jclass clazz = findClass(env, "org/pEp/jniadapter/_«@name»_Return");
+                ||
+
             when "count(parm[returns|creates]) = 1" {
-                |> jclass clazz = findClass(env, "org/pEp/jniadapter/«$jtype»");
+                const "jtype" call "CamelCase" with "text", "name(parm[creates|returns]/*[2])";
+                ||
+                    jclass clazz = findClass(env, "org/pEp/jniadapter/«$jtype»");
+                ||
             }
         }
 
@@ -45,6 +62,39 @@ tstylesheet {
         }
 
         ||
+    }
+
+    template "parm", mode=in {
+        const "type", "name(*[2])";
+        const "name", "name(*[3])";
+
+        choose {
+            when "$type = 'message'"
+                | message *_«$name» = (message *) callLongMethod(env, «$name», "getHandle");
+            otherwise
+                | √$type *_«$name» = to_«$type»(env, «$name»);
+        }
+    }
+
+    template "parm", mode=out {
+        const "type", "name(*[2])";
+        const "name", "name(*[3])";
+
+        choose {
+            when "$type = 'Color'"
+                | PEP_color _«$name»;
+            otherwise
+                | √$type *_«$name»;
+        }
+    }
+
+    template "parm", mode=call {
+        const "dir", "name(*[1])";
+        const "name", "name(*[3])";
+     
+        > , 
+        if "$dir = 'creates' or $dir = 'returns'" > &
+        > _«$name»
     }
 
     function "mangle" {

@@ -328,9 +328,13 @@ namespace pEp {
             pEp_identity *ident = new_identity(NULL, NULL, NULL, NULL);
 
             ident->address = _getStringField(env, classname, obj, "address");
+            ident->address_size = strlen(ident->address);
             ident->fpr = _getStringField(env, classname, obj, "fpr");
+            ident->fpr_size = strlen(ident->fpr);
             ident->user_id = _getStringField(env, classname, obj, "user_id");
+            ident->user_id_size = strlen(ident->user_id);
             ident->username = _getStringField(env, classname, obj, "username");
+            ident->username_size = strlen(ident->username);
 
             jfieldID comm_type_id = getFieldID(env, classname, "comm_type", "I");
             ident->comm_type = (PEP_comm_type) (int) env->GetIntField(obj, comm_type_id);

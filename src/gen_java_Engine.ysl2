@@ -140,9 +140,11 @@ tstylesheet {
         const "type", "name(*[2])";
         const "name" call "lcase" with "text", "name(*[3])";
 
-        if "$dir = 'in'" {
-            if "$type = 'string' or $type = 'stringlist'" | ¡$type _«$name» = AbstractEngine.toUTF8(«$name»);
-            if "$type = 'identity'" | _Identity _«$name» = new _Identity(«$name»);
+        if "$dir = 'in'" choose {
+            when "$type = 'string' or $type = 'stringlist'"
+                | ¡$type _«$name» = AbstractEngine.toUTF8(«$name»);
+            when "$type = 'identity'"
+                | _Identity _«$name» = new _Identity(«$name»);
         }
     }
 
@@ -152,9 +154,12 @@ tstylesheet {
         const "name" call "lcase" with "text", "name(*[3])";
 
         if "$dir != 'in'" choose {
-            when "$type = 'string' or $type = 'stringlist'" | result.«$name» = AbstractEngine.toUTF16(_result.«$name»);
-            if "$type = 'identity'" | result.«$name» = Identity(«$name»);
-            otherwise | result.«$name» = _result.«$name»;
+            when "$type = 'string' or $type = 'stringlist'"
+                | result.«$name» = AbstractEngine.toUTF16(_result.«$name»);
+            when "$type = 'identity'"
+                | result.«$name» = Identity(«$name»);
+            otherwise
+                | result.«$name» = _result.«$name»;
         }
     }
 
@@ -162,7 +167,8 @@ tstylesheet {
         const "type", "name(*[2])";
         const "name" call "lcase" with "text", "name(*[3])";
 
-        if "$type = 'string' or $type = 'stringlist'" > _
+        if "$type = 'string' or $type = 'stringlist' or $type = 'identity'"
+            > _
         > «$name»`if "position()!=last()" > , `
     }
 }
