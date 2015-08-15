@@ -12,7 +12,7 @@ function "toJava" {
         when "$type='timestamp'" > Date
         when "$type='EncFormat'" > Message.EncFormat
         when "$type='bloblist'" > Vector<Blob>
-        when "$type='stringpairlist'" > Vector<Pair<String, String>>
+        when "$type='stringpairlist'" > ArrayList<Pair<String, String>>
         when "$type='message'" > Message
 
         otherwise call "CamelCase" with "text", "$type";
@@ -24,7 +24,7 @@ function "toIntermediate" {
 
     choose {
         when "$type='stringlist'" > Vector<byte[]>
-        when "$type='stringpairlist'" > Vector<Pair<byte[], byte[]>>
+        when "$type='stringpairlist'" > ArrayList<Pair<byte[], byte[]>>
         when "$type='string'" > byte[]
         when "$type='identity'" > _Identity
         when "$type='identitylist'" > Vector<_Identity>

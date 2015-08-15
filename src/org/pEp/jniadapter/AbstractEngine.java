@@ -38,8 +38,8 @@ abstract class AbstractEngine implements AutoCloseable {
         }
     }
 
-    public static ArrayList<byte[]> toUTF8(ArrayList<String> list) {
-        ArrayList<byte[]> result = new ArrayList<byte[]>(list.size());
+    public static Vector<byte[]> toUTF8(Vector<String> list) {
+        Vector<byte[]> result = new Vector<byte[]>(list.size());
 
         for (int i=0; i<list.size(); i++)
             result.set(i, toUTF8(list.get(i)));
@@ -56,8 +56,8 @@ abstract class AbstractEngine implements AutoCloseable {
         return result;
     }
 
-    public static Vector<Pair<byte[], byte[]>> toUTF8(Vector<Pair<String, String>> list) {
-        Vector<Pair<byte[], byte[]>> result = new Vector<Pair<byte[], byte[]>>(list.size());
+    public static ArrayList<Pair<byte[], byte[]>> toUTF8(ArrayList<Pair<String, String>> list) {
+        ArrayList<Pair<byte[], byte[]>> result = new ArrayList<Pair<byte[], byte[]>>(list.size());
 
         for (int i=0; i<list.size(); i++)
             result.set(i, toUTF8(list.get(i)));
@@ -75,8 +75,8 @@ abstract class AbstractEngine implements AutoCloseable {
         }
     }
 
-    public static ArrayList<String> toUTF16(ArrayList<byte[]> list) {
-        ArrayList<String> result = new ArrayList<String>(list.size());
+    public static Vector<String> toUTF16(Vector<byte[]> list) {
+        Vector<String> result = new Vector<String>(list.size());
 
         for (int i=0; i<list.size(); i++)
             result.set(i, toUTF16(list.get(i)));
@@ -93,8 +93,8 @@ abstract class AbstractEngine implements AutoCloseable {
         return result;
     }
 
-    public static Vector<Pair<String, String>> toUTF16(Vector<Pair<byte[], byte[]>> list) {
-        Vector<Pair<String, String>> result = new Vector<Pair<String, String>>(list.size());
+    public static ArrayList<Pair<String, String>> toUTF16(ArrayList<Pair<byte[], byte[]>> list) {
+        ArrayList<Pair<String, String>> result = new ArrayList<Pair<String, String>>(list.size());
 
         for (int i=0; i<list.size(); i++)
             result.set(i, toUTF16(list.get(i)));

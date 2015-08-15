@@ -16,8 +16,9 @@ tstylesheet {
             final public class «$cname» extends AbstractEngine {
                 public «$cname»() throws pEpException { }
 
-                `` apply "method"
+                `` apply "method", mode=plain
             }
+
             ||
     }
 
@@ -43,61 +44,60 @@ tstylesheet {
         }
     }
 
-    template "method" {
+    template "method", mode=plain {
         const "convert", "count(parm/stringlist|parm/stringpairlist|parm/string|parm/identity|parm/identitylist|parm/bloblist) > 0";
         const "singlereturn", "count(parm/creates|parm/returns) = 1";
         const "multireturn", "count(parm/creates|parm/returns) > 1";
 
-        if "$convert" {
-            if "$multireturn"
+        if "$multireturn" {
+            if "$convert"
             ||
             private class _«@name»_Return {
             `` apply "parm[creates|returns]", 1, mode=intermediate with "public", 1;
             }
 
             ||
+
             ||
-            private native `call "returnInter"` _«@name»(
-            `` apply "parm[in]", 2, mode=intermediate
-                ) throws pEpException;
+            public class «@name»_Return {
+            `` apply "parm[creates|returns]", 1, mode=java with "public", 1;
+            }
 
             ||
         }
 
-        if "$multireturn"
+        if "$convert"
         ||
-        public class «@name»_Return {
-        `` apply "parm[creates|returns]", 1, mode=java with "public", 1;
-        }
+        private native `call "returnInter"` _«@name»(
+        `` apply "parm[in]", 2, mode=intermediate
+            ) throws pEpException;
 
         ||
+
         ||
         public `if "not($convert)" > native ``call "returnJava"` «@name»(
         `` apply "parm[in]", 2, mode=java
             ) throws pEpException`if "not($convert)" > ;`
-        {
-            `` apply "parm", mode=convertIn;
-            `if "$singlereturn or $multireturn" call "returnInter", copy "' _result = '"`_«@name»(`apply "parm[in]", mode=call`);
-            `` if "$singlereturn" |> return _result;
-            `` if "$multireturn" apply ".", mode=multireturn with "convert", "$convert";
-        }
-
         ||
-    }
 
-    template "method", mode=multireturn {
-        param "convert";
+        if "$convert" {
+            | {
+            apply "parm", mode=convertIn;
 
-        choose {
-            when "$convert"
-                ||
+            if "$singlereturn" |> return _«@name»(`apply "parm[in]", mode=call;`);
 
+            if "$multireturn"
+            ||
+                _«@name»_Return _result = _«@name»(`apply "parm[in]", mode=call;`);
                 «@name»_Return result = new «@name»_Return();
-                `` apply "parm[creates|returns]", 0, mode=convertOut;
-
+                `` apply "parm[creates|returns]", mode=convertOut;
                 return result;
-                ||
-            otherwise | return _result;
+            ||
+
+            ||
+            }
+
+            ||
         }
     }
 
@@ -140,15 +140,8 @@ tstylesheet {
         const "type", "name(*[2])";
         const "name" call "lcase" with "text", "name(*[3])";
 
-        if "$dir = 'in'" choose {
-            when "$type = 'string'" | ¡$type _«$name» = AbstractEngine.toUTF8(«$name»);
-            when "$type = 'stringlist'"
-                ||
-                Vector<byte[]> _«$name» = new Vector<byte[]>();
-                for (String s : «$name») {
-                    _«$name».add(AbstractEngine.toUTF8(s));
-                }
-                ||
+        if "$dir = 'in'" {
+            if "$type = 'string' or $type = 'stringlist'" | ¡$type _«$name» = AbstractEngine.toUTF8(«$name»);
         }
     }
 
@@ -158,14 +151,7 @@ tstylesheet {
         const "name" call "lcase" with "text", "name(*[3])";
 
         if "$dir != 'in'" choose {
-            when "$type = 'string'" | †$type «$name» = AbstractEngine.toUTF16(_«$name»);
-            when "$type = 'stringlist'"
-                ||
-                Vector<String> result.«$name» = new Vector<String>();
-                for (byte[] a : _result._«$name») {
-                    result.«$name».add(AbstractEngine.toUTF16(a));
-                }
-                ||
+            when "$type = 'string' or $type = 'stringlist'" | result.«$name» = AbstractEngine.toUTF16(_result.«$name»);
             otherwise | result.«$name» = _result.«$name»;
         }
     }
