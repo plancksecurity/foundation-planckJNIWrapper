@@ -3,5 +3,44 @@ include yslt.yml2
 tstylesheet {
     include ./types_c.ysl2
 
+    template "/namespace[@name='pEp']" apply "interface", 0;
+
+    template "interface" document("org_pEp_jniadapter_{@name}.cc", "text")
+        ||
+        #include "org_pEp_jniadapter_«@name».h"
+
+        `` apply "method", 0
+        ||
+
+    template "method" {
+        const "mangled" call "mangle";
+
+        ||
+        JNIEXPORT jobject JNICALL «$mangled»(JNIEnv *env, jobject obj`apply "parm[in]", mode=sig`)
+        {
+            jobject result;
+
+
+            return result;
+        }
+
+        ||
+    }
+
+    function "mangle" {
+        const "convert", "count(parm/stringlist|parm/string|parm/identity) > 0";
+
+        choose {
+            when "$convert"
+                > «concat('Java_org_pEp_jniadapter_', ../@name, '__1', str:replace(@name, '_', '_1'))»
+            otherwise
+                > «concat('Java_org_pEp_jniadapter_', ../@name, '_', str:replace(@name, '_', '_1'))»
+        }
+    }
+
+    template "parm", mode=sig {
+        const "name", "name(*[3])";
+        > , jobject «$name»
+    }
 }
 

@@ -45,7 +45,7 @@ tstylesheet {
     }
 
     template "method", mode=plain {
-        const "convert", "count(parm/stringlist|parm/stringpairlist|parm/string|parm/identity|parm/identitylist|parm/bloblist) > 0";
+        const "convert", "count(parm/stringlist|parm/string|parm/identity) > 0";
         const "singlereturn", "count(parm/creates|parm/returns) = 1";
         const "multireturn", "count(parm/creates|parm/returns) > 1";
 
@@ -142,6 +142,7 @@ tstylesheet {
 
         if "$dir = 'in'" {
             if "$type = 'string' or $type = 'stringlist'" | ¡$type _«$name» = AbstractEngine.toUTF8(«$name»);
+            if "$type = 'identity'" | _Identity _«$name» = new _Identity(«$name»);
         }
     }
 
@@ -152,6 +153,7 @@ tstylesheet {
 
         if "$dir != 'in'" choose {
             when "$type = 'string' or $type = 'stringlist'" | result.«$name» = AbstractEngine.toUTF16(_result.«$name»);
+            if "$type = 'identity'" | result.«$name» = Identity(«$name»);
             otherwise | result.«$name» = _result.«$name»;
         }
     }
