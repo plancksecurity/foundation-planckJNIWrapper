@@ -46,10 +46,17 @@ tstylesheet {
 
         choose {
             when "count(parm[returns|creates]) > 1" {
-                apply "parm[returns|creates]", mode=return {
-                    with "retname", "'result'";
+                apply "parm[returns|creates]", mode=return;
+
+                apply "parm[1]", mode=return {
+                    with "name" > result
+                    with "jtype" > _«@name»_Result
+                    with "sig" > ()V
+                    with "jnitype" >
                 }
 
+                apply "parm[returns|creates]", mode=setresult
+                    with "jtype" > _«@name»_Result
             }
 
             when "count(parm[returns|creates]) = 1" choose {
@@ -74,28 +81,61 @@ tstylesheet {
         }
 
         ||
-            return result;
+            return result_;
         }
 
         ||
     }
 
-    template "parm", mode=return {
-        param "jtype" call "toJavaDeclare" with "type", "name(*[2])";
-        param "name", "concat(name(*[3]), '_')";
-        param "jnitype";
-        param "retname";
-        param "sig", "'()V'";
+    template "parm", mode=setresult {
+        param "jtype";
+        const "sig" call "toSig" with "type", "name(*[2])";
+        const "name", "name(*[3])";
+        ||
+        jfieldID «$name»_field = getFieldID(env, "«$jtype»",
+                "«$name»", "«$sig»");
+        env->SetObjectField(result_, «$name»_field, «$name»_);
 
         ||
-        jclass clazz_«$name» = findClass(env, "org/pEp/jniadapter/«$jtype»");
-        jmethodID constructor_«$name» = env->GetMethodID(clazz_«$name», "<init>", "«$sig»");
-        assert(constructor_«$name»);
-        ||
-        indent(0);
-        > jobject «$name» = env->NewObject(clazz_«$name», constructor_«$name»
-        if "$jnitype" > , («$jnitype») _«$retname»
-        > );\n\n
+    }
+
+    template "parm", mode=return {
+        param "type", "name(*[2])";
+        param "jtype" call "toJavaDeclare" with "type", "$type";
+        param "name", "name(*[3])";
+        param "jnitype" choose {
+            when "$type = 'message'" > jlong
+            when "$type = 'Color'" > jint
+            when "$type = 'stringlist'" > jbyteArray
+            otherwise >
+        }
+        param "retname", "$name";
+        param "sig" choose {
+            when "$type = 'message'" > (J)V
+            when "$type = 'Color'" > (I)V
+            when "$type = 'stringlist'" > (Ljava.lang.Object;)V
+            otherwise > ()V
+        }
+
+        choose {
+            when "$jnitype = 'jbyteArray'"
+            ||
+            jobject «$name»_ = from_stringlist(env, _«$retname»);
+
+            ||
+
+            otherwise {
+            ||
+            jclass clazz_«$name»_ = findClass(env, "org/pEp/jniadapter/«$jtype»");
+            jmethodID constructor_«$name»_ = env->GetMethodID(clazz_«$name»_, "<init>", "«$sig»");
+            assert(constructor_«$name»_);
+            ||
+            indent(0);
+            > jobject «$name»_ = env->NewObject(clazz_«$name»_, constructor_«$name»_
+            if "$jnitype != ''" > , («$jnitype») _«$retname»
+            > );\n\n
+            }
+        }
     }
 
     template "parm", mode=in {

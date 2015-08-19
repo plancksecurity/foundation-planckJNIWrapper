@@ -36,6 +36,20 @@ function "toJavaDeclare" {
         otherwise error | # cannot declare "«$type»"
     }
 }
+
+function "toSig" {
+    param "type";
+
+    choose {
+        when "$type='string'" error | # cannot declare "string"
+        otherwise {
+            > L
+            call "toJavaDeclare" with "type", "$type";
+            > ;
+        }
+    }
+}
+
 function "toIntermediate" {
     param "type";
 
