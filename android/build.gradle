@@ -58,7 +58,7 @@ android {
 
     // unzip some of the dependencies 
     task unzipDeps(type: Copy) {
-        from zipTree(file('../../pEpEngine/android/pEpEngine-android-1.zip'))
+        from zipTree(file('../../pEpEngine/build-android/pEpEngine-android-1.zip'))
         from zipTree(file('../../libetpan/build-android/libetpan-android-1.zip'))
         from zipTree(file('../../libetpan/build-android/dependencies/openssl/openssl-android-1.zip'))
         from zipTree(file('../../libetpan/build-android/dependencies/cyrus-sasl/cyrus-sasl-android-1.zip'))
@@ -86,14 +86,14 @@ android {
 }
 
 def getNdkDir() {
-    if (System.env.ANDROID_NDK_ROOT != null)
-        return System.env.ANDROID_NDK_ROOT
+    if (System.env.ANDROID_NDK != null)
+        return System.env.ANDROID_NDK
 
     Properties properties = new Properties()
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
     def ndkdir = properties.getProperty('ndk.dir', null)
     if (ndkdir == null)
-        throw new GradleException("NDK location not found. Define location with ndk.dir in the local.properties file or with an ANDROID_NDK_ROOT environment variable.")
+        throw new GradleException("NDK location not found. Define location with ndk.dir in the local.properties file or with an ANDROID_NDK environment variable.")
 
     return ndkdir
 }
