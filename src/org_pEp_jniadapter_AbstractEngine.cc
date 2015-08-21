@@ -1,6 +1,7 @@
 #include "org_pEp_jniadapter_AbstractEngine.h"
 
 #include <stdexcept>
+#include <unistd.h>
 #include <assert.h>
 #include <pthread.h>
 #include <pEp/keymanagement.h>
@@ -10,6 +11,7 @@
 
 extern "C" {
     using namespace pEp::JNIAdapter;
+    using namespace pEp::utility;
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_init(
             JNIEnv *env,
@@ -64,9 +66,26 @@ extern "C" {
             env->SetLongField(me, handle, jlong(0));
     }
 
+    pEp_identity *retrieve_next_identity(void *arg)
+    {
+        locked_queue< pEp_identity * > *queue = (locked_queue< pEp_identity * > *) arg;
+
+        while (!queue->size())
+            usleep(10000);
+
+        pEp_identity *ident = queue->front();
+        queue->pop_front();
+        return ident;
+    }
+
     static void *start_routine(void *arg)
     {
-        return NULL;
+        PEP_STATUS status = do_keymanagement(retrieve_next_identity, arg);
+
+        locked_queue< pEp_identity * > *queue = (locked_queue< pEp_identity * > *) arg;
+        delete queue;
+
+        return (void *) status;
     }
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_startKeyserverLookup(
@@ -75,25 +94,32 @@ extern "C" {
         )
     {
         pthread_t *thread = NULL;
-        jfieldID handle;
+        locked_queue< pEp_identity * > *queue = NULL;
+
+        jfieldID thread_handle;
+        jfieldID queue_handle;
 
         try {
-            handle = getFieldID(env, "org/pEp/jniadapter/Engine", "keyserverThread", "J");
+            thread_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "keyserverThread", "J");
+            queue_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "queueThread", "J");
         }
         catch (std::exception& ex) {
             assert(0);
             return;
         }
 
-        thread = (pthread_t *) env->GetLongField(obj, handle);
+        thread = (pthread_t *) env->GetLongField(obj, thread_handle);
         if (thread)
             return;
  
         thread = (pthread_t *) calloc(1, sizeof(pthread_t));
         assert(thread);
-        env->SetLongField(obj, handle, (jlong) thread);
+        env->SetLongField(obj, thread_handle, (jlong) thread);
 
-        pthread_create(thread, NULL, start_routine, NULL);
+        queue = new locked_queue< pEp_identity * >();
+        env->SetLongField(obj, queue_handle, (jlong) queue);
+
+        pthread_create(thread, NULL, start_routine, (void *) queue);
     }
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_stopKeyserverLookup(
@@ -102,21 +128,30 @@ extern "C" {
         )
     {
         pthread_t *thread = NULL;
-        jfieldID handle;
+        locked_queue< pEp_identity * > *queue = NULL;
+
+        jfieldID thread_handle;
+        jfieldID queue_handle;
 
         try {
-            handle = getFieldID(env, "org/pEp/jniadapter/Engine", "keyserverThread", "J");
+            thread_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "keyserverThread", "J");
+            queue_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "queueThread", "J");
         }
         catch (std::exception& ex) {
             assert(0);
             return;
         }
 
-        thread = (pthread_t *) env->GetLongField(obj, handle);
+        thread = (pthread_t *) env->GetLongField(obj, thread_handle);
         if (!thread)
             return;
  
-        // stop thread
+        queue = (locked_queue< pEp_identity * > *) env->GetLongField(obj, queue_handle);
+
+        env->SetLongField(obj, queue_handle, (jlong) 0);
+        env->SetLongField(obj, thread_handle, (jlong) 0);
+
+        queue->push_front(NULL);
     }
 
 } // extern "C"

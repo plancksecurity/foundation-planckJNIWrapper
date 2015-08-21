@@ -28,6 +28,7 @@ abstract class AbstractEngine implements AutoCloseable {
     }
 
     private long keyserverThread;
+    private long queueThread;
 
     public native void startKeyserverLookup();
     public native void stopKeyserverLookup();
