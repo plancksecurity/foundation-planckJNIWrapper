@@ -69,7 +69,7 @@ extern "C" {
     int examine_identity(pEp_identity *ident, void *arg)
     {
         locked_queue< pEp_identity * > *queue = (locked_queue< pEp_identity * > *) arg;
-        queue->push_back(ident);
+        queue->push_back(identity_dup(ident));
         return 0;
     }
 
@@ -90,6 +90,13 @@ extern "C" {
         PEP_STATUS status = do_keymanagement(retrieve_next_identity, arg);
 
         locked_queue< pEp_identity * > *queue = (locked_queue< pEp_identity * > *) arg;
+
+        while (queue->size()) {
+            pEp_identity *ident = queue->front();
+            queue->pop_front();
+            free_identity(ident);
+        }
+
         delete queue;
 
         return (void *) status;
