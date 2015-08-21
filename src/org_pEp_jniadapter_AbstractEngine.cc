@@ -66,12 +66,19 @@ extern "C" {
             env->SetLongField(me, handle, jlong(0));
     }
 
+    int examine_identity(pEp_identity *ident, void *arg)
+    {
+        locked_queue< pEp_identity * > *queue = (locked_queue< pEp_identity * > *) arg;
+        queue->push_back(ident);
+        return 0;
+    }
+
     pEp_identity *retrieve_next_identity(void *arg)
     {
         locked_queue< pEp_identity * > *queue = (locked_queue< pEp_identity * > *) arg;
 
         while (!queue->size())
-            usleep(10000);
+            usleep(100000);
 
         pEp_identity *ident = queue->front();
         queue->pop_front();
@@ -93,6 +100,8 @@ extern "C" {
             jobject obj
         )
     {
+        PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+
         pthread_t *thread = NULL;
         locked_queue< pEp_identity * > *queue = NULL;
 
@@ -120,6 +129,7 @@ extern "C" {
         env->SetLongField(obj, queue_handle, (jlong) queue);
 
         pthread_create(thread, NULL, start_routine, (void *) queue);
+        register_examine_function(session, examine_identity, (void *) queue);
     }
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_stopKeyserverLookup(
@@ -127,6 +137,8 @@ extern "C" {
             jobject obj
         )
     {
+        PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+
         pthread_t *thread = NULL;
         locked_queue< pEp_identity * > *queue = NULL;
 
@@ -151,7 +163,11 @@ extern "C" {
         env->SetLongField(obj, queue_handle, (jlong) 0);
         env->SetLongField(obj, thread_handle, (jlong) 0);
 
+        register_examine_function(session, NULL, NULL);
+
         queue->push_front(NULL);
+        pthread_join(*thread, NULL);
+        free(thread);
     }
 
 } // extern "C"
