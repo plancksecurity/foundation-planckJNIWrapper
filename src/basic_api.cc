@@ -3,9 +3,9 @@
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
 
-using namespace pEp::JNIAdapter;
-
 extern "C" {
+    using namespace pEp::JNIAdapter;
+
 JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_trustwords(
         JNIEnv *env,
         jobject obj,

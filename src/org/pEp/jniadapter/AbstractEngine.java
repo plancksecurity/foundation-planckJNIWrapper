@@ -27,6 +27,11 @@ abstract class AbstractEngine implements AutoCloseable {
         release();
     }
 
+    private long keyserverThread;
+
+    public native void startKeyserverLookup();
+    public native void stopKeyserverLookup();
+
     public static byte[] toUTF8(String str) {
         try {
             String _str = Normalizer.normalize(str, Normalizer.Form.NFC);
