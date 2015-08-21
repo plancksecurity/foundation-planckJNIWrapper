@@ -14,6 +14,7 @@ tstylesheet {
         #include <exception>
         #include <new>
         #include <stdint.h>
+        #include <stdlib.h>
         #include <assert.h>
         #include <pEp/«@name».h>
 

@@ -59,6 +59,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libetpan
 LOCAL_SRC_FILES := ../build/libetpan-android-1/libs/$(TARGET_ARCH_ABI)/libetpan.a
 LOCAL_EXPORT_C_INCLUDES := build/libetpan-android-1/include
+LOCAL_EXPORT_LDLIBS := -lz
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -70,7 +71,7 @@ include $(PREBUILT_STATIC_LIBRARY)
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNIAdapter
 LOCAL_SHARED_LIBRARIES := libgpgme
-LOCAL_STATIC_LIBRARIES := openssl cyrus-sasl libetpan pEpEngine
+LOCAL_STATIC_LIBRARIES := pEpEngine libetpan openssl cyrus-sasl 
 LOCAL_CPP_FEATURES += exceptions
 LOCAL_SRC_FILES  := \
 		  ../../src/org_pEp_jniadapter_Engine.cc \
