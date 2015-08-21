@@ -18,6 +18,12 @@ tstylesheet {
                 public «$cname»() throws pEpException { }
 
                 `` apply "method", mode=plain
+                private native byte[] trustwords(_Identity ident);
+
+                public String trustwords(Identity ident) {
+                    _Identity _ident = new _Identity(ident);
+                    return AbstractEngine.toUTF16(trustwords(_ident));
+                }
             }
 
             ||
@@ -47,6 +53,7 @@ tstylesheet {
 
     template "method", mode=plain {
         const "convert", "count(parm/stringlist|parm/string|parm/identity) > 0";
+        const "convertreturn", "count(parm[returns]/stringlist|parm[returns]/string|parm[returns]/identity) > 0";
         const "singlereturn", "count(parm/creates|parm/returns) = 1";
         const "multireturn", "count(parm/creates|parm/returns) > 1";
 
@@ -85,7 +92,12 @@ tstylesheet {
             | {
             apply "parm", mode=convertIn;
 
-            if "$singlereturn" |> return _«@name»(`apply "parm[in]", mode=call;`);
+            if "$singlereturn" choose {
+                when "$convertreturn"
+                    |> return AbstractEngine.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
+                otherwise
+                    |> return _«@name»(`apply "parm[in]", mode=call;`);
+            }
 
             if "$multireturn"
             ||
@@ -97,9 +109,11 @@ tstylesheet {
 
             ||
             }
-
             ||
         }
+        ||
+
+        ||
     }
 
     template "parm", mode=java {
