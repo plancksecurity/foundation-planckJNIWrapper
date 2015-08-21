@@ -18,15 +18,38 @@ tstylesheet {
                 public «$cname»() throws pEpException { }
 
                 `` apply "method", mode=plain
-                private native byte[] trustwords(_Identity ident);
-
-                public String trustwords(Identity ident) {
-                    _Identity _ident = new _Identity(ident);
-                    return AbstractEngine.toUTF16(trustwords(_ident));
-                }
+                `` apply "basic"
             }
 
             ||
+    }
+
+    template "basic" {
+        const "itype" call "toIntermediate" with "type", "@type";
+        const "jtype" call "toJava" with "type", "@type";
+        const "ptype", "name(parm/*[1])";
+        const "pitype" call "toIntermediate" with "type", "$ptype";
+        const "pjtype" call "toJava" with "type", "$ptype";
+        const "pname", "name(parm/*[2])";
+
+        ||
+        private native «$itype» «@name»(«$pitype» «$pname»);
+
+        public «$jtype» «@name»(«$pjtype» «$pname») {
+            «$pitype» _«$pname» = new «$pitype»(«$pname»);
+        ||
+        choose {
+            when "@type = 'void'"
+                |> «@name»(_«$pname»);
+            when "@type = 'identity'"
+                |> return new Identity(«@name»(_«$pname»));
+            otherwise
+                |> return AbstractEngine.toUTF16(«@name»(_«$pname»));
+        }
+        ||
+        }
+
+        ||
     }
 
     function "returnJava" {
