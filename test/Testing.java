@@ -39,6 +39,17 @@ class Testing {
         to1.address = "vb@pep-project.org";
         to.add(to1);
         msg.setTo(to);
+
+        msg.setShortmsg("hello, world");
+        msg.setLongmsg("this is a test");
+
+        try {
+            Message enc = e.encrypt_message(msg, null);
+            System.out.println("encrypted");
+        }
+        catch (pEpException ex) {
+            System.out.println("cannot encrypt");
+        }
     }
 }
 
