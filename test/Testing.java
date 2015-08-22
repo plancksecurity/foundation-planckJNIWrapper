@@ -58,6 +58,14 @@ class Testing {
         System.out.println(enc.getLongmsg());
         Vector<Blob> attachments = enc.getAttachments();
         System.out.println(e.toUTF16(attachments.get(1).data));
+
+        msg.setDir(Message.Direction.Outgoing);
+        try {
+            System.out.println(e.outgoing_message_color(msg));
+        }
+        catch (pEpException ex) {
+            System.out.println("cannot measure outgoing message color");
+        }
     }
 }
 

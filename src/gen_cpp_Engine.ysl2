@@ -140,6 +140,36 @@ tstylesheet {
 
             ||
 
+            when "$jtype = 'Color'"
+            ||
+            jobject «$name»_ = NULL;
+            {
+                jclass clazz_color = findClass(env, "org/pEp/jniadapter/Color");
+                assert(clazz_color);
+                jmethodID method_values = env->GetStaticMethodID(clazz_color, "values",
+                        "()[Lorg/pEp/jniadapter/Color;");
+                assert(method_values);
+                jfieldID field_value = env->GetFieldID(clazz_color, "value", "I");
+                assert(field_value);
+
+                jobjectArray values = (jobjectArray) env->CallStaticObjectMethod(clazz_color,
+                        method_values);
+                assert(values);
+
+                jsize values_size = env->GetArrayLength(values);
+                for (jsize i = 0; i < values_size; i++) {
+                    jobject element = env->GetObjectArrayElement(values, i);
+                    assert(element);
+                    jint value = env->GetIntField(element, field_value);
+                    if (value == (jint) _color) {
+                        «$name»_ = element;
+                        break;
+                    }
+                }
+            }
+
+            ||
+
             otherwise {
                 | jobject «$name»_ = NULL;
                 indent(0);
@@ -147,6 +177,7 @@ tstylesheet {
                 > {\n
                 ||
                     jclass clazz_«$name»_ = findClass(env, "org/pEp/jniadapter/«$jtype»");
+                    assert(clazz_«$name»_);
                     jmethodID constructor_«$name»_ = env->GetMethodID(clazz_«$name»_, "<init>", "«$sig»");
                     assert(constructor_«$name»_);
                 ||
