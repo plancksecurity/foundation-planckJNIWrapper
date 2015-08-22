@@ -13,7 +13,7 @@ extern "C" {
     using namespace pEp::JNIAdapter;
     using namespace pEp::utility;
 
-    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_init(
+    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_init(
             JNIEnv *env,
             jobject me
         )
@@ -43,7 +43,7 @@ extern "C" {
         env->SetLongField(me, handle, _session);
     }
 
-    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_release(
+    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_release(
             JNIEnv *env,
             jobject me
         )

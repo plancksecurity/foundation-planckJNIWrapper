@@ -1,8 +1,9 @@
 LIBRARY=libpEpJNI.a
+SHARED=libpEpJNI.so
 JAR=jniadapter.jar
 include Makefile.conf
 
-all: $(JAR) $(LIBRARY)
+all: $(JAR) $(SHARED)
 
 JAVA_SOURCES=org/pEp/jniadapter/pEpException.java \
 			 org/pEp/jniadapter/AbstractEngine.java \
@@ -39,6 +40,9 @@ org_pEp_jniadapter_Engine.o org_pEp_jniadapter_Message.o: %.o: %.cc %.h
 $(LIBRARY): org_pEp_jniadapter_AbstractEngine.o org_pEp_jniadapter_Engine.o org_pEp_jniadapter_Message.o throw_pEp_exception.o jniutils.o basic_api.o
 	ar -r $@ *.o
 
+$(SHARED): $(LIBRARY)
+	g++ -shared -o $(SHARED) $(LDFLAGS) -lpEpEngine *.o
+
 org/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2
 	yml2proc -y gen_java_exceptions.ysl2 $< -o $@
 
@@ -67,6 +71,7 @@ clean:
 	rm -f $(JAR) $(LIBRARY)
 	rm -f *.o
 	rm -f *.class
+	rm -f *.xml *.xsl
 	rm -f org_pEp_jniadapter_*.h
 	rm -f org/pEp/jniadapter/*.class
 	rm -f org/pEp/jniadapter/pEp*.java
