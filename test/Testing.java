@@ -57,7 +57,7 @@ class Testing {
 
         System.out.println(enc.getLongmsg());
         Vector<Blob> attachments = enc.getAttachments();
-        System.out.println(attachments.get(1).data);
+        System.out.println(e.toUTF16(attachments.get(1).data));
     }
 }
 

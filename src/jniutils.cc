@@ -455,6 +455,8 @@ namespace pEp {
             memcpy((char *)_b, b->value, b->size);
             env->ReleaseByteArrayElements(_data, _b, 0);
 
+            env->SetObjectField(obj, fieldID, reinterpret_cast<jobject>(_data));
+
             _setStringField(env, classname, obj, "mime_type", b->mime_type);
             _setStringField(env, classname, obj, "filename", b->filename);
 
