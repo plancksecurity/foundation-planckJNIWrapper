@@ -11,3 +11,4 @@ test: Testing.class
 
 clean:
 	rm -f *.class
+	rm -f *.log
