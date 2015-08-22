@@ -24,6 +24,8 @@ namespace pEp {
         jclass findClass(JNIEnv *env, const char *classname)
         {
             jclass clazz = env->FindClass(classname);
+            if (!clazz)
+                fprintf(stderr, "class not found: %s\n", classname);
             assert(clazz);
 
             if (clazz == NULL) {

@@ -22,17 +22,17 @@ function "toJavaDeclare" {
     param "type";
 
     choose {
-        when "$type='stringlist'" > java.util.Vector
+        when "$type='stringlist'" error | # cannot declare "stringlist"
         when "$type='string'" error | # cannot declare "string"
-        when "$type='message'" > org.pEp.jniadapter.Message
-        when "$type='identity'" > org.pEp.jniadapter._Identity
-        when "$type='identitylist'" > java.util.Vector
-        when "$type='timestamp'" > java.util.Date
-        when "$type='EncFormat'" > org.pEp.jniadapter.Message.EncFormat
-        when "$type='bloblist'" > java.util.Vector
-        when "$type='stringpairlist'" > java.util.ArrayList
-        when "$type='message'" > org.pEp.jniadapter.Message
-        when "$type='Color'" > org.pEp.jniadapter.Color
+        when "$type='message'" > Message
+        when "$type='identity'" > _Identity
+        when "$type='identitylist'" | # cannot declare "identitylist"
+        when "$type='timestamp'" | # cannot declare "timestamp"
+        when "$type='EncFormat'" > Message.EncFormat
+        when "$type='bloblist'" | # cannot declare "bloblist"
+        when "$type='stringpairlist'" | # cannot declare "stringpairlist"
+        when "$type='message'" > Message
+        when "$type='Color'" > Color
 
         otherwise error | # cannot declare "«$type»"
     }
@@ -45,7 +45,19 @@ function "toSig" {
         when "$type='string'" error | # cannot declare "string"
         otherwise {
             > L
-            call "toJavaDeclare" with "type", "$type";
+            choose {
+                when "$type='stringlist'" > java.util.Vector
+                when "$type='string'" error | # cannot declare "string"
+                when "$type='message'" > org.pEp.jniadapter.Message
+                when "$type='identity'" > org.pEp.jniadapter._Identity
+                when "$type='identitylist'" > java.util.Vector
+                when "$type='timestamp'" > java.util.Date
+                when "$type='EncFormat'" > org.pEp.jniadapter.Message.EncFormat
+                when "$type='bloblist'" > java.util.Vector
+                when "$type='stringpairlist'" > java.util.ArrayList
+                when "$type='message'" > org.pEp.jniadapter.Message
+                when "$type='Color'" > org.pEp.jniadapter.Color
+            }
             > ;
         }
     }

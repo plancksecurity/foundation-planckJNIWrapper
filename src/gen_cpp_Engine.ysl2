@@ -115,7 +115,7 @@ tstylesheet {
 
     template "parm", mode=return {
         param "type", "name(*[2])";
-        param "jtype" call "toJavaDeclare" with "type", "$type";
+        param "jtype" call "toJava" with "type", "$type";
         param "name", "name(*[3])";
         param "jnitype" choose {
             when "$type = 'message'" > jlong
