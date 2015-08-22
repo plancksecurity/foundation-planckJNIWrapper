@@ -29,7 +29,13 @@ JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_trustwords(
         return NULL;
     }
 
-    PEP_STATUS status = ::trustwords(session, _ident->fpr, _ident->lang, &words, &wsize, 10);
+    const char *lang;
+    if (_ident->lang[0])
+        lang = _ident->lang;
+    else
+        lang = "en";
+
+    PEP_STATUS status = ::trustwords(session, _ident->fpr, lang, &words, &wsize, 10);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
         return NULL;

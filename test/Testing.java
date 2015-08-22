@@ -20,6 +20,8 @@ class Testing {
         Identity vb = new Identity();
         vb.fpr = "DB4713183660A12ABAFA7714EBE90D44146F62F4";
         String t = e.trustwords(vb);
+        System.out.print("Trustwords: ");
+        System.out.println(t);
     }
 }
 
