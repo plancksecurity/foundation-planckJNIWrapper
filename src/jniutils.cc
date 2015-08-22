@@ -181,6 +181,9 @@ namespace pEp {
 
         jobject from_stringlist(JNIEnv *env, stringlist_t *sl)
         {
+            if (!sl)
+                return (jobject) NULL;
+
             jclass clazz = findClass(env, "java/util/ArrayList");
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
             assert(constructor);
@@ -198,6 +201,9 @@ namespace pEp {
 
         stringlist_t *to_stringlist(JNIEnv *env, jobject obj)
         {
+            if (!obj)
+                return NULL;
+
             jint size = callIntMethod(env, obj, "size");
             if (size == 0)
                 return NULL;
@@ -218,6 +224,9 @@ namespace pEp {
 
         jobject from_stringpairlist(JNIEnv *env, stringpair_list_t *sl)
         {
+            if (!sl)
+                return (jobject) NULL;
+
             jclass clazz = findClass(env, "java/util/Vector");
             jclass clazz_pair = findClass(env, "org/pEp/jniadapter/Pair");
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
@@ -246,6 +255,9 @@ namespace pEp {
 
         stringpair_list_t *to_stringpairlist(JNIEnv *env, jobject obj)
         {
+            if (!obj)
+                return NULL;
+
             jint size = callIntMethod(env, obj, "size");
             if (size == 0)
                 return NULL;
@@ -281,6 +293,9 @@ namespace pEp {
 
         jobject from_timestamp(JNIEnv *env, timestamp *ts)
         {
+            if (!ts)
+                return (jobject) NULL;
+
             time_t t = timegm(ts);
             jclass clazz = findClass(env, "java/util/Date");
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "(J)V");
@@ -290,6 +305,9 @@ namespace pEp {
 
         timestamp *to_timestamp(JNIEnv *env, jobject date)
         {
+            if (!date)
+                return NULL;
+
             time_t t = (time_t) callLongMethod(env, date, "getTime");
             return new_timestamp(t);
         }
@@ -306,6 +324,9 @@ namespace pEp {
 
         jobject from_identity(JNIEnv *env, pEp_identity *ident)
         {
+            if (!ident)
+                return (jobject) NULL;
+
             static const char *classname = "org/pEp/jniadapter/_Identity";
             jclass clazz = findClass(env, classname);
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
@@ -342,6 +363,9 @@ namespace pEp {
 
         pEp_identity *to_identity(JNIEnv *env, jobject obj)
         {
+            if (!obj)
+                return NULL;
+
             static const char *classname = "org/pEp/jniadapter/_Identity";
             pEp_identity *ident = new_identity(NULL, NULL, NULL, NULL);
 
@@ -372,6 +396,9 @@ namespace pEp {
 
         jobject from_identitylist(JNIEnv *env, identity_list *il)
         {
+            if (!il)
+                return (jobject) NULL;
+
             jclass clazz = findClass(env, "java/util/ArrayList");
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
             assert(constructor);
@@ -389,6 +416,9 @@ namespace pEp {
 
         identity_list *to_identitylist(JNIEnv *env, jobject obj)
         {
+            if (!obj)
+                return NULL;
+
             jint size = callIntMethod(env, obj, "size");
             if (size == 0)
                 return NULL;
@@ -407,6 +437,9 @@ namespace pEp {
 
         jobject _from_blob(JNIEnv *env, bloblist_t *b)
         {
+            if (!b)
+                return (jobject) NULL;
+
             static const char *classname = "org/pEp/jniadapter/_Blob";
             jclass clazz = findClass(env, classname);
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
@@ -428,6 +461,9 @@ namespace pEp {
 
         jobject from_bloblist(JNIEnv *env, bloblist_t *bl)
         {
+            if (!bl)
+                return (jobject) NULL;
+
             jclass clazz = findClass(env, "java/util/ArrayList");
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
             assert(constructor);
@@ -445,6 +481,9 @@ namespace pEp {
 
         bloblist_t *to_bloblist(JNIEnv *env, jobject obj)
         {
+            if (!obj)
+                return NULL;
+
             jint size = callIntMethod(env, obj, "size");
             if (size == 0)
                 return NULL;
