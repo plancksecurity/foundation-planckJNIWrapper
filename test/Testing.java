@@ -33,6 +33,7 @@ class Testing {
         from.username = "Volker Birk";
         from.address = "vb@dingens.org";
         from.user_id = "23";
+        from.me = true;
         msg.setFrom(from);
 
         Vector<Identity> to = new Vector<Identity>();
