@@ -2,6 +2,7 @@ import org.pEp.jniadapter.Engine;
 import org.pEp.jniadapter.pEpException;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
+import org.pEp.jniadapter.Blob;
 import java.util.Vector;
 
 class Testing {
@@ -45,13 +46,18 @@ class Testing {
         msg.setShortmsg("hello, world");
         msg.setLongmsg("this is a test");
 
+        Message enc = null;
         try {
-            Message enc = e.encrypt_message(msg, null);
+            enc = e.encrypt_message(msg, null);
             System.out.println("encrypted");
         }
         catch (pEpException ex) {
             System.out.println("cannot encrypt");
         }
+
+        System.out.println(enc.getLongmsg());
+        Vector<Blob> attachments = enc.getAttachments();
+        System.out.println(attachments.get(1).data);
     }
 }
 
