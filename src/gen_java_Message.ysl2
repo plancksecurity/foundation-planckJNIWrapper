@@ -35,6 +35,10 @@ tstylesheet {
                     release(handle);
                 }
 
+                final protected long getHandle() {
+                    return handle;
+                }
+
                 `` apply "enum", mode=inner
                 `` apply "*[name(.)!='enum']", mode=entry
             }
