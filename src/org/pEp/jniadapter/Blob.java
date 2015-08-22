@@ -11,8 +11,10 @@ public class Blob {
 
     Blob(_Blob b) {
         data = b.data;
-        mime_type = AbstractEngine.toUTF16(b.mime_type);
-        filename = AbstractEngine.toUTF16(b.filename);
+        if (b.mime_type != null)
+            mime_type = AbstractEngine.toUTF16(b.mime_type);
+        if (b.filename != null)
+            filename = AbstractEngine.toUTF16(b.filename);
     }
 }
 

@@ -8,7 +8,12 @@ all: $(JAR) $(SHARED)
 JAVA_SOURCES=org/pEp/jniadapter/pEpException.java \
 			 org/pEp/jniadapter/AbstractEngine.java \
 			 org/pEp/jniadapter/Message.java \
-			 org/pEp/jniadapter/Engine.java
+			 org/pEp/jniadapter/Engine.java \
+			 org/pEp/jniadapter/Identity.java \
+			 org/pEp/jniadapter/_Identity.java \
+			 org/pEp/jniadapter/Blob.java \
+			 org/pEp/jniadapter/_Blob.java \
+			 org/pEp/jniadapter/CommType.java
 
 C_SOURCES=org_pEp_jniadapter_Engine.cc \
 		  org_pEp_jniadapter_Engine.h \

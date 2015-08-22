@@ -18,12 +18,17 @@ public class _Identity {
     }
 
     public _Identity(Identity i) {
-        address = AbstractEngine.toUTF8(i.address);
-        fpr = AbstractEngine.toUTF8(i.address);
-        user_id = AbstractEngine.toUTF8(i.address);
-        username = AbstractEngine.toUTF8(i.address);
+        if (i.address != null)
+            address = AbstractEngine.toUTF8(i.address);
+        if (i.fpr != null)
+            fpr = AbstractEngine.toUTF8(i.fpr);
+        if (i.user_id != null)
+            user_id = AbstractEngine.toUTF8(i.user_id);
+        if (i.username != null)
+            username = AbstractEngine.toUTF8(i.username);
         comm_type = i.comm_type.value;
-        lang = AbstractEngine.toUTF8(i.address);
+        if (i.lang != null)
+            lang = AbstractEngine.toUTF8(i.lang);
         me = i.me;
     }
 }
