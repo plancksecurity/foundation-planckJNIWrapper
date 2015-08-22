@@ -12,6 +12,7 @@ tstylesheet {
         #include <assert.h>
         #include <pEp/message_api.h>
         #include "org_pEp_jniadapter_«@name».h"
+        #include "throw_pEp_exception.hh"
         #include "jniutils.hh"
 
         using namespace pEp::JNIAdapter;
@@ -41,6 +42,11 @@ tstylesheet {
             `` apply "parm[creates|returns]", mode=out
 
             PEP_STATUS status = ::«@name»(session`apply "parm", mode=call``if "@name = 'encrypt_message'" > , PEP_enc_PEP`);
+            if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) |`> |`
+                    status >= PEP_TRUSTWORD_NOT_FOUND) {
+                throw_pEp_Exception(env, status);
+                return NULL;
+            }
 
         ||
 
@@ -93,8 +99,16 @@ tstylesheet {
         const "name", "name(*[3])";
         ||
         jfieldID «$name»_field = getFieldID(env, "«$jtype»",
-                "«$name»", "«$sig»");
-        env->SetObjectField(result_, «$name»_field, «$name»_);
+                    "«$name»", "«$sig»");
+        if («$name»_)
+            env->SetObjectField(result_, «$name»_field, «$name»_);
+        ||
+        if "$name = 'dst'"
+        ||
+        else
+            env->SetObjectField(result_, «$name»_field, src);
+        ||
+        ||
 
         ||
     }
@@ -120,20 +134,32 @@ tstylesheet {
         choose {
             when "$jnitype = 'jbyteArray'"
             ||
-            jobject «$name»_ = from_stringlist(env, _«$retname»);
+            jobject «$name»_ = NULL;
+            if (_«$retname»)
+                «$name»_ = from_stringlist(env, _«$retname»);
 
             ||
 
             otherwise {
-            ||
-            jclass clazz_«$name»_ = findClass(env, "org/pEp/jniadapter/«$jtype»");
-            jmethodID constructor_«$name»_ = env->GetMethodID(clazz_«$name»_, "<init>", "«$sig»");
-            assert(constructor_«$name»_);
-            ||
-            indent(0);
-            > jobject «$name»_ = env->NewObject(clazz_«$name»_, constructor_«$name»_
-            if "$jnitype != ''" > , («$jnitype») _«$retname»
-            > );\n\n
+                | jobject «$name»_ = NULL;
+                indent(0);
+                if "$retname != 'result'" > if (_«$retname») 
+                > {\n
+                ||
+                    jclass clazz_«$name»_ = findClass(env, "org/pEp/jniadapter/«$jtype»");
+                    jmethodID constructor_«$name»_ = env->GetMethodID(clazz_«$name»_, "<init>", "«$sig»");
+                    assert(constructor_«$name»_);
+                ||
+
+                indent(1);
+                > «$name»_ = env->NewObject(clazz_«$name»_, constructor_«$name»_
+                if "$jnitype != ''" > , («$jnitype») _«$retname»
+                > );\n
+
+                ||
+                }
+
+                ||
             }
         }
     }

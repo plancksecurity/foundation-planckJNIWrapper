@@ -18,9 +18,38 @@ tstylesheet {
                 public «$cname»() throws pEpException { }
 
                 `` apply "method", mode=plain
+                `` apply "basic"
             }
 
             ||
+    }
+
+    template "basic" {
+        const "itype" call "toIntermediate" with "type", "@type";
+        const "jtype" call "toJava" with "type", "@type";
+        const "ptype", "name(parm/*[1])";
+        const "pitype" call "toIntermediate" with "type", "$ptype";
+        const "pjtype" call "toJava" with "type", "$ptype";
+        const "pname", "name(parm/*[2])";
+
+        ||
+        private native «$itype» «@name»(«$pitype» «$pname»);
+
+        public «$jtype» «@name»(«$pjtype» «$pname») {
+            «$pitype» _«$pname» = new «$pitype»(«$pname»);
+        ||
+        choose {
+            when "@type = 'void'"
+                |> «@name»(_«$pname»);
+            when "@type = 'identity'"
+                |> return new Identity(«@name»(_«$pname»));
+            otherwise
+                |> return AbstractEngine.toUTF16(«@name»(_«$pname»));
+        }
+        ||
+        }
+
+        ||
     }
 
     function "returnJava" {
@@ -47,6 +76,7 @@ tstylesheet {
 
     template "method", mode=plain {
         const "convert", "count(parm/stringlist|parm/string|parm/identity) > 0";
+        const "convertreturn", "count(parm[returns]/stringlist|parm[returns]/string|parm[returns]/identity) > 0";
         const "singlereturn", "count(parm/creates|parm/returns) = 1";
         const "multireturn", "count(parm/creates|parm/returns) > 1";
 
@@ -85,7 +115,12 @@ tstylesheet {
             | {
             apply "parm", mode=convertIn;
 
-            if "$singlereturn" |> return _«@name»(`apply "parm[in]", mode=call;`);
+            if "$singlereturn" choose {
+                when "$convertreturn"
+                    |> return AbstractEngine.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
+                otherwise
+                    |> return _«@name»(`apply "parm[in]", mode=call;`);
+            }
 
             if "$multireturn"
             ||
@@ -97,9 +132,11 @@ tstylesheet {
 
             ||
             }
-
             ||
         }
+        ||
+
+        ||
     }
 
     template "parm", mode=java {

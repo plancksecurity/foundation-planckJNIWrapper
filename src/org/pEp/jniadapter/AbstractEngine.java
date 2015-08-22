@@ -27,6 +27,12 @@ abstract class AbstractEngine implements AutoCloseable {
         release();
     }
 
+    private long keyserverThread;
+    private long queueThread;
+
+    public native void startKeyserverLookup();
+    public native void stopKeyserverLookup();
+
     public static byte[] toUTF8(String str) {
         try {
             String _str = Normalizer.normalize(str, Normalizer.Form.NFC);
@@ -100,40 +106,6 @@ abstract class AbstractEngine implements AutoCloseable {
             result.set(i, toUTF16(list.get(i)));
 
         return result;
-    }
-
-    public class _Identity {
-        public byte[] address;
-        public byte[] fpr;
-        public byte[] user_id;
-        public byte[] username;
-        CommType comm_type;
-        public byte[] lang;
-        public boolean me;
-
-        public _Identity(Identity value) {
-            address = toUTF8(value.address);
-            fpr = toUTF8(value.fpr);
-            user_id = toUTF8(value.user_id);
-            username = toUTF8(value.username);
-            comm_type = value.comm_type;
-            lang = toUTF8(value.lang);
-            me = value.me;
-        }
-
-        public Identity getIdentity() {
-            Identity ident = new Identity(me);
-
-            ident.address = toUTF16(address);
-            ident.fpr = toUTF16(fpr);
-            ident.user_id = toUTF16(user_id);
-            ident.username = toUTF16(username);
-            ident.comm_type = comm_type;
-            ident.lang = toUTF16(lang);
-            ident.me = me;
-
-            return ident;
-        }
     }
 }
 

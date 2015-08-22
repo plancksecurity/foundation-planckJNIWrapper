@@ -4,6 +4,7 @@ decl interface @name;
 decl exception @name;
 decl method @name;
 decl struct @name;
+decl basic @type @name;
 
 namespace pEp {
     exception pEp_status {
@@ -86,6 +87,11 @@ namespace pEp {
                 in message msg,
                 returns Color color
             );
+
+        basic string trustwords(identity ident);
+        basic identity myself(identity ident);
+        basic identity updateIdentity(identity ident);
+        basic void keyCompromized(identity ident);
     };
 
     struct message {

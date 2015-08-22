@@ -36,7 +36,7 @@ org_pEp_jniadapter_AbstractEngine.o: %.o: %.cc %.h throw_pEp_exception.hh jniuti
 
 org_pEp_jniadapter_Engine.o org_pEp_jniadapter_Message.o: %.o: %.cc %.h
 
-$(LIBRARY): org_pEp_jniadapter_AbstractEngine.o org_pEp_jniadapter_Engine.o org_pEp_jniadapter_Message.o throw_pEp_exception.o jniutils.o
+$(LIBRARY): org_pEp_jniadapter_AbstractEngine.o org_pEp_jniadapter_Engine.o org_pEp_jniadapter_Message.o throw_pEp_exception.o jniutils.o basic_api.o
 	ar -r $@ *.o
 
 org/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2
@@ -58,6 +58,8 @@ throw_pEp_exception.cc throw_pEp_exception.hh: pEp.yml2 gen_throw_pEp_exception.
 	yml2proc -y gen_throw_pEp_exception.ysl2 $< -o throw_pEp_exception.cc
 
 throw_pEp_exception.o: throw_pEp_exception.cc throw_pEp_exception.hh
+
+basic_api.o: basic_api.cc jniutils.hh throw_pEp_exception.hh
 
 .PHONY: clean
 

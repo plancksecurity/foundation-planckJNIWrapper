@@ -1,11 +1,90 @@
 #pragma once
 
+#include <list>
+#include <pthread.h>
 #include <jni.h>
 #include <pEp/stringpair.h>
 #include <pEp/identity_list.h>
 #include <pEp/bloblist.h>
 
 namespace pEp {
+    namespace utility {
+        using namespace std;
+
+        class mutex {
+            pthread_mutex_t _mutex;
+
+        public:
+            mutex() {
+                pthread_mutex_init(&_mutex, NULL);
+            }
+            ~mutex() {
+                pthread_mutex_destroy(&_mutex);
+            }
+            void lock() {
+                pthread_mutex_lock(&_mutex);
+            }
+            void unlock() {
+                pthread_mutex_unlock(&_mutex);
+            }
+        };
+
+        template<class T> class lock_guard {
+            T& _mtx;
+
+        public:
+            lock_guard(T& mtx) : _mtx(mtx) {
+                _mtx.lock();
+            }
+            ~lock_guard() {
+                _mtx.unlock();
+            }
+        };
+
+        template<class T> class locked_queue
+        {
+            mutex _mtx;
+            list<T> _q;
+
+        public:
+            T& back()
+            {
+                lock_guard<mutex> lg(_mtx);
+                return _q.back();
+            }
+            T& front()
+            {
+                lock_guard<mutex> lg(_mtx);
+                return _q.front();
+            }
+            void pop_back()
+            {
+                lock_guard<mutex> lg(_mtx);
+                _q.pop_back();
+            }
+            void pop_front()
+            {
+                lock_guard<mutex> lg(_mtx);
+                _q.pop_front();
+            }
+            void push_back(const T& data)
+            {
+                lock_guard<mutex> lg(_mtx);
+                _q.push_back(data);
+            }
+            void push_front(const T& data)
+            {
+                lock_guard<mutex> lg(_mtx);
+                _q.push_front(data);
+            }
+            size_t size()
+            {
+                lock_guard<mutex> lg(_mtx);
+                return _q.size();
+            }
+        };
+    }
+
     namespace JNIAdapter {
         jclass findClass(JNIEnv *env, const char *classname);
 

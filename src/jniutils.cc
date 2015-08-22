@@ -77,6 +77,7 @@ namespace pEp {
 
             return env->CallIntMethod(obj, method);
         }
+
         jlong callLongMethod(
                 JNIEnv *env,
                 jobject obj,

@@ -12,6 +12,7 @@ function "toJava" {
         when "$type='bloblist'" > Vector<Blob>
         when "$type='stringpairlist'" > ArrayList<Pair<String, String>>
         when "$type='message'" > Message
+        when "$type='void'" > void
 
         otherwise call "CamelCase" with "text", "$type";
     }
