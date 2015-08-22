@@ -46,6 +46,7 @@ namespace pEp {
             )
         {
             jclass clazz = findClass(env, classname);
+            assert(clazz);
 
             jfieldID field = env->GetFieldID(clazz, fieldname, signature);
             assert(field);

@@ -67,6 +67,14 @@ class Testing {
         catch (pEpException ex) {
             System.out.println("cannot measure outgoing message color");
         }
+
+        try {
+            Engine.decrypt_message_Return result = e.decrypt_message(enc);
+            System.out.println("decrypted");
+        }
+        catch (pEpException ex) {
+            System.out.println("cannot decrypt");
+        }
     }
 }
 

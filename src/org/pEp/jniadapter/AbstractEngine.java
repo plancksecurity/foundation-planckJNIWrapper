@@ -103,7 +103,7 @@ abstract class AbstractEngine implements AutoCloseable {
         Vector<String> result = new Vector<String>(list.size());
 
         for (int i=0; i<list.size(); i++)
-            result.set(i, toUTF16(list.get(i)));
+            result.add(toUTF16(list.get(i)));
 
         return result;
     }

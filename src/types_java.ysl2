@@ -46,17 +46,17 @@ function "toSig" {
         otherwise {
             > L
             choose {
-                when "$type='stringlist'" > java.util.Vector
+                when "$type='stringlist'" > java/util/Vector
                 when "$type='string'" error | # cannot declare "string"
-                when "$type='message'" > org.pEp.jniadapter.Message
-                when "$type='identity'" > org.pEp.jniadapter._Identity
-                when "$type='identitylist'" > java.util.Vector
-                when "$type='timestamp'" > java.util.Date
-                when "$type='EncFormat'" > org.pEp.jniadapter.Message.EncFormat
-                when "$type='bloblist'" > java.util.Vector
-                when "$type='stringpairlist'" > java.util.ArrayList
-                when "$type='message'" > org.pEp.jniadapter.Message
-                when "$type='Color'" > org.pEp.jniadapter.Color
+                when "$type='message'" > org/pEp/jniadapter/Message
+                when "$type='identity'" > org/pEp/jniadapter/_Identity
+                when "$type='identitylist'" > java/util/Vector
+                when "$type='timestamp'" > java/util/Date
+                when "$type='EncFormat'" > org/pEp/jniadapter/Message/EncFormat
+                when "$type='bloblist'" > java/util/Vector
+                when "$type='stringpairlist'" > java/util/ArrayList
+                when "$type='message'" > org/pEp/jniadapter/Message
+                when "$type='Color'" > org/pEp/jniadapter/Color
             }
             > ;
         }

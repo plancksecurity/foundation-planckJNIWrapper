@@ -56,13 +56,13 @@ tstylesheet {
 
                 apply "parm[1]", mode=return {
                     with "name" > result
-                    with "jtype" > _«@name»_Result
-                    with "sig" > ()V
-                    with "jnitype" >
+                    with "jtype" > Engine$_«@name»_Return
+                    with "sig" > (Lorg/pEp/jniadapter/Engine;)V
+                    with "jnitype" > InnerClass
                 }
 
                 apply "parm[returns|creates]", mode=setresult
-                    with "jtype" > _«@name»_Result
+                    with "jtype" > org/pEp/jniadapter/Engine$_«@name»_Return
             }
 
             when "count(parm[returns|creates]) = 1" choose {
@@ -184,7 +184,10 @@ tstylesheet {
 
                 indent(1);
                 > «$name»_ = env->NewObject(clazz_«$name»_, constructor_«$name»_
-                if "$jnitype != ''" > , («$jnitype») _«$retname»
+                choose {
+                    when "$jnitype = 'InnerClass'" > , obj
+                    when "$jnitype != ''" > , («$jnitype») _«$retname»
+                }
                 > );\n
 
                 ||
