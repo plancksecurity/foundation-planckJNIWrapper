@@ -1,6 +1,7 @@
 import org.pEp.jniadapter.Engine;
 import org.pEp.jniadapter.pEpException;
 import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.Message;
 
 class Testing {
     public static void main(String[] args) {
@@ -22,6 +23,13 @@ class Testing {
         String t = e.trustwords(vb);
         System.out.print("Trustwords: ");
         System.out.println(t);
+
+        // message
+        Message msg = new Message();
+        Identity from = new Identity();
+        from.username = "Volker Birk";
+        from.address = "vb@dingens.org";
+        msg.setFrom(from);
     }
 }
 

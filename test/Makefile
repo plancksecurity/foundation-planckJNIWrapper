@@ -2,10 +2,10 @@ CLASSPATH=.:../src
 VM=java -Djava.library.path=../src
 
 test: Testing.class
-	$(VM) Testing
+	CLASSPATH=$(CLASSPATH) $(VM) Testing
 
 %.class: %.java
-	javac $<
+	CLASSPATH=$(CLASSPATH) javac $<
 
 .PHONY: clean
 

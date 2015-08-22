@@ -9,64 +9,84 @@ tstylesheet {
     template "struct" {
         const "jname" call "CamelCase" with "text", "@name";
 
-        document("org_pEp_jniadapter_{$jname}.cc", "text")
-        ||
-        #include <exception>
-        #include <new>
-        #include <stdint.h>
-        #include <stdlib.h>
-        #include <assert.h>
-        #include <pEp/«@name».h>
+        document("org_pEp_jniadapter_{$jname}.cc", "text") {
+            ||
+            #include <exception>
+            #include <new>
+            #include <stdint.h>
+            #include <stdlib.h>
+            #include <assert.h>
+            #include <pEp/«@name».h>
 
-        #include "jniutils.hh"
-        #include "org_pEp_jniadapter_«$jname».h"
+            #include "jniutils.hh"
+            #include "org_pEp_jniadapter_«$jname».h"
 
-        using namespace std;
+            using namespace std;
 
-        namespace pEp {
-            namespace JNIAdapter {
-                static ::«@name» *«@name»_ptr(JNIEnv *env, jobject me) {
-                    jfieldID handle;
+            namespace pEp {
+                namespace JNIAdapter {
+                    static ::«@name» *«@name»_ptr(JNIEnv *env, jobject me) {
+                        jfieldID handle;
 
-                    try {
-                        handle = getFieldID(env, "org/pEp/jniadapter/«$jname»", "handle", "J");
+                        try {
+                            handle = getFieldID(env, "org/pEp/jniadapter/«$jname»", "handle", "J");
+                        }
+                        catch (std::exception& ex) {
+                            assert(0);
+                            return NULL;
+                        }
+
+                        return (::«@name» *) (intptr_t) (int64_t) env->GetLongField(me, handle);
                     }
-                    catch (std::exception& ex) {
-                        assert(0);
-                        return NULL;
-                    }
-
-                    return (::«@name» *) (intptr_t) (int64_t) env->GetLongField(me, handle);
-                }
+                };
             };
-        };
 
-        extern "C" {
+            extern "C" {
 
-        using namespace pEp::JNIAdapter;
+            using namespace pEp::JNIAdapter;
 
-        JNIEXPORT jlong JNICALL
-                Java_org_pEp_jniadapter_«$jname»_init(JNIEnv *env, jobject obj) {
-            ::«@name» * _obj = ::new_«@name»(PEP_dir_incoming);
-            if (!_obj) {
-                outOfMemory(env);
-                return (jlong) 0;
+            JNIEXPORT jlong JNICALL
+                    Java_org_pEp_jniadapter_«$jname»_init(JNIEnv *env, jobject obj) {
+                ::«@name» * _obj = ::new_«@name»(PEP_dir_incoming);
+                if (!_obj) {
+                    outOfMemory(env);
+                    return (jlong) 0;
+                }
+                return (jlong) (int64_t) (intptr_t) _obj;
             }
-            return (jlong) (int64_t) (intptr_t) _obj;
-        }
 
-        JNIEXPORT void JNICALL
-                Java_org_pEp_jniadapter_«$jname»_release(JNIEnv *env, jobject obj, jlong value) {
-            if (value) {
-                ::«@name» *_obj = (::«@name» *) (intptr_t) (int64_t) value;
-                ::free_«@name»(_obj);
+            JNIEXPORT void JNICALL
+                    Java_org_pEp_jniadapter_«$jname»_release(JNIEnv *env, jobject obj, jlong value) {
+                if (value) {
+                    ::«@name» *_obj = (::«@name» *) (intptr_t) (int64_t) value;
+                    ::free_«@name»(_obj);
+                }
             }
+
+            ||
+            apply "*[name(.)!='enum']", 0, mode=entry {
+                with "name", "@name";
+                with "class" call "CamelCase" with "text", "@name";
+            }
+            ||
+            } // extern "C"
+
+            ||
         }
+    }
 
-        `` apply "*[name(.)!='enum']", 0, mode=entry with "name", "@name", with "class" call "CamelCase" with "text", "@name";
-        } // extern "C"
+    function "mangle" {
+        param "type";
+        param "name";
+        param "classname" call "CamelCase" with "text", "../@name";
+        const "convert", "$type != 'timestamp'";
 
-        ||
+        choose {
+            when "$convert"
+                > «concat('Java_org_pEp_jniadapter_', $classname, '__1', str:replace($name, '_', '_1'))»
+            otherwise
+                > «concat('Java_org_pEp_jniadapter_', $classname, '_', str:replace($name, '_', '_1'))»
+        }
     }
 
     template "*", mode=entry {
@@ -76,10 +96,17 @@ tstylesheet {
         const "jname" call "CamelCase" with "text", "name(*[1])";
         const "cname" call "lcase" with "text", "name(*[1])";
         const "type", "name(.)";
-
+        const "getname" call "mangle" {
+            with "type", "$type";
+            with "name", "concat('get', $jname)";
+        }
+        const "setname" call "mangle" {
+            with "type", "$type";
+            with "name", "concat('set', $jname)";
+        }
         ||
         JNIEXPORT `call "jni_type" with "type", "name(.)"` JNICALL
-                Java_org_pEp_jniadapter_«$class»_get«$jname»(JNIEnv *env, jobject obj) {
+                «$getname»(JNIEnv *env, jobject obj) {
             «$name» *_obj = «$name»_ptr(env, obj);
         ||
         choose {
@@ -92,7 +119,7 @@ tstylesheet {
         }
 
         JNIEXPORT void JNICALL
-                Java_org_pEp_jniadapter_«$class»_set«$jname»(JNIEnv *env, jobject obj, `call "jni_type" with "type", "name(.)"` value) {
+                «$setname»(JNIEnv *env, jobject obj, `call "jni_type" with "type", "name(.)"` value) {
             «$name» *_obj = «$name»_ptr(env, obj);   
         ||
         choose {

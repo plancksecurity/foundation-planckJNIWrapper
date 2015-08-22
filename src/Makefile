@@ -46,7 +46,7 @@ $(LIBRARY): org_pEp_jniadapter_AbstractEngine.o org_pEp_jniadapter_Engine.o org_
 	ar -r $@ *.o
 
 $(SHARED): $(LIBRARY)
-	g++ -shared -o $(SHARED) $(LDFLAGS) -lpEpEngine *.o
+	c++ -shared -o $(SHARED) $(LDFLAGS) -lpEpEngine *.o
 
 org/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2
 	yml2proc -y gen_java_exceptions.ysl2 $< -o $@
@@ -73,7 +73,7 @@ basic_api.o: basic_api.cc jniutils.hh throw_pEp_exception.hh
 .PHONY: clean
 
 clean:
-	rm -f $(JAR) $(LIBRARY)
+	rm -f $(JAR) $(LIBRARY) $(SHARED)
 	rm -f *.o
 	rm -f *.class
 	rm -f *.xml *.xsl
