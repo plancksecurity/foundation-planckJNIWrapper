@@ -31,12 +31,14 @@ class Testing {
         Identity from = new Identity();
         from.username = "Volker Birk";
         from.address = "vb@dingens.org";
+        from.user_id = "23";
         msg.setFrom(from);
 
         Vector<Identity> to = new Vector<Identity>();
         Identity to1 = new Identity();
         to1.username = "Volker Birk";
         to1.address = "vb@pep-project.org";
+        to1.user_id = "42";
         to.add(to1);
         msg.setTo(to);
 
