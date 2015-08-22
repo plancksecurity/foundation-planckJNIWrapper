@@ -68,13 +68,17 @@ class Testing {
             System.out.println("cannot measure outgoing message color");
         }
 
+        Engine.decrypt_message_Return result = null;
         try {
-            Engine.decrypt_message_Return result = e.decrypt_message(enc);
+            result = e.decrypt_message(enc);
             System.out.println("decrypted");
         }
         catch (pEpException ex) {
             System.out.println("cannot decrypt");
         }
+        
+        System.out.println(result.dst.getShortmsg());
+        System.out.println(result.dst.getLongmsg());
     }
 }
 
