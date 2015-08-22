@@ -186,7 +186,7 @@ namespace pEp {
             if (!sl)
                 return (jobject) NULL;
 
-            jclass clazz = findClass(env, "java/util/ArrayList");
+            jclass clazz = findClass(env, "java/util/Vector");
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
             assert(constructor);
             jobject obj = env->NewObject(clazz, constructor);
@@ -229,7 +229,7 @@ namespace pEp {
             if (!sl)
                 return (jobject) NULL;
 
-            jclass clazz = findClass(env, "java/util/Vector");
+            jclass clazz = findClass(env, "java/util/ArrayList");
             jclass clazz_pair = findClass(env, "org/pEp/jniadapter/Pair");
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
             assert(constructor);
@@ -401,7 +401,7 @@ namespace pEp {
             if (!il)
                 return (jobject) NULL;
 
-            jclass clazz = findClass(env, "java/util/ArrayList");
+            jclass clazz = findClass(env, "java/util/Vector");
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
             assert(constructor);
             jobject obj = env->NewObject(clazz, constructor);
@@ -466,7 +466,7 @@ namespace pEp {
             if (!bl)
                 return (jobject) NULL;
 
-            jclass clazz = findClass(env, "java/util/ArrayList");
+            jclass clazz = findClass(env, "java/util/Vector");
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
             assert(constructor);
             jobject obj = env->NewObject(clazz, constructor);
