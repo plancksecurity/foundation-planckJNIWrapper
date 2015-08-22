@@ -2,8 +2,22 @@
 
 #include <stdexcept>
 #include <typeinfo>
+#include <time.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <string>
+
+#ifdef ANDROID
+#include <time64.h>
+time_t timegm(struct tm* const t) {
+    static const time_t kTimeMax = ~(1L << (sizeof(time_t) * CHAR_BIT - 1));
+    static const time_t kTimeMin = (1L << (sizeof(time_t) * CHAR_BIT - 1));
+    time64_t result = timegm64(t);
+    if (result < kTimeMin || result > kTimeMax)
+        return -1;
+    return result;
+}
+#endif
 
 namespace pEp {
     namespace JNIAdapter {
