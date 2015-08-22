@@ -2,6 +2,7 @@ import org.pEp.jniadapter.Engine;
 import org.pEp.jniadapter.pEpException;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
+import java.util.Vector;
 
 class Testing {
     public static void main(String[] args) {
@@ -26,10 +27,18 @@ class Testing {
 
         // message
         Message msg = new Message();
+
         Identity from = new Identity();
         from.username = "Volker Birk";
         from.address = "vb@dingens.org";
         msg.setFrom(from);
+
+        Vector<Identity> to = new Vector<Identity>();
+        Identity to1 = new Identity();
+        to1.username = "Volker Birk";
+        to1.address = "vb@pep-project.org";
+        to.add(to1);
+        msg.setTo(to);
     }
 }
 
