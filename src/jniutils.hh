@@ -2,7 +2,7 @@
 
 #include <list>
 #include <pthread.h>
-#include <errno>
+#include <errno.h>
 #include <jni.h>
 #include <pEp/stringpair.h>
 #include <pEp/identity_list.h>
