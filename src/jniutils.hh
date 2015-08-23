@@ -13,7 +13,8 @@ namespace pEp {
         using namespace std;
 
         class mutex {
-            pthread_mutex_t _mutex;
+            typedef pthread_mutex_t native_handle_type;
+            native_handle_type _mutex;
 
         public:
             mutex() {
@@ -30,6 +31,12 @@ namespace pEp {
             }
             void unlock() {
                 pthread_mutex_unlock(&_mutex);
+            }
+            native_handle_type native_handle() {
+                return _mutex;
+            }
+            bool try_lock() {
+                return pthread_mutex_trylock(&_mutex) == 0;
             }
         };
 
