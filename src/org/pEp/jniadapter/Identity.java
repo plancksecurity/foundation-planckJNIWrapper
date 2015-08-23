@@ -20,17 +20,12 @@ public class Identity {
     }
 
     public Identity(_Identity i) {
-        if (i.address != null)
-            address = AbstractEngine.toUTF16(i.address);
-        if (i.fpr != null)
-            fpr = AbstractEngine.toUTF16(i.fpr);
-        if (i.user_id != null)
-            user_id = AbstractEngine.toUTF16(i.user_id);
-        if (i.username != null)
-            username = AbstractEngine.toUTF16(i.username);
+        address = AbstractEngine.toUTF16(i.address);
+        fpr = AbstractEngine.toUTF16(i.fpr);
+        user_id = AbstractEngine.toUTF16(i.user_id);
+        username = AbstractEngine.toUTF16(i.username);
         comm_type = CommType.Management.tag.get(i.comm_type);
-        if (i.lang != null)
-            lang = AbstractEngine.toUTF16(i.lang);
+        lang = AbstractEngine.toUTF16(i.lang);
         me = i.me;
     }
 }

@@ -1,8 +1,4 @@
-import org.pEp.jniadapter.Engine;
-import org.pEp.jniadapter.pEpException;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Message;
-import org.pEp.jniadapter.Blob;
+import org.pEp.jniadapter.*;
 import java.util.Vector;
 
 class Testing {
