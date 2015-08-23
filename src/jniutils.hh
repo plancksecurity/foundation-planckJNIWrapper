@@ -2,6 +2,7 @@
 
 #include <list>
 #include <pthread.h>
+#include <errno>
 #include <jni.h>
 #include <pEp/stringpair.h>
 #include <pEp/identity_list.h>
@@ -16,7 +17,10 @@ namespace pEp {
 
         public:
             mutex() {
-                pthread_mutex_init(&_mutex, NULL);
+                int result;
+                do {
+                    result = pthread_mutex_init(&_mutex, NULL);
+                } while (result == EAGAIN);
             }
             ~mutex() {
                 pthread_mutex_destroy(&_mutex);
