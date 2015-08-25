@@ -69,7 +69,7 @@ LOCAL_EXPORT_C_INCLUDES := build/pEpEngine-android-1/include
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE     := pEpJNIAdapter
+LOCAL_MODULE     := pEpJNI
 LOCAL_SHARED_LIBRARIES := libgpgme
 LOCAL_STATIC_LIBRARIES := pEpEngine libetpan openssl cyrus-sasl 
 LOCAL_CPP_FEATURES += exceptions
