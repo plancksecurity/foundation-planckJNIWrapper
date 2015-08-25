@@ -74,6 +74,7 @@ LOCAL_SHARED_LIBRARIES := libgpgme
 LOCAL_STATIC_LIBRARIES := pEpEngine libetpan openssl cyrus-sasl 
 LOCAL_CPP_FEATURES += exceptions
 LOCAL_SRC_FILES  := \
+		  ../../src/org_pEp_jniadapter_AbstractEngine.cc \
 		  ../../src/org_pEp_jniadapter_Engine.cc \
 		  ../../src/org_pEp_jniadapter_Message.cc \
 		  ../../src/throw_pEp_exception.cc \
