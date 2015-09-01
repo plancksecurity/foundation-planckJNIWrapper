@@ -79,10 +79,10 @@ LOCAL_SRC_FILES  := \
 		  ../../src/org_pEp_jniadapter_Message.cc \
 		  ../../src/throw_pEp_exception.cc \
 		  ../../src/jniutils.cc
-
-LOCAL_C_INCLUDES := ../src
-
-
+LOCAL_C_INCLUDES := ../../src
 include $(BUILD_SHARED_LIBRARY)
 
-
+include $(CLEAR_VARS)
+LOCAL_MODULE     := pEpJNIAndroidHelper
+LOCAL_SRC_FILES  := org_pEp_jniadapter_AndroidHelper.cc
+include $(BUILD_SHARED_LIBRARY)

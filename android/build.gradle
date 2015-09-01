@@ -30,7 +30,7 @@ android {
             manifest.srcFile 'AndroidManifest.xml'
 
             // where to find generated Java source
-            java.srcDirs = ['../src']
+            java.srcDirs = ['../src', 'src']
 
             // disable automatic ndk-build call, which ignore our Android.mk
             jni.srcDirs = []
