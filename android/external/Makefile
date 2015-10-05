@@ -20,6 +20,7 @@ PEP_PACKAGE_NAME ?= com.pep.pepjniaaractivity
 # slected commit is archived in external/$project
 
 EXTERNAL_GIT_REPOS = \
+libetpan|https://github.com/fdik/libetpan.git?HEAD\
 gnupg|git://git.gnupg.org/gnupg.git?08c00cd\
 libassuan|git://git.gnupg.org/libassuan.git?261498d\
 libgcrypt|git://git.gnupg.org/libgcrypt.git?b3936b6\
@@ -150,7 +151,7 @@ export AUTOMAKE=automake-1.11
     $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS_CLEAN) \
 	showsetup
 
-all: gnupg-install gpgme-install assets
+all: libetpan-build gnupg-install gpgme-install assets
 
 
 #------------------------------------------------------------------------------#
@@ -474,6 +475,14 @@ gpgme-install: $(LOCAL)/bin/gpg2 $(LOCAL)/lib/libgpgme.so
 gpgme-clean:
 	-$(MAKE) -C gpgme clean
 	-rm -f gpgme/Makefile gpgme/configure
+
+#------------------------------------------------------------------------------#
+# libetpan
+
+libetpan/libetpan-android-1.zip: libetpan
+	cd libetpan/build-android; ./build.sh
+
+libetpan-build: libetpan/libetpan-android-1.zip
 
 #------------------------------------------------------------------------------#
 # assets for Android app

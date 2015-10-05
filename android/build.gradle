@@ -6,12 +6,12 @@ def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 def pEpAppPackageName = hasProperty('pEpAppPackageName') ? pEpAppPackageName : "com.pep.k9"
 
-def pEpEngineAndroid = new File(new File(pEpEngineSrc), 'build-android')
-def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
-def libetpanAndroid = new File(new File(pEpEngineSrc), '../libetpan/build-android')
-
 def externalInstallDir = file('external/data/data/' + pEpAppPackageName + '/app_opt')
 def externalIncludePath = new File(externalInstallDir, 'include').absolutePath
+def libetpanAndroid = file('external/libetpan/build-android')
+
+def pEpEngineAndroid = new File(new File(pEpEngineSrc), 'build-android')
+def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 
 buildscript {
     repositories {
