@@ -1,10 +1,5 @@
 LOCAL_PATH:= $(call my-dir)
 
-GPGEXT := ../../../gnupg-for-android/external
-GPGROOT := data/data/info.guardianproject.gpg/app_opt
-GPGBUILD := $(GPGEXT)/$(GPGROOT)
-
-
 include $(CLEAR_VARS)
 LOCAL_MODULE := libassuan
 LOCAL_SRC_FILES := $(GPGBUILD)/lib/libassuan.so
@@ -28,7 +23,7 @@ include $(PREBUILT_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 LOCAL_MODULE := libgpgme
 LOCAL_SRC_FILES := $(GPGBUILD)/lib/libgpgme.so
-LOCAL_EXPORT_C_INCLUDES := $(GPGEXT)/$(GPGROOT)/include $(GPGEXT)/gpgme/src
+LOCAL_EXPORT_C_INCLUDES := $(GPGBUILD)/include
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -78,11 +73,13 @@ LOCAL_SRC_FILES  := \
 		  ../../src/org_pEp_jniadapter_Engine.cc \
 		  ../../src/org_pEp_jniadapter_Message.cc \
 		  ../../src/throw_pEp_exception.cc \
+		  ../../src/basic_api.cc \
 		  ../../src/jniutils.cc
 LOCAL_C_INCLUDES := ../../src
 include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNIAndroidHelper
+LOCAL_SHARED_LIBRARIES := libgpgme
 LOCAL_SRC_FILES  := org_pEp_jniadapter_AndroidHelper.cc
 include $(BUILD_SHARED_LIBRARY)

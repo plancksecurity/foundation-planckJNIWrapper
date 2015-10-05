@@ -2,6 +2,15 @@
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
+def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
+def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
+
+def pEpEngineAndroid = new File(new File(pEpEngineSrc), 'build-android')
+def libetpanAndroid = new File(new File(pEpEngineSrc), '../libetpan/build-android')
+
+def externalInstallDir = file('external/data/data/' + pEpAppPackageName + '/app_opt')
+def externalIncludePath = new File(externalInstallDir, 'include').absolutePath
+
 buildscript {
     repositories {
         jcenter()
@@ -35,8 +44,12 @@ android {
             // disable automatic ndk-build call, which ignore our Android.mk
             jni.srcDirs = []
             jniLibs.srcDir 'libs'
-
+            assets.srcDirs = ['assets']
         }
+    }
+
+    dependencies {
+        compile fileTree(dir: 'libs', include: '*.jar')
     }
 
     lintOptions {
@@ -56,21 +69,48 @@ android {
         commandLine 'make', 'gensource'
     }
 
+    // call external build (GnuPG, GPGME, etc)
+    task buildExternal(type:Exec) {
+        workingDir 'external'
+        commandLine 'make', 'all', 'PEP_PACKAGE_NAME='+pEpAppPackageName
+    }
+
+    // call pEpEngine Build 
+    task buildpEpEngine(type:Exec) {
+        workingDir pEpEngineAndroid
+        environment['GPGME_INCLUDE_PATH'] = externalIncludePath
+        commandLine './build.sh'
+    }
+    if(buildAutomatic=="true"){
+        buildpEpEngine.dependsOn buildExternal
+    }
+
     // unzip some of the dependencies 
     task unzipDeps(type: Copy) {
-        from zipTree(file('../../pEpEngine/build-android/pEpEngine-android-1.zip'))
-        from zipTree(file('../../libetpan/build-android/libetpan-android-1.zip'))
-        from zipTree(file('../../libetpan/build-android/dependencies/openssl/openssl-android-1.zip'))
-        from zipTree(file('../../libetpan/build-android/dependencies/cyrus-sasl/cyrus-sasl-android-1.zip'))
+        from zipTree(new File(pEpEngineAndroid, 'pEpEngine-android-1.zip'))
+        from zipTree(new File(libetpanAndroid, 'libetpan-android-1.zip'))
+        from zipTree(new File(libetpanAndroid, 'dependencies/openssl/openssl-android-1.zip'))
+        from zipTree(new File(libetpanAndroid, 'dependencies/cyrus-sasl/cyrus-sasl-android-1.zip'))
         into file("${buildDir}")
+    }
+
+    if(buildAutomatic=="true"){
+        unzipDeps.dependsOn buildpEpEngine
+    }
+
+    // copy pEpEnginge's system.db to asset 
+    task cpDBAssets(type: Copy) {
+        from file(new File(new File(pEpEngineSrc), 'db/system.db'))
+        into 'assets'
     }
 
     // call regular ndk-build(.cmd) script from app directory
     task jniBuild(type: Exec) {
-        commandLine getNdkBuildCmd(), 'V=1'
+        commandLine getNdkBuildCmd(), 'V=1', 'GPGBUILD='+externalInstallDir.absolutePath
     }
     jniBuild.dependsOn genSources
     jniBuild.dependsOn unzipDeps
+    jniBuild.dependsOn cpDBAssets
 
     // Ensure this is done before java build
     tasks.withType(JavaCompile) {

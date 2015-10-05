@@ -36,8 +36,13 @@ tstylesheet {
         private native «$itype» «@name»(«$pitype» «$pname»);
 
         public «$jtype» «@name»(«$pjtype» «$pname») {
-            «$pitype» _«$pname» = new «$pitype»(«$pname»);
         ||
+        choose {
+            when "$ptype = 'string'"
+            |> «$pitype» _«$pname» = «$pname».getBytes();
+            otherwise
+            |> «$pitype» _«$pname» = new «$pitype»(«$pname»);
+        }
         choose {
             when "@type = 'void'"
                 |> «@name»(_«$pname»);

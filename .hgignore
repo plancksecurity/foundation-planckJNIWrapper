@@ -9,6 +9,8 @@ syntax: glob
 *.a
 *.dylib
 *.so
+*.orig
+*~
 
 # ignore generated files
 
@@ -30,3 +32,9 @@ android/build
 android/libs
 android/obj
 android/.gradle
+android/external/*.git
+android/assets
+
+syntax: regexp
+android/external/[^.]*
+

@@ -96,5 +96,27 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyCompromized(
     ::key_compromized(session, _ident->fpr);
 }
 
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_importKey(
+        JNIEnv *env,
+        jobject obj,
+        jbyteArray key
+    )
+{
+    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+    char *_key = to_string(env, key);
+
+    if(_key == NULL){
+        throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
+        return;
+    }
+
+    
+    PEP_STATUS status = ::import_key(session, _key, strlen(_key));
+    if (status != PEP_STATUS_OK) {
+        throw_pEp_Exception(env, status);
+        return;
+    }
+
+}
 } // extern "C"
 
