@@ -1,7 +1,16 @@
 #!/system/bin/sh
+
+exit_with_log() {
+    echo Pipe kill $$ >> /data/data/com.pep.pepjniaaractivity/files/pinentry.log
+    exit
+}
+trap "exit_with_log" 13
+
+echo Start $$ >> /data/data/com.pep.pepjniaaractivity/files/pinentry.log
 echo OK
 while read cmd rest
 do
+    echo $cmd $rest >> /data/data/com.pep.pepjniaaractivity/files/pinentry.log
     case $cmd in
         SETDESC)
             DESC=$rest
@@ -32,6 +41,7 @@ do
                 pid*)
                     echo D $$
                     echo OK
+                    echo D $$ >> /data/data/com.pep.pepjniaaractivity/files/pinentry.log
                 ;;
             esac
         ;;

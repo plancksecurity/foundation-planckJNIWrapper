@@ -21,9 +21,10 @@ public class GPGAgentService extends Service {
                     "gpg-agent" +
                     " --pinentry-program " + 
                     new File(AndroidHelper.binDir, "pinentry.sh").getAbsolutePath() +
-                    " --no-detach" +
-                    " --daemon --write-env-file" +
-                    " --batch" + 
+                    //" --no-detach" +
+                    " --daemon" +
+                    //" --write-env-file" +
+                    //" --batch" + 
                     " --debug-level basic --log-file "
                     + new File(GPGAgentService.this.getFilesDir(), "gpg-agent.log")).waitFor();
                 Log.i(TAG, "execution terminated");
