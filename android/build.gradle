@@ -81,6 +81,7 @@ android {
     task buildpEpEngine(type:Exec) {
         workingDir pEpEngineAndroid
         environment['GPGME_INCLUDE_PATH'] = externalIncludePath
+        environment['LIBETPAN_PATH'] = libetpanAndroid.absolutePath
         commandLine './build.sh'
     }
     if(buildAutomatic=="true"){
