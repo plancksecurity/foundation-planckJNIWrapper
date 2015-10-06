@@ -93,7 +93,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyCompromized(
         return;
     }
 
-    ::key_compromized(session, _ident->fpr);
+    ::key_compromized(session, _ident);
 }
 
 JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_importKey(
