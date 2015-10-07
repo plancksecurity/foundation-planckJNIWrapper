@@ -15,55 +15,6 @@ APP_PLATFORM ?= android-14
 PEP_PACKAGE_NAME ?= com.pep.pepjniaaractivity
 
 #------------------------------------------------------------------------------#
-# Clone update and archive external projects GIT repos
-# Local clone is in external/$project.git while 
-# slected commit is archived in external/$project
-
-EXTERNAL_GIT_REPOS = \
-libetpan|https://github.com/fdik/libetpan.git?HEAD\
-gnupg|git://git.gnupg.org/gnupg.git?08c00cd\
-libassuan|git://git.gnupg.org/libassuan.git?261498d\
-libgcrypt|git://git.gnupg.org/libgcrypt.git?b3936b6\
-libgpg-error|git://git.gnupg.org/libgpg-error.git?bcd9295\
-libksba|git://git.gnupg.org/libksba.git?02079b5\
-curl|https://github.com/bagder/curl?f77e89c\
-npth|git://git.gnupg.org/npth.git?79fbdce\
-gpgme|git://git.gnupg.org/gpgme.git?37d927a
-
-define per_repo_targets
-$(1).git:
-	git clone $(2) $(1).git
-
-$(1).git_update: $(1).git
-	cd $(1).git; git pull
-
-$(1): |$(1).git
-	mkdir $(1)
-	(cd $(1).git; git archive --format=tar $(3)) | tar -C $(1) -x
-
-$(1)_clean: 
-	rm -rf $(1)
-
-EXTERNAL_LOCAL_GITS += $(1).git
-EXTERNAL_LOCAL_GITS_UPDATE += $(1).git_update
-EXTERNAL_SRCS += $(1)
-EXTERNAL_SRCS_CLEAN += $(1)_clean
-endef
-
-define per_repo
-$(call per_repo_targets,\
-    $(1),\
-    $(word 1,$(subst ?, ,$(2))),\
-    $(word 2,$(subst ?, ,$(2))))
-endef
-
-$(foreach repo, $(EXTERNAL_GIT_REPOS), $(eval $(call per_repo,\
-    $(word 1,$(subst |, ,$(repo))),\
-    $(word 2,$(subst |, ,$(repo))))))
-
-git_update: $(EXTERNAL_LOCAL_GITS_UPDATE)
-
-#------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
 
 EXTERNAL_ROOT := $(shell pwd)
@@ -105,13 +56,9 @@ TARGET_ARCH_ABI = $(APP_ABI)
 include $(ANDROID_NDK_HOME)/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 
 CC := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-gcc --sysroot=$(NDK_SYSROOT)
-CXX := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-g++
-CPP := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-cpp
 LD := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-ld
 AR := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-ar
 RANLIB := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-ranlib
-STRIP := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-strip \
-	--strip-unneeded -R .note -R .comment
 
 CFLAGS = -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS)
 LDFLAGS = -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS)
@@ -131,13 +78,6 @@ endif
 export PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig
 # workaround for cross-compiling bug in autoconf
 export ac_cv_func_malloc_0_nonnull=yes
-
-# GnuPG does not work with automake 1.14, it has proven reliable on 1.11, and
-# that's widely available, so we'll add it to the env here, and the
-# ./autogen.sh scripts will pick it up.
-# http://lists.gnupg.org/pipermail/gnupg-devel/2013-August/027857.html
-export AUTOMAKE=automake-1.11
-
 
 .PHONY = clean distclean install-clean \
 	libgpg-error-build libgpg-error-clean libgpg-error-install \
@@ -172,6 +112,8 @@ showsetup:
 
 #------------------------------------------------------------------------------#
 # libgpg-error
+
+EXTERNAL_GIT_REPOS += libgpg-error|git://git.gnupg.org/libgpg-error.git?libgpg-error-1.20
 
 libgpg-error/configure: libgpg-error libgpg-error/configure.ac
 	cd libgpg-error && ./autogen.sh
@@ -217,6 +159,8 @@ libgpg-error-clean:
 #------------------------------------------------------------------------------#
 # libgcrypt
 
+EXTERNAL_GIT_REPOS += libgcrypt|git://git.gnupg.org/libgcrypt.git?libgcrypt-1.6.4
+
 libgcrypt/configure: libgcrypt libgcrypt/configure.ac
 	cd libgcrypt && ./autogen.sh
 
@@ -248,6 +192,8 @@ libgcrypt-clean:
 
 #------------------------------------------------------------------------------#
 # libassuan
+
+EXTERNAL_GIT_REPOS += libassuan|git://git.gnupg.org/libassuan.git?libassuan-2.3.0
 
 libassuan/configure: libassuan libassuan/configure.ac
 	cd libassuan && ./autogen.sh && autoreconf --install --force --verbose
@@ -281,6 +227,8 @@ libassuan-clean:
 #------------------------------------------------------------------------------#
 # npth
 
+EXTERNAL_GIT_REPOS += npth|git://git.gnupg.org/npth.git?npth-1.2
+
 npth/configure: npth npth/configure.ac
 	cd npth && ./autogen.sh && autoreconf --install --force --verbose
 
@@ -313,6 +261,8 @@ npth-clean:
 #------------------------------------------------------------------------------#
 # libksba
 
+EXTERNAL_GIT_REPOS += libksba|git://git.gnupg.org/libksba.git?libksba-1.3.3
+
 libksba/configure: libksba libksba/configure.ac
 	cd libksba && ./autogen.sh
 
@@ -344,6 +294,8 @@ libksba-clean:
 
 #------------------------------------------------------------------------------#
 # curl
+
+EXTERNAL_GIT_REPOS += curl|https://github.com/bagder/curl?curl-7_45_0
 
 curl/configure: curl curl/configure.ac
 	cd curl && ./buildconf
@@ -387,6 +339,8 @@ curl-clean:
 
 #------------------------------------------------------------------------------#
 # gnupg
+
+EXTERNAL_GIT_REPOS += gnupg|git://git.gnupg.org/gnupg.git?gnupg-2.1.8
 
 gnupg/configure: gnupg
 	cd gnupg && ./autogen.sh
@@ -440,8 +394,10 @@ gnupg-clean:
 #------------------------------------------------------------------------------#
 # gpgme
 
+EXTERNAL_GIT_REPOS += gpgme|git://git.gnupg.org/gpgme.git?gpgme-1.6.0
+
 gpgme/configure: gpgme gpgme/configure.ac
-	cd gpgme && ./autogen.sh
+	cd gpgme && ./autogen.sh 
 
 gpgme/Makefile: gpgme/configure
 	-patch -N -p1 --reject-file=- gpgme/m4/libtool.m4 libtool-Add-Android-Linux-support.patch
@@ -458,6 +414,7 @@ gpgme/Makefile: gpgme/configure
 				--disable-gpg-test \
 				--disable-gpgsm-test \
 				--disable-gpgconf-test \
+				--disable-parallel-test \
 				--disable-g13-test \
 				--prefix=$(prefix)
 
@@ -479,6 +436,8 @@ gpgme-clean:
 #------------------------------------------------------------------------------#
 # libetpan
 
+EXTERNAL_GIT_REPOS += libetpan|https://github.com/fdik/libetpan.git?HEAD
+
 libetpan/libetpan-android-1.zip: libetpan
 	cd libetpan/build-android; ./build.sh
 
@@ -490,7 +449,7 @@ libetpan-build: libetpan/libetpan-android-1.zip
 clean-assets:
 	rm -rf $(ASSETS)
 
-ASSETS := $(EXTERNAL_ROOT)/../assets
+ASSETS := $(EXTERNAL_ROOT)/assets
 assets: clean-assets
 	# add the new stuff
 	install -d $(ASSETS)
@@ -533,4 +492,42 @@ distclean: clean install-clean
 gitclean: $(EXTERNAL_SRCS_CLEAN)
 	rm -rf $(ASSETS)
 	rm -rf $(EXTERNAL_ROOT)/data
+
+#------------------------------------------------------------------------------#
+# Clone update and archive external projects GIT repos
+# Local clone is in external/$project.git while 
+# slected commit is archived in external/$project
+
+define per_repo_targets
+$(1).git:
+	git clone $(2) $(1).git
+
+$(1).git_update: $(1).git
+	cd $(1).git; git pull
+
+$(1): |$(1).git
+	mkdir $(1)
+	(cd $(1).git; git archive --format=tar $(3)) | tar -C $(1) -x
+
+$(1)_clean: 
+	rm -rf $(1)
+
+EXTERNAL_LOCAL_GITS += $(1).git
+EXTERNAL_LOCAL_GITS_UPDATE += $(1).git_update
+EXTERNAL_SRCS += $(1)
+EXTERNAL_SRCS_CLEAN += $(1)_clean
+endef
+
+define per_repo
+$(call per_repo_targets,\
+    $(1),\
+    $(word 1,$(subst ?, ,$(2))),\
+    $(word 2,$(subst ?, ,$(2))))
+endef
+
+$(foreach repo, $(EXTERNAL_GIT_REPOS), $(eval $(call per_repo,\
+    $(word 1,$(subst |, ,$(repo))),\
+    $(word 2,$(subst |, ,$(repo))))))
+
+git_update: $(EXTERNAL_LOCAL_GITS_UPDATE)
 
