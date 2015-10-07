@@ -14,6 +14,8 @@ APP_ABI ?= armeabi-v7a
 APP_PLATFORM ?= android-14
 PEP_PACKAGE_NAME ?= com.pep.pepjniaaractivity
 
+all: libetpan-build gnupg-install gpgme-install assets
+
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
 
@@ -79,21 +81,6 @@ export PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig
 # workaround for cross-compiling bug in autoconf
 export ac_cv_func_malloc_0_nonnull=yes
 
-.PHONY = clean distclean install-clean \
-	libgpg-error-build libgpg-error-clean libgpg-error-install \
-	libgcrypt-build libgcrypt-clean libgcrypt-install \
-	libassuan-build libassuan-clean libassuan-install \
-	libksba-build libksba-clean libksba-install \
-	gnupg-build gnupg-clean \
-	curl-build curl-clean curl-install \
-	npth-build npth-clean npth-install \
-	assets clean-assets \
-    $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS_CLEAN) \
-	showsetup
-
-all: libetpan-build gnupg-install gpgme-install assets
-
-
 #------------------------------------------------------------------------------#
 # debugging stuff
 
@@ -115,10 +102,10 @@ showsetup:
 
 EXTERNAL_GIT_REPOS += libgpg-error|git://git.gnupg.org/libgpg-error.git?libgpg-error-1.20
 
-libgpg-error/configure: libgpg-error libgpg-error/configure.ac
+libgpg-error/configure: libgpg-error.src.stamp libgpg-error/configure.ac 
 	cd libgpg-error && ./autogen.sh
 
-libgpg-error/Makefile: libgpg-error/configure
+libgpg-error/Makefile: libgpg-error/configure 
 	cd libgpg-error && \
 		./configure \
 			CC="$(CC)" \
@@ -140,7 +127,7 @@ libgpg-error/Makefile: libgpg-error/configure
 	sed -i 's,^finish_cmds=.*,finish_cmds="",' libgpg-error/libtool
 	sed -i 's,^sys_lib_dlsearch_path_spec=.*,sys_lib_dlsearch_path_spec="/lib /usr/lib",' libgpg-error/libtool
 
-libgpg-error/src/.libs/libgpg-error.so: libgpg-error/Makefile
+libgpg-error/src/.libs/libgpg-error.so: libgpg-error/Makefile 
 	$(MAKE) -C libgpg-error
 
 libgpg-error-build: libgpg-error/src/.libs/libgpg-error.so
@@ -151,20 +138,15 @@ $(LOCAL)/lib/libgpg-error.so: libgpg-error/src/.libs/libgpg-error.so
 
 libgpg-error-install: $(LOCAL)/lib/libgpg-error.so
 
-libgpg-error-clean:
-	-$(MAKE) -C libgpg-error clean
-	rm -rf libgpg-error/configure libgpg-error/Makefile
-
-
 #------------------------------------------------------------------------------#
 # libgcrypt
 
 EXTERNAL_GIT_REPOS += libgcrypt|git://git.gnupg.org/libgcrypt.git?libgcrypt-1.6.4
 
-libgcrypt/configure: libgcrypt libgcrypt/configure.ac
+libgcrypt/configure: libgcrypt.src.stamp libgcrypt/configure.ac 
 	cd libgcrypt && ./autogen.sh
 
-libgcrypt/Makefile: libgcrypt/configure
+libgcrypt/Makefile: libgcrypt/configure 
 	cd libgcrypt && \
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
@@ -185,17 +167,12 @@ libgcrypt-build: libgcrypt/src/.libs/libgcrypt.so
 
 libgcrypt-install: $(LOCAL)/lib/libgcrypt.so
 
-libgcrypt-clean:
-	-$(MAKE) -C libgcrypt clean
-	rm -rf libgcrypt/configure libgcrypt/Makefile
-
-
 #------------------------------------------------------------------------------#
 # libassuan
 
 EXTERNAL_GIT_REPOS += libassuan|git://git.gnupg.org/libassuan.git?libassuan-2.3.0
 
-libassuan/configure: libassuan libassuan/configure.ac
+libassuan/configure: libassuan.src.stamp libassuan/configure.ac 
 	cd libassuan && ./autogen.sh && autoreconf --install --force --verbose
 
 libassuan/Makefile: libassuan/configure
@@ -219,17 +196,12 @@ libassuan-build: libassuan/src/.libs/libassuan.so
 
 libassuan-install: $(LOCAL)/lib/libassuan.so
 
-libassuan-clean:
-	-$(MAKE) -C libassuan clean
-	rm -rf libassuan/configure libassuan/Makefile
-
-
 #------------------------------------------------------------------------------#
 # npth
 
 EXTERNAL_GIT_REPOS += npth|git://git.gnupg.org/npth.git?npth-1.2
 
-npth/configure: npth npth/configure.ac
+npth/configure: npth.src.stamp npth/configure.ac 
 	cd npth && ./autogen.sh && autoreconf --install --force --verbose
 
 npth/Makefile: npth/configure
@@ -253,17 +225,12 @@ npth-build: npth/src/.libs/libnpth.so
 
 npth-install: $(LOCAL)/lib/libnpth.so
 
-npth-clean:
-	-$(MAKE) -C npth clean
-	rm -rf npth/Makefile npth/configure
-
-
 #------------------------------------------------------------------------------#
 # libksba
 
 EXTERNAL_GIT_REPOS += libksba|git://git.gnupg.org/libksba.git?libksba-1.3.3
 
-libksba/configure: libksba libksba/configure.ac
+libksba/configure: libksba.src.stamp libksba/configure.ac 
 	cd libksba && ./autogen.sh
 
 libksba/Makefile: $(LOCAL)/lib/libgpg-error.so libksba/configure
@@ -287,17 +254,12 @@ libksba-build: libksba/src/.libs/libksba.so
 
 libksba-install: $(LOCAL)/lib/libksba.so
 
-libksba-clean:
-	-$(MAKE) -C libksba clean
-	rm -rf libksba/configure libksba/Makefile
-
-
 #------------------------------------------------------------------------------#
 # curl
 
 EXTERNAL_GIT_REPOS += curl|https://github.com/bagder/curl?curl-7_45_0
 
-curl/configure: curl curl/configure.ac
+curl/configure: curl.src.stamp curl/configure.ac 
 	cd curl && ./buildconf
 
 curl/Makefile: curl/configure
@@ -333,16 +295,12 @@ curl-build: curl/lib/.libs/libcurl.so
 
 curl-install: $(LOCAL)/lib/libcurl.so
 
-curl-clean:
-	-$(MAKE) -C curl clean
-	rm -f curl/Makefile
-
 #------------------------------------------------------------------------------#
 # gnupg
 
 EXTERNAL_GIT_REPOS += gnupg|git://git.gnupg.org/gnupg.git?gnupg-2.1.8
 
-gnupg/configure: gnupg
+gnupg/configure: gnupg.src.stamp gnupg/configure.ac 
 	cd gnupg && ./autogen.sh
 
 gnupg/Makefile: gnupg/configure
@@ -361,14 +319,14 @@ gnupg/Makefile: gnupg/configure
 				--without-libiconv-prefix \
 				--disable-doc \
 				--disable-g13 \
+				--disable-gpgsm \
 				--disable-ntbtls \
 				--disable-gnutls \
-				--enable-dirmngr-auto-start \
+				--disable-dirmngr \
+				--disable-card-support \
+				--disable-dirmngr-auto-start \
 				--with-agent-pgm=$(prefix)/bin/gpg-agent \
 				--with-pinentry-pgm=$(prefix)/bin/pinentry.sh \
-				--with-dirmngr-pgm=$(prefix)/bin/dirmngr \
-				--with-protect-tool-pgm=$(prefix)/libexec/gpg-protect-tool \
-				--with-scdaemon-pgm=$(prefix)/bin/scdaemon \
 				--prefix=$(prefix)
 
 gnupg/g10/gpg2: $(LOCAL)/lib/libgpg-error.so $(LOCAL)/lib/libgcrypt.so $(LOCAL)/lib/libksba.so $(LOCAL)/lib/libassuan.so $(LOCAL)/lib/libnpth.so $(LOCAL)/lib/libcurl.so gnupg/Makefile
@@ -388,15 +346,12 @@ gnupg-install: $(LOCAL)/bin/gpg2 $(LOCAL)/bin/pinentry.sh
 	install -d $(LOCAL)/var/run/gnupg
 	install -d $(LOCAL)/var/cache/gnupg
 
-gnupg-clean:
-	-$(MAKE) -C gnupg
-
 #------------------------------------------------------------------------------#
 # gpgme
 
 EXTERNAL_GIT_REPOS += gpgme|git://git.gnupg.org/gpgme.git?gpgme-1.6.0
 
-gpgme/configure: gpgme gpgme/configure.ac
+gpgme/configure: gpgme.src.stamp gpgme/configure.ac 
 	cd gpgme && ./autogen.sh 
 
 gpgme/Makefile: gpgme/configure
@@ -429,25 +384,18 @@ gpgme-build: gpgme/src/.libs/libgpgme.so
 
 gpgme-install: $(LOCAL)/bin/gpg2 $(LOCAL)/lib/libgpgme.so
 
-gpgme-clean:
-	-$(MAKE) -C gpgme clean
-	-rm -f gpgme/Makefile gpgme/configure
-
 #------------------------------------------------------------------------------#
 # libetpan
 
 EXTERNAL_GIT_REPOS += libetpan|https://github.com/fdik/libetpan.git?HEAD
 
-libetpan/libetpan-android-1.zip: libetpan
+libetpan/libetpan-android-1.zip: libetpan.src.stamp
 	cd libetpan/build-android; ./build.sh
 
 libetpan-build: libetpan/libetpan-android-1.zip
 
 #------------------------------------------------------------------------------#
 # assets for Android app
-
-clean-assets:
-	rm -rf $(ASSETS)
 
 ASSETS := $(EXTERNAL_ROOT)/assets
 assets: clean-assets
@@ -472,47 +420,30 @@ assets: clean-assets
 
 
 #------------------------------------------------------------------------------#
-# clean
-
-install-clean:
-	rm -rf -- $(LOCAL)
-
-clean: install-clean gnupg-clean curl-clean libksba-clean libassuan-clean npth-clean libgcrypt-clean libgpg-error-clean 
-
-distclean: clean install-clean
-	-$(MAKE) -C gnupg distclean
-	-$(MAKE) -C curl distclean
-	-rm -f curl/configure # their distclean fails to rm this
-	-$(MAKE) -C libksba distclean
-	-$(MAKE) -C npth distclean
-	-$(MAKE) -C libassuan distclean
-	-$(MAKE) -C libgcrypt distclean
-	-$(MAKE) -C libgpg-error distclean
-
-gitclean: $(EXTERNAL_SRCS_CLEAN)
-	rm -rf $(ASSETS)
-	rm -rf $(EXTERNAL_ROOT)/data
-
-#------------------------------------------------------------------------------#
 # Clone update and archive external projects GIT repos
 # Local clone is in external/$project.git while 
 # slected commit is archived in external/$project
 
 define per_repo_targets
-$(1).git:
+$(1).git.stamp:
 	git clone $(2) $(1).git
+	touch $(1).git.stamp
 
-$(1).git_update: $(1).git
+$(1).git_update: $(1).git.stamp
 	cd $(1).git; git pull
+	touch $(1).git.stamp
 
-$(1): |$(1).git
+$(1).src.stamp: $(1).git.stamp
+	rm -rf $(1)
 	mkdir $(1)
 	(cd $(1).git; git archive --format=tar $(3)) | tar -C $(1) -x
+	touch $(1).src.stamp
 
 $(1)_clean: 
 	rm -rf $(1)
+	rm -f $(1).src.stamp
 
-EXTERNAL_LOCAL_GITS += $(1).git
+EXTERNAL_LOCAL_GITS += $(1).git.stamp
 EXTERNAL_LOCAL_GITS_UPDATE += $(1).git_update
 EXTERNAL_SRCS += $(1)
 EXTERNAL_SRCS_CLEAN += $(1)_clean
@@ -529,5 +460,33 @@ $(foreach repo, $(EXTERNAL_GIT_REPOS), $(eval $(call per_repo,\
     $(word 1,$(subst |, ,$(repo))),\
     $(word 2,$(subst |, ,$(repo))))))
 
+git_clones: $(EXTERNAL_LOCAL_GITS)
+
 git_update: $(EXTERNAL_LOCAL_GITS_UPDATE)
+
+#------------------------------------------------------------------------------#
+# clean
+
+clean-assets:
+	rm -rf $(ASSETS)
+
+clean-install:
+	rm -rf $(LOCAL)
+
+clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install
+
+#------------------------------------------------------------------------------#
+
+.PHONY = clean distclean \
+	libgpg-error-build libgpg-error-install \
+	libgcrypt-build libgcrypt-install \
+	libassuan-build libassuan-install \
+	libksba-build libksba-install \
+	gnupg-build  gnupg-install\
+	gpgme-build  gpgme-install\
+	curl-build curl-install \
+	npth-build npth-install \
+	assets clean-assets clean-install \
+    $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS_CLEAN) \
+	showsetup
 
