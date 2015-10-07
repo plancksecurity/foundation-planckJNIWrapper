@@ -22,7 +22,7 @@ buildscript {
     }
 }
 
-apply plugin: 'com.android.library'
+apply plugin: 'android-library'
 
 android {
     compileSdkVersion 21
@@ -130,6 +130,8 @@ android {
     tasks.withType(JavaCompile) {
         compileTask -> compileTask.dependsOn jniBuild
     }
+
+    assemble.dependsOn unzipDeps
 
     task cleanNative(type: Exec) {
         commandLine getNdkBuildCmd(), 'clean'
