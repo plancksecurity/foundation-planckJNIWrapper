@@ -30,6 +30,7 @@ public class AndroidHelper {
     private static native int nativeSetup(String debugflag);
 
     private static File homeDir;
+    public static File gnupgHomeDir;
     private static File optDir;
     private static File versionFile;
     public static File binDir;
@@ -77,7 +78,9 @@ public class AndroidHelper {
         // something like "/data/data/app.package.name/home"
         // pEpEngine use it to find management DB and gpg home
         homeDir = c.getDir("home", Context.MODE_PRIVATE);
+        gnupgHomeDir = new File(homeDir, ".gnupg");
         setenv("HOME", homeDir.getAbsolutePath(), true);
+        setenv("GNUPGHOME", gnupgHomeDir.getAbsolutePath(), true);
 
         // pEpEngine need to find the safe words database
         shareDir = c.getDir("trustwords", Context.MODE_PRIVATE);

@@ -25,8 +25,9 @@ public class GPGAgentService extends Service {
                     " --daemon" +
                     //" --write-env-file" +
                     //" --batch" + 
-                    " --debug-level basic --log-file "
-                    + new File(GPGAgentService.this.getFilesDir(), "gpg-agent.log")).waitFor();
+                    " --homedir " + AndroidHelper.gnupgHomeDir.getAbsolutePath() +
+                    " --debug-level basic --log-file " + 
+                    new File(GPGAgentService.this.getFilesDir(), "gpg-agent.log")).waitFor();
                 Log.i(TAG, "execution terminated");
             } catch (Exception e) {
                 Log.e(TAG, "could not execute process", e);
