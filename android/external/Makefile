@@ -341,9 +341,9 @@ $(LOCAL)/lib/liblibiconv.so: libiconv/lib/.libs/liblibiconv.so
 	$(MAKE) -C libiconv DESTDIR=$(DESTDIR) prefix=$(prefix) install
 	ls -l $(LOCAL)/lib/liblibiconv.so
 
-libiconv-build: libiconv/lib/.libs/liblibiconv.so
+libiconv-build: libiconv/lib/.libs/libiconv.so
 
-libiconv-install: $(LOCAL)/lib/liblibiconv.so
+libiconv-install: $(LOCAL)/lib/libiconv.so
 
 #------------------------------------------------------------------------------#
 # gnupg
@@ -354,6 +354,7 @@ gnupg/configure: gnupg.src.stamp gnupg/configure.ac
 	cd gnupg && ./autogen.sh
 
 gnupg/Makefile: gnupg/configure
+	-patch -N -p1 --reject-file=- gnupg/gl/stdint_.h gnupg_fix_gmulib_stdint_with_bionic.patch
 	cd gnupg && \
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
@@ -364,22 +365,14 @@ gnupg/Makefile: gnupg/configure
 				--with-libassuan-prefix=$(LOCAL) \
 				--with-ksba-prefix=$(LOCAL) \
 				--with-libcurl=$(LOCAL) \
-				--with-libiconv-prefix=$(LOCAL) \
 				--disable-agent \
+				--disable-scdaemon \
 				--disable-ldap \
 				--disable-doc \
-				--disable-g13 \
 				--disable-gpgsm \
-				--disable-ntbtls \
-				--disable-gnutls \
-				--disable-dirmngr \
-				--disable-card-support \
-				--disable-dirmngr-auto-start \
-				--with-agent-pgm=$(prefix)/bin/gpg-agent \
-				--with-pinentry-pgm=$(prefix)/bin/pinentry.sh \
 				--prefix=$(prefix)
 
-gnupg/g10/gpg2: $(LOCAL)/lib/libgpg-error.so $(LOCAL)/lib/libgcrypt.so $(LOCAL)/lib/libksba.so $(LOCAL)/lib/libassuan.so $(LOCAL)/lib/libnpth.so $(LOCAL)/lib/libcurl.so gnupg/Makefile
+gnupg/g10/gpg2: $(LOCAL)/lib/libgpg-error.so $(LOCAL)/lib/libgcrypt.so $(LOCAL)/lib/libksba.so $(LOCAL)/lib/libassuan.so $(LOCAL)/lib/libnpth.so $(LOCAL)/lib/libcurl.so $(LOCAL)/lib/libiconv.so gnupg/Makefile
 	$(MAKE) -C gnupg
 
 $(LOCAL)/bin/gpg2: gnupg/g10/gpg2 gnupg/configure
