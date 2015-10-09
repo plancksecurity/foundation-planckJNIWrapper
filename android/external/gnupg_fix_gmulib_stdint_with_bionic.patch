@@ -1,0 +1,32 @@
+From: Werner Koch <wk [at] gnupg>
+Date: Fri, 27 Jan 2012 17:29:57 +0100
+Subject: [PATCH] gl: Add support for Android to stdint.h replacement.
+
+* gl/stdint_.h: When included from Bionic <sys/types.h>, just include
+the system's <stdint.h>. 
+--- stdint_.h.orig	2015-10-09 21:44:51.443870121 +0200
++++ stdint_.h	2015-10-09 21:53:55.933979218 +0200
+@@ -18,6 +18,16 @@
+ #ifndef _GL_STDINT_H
+ #define _GL_STDINT_H
+ 
++/* On Android (Bionic libc), <sys/types.h> includes this file before
++ having defined 'time_t'. Therefore in this case avoid including
++ other system header files; just include the system's <stdint.h>.
++ Ideally we should test __BIONIC__ here, but it is only defined after
++ <sys/cdefs.h> has been included; hence test __ANDROID__ instead. */
++#if defined __ANDROID__ \
++ && defined _SYS_TYPES_H_ && !defined _SSIZE_T_DEFINED_
++# include_next <stdint.h>
++#else 
++
+ /*
+  * ISO C 99 <stdint.h> for platforms that lack it.
+  * <http://www.opengroup.org/susv3xbd/stdint.h.html>
+@@ -488,4 +498,6 @@
+ 
+ #endif /* !defined __cplusplus || defined __STDC_CONSTANT_MACROS */
+ 
++#endif /* !(defined __ANDROID__ && ...) */ 
++
+ #endif /* _GL_STDINT_H */
