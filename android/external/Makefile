@@ -296,9 +296,59 @@ curl-build: curl/lib/.libs/libcurl.so
 curl-install: $(LOCAL)/lib/libcurl.so
 
 #------------------------------------------------------------------------------#
+# libiconv
+
+# libiconv from git can't autogen with today's debian packages.
+#EXTERNAL_GIT_REPOS += libiconv|git://git.savannah.gnu.org/libiconv.git?5365cc8
+
+# using released package instead
+libiconv-1.14.tar.gz:
+	wget https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+
+libiconv.src.stamp: libiconv-1.14.tar.gz
+	tar xvfz libiconv-1.14.tar.gz
+	mv libiconv-1.14 libiconv
+	touch $@
+
+libiconv-src: libiconv.src.stamp
+
+libiconv-clean:
+	tar xvfz libiconv-1.14.tar.gz
+	rm -rf libiconv
+	rm -rf libiconv.src.stamp
+
+EXTERNAL_SRCS += libiconv-src
+EXTERNAL_SRCS_CLEAN += libiconv-clean
+
+libiconv/Makefile: libiconv.src.stamp
+	-patch -N -p1 --reject-file=- libiconv/m4/libtool.m4 libtool-Add-Android-Linux-support.patch
+	cp config.sub libiconv/build-aux
+	cp config.guess libiconv/build-aux
+	cp config.sub libiconv/libcharset/build-aux
+	cp config.guess libiconv/libcharset/build-aux
+	cd libiconv && \
+		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+			./configure \
+				--enable-maintainer-mode \
+				--host=$(HOST) \
+				--with-gnu-ld \
+				--prefix=$(LOCAL)
+
+libiconv/lib/.libs/liblibiconv.so: libiconv/Makefile
+	$(MAKE) -C libiconv
+
+$(LOCAL)/lib/liblibiconv.so: libiconv/lib/.libs/liblibiconv.so
+	$(MAKE) -C libiconv DESTDIR=$(DESTDIR) prefix=$(prefix) install
+	ls -l $(LOCAL)/lib/liblibiconv.so
+
+libiconv-build: libiconv/lib/.libs/liblibiconv.so
+
+libiconv-install: $(LOCAL)/lib/liblibiconv.so
+
+#------------------------------------------------------------------------------#
 # gnupg
 
-EXTERNAL_GIT_REPOS += gnupg|git://git.gnupg.org/gnupg.git?gnupg-2.1.8
+EXTERNAL_GIT_REPOS += gnupg|git://git.gnupg.org/gnupg.git?gnupg-2.0.29
 
 gnupg/configure: gnupg.src.stamp gnupg/configure.ac 
 	cd gnupg && ./autogen.sh
@@ -313,10 +363,10 @@ gnupg/Makefile: gnupg/configure
 				--with-libgcrypt-prefix=$(LOCAL) \
 				--with-libassuan-prefix=$(LOCAL) \
 				--with-ksba-prefix=$(LOCAL) \
-				--with-npth-prefix=$(LOCAL) \
 				--with-libcurl=$(LOCAL) \
+				--with-libiconv-prefix=$(LOCAL) \
+				--disable-agent \
 				--disable-ldap \
-				--without-libiconv-prefix \
 				--disable-doc \
 				--disable-g13 \
 				--disable-gpgsm \
@@ -439,14 +489,16 @@ $(1).src.stamp: $(1).git.stamp
 	(cd $(1).git; git archive --format=tar $(3)) | tar -C $(1) -x
 	touch $(1).src.stamp
 
-$(1)_clean: 
+$(1)-src: $(1).src.stamp
+
+$(1)-clean: 
 	rm -rf $(1)
 	rm -f $(1).src.stamp
 
 EXTERNAL_LOCAL_GITS += $(1).git.stamp
 EXTERNAL_LOCAL_GITS_UPDATE += $(1).git_update
-EXTERNAL_SRCS += $(1)
-EXTERNAL_SRCS_CLEAN += $(1)_clean
+EXTERNAL_SRCS += $(1)-src
+EXTERNAL_SRCS_CLEAN += $(1)-clean
 endef
 
 define per_repo
@@ -487,6 +539,6 @@ clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install
 	curl-build curl-install \
 	npth-build npth-install \
 	assets clean-assets clean-install \
-    $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS_CLEAN) \
+    $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN) \
 	showsetup
 
