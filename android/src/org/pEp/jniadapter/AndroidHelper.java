@@ -138,7 +138,7 @@ public class AndroidHelper {
                 Log.e(TAG, "Couldn't delete temp dir");
             }
         }
-        optDir.mkdirs();
+        tmpDir.mkdirs();
     }
 
     public static void nativeSetup(Context c) {
