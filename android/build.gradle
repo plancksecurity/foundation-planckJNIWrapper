@@ -120,6 +120,7 @@ android {
 
     // call regular ndk-build(.cmd) script from app directory
     task jniBuild(type: Exec) {
+        // In case ndk-gdb works one day, add: 'NDK_DEBUG=1',
         commandLine getNdkBuildCmd(), 'V=1', 'GPGBUILD='+externalInstallDir.absolutePath
     }
     jniBuild.dependsOn genSources

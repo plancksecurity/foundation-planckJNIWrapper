@@ -34,6 +34,7 @@ public class AndroidHelper {
     private static File optDir;
     private static File versionFile;
     public static File binDir;
+    private static File tmpDir;
         
     // TODO : Increment when needed.
     public static int VERSION_CODE = 0;
@@ -60,6 +61,9 @@ public class AndroidHelper {
         binDir = new File(optDir, "bin");
         setenv("PATH", System.getenv("PATH") + ":" + 
                        binDir.getAbsolutePath(), true);
+
+        tmpDir = new File(c.getCacheDir(), "tmp");
+        setenv("TEMP", tmpDir.getAbsolutePath(), true);
 
         // Tell dynamic loader where to find libs
         String appLibDir = "";
@@ -126,9 +130,17 @@ public class AndroidHelper {
         // Fill version file
         setInstalledVersion(c);
 
+        // Clean and creat tempdir
+        if (tmpDir.exists()){
+            try {
+                FileUtils.deleteDirectory(tmpDir);
+            } catch (IOException e) {
+                Log.e(TAG, "Couldn't delete temp dir");
+            }
+        }
+        optDir.mkdirs();
     }
 
-    
     public static void nativeSetup(Context c) {
         // pre-load libs for pepengine, as
         // android cannot solve lib dependencies on its own
