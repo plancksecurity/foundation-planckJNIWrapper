@@ -145,7 +145,8 @@ public class AndroidHelper {
             already = true;
             assetsSetup(c);
             nativeSetup(c);
-            startDaemonIfNeeded(c);
+            // TODO : remove agent service.
+            //startDaemonIfNeeded(c);
         }
     }
 

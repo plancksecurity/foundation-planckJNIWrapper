@@ -334,12 +334,12 @@ libiconv/Makefile: libiconv.src.stamp
 				--with-gnu-ld \
 				--prefix=$(LOCAL)
 
-libiconv/lib/.libs/liblibiconv.so: libiconv/Makefile
+libiconv/lib/.libs/libconv.so: libiconv/Makefile
 	$(MAKE) -C libiconv
 
-$(LOCAL)/lib/liblibiconv.so: libiconv/lib/.libs/liblibiconv.so
+$(LOCAL)/lib/libiconv.so: libiconv/lib/.libs/libiconv.so
 	$(MAKE) -C libiconv DESTDIR=$(DESTDIR) prefix=$(prefix) install
-	ls -l $(LOCAL)/lib/liblibiconv.so
+	ls -l $(LOCAL)/lib/libiconv.so
 
 libiconv-build: libiconv/lib/.libs/libiconv.so
 
