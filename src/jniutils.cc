@@ -142,7 +142,7 @@ namespace pEp {
                 throw std::invalid_argument(std::string(methodname));
             }
 
-            return env->CallLongMethod(obj, method, o);
+            return env->CallBooleanMethod(obj, method, o);
         }
 
         jint outOfMemory(JNIEnv *env)
