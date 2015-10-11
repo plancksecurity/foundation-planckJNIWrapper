@@ -43,6 +43,7 @@ tstylesheet {
 
             PEP_STATUS status = ::«@name»(session`apply "parm", mode=call``if "@name = 'encrypt_message'" > , PEP_enc_PEP`);
             if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) |`> |`
+                    status < PEP_STATUS_OK |`> |`
                     status >= PEP_TRUSTWORD_NOT_FOUND) {
                 throw_pEp_Exception(env, status);
                 return NULL;
