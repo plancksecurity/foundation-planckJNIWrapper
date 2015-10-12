@@ -140,7 +140,7 @@ android {
     assemble.dependsOn unzipDeps
 
     task jniClean(type: Exec) {
-        commandLine getNdkBuildCmd(), 'clean'
+        commandLine getNdkBuildCmd(), 'clean', 'GPGBUILD='+externalInstallDir.absolutePath
     }
 
     if(buildAutomatic=="true"){
