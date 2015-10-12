@@ -32,11 +32,6 @@ LOCAL_SRC_FILES := $(GPGBUILD)/lib/libksba.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := libnpth
-LOCAL_SRC_FILES := $(GPGBUILD)/lib/libnpth.so
-include $(PREBUILT_SHARED_LIBRARY)
-
-include $(CLEAR_VARS)
 LOCAL_MODULE := openssl
 LOCAL_SRC_FILES := ../build/openssl-android-1/libs/$(TARGET_ARCH_ABI)/libcrypto.a
 #\

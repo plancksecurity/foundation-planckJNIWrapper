@@ -46,13 +46,6 @@ public class AndroidHelper {
 
     private static boolean already = false;
 
-    public static void startDaemonIfNeeded(Context c) {
-        if (!new File(homeDir, "S.gpg-agent").exists()) {
-            Intent service = new Intent(c, GPGAgentService.class);
-            c.startService(service);
-        }
-    }
-
     public static void envSetup(Context c) {
         // "/opt" like dir to unpack GnuPG assets
         optDir = c.getDir("opt", Context.MODE_PRIVATE);
@@ -147,9 +140,12 @@ public class AndroidHelper {
         System.loadLibrary("gpg-error");
         System.loadLibrary("assuan");
         System.loadLibrary("gpgme");
-        // Launch native side setup
-        // TODO disable debug when done
-        nativeSetup( "9:"+new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());
+
+        // With lots of log 
+        // nativeSetup( "9:"+new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());
+
+        // With almost no log 
+        nativeSetup( "0:"+new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());
     }
 
     public static void setup(Context c) {
@@ -157,8 +153,6 @@ public class AndroidHelper {
             already = true;
             assetsSetup(c);
             nativeSetup(c);
-            // TODO : remove agent service.
-            //startDaemonIfNeeded(c);
         }
     }
 

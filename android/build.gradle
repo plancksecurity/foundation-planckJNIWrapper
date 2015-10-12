@@ -77,6 +77,11 @@ android {
         commandLine 'make', 'all', 'PEP_PACKAGE_NAME='+pEpAppPackageName
     }
 
+    task cleanExternal(type:Exec) {
+        workingDir 'external'
+        commandLine 'make', 'clean', 'PEP_PACKAGE_NAME='+pEpAppPackageName
+    }
+
     // call pEpEngine Build 
     task buildpEpEngine(type:Exec) {
         workingDir pEpEngineAndroid
@@ -134,11 +139,18 @@ android {
 
     assemble.dependsOn unzipDeps
 
-    task cleanNative(type: Exec) {
+    task jniClean(type: Exec) {
         commandLine getNdkBuildCmd(), 'clean'
     }
 
-    clean.dependsOn cleanNative
+    if(buildAutomatic=="true"){
+        clean.dependsOn cleanExternal
+        // ndk-build clean complains when .so are missing
+        // ensure jniClean happens before external clean
+        cleanExternal.dependsOn jniClean
+    }else{ 
+        clean.dependsOn jniClean
+    }
 
 }
 

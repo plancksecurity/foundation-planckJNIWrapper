@@ -197,35 +197,6 @@ libassuan-build: libassuan/src/.libs/libassuan.so
 libassuan-install: $(LOCAL)/lib/libassuan.so
 
 #------------------------------------------------------------------------------#
-# npth
-
-EXTERNAL_GIT_REPOS += npth|git://git.gnupg.org/npth.git?npth-1.2
-
-npth/configure: npth.src.stamp npth/configure.ac 
-	cd npth && ./autogen.sh && autoreconf --install --force --verbose
-
-npth/Makefile: npth/configure
-	-patch -N -p1 --reject-file=- npth/m4/libtool.m4 libtool-Add-Android-Linux-support.patch
-	cd npth && \
-		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-			./configure \
-				--enable-maintainer-mode \
-				--host=$(HOST) \
-				--with-gnu-ld \
-				--prefix=$(LOCAL)
-
-npth/src/.libs/libnpth.so: $(LOCAL)/lib/libgpg-error.so npth/Makefile
-	$(MAKE) -C npth
-
-$(LOCAL)/lib/libnpth.so: npth/src/.libs/libnpth.so
-	$(MAKE) -C npth prefix=$(LOCAL) install
-	ls -l $(LOCAL)/lib/libnpth.so*
-
-npth-build: npth/src/.libs/libnpth.so
-
-npth-install: $(LOCAL)/lib/libnpth.so
-
-#------------------------------------------------------------------------------#
 # libksba
 
 EXTERNAL_GIT_REPOS += libksba|git://git.gnupg.org/libksba.git?libksba-1.3.3
@@ -334,7 +305,7 @@ libiconv/Makefile: libiconv.src.stamp
 				--with-gnu-ld \
 				--prefix=$(LOCAL)
 
-libiconv/lib/.libs/libconv.so: libiconv/Makefile
+libiconv/lib/.libs/libiconv.so: libiconv/Makefile
 	$(MAKE) -C libiconv
 
 $(LOCAL)/lib/libiconv.so: libiconv/lib/.libs/libiconv.so
@@ -372,19 +343,16 @@ gnupg/Makefile: gnupg/configure
 				--disable-gpgsm \
 				--prefix=$(prefix)
 
-gnupg/g10/gpg2: $(LOCAL)/lib/libgpg-error.so $(LOCAL)/lib/libgcrypt.so $(LOCAL)/lib/libksba.so $(LOCAL)/lib/libassuan.so $(LOCAL)/lib/libnpth.so $(LOCAL)/lib/libcurl.so $(LOCAL)/lib/libiconv.so gnupg/Makefile
+gnupg/g10/gpg2: $(LOCAL)/lib/libgpg-error.so $(LOCAL)/lib/libgcrypt.so $(LOCAL)/lib/libksba.so $(LOCAL)/lib/libassuan.so $(LOCAL)/lib/libcurl.so $(LOCAL)/lib/libiconv.so gnupg/Makefile
 	$(MAKE) -C gnupg
 
 $(LOCAL)/bin/gpg2: gnupg/g10/gpg2 gnupg/configure
 	$(MAKE) -C gnupg prefix=$(LOCAL) install
 	ls -l $(LOCAL)/bin/gpg2
 
-$(LOCAL)/bin/pinentry.sh: pinentry.sh
-	install $< $(LOCAL)/bin 
-
 gnupg-build: gnupg/g10/gpg2
 
-gnupg-install: $(LOCAL)/bin/gpg2 $(LOCAL)/bin/pinentry.sh
+gnupg-install: $(LOCAL)/bin/gpg2
 	install -d $(LOCAL)/etc/gnupg
 	install -d $(LOCAL)/var/run/gnupg
 	install -d $(LOCAL)/var/cache/gnupg
@@ -530,7 +498,6 @@ clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install
 	gnupg-build  gnupg-install\
 	gpgme-build  gpgme-install\
 	curl-build curl-install \
-	npth-build npth-install \
 	assets clean-assets clean-install \
     $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN) \
 	showsetup
