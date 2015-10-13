@@ -74,7 +74,12 @@ android {
     // call external build (GnuPG, GPGME, etc)
     task buildExternal(type:Exec) {
         workingDir 'external'
-        commandLine 'make', 'all', 'PEP_PACKAGE_NAME='+pEpAppPackageName
+        commandLine 'make', 'build', 'PEP_PACKAGE_NAME='+pEpAppPackageName
+    }
+
+    task externalAssets(type:Exec) {
+        workingDir 'external'
+        commandLine 'make', 'assets', 'PEP_PACKAGE_NAME='+pEpAppPackageName
     }
 
     task cleanExternal(type:Exec) {
@@ -89,9 +94,6 @@ android {
         environment['LIBETPAN_PATH'] = libetpanAndroid.absolutePath
         commandLine './build.sh'
     }
-    if(buildAutomatic=="true"){
-        buildpEpEngine.dependsOn buildExternal
-    }
 
     // unzip some of the dependencies 
     task unzipDeps(type: Copy) {
@@ -100,10 +102,6 @@ android {
         from zipTree(new File(libetpanAndroid, 'dependencies/openssl/openssl-android-1.zip'))
         from zipTree(new File(libetpanAndroid, 'dependencies/cyrus-sasl/cyrus-sasl-android-1.zip'))
         into file("${buildDir}")
-    }
-
-    if(buildAutomatic=="true"){
-        unzipDeps.dependsOn buildpEpEngine
     }
 
     // builds pEpEnginge's system.db 
@@ -118,10 +116,11 @@ android {
         into 'assets'
     }
 
-    if(buildAutomatic=="true"){
-        cpDBAssets.dependsOn buildpEpEngineSystemDB
+    // This ensures that assets are populated before collecting resources.
+    libraryVariants.all { variant ->
+        variant.preBuild.dependsOn(cpDBAssets)
+        variant.preBuild.dependsOn(externalAssets)
     }
-
 
     // call regular ndk-build(.cmd) script from app directory
     task jniBuild(type: Exec) {
@@ -130,26 +129,26 @@ android {
     }
     jniBuild.dependsOn genSources
     jniBuild.dependsOn unzipDeps
-    jniBuild.dependsOn cpDBAssets
 
     // Ensure this is done before java build
     tasks.withType(JavaCompile) {
         compileTask -> compileTask.dependsOn jniBuild
     }
 
-    assemble.dependsOn unzipDeps
-
     task jniClean(type: Exec) {
         commandLine getNdkBuildCmd(), 'clean', 'GPGBUILD='+externalInstallDir.absolutePath
+        ignoreExitValue = true
     }
+    clean.dependsOn jniClean
 
     if(buildAutomatic=="true"){
+
+        buildpEpEngine.dependsOn buildExternal
+        externalAssets.dependsOn buildExternal
+        unzipDeps.dependsOn buildpEpEngine
+        cpDBAssets.dependsOn buildpEpEngineSystemDB
+
         clean.dependsOn cleanExternal
-        // ndk-build clean complains when .so are missing
-        // ensure jniClean happens before external clean
-        cleanExternal.dependsOn jniClean
-    }else{ 
-        clean.dependsOn jniClean
     }
 
 }

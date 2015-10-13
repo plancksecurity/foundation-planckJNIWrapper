@@ -14,7 +14,9 @@ APP_ABI ?= armeabi-v7a
 APP_PLATFORM ?= android-14
 PEP_PACKAGE_NAME ?= com.pep.pepjniaaractivity
 
-all: libetpan-build gnupg-install gpgme-install assets
+all: build assets
+
+build: libetpan-build gnupg-install gpgme-install
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
