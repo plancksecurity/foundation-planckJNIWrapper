@@ -13,13 +13,8 @@ def libetpanAndroid = file('external/libetpan/build-android')
 def pEpEngineAndroid = new File(new File(pEpEngineSrc), 'build-android')
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.0'
-    }
+repositories {
+    jcenter()
 }
 
 apply plugin: 'android-library'
@@ -51,7 +46,7 @@ android {
     }
 
     dependencies {
-        compile fileTree(dir: 'libs', include: '*.jar')
+        compile 'commons-io:commons-io:2.4'
     }
 
     lintOptions {
