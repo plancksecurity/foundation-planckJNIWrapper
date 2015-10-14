@@ -82,6 +82,11 @@ android {
         commandLine 'make', 'clean', 'PEP_PACKAGE_NAME='+pEpAppPackageName
     }
 
+    task cleanExternalAssets(type:Exec) {
+        workingDir 'external'
+        commandLine 'make', 'clean-assets', 'PEP_PACKAGE_NAME='+pEpAppPackageName
+    }
+
     // call pEpEngine Build 
     task buildpEpEngine(type:Exec) {
         workingDir pEpEngineAndroid
@@ -112,10 +117,8 @@ android {
     }
 
     // This ensures that assets are populated before collecting resources.
-    libraryVariants.all { variant ->
-        variant.preBuild.dependsOn(cpDBAssets)
-        variant.preBuild.dependsOn(externalAssets)
-    }
+    preBuild.dependsOn(cpDBAssets)
+    preBuild.dependsOn(externalAssets)
 
     // call regular ndk-build(.cmd) script from app directory
     task jniBuild(type: Exec) {
@@ -135,6 +138,7 @@ android {
         ignoreExitValue = true
     }
     clean.dependsOn jniClean
+    clean.dependsOn cleanExternalAssets
 
     if(buildAutomatic=="true"){
 
