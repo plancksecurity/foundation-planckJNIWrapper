@@ -5,7 +5,7 @@ public class Blob {
     public String mime_type;
     public String filename;
 
-    Blob() {
+    public Blob() {
         mime_type = "application/octet-stream";
     }
 
