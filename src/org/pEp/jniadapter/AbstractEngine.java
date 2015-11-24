@@ -88,7 +88,10 @@ abstract class AbstractEngine implements AutoCloseable {
             return null;
 
         try {
-            return new String(utf8, "UTF-8");
+            byte newUtf8[] = new byte[utf8.length];
+            System.arraycopy(utf8,0,newUtf8,0,utf8.length);
+
+            return new String(newUtf8, "UTF-8");
         }
         catch (UnsupportedEncodingException e) {
             assert false;
