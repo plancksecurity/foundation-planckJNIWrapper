@@ -478,7 +478,8 @@ namespace pEp {
             bloblist_t *_bl;
             for (_bl = bl; _bl && _bl->value; _bl = _bl->next) {
                 jobject o = _from_blob(env, _bl);
-                callBooleanMethod(env, obj, "add", o);
+                if(o)
+                    callBooleanMethod(env, obj, "add", o);
             }
 
             return obj;
