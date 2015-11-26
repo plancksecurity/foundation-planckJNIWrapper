@@ -71,6 +71,13 @@ android {
         }
     }
 
+    ext {
+        pEpEngineZip = new File(pEpEngineAndroid, 'pEpEngine-android-1.zip')
+        libEtPanZip = new File(libetpanAndroid, 'libetpan-android-1.zip')
+        libOpenSslZip = new File(libetpanAndroid, 'dependencies/openssl/openssl-android-1.zip')
+        libSaslZip = new File(libetpanAndroid, 'dependencies/cyrus-sasl/cyrus-sasl-android-1.zip')
+    }
+
     // call source generation makefile target
     task genSources(type:Exec) {
         workingDir '../src'
@@ -106,12 +113,16 @@ android {
         commandLine './build.sh'
     }
 
+    task cleanpEpEngine(type:Exec) {
+        commandLine 'rm', '-f', pEpEngineZip.absolutePath
+    }
+
     // unzip some of the dependencies 
     task unzipDeps(type: Copy) {
-        from zipTree(new File(pEpEngineAndroid, 'pEpEngine-android-1.zip'))
-        from zipTree(new File(libetpanAndroid, 'libetpan-android-1.zip'))
-        from zipTree(new File(libetpanAndroid, 'dependencies/openssl/openssl-android-1.zip'))
-        from zipTree(new File(libetpanAndroid, 'dependencies/cyrus-sasl/cyrus-sasl-android-1.zip'))
+        from zipTree(pEpEngineZip)
+        from zipTree(libEtPanZip)
+        from zipTree(libOpenSslZip)
+        from zipTree(libSaslZip)
         into file("${buildDir}")
     }
 
@@ -160,6 +171,7 @@ android {
         cpDBAssets.dependsOn buildpEpEngineSystemDB
 
         clean.dependsOn cleanExternal
+        clean.dependsOn cleanpEpEngine
     }
 
 }
