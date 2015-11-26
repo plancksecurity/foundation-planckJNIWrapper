@@ -142,10 +142,10 @@ public class AndroidHelper {
         System.loadLibrary("gpgme");
 
         // With lots of log 
-        // nativeSetup( "9:"+new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());
+        nativeSetup( "9:"+new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());
 
         // With almost no log 
-        nativeSetup( "0:"+new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());
+        //nativeSetup( "0:"+new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());
     }
 
     public static void setup(Context c) {

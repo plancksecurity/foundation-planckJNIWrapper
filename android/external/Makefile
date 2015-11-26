@@ -11,12 +11,12 @@
 NDK_ABI ?= arm
 NDK_TOOLCHAIN_VERSION ?= 4.8
 APP_ABI ?= armeabi-v7a
-APP_PLATFORM ?= android-14
+APP_PLATFORM ?= android-15
 PEP_PACKAGE_NAME ?= com.pep.pepjniaaractivity
 
 all: build assets
 
-build: libetpan-build gnupg-install gpgme-install
+build: showsetup libetpan-build gnupg-install gpgme-install
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
@@ -65,7 +65,7 @@ AR := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-ar
 RANLIB := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-ranlib
 
 CFLAGS = -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS)
-LDFLAGS = -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS)
+LDFLAGS = -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie
 
 # change 'release' to 'debug' for unoptimized debug builds
 ifeq ($(APP_ABI),armeabi-v7a)
@@ -286,7 +286,6 @@ libiconv.src.stamp: libiconv-1.14.tar.gz
 libiconv-src: libiconv.src.stamp
 
 libiconv-clean:
-	tar xvfz libiconv-1.14.tar.gz
 	rm -rf libiconv
 	rm -rf libiconv.src.stamp
 
@@ -407,6 +406,8 @@ libetpan/libetpan-android-1.zip: libetpan.src.stamp
 
 libetpan-build: libetpan/libetpan-android-1.zip
 
+libetpan-cleanzip: 
+	rm -f libetpan/libetpan-android-1.zip
 #------------------------------------------------------------------------------#
 # assets for Android app
 
@@ -486,17 +487,18 @@ clean-assets:
 	rm -rf $(ASSETS)
 
 clean-install:
-	rm -rf $(LOCAL)
+	rm -rf $(DESTDIR)/data
 
-clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install
+clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install libetpan-cleanzip
 
 #------------------------------------------------------------------------------#
 
-.PHONY = clean distclean \
+.PHONY = clean clean-install clean-assets libetpan-cleanzip\
 	libgpg-error-build libgpg-error-install \
 	libgcrypt-build libgcrypt-install \
 	libassuan-build libassuan-install \
 	libksba-build libksba-install \
+	libiconv-build libiconv-install \
 	gnupg-build  gnupg-install\
 	gpgme-build  gpgme-install\
 	curl-build curl-install \

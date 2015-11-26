@@ -1,8 +1,5 @@
 // Android pEp JNI adapter Aar gradle build script
 
-
-
-
 import org.apache.tools.ant.taskdefs.condition.Os
 
 def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
@@ -20,19 +17,18 @@ buildscript {
     repositories {
         jcenter()
     }
-
     dependencies {
         classpath 'com.android.tools.build:gradle:1.1.0'
     }
 }
 
-apply plugin: 'android-library'
-
+allprojects {
     repositories {
         jcenter()
     }
-
-
+}
+    
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 21
@@ -153,6 +149,7 @@ android {
         ignoreExitValue = true
     }
     clean.dependsOn jniClean
+    cleanExternal.dependsOn jniClean
     clean.dependsOn cleanExternalAssets
 
     if(buildAutomatic=="true"){
