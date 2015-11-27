@@ -1,0 +1,3 @@
+include ':app'
+include ':pEpJNIAdapter'
+project(':pEpJNIAdapter').projectDir = file("../android")

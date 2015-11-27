@@ -38,6 +38,10 @@ android/local.properties
 android/gradle.properties
 android/pEpJNIAdapter.iml
 
+androidTests/.gradle
+androidTests/local.properties
+androidTests/gradle.properties
+
 syntax: regexp
 android/external/[^.]*
 
