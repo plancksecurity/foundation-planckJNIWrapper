@@ -99,7 +99,8 @@ tstylesheet {
                 return new «$type»(_get«$name»());
             }
             public void set«$name»(«$type» value) {
-                _set«$name»(new «$itype»(value));
+                if(value != null)
+                    _set«$name»(new «$itype»(value));
             }
             
             ||
@@ -116,10 +117,12 @@ tstylesheet {
                 return list;
             }
             public void set«$name»(«$type» value) {
-                «$itype» list = new «$itype»();
-                for («$ename» i : value)
-                    list.add(new _«$ename»(i));
-                _set«$name»(list);
+                if(value != null){
+                    «$itype» list = new «$itype»();
+                    for («$ename» i : value)
+                        list.add(new _«$ename»(i));
+                    _set«$name»(list);
+                }
             }
             
             ||
@@ -132,7 +135,8 @@ tstylesheet {
                 return AbstractEngine.toUTF16(_get«$name»());
             }
             public void set«$name»(«$type» value) {
-                _set«$name»(AbstractEngine.toUTF8(value));
+                if(value != null)
+                    _set«$name»(AbstractEngine.toUTF8(value));
             }
 
             ||
@@ -145,7 +149,8 @@ tstylesheet {
             }
             private native void _set«$name»(int value);
             public void set«$name»(«$itype» value) {
-                _set«$name»(value.value);
+                if(value != null)
+                    _set«$name»(value.value);
             }
 
             ||
