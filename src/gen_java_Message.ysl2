@@ -101,6 +101,8 @@ tstylesheet {
             public void set«$name»(«$type» value) {
                 if(value != null)
                     _set«$name»(new «$itype»(value));
+                else
+                    _set«$name»(null);
             }
             
             ||
@@ -122,6 +124,8 @@ tstylesheet {
                     for («$ename» i : value)
                         list.add(new _«$ename»(i));
                     _set«$name»(list);
+                }else{
+                    _set«$name»(null);
                 }
             }
             
@@ -137,6 +141,8 @@ tstylesheet {
             public void set«$name»(«$type» value) {
                 if(value != null)
                     _set«$name»(AbstractEngine.toUTF8(value));
+                else
+                    _set«$name»(null);
             }
 
             ||
@@ -151,6 +157,8 @@ tstylesheet {
             public void set«$name»(«$itype» value) {
                 if(value != null)
                     _set«$name»(value.value);
+                else
+                    _set«$name»(0);
             }
 
             ||
