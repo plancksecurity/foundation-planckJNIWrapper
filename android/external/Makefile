@@ -12,7 +12,7 @@ NDK_ABI ?= arm
 NDK_TOOLCHAIN_VERSION ?= 4.8
 APP_ABI ?= armeabi-v7a
 APP_PLATFORM ?= android-15
-PEP_PACKAGE_NAME ?= com.pep.pepjniaaractivity
+PEP_PACKAGE_NAME ?= com.pep.k9
 
 all: build assets
 
@@ -327,6 +327,7 @@ gnupg/configure: gnupg.src.stamp gnupg/configure.ac
 
 gnupg/Makefile: gnupg/configure
 	-patch -N -p1 --reject-file=- gnupg/gl/stdint_.h gnupg_fix_gmulib_stdint_with_bionic.patch
+	-patch -N -p1 --reject-file=- gnupg/jnlib/dotlock.c gnupg_use_rename_for_dotlock.patch
 	cd gnupg && \
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
