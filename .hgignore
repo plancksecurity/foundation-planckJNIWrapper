@@ -41,6 +41,12 @@ android/pEpJNIAdapter.iml
 androidTests/.gradle
 androidTests/local.properties
 androidTests/gradle.properties
+androidTests/app/build
+androidTests/build
+androidTests/.idea
+androidTests/androidTests.iml
+androidTests/app/app.iml
+
 
 syntax: regexp
 android/external/[^.]*

@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             try {
-                testPEp();
+                testPEpAliceBobJohn();
+                //testPEpTypes();
             }
             catch (Exception ex) {
                 Log.e("PEPTEST", "##################### TEST Exception ####################",ex);
@@ -72,8 +73,99 @@ public class MainActivity extends AppCompatActivity {
         return new String(buffer);
 
     }
+    public void testPEpTypes() throws pEpException, IOException {
 
-    public void testPEp() throws pEpException, IOException {
+        Engine e;
+
+        Log.d("PEPTEST", "Test loaded");
+
+        e = new Engine();
+
+        Message msg = new Message();
+
+        // Call getter before call to getter
+        assert msg.getDir()==null;
+        assert msg.getId()==null;
+        assert msg.getLongmsg()==null;
+        assert msg.getLongmsg()==null;
+        assert msg.getLongmsgFormatted()==null;
+        assert msg.getAttachments()==null;
+        assert msg.getSent()==null;
+        assert msg.getRecv()==null;
+        assert msg.getFrom()==null;
+        assert msg.getTo()==null;
+        assert msg.getRecvBy()==null;
+        assert msg.getCc()==null;
+        assert msg.getBcc()==null;
+        assert msg.getInReplyTo()==null;
+        assert msg.getReferences()==null;
+        assert msg.getKeywords()==null;
+        assert msg.getComments()==null;
+        assert msg.getOptFields()==null;
+        assert msg.getEncFormat()==null;
+
+        // Call setter with null call to getter
+        msg.setDir(null);
+        assert msg.getDir()==null;
+
+        msg.setId(null);
+        assert msg.getId()==null;
+
+        msg.setShortmsg(null);
+        assert msg.getLongmsg()==null;
+
+        msg.setLongmsg(null);
+        assert msg.getLongmsg()==null;
+
+        msg.setLongmsgFormatted(null);
+        assert msg.getLongmsgFormatted()==null;
+
+        msg.setAttachments(null);
+        assert msg.getAttachments()==null;
+
+        msg.setSent(null);
+        assert msg.getSent()==null;
+
+        msg.setRecv(null);
+        assert msg.getRecv()==null;
+
+        msg.setFrom(null);
+        assert msg.getFrom()==null;
+
+        msg.setTo(null);
+        assert msg.getTo()==null;
+
+        msg.setRecvBy(null);
+        assert msg.getRecvBy()==null;
+
+        msg.setCc(null);
+        assert msg.getCc()==null;
+
+        msg.setBcc(null);
+        assert msg.getBcc()==null;
+
+        msg.setInReplyTo(null);
+        assert msg.getInReplyTo()==null;
+
+        msg.setReferences(null);
+        assert msg.getReferences()==null;
+
+        msg.setKeywords(null);
+        assert msg.getKeywords()==null;
+
+        msg.setComments(null);
+        assert msg.getComments()==null;
+
+        msg.setOptFields(null);
+        assert msg.getOptFields()==null;
+
+        msg.setEncFormat(null);
+        assert msg.getEncFormat()==null;
+
+        Log.d("PEPTEST", "Test finished");
+    }
+
+    public void testPEpAliceBobJohn() throws pEpException, IOException {
         Engine e;
 
         // load
@@ -107,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         // pEp Test Bob (test key, don't use) <pep.test.bob@pep-project.org> 
         //         C9C2EE39
         // 59BFF488C9C2EE39
-        e.importKey(LoadAssetAsString("C9C2EE39_pub.asc"));
+        e.importKey(LoadAssetAsString("0xC9C2EE39.asc"));
 
         Identity bob = new Identity();
         bob.username = "bob Test";
@@ -120,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
         // pEp Test John (test key, don't use) <pep.test.john@pep-project.org>
         //         70DCF575
         // 135CD6D170DCF575
-        e.importKey(LoadAssetAsString("70DCF575_pub.asc"));
+        e.importKey(LoadAssetAsString("0x70DCF575.asc"));
 
         Identity john = new Identity();
         john.username = "john Test";
