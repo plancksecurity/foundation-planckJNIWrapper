@@ -34,6 +34,7 @@ public class AndroidHelper {
     private static File optDir;
     private static File versionFile;
     public static File binDir;
+    public static File libDir;
     private static File tmpDir;
         
     // TODO : Increment when needed.
@@ -59,6 +60,8 @@ public class AndroidHelper {
         setenv("TEMP", tmpDir.getAbsolutePath(), true);
 
         // Tell dynamic loader where to find libs
+        // Add GnuPG's bin to PATH
+        libDir = new File(optDir, "lib");
         String appLibDir = "";
         try {
             appLibDir = new File(c.getApplicationInfo().nativeLibraryDir).getCanonicalPath();
