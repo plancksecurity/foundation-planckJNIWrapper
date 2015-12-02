@@ -39,7 +39,11 @@ abstract class AbstractEngine implements AutoCloseable {
 
         try {
             String _str = Normalizer.normalize(str, Normalizer.Form.NFC);
-            return _str.getBytes("UTF-8");
+            byte _buf[] = _str.getBytes("UTF-8");
+            // F*ck you, Java !
+            byte _cpy[] = new byte[_buf.length];
+            System.arraycopy(_buf,0,_cpy,0,_buf.length);
+            return _cpy;
         }
         catch (UnsupportedEncodingException e) {
             assert false;

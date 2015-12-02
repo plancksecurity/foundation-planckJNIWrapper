@@ -48,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             try {
-                //testPEpAliceBobJohn();
-                testPEpTypes();
+                testPEpAliceBobJohn();
+                //testPEpTypes();
             }
             catch (Exception ex) {
                 Log.e("PEPTEST", "##################### TEST Exception ####################",ex);
@@ -426,34 +426,37 @@ public class MainActivity extends AppCompatActivity {
 
         Vector<Identity> to = new Vector<Identity>();
         to.add(bob);
-        to.add(john);
         msg.setTo(to);
+
+        Vector<Identity> cc = new Vector<Identity>();
+        cc.add(alice);
+        msg.setCc(cc);
+
+        Vector<Identity> bcc = new Vector<Identity>();
+        bcc.add(john);
+        msg.setBcc(bcc);
 
         msg.setShortmsg("hello, world");
         msg.setLongmsg("this is a test");
 
         msg.setDir(Message.Direction.Outgoing);
-        Log.d("PEPTEST", e.outgoing_message_color(msg).toString());
+        assert e.outgoing_message_color(msg).equals(Color.pEpRatingReliable);
 
         Message enc = null;
         enc = e.encrypt_message(msg, null);
 
-        if(enc != null) {
-            Log.d("PEPTEST", "encrypted OK");
-            Log.d("PEPTEST", enc.getLongmsg());
-            Vector<Blob> attachments = enc.getAttachments();
-            Log.d("PEPTEST", e.toUTF16(attachments.get(1).data));
+        assert enc != null;
 
-            Engine.decrypt_message_Return result = null;
-            result = e.decrypt_message(enc);
-            Log.d("PEPTEST", "decrypted");
+        assert enc.getShortmsg().equals("pEp");
+        assert enc.getLongmsg().contains("pep-project.org");
 
-            Log.d("PEPTEST", result.dst.getShortmsg());
-            Log.d("PEPTEST", result.dst.getLongmsg());
-        } else {
-            Log.d("PEPTEST", "NOT encrypted !!!");
+        Vector<Blob> attachments = enc.getAttachments();
+        assert e.toUTF16(attachments.get(1).data).startsWith("-----BEGIN PGP MESSAGE-----");
 
-        }
+        Engine.decrypt_message_Return result = null;
+        result = e.decrypt_message(enc);
+        assert result.dst.getShortmsg().equals("hello, world");
+        assert result.dst.getLongmsg().equals("this is a test");
 
     }
 
