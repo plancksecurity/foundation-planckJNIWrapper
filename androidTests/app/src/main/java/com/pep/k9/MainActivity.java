@@ -439,6 +439,14 @@ public class MainActivity extends AppCompatActivity {
         msg.setShortmsg("hello, world");
         msg.setLongmsg("this is a test");
 
+        {
+            ArrayList<Pair<String, String>> pairs = new ArrayList<Pair<String, String>>();
+            pairs.add(new Pair<String,String>("Received","in time"));
+            pairs.add(new Pair<String,String>("X-Foobaz","of course"));
+
+            msg.setOptFields(pairs);
+        }
+
         msg.setDir(Message.Direction.Outgoing);
         assert e.outgoing_message_color(msg).equals(Color.pEpRatingReliable);
 
@@ -457,6 +465,23 @@ public class MainActivity extends AppCompatActivity {
         result = e.decrypt_message(enc);
         assert result.dst.getShortmsg().equals("hello, world");
         assert result.dst.getLongmsg().equals("this is a test");
+
+        ArrayList<Pair<String, String>> _pairs = result.dst.getOptFields();
+        {
+            String fbz = null;
+            String rcvd = null;
+            for (Pair<String, String> _pair : _pairs) {
+                if (_pair.first.equals("Received"))
+                    rcvd = _pair.second;
+                if (_pair.first.equals("X-Foobaz"))
+                    fbz = _pair.second;
+            }
+            /* FIXME ?
+            assert rcvd!=null && rcvd.equals("in time");
+            assert fbz!=null && fbz.equals("of course");
+            */
+
+        }
 
     }
 
