@@ -107,36 +107,62 @@ tstylesheet {
             
             ||
 
-            when "$ctype = 'identitylist' or $ctype = 'bloblist'"
-            ||
-            `` const "ename", "substring-before(substring-after($type, '<'), '>')";
-            private native «$itype» _get«$name»();
-            private native void _set«$name»(«$itype» value);
-            public «$type» get«$name»() {
-                «$type» list = new «$type»();
-                for (_«$ename» i : _get«$name»())
-                    list.add(new «$ename»(i));
-                return list;
-            }
-            public void set«$name»(«$type» value) {
-                if(value != null){
-                    «$itype» list = new «$itype»();
-                    for («$ename» i : value)
-                        list.add(new _«$ename»(i));
-                    _set«$name»(list);
-                }else{
-                    _set«$name»(null);
-                }
-            }
-            
-            ||
+            when "$ctype = 'identitylist' or $ctype = 'bloblist' or $ctype = 'stringlist' or $ctype = 'stringpairlist'"
+            {
 
+                const "ename", "substring-after(substring($type,1,string-length($type)-1), '<')";
+                const "iename" choose {
+                    when "$ctype = 'stringlist'" > byte[]
+                    when "$ctype = 'stringpairlist'" > Pair<byte[],byte[]>
+                    otherwise > _«$ename»
+                }
+                const "convget" choose {
+                    when "$ctype = 'stringlist'" > AbstractEngine.toUTF16(i)
+                    when "$ctype = 'stringpairlist'" > new Pair<String, String>(AbstractEngine.toUTF16(i.first), AbstractEngine.toUTF16(i.second))
+                    otherwise > new «$ename»(i)
+                }
+                const "convset" choose {
+                    when "$ctype = 'stringlist'" > AbstractEngine.toUTF8(i)
+                    when "$ctype = 'stringpairlist'" > new Pair<byte[],byte[]>(AbstractEngine.toUTF8(i.first), AbstractEngine.toUTF8(i.second))
+                    otherwise > new _«$ename»(i)
+                }
+                ||
+                private native «$itype» _get«$name»();
+                private native void _set«$name»(«$itype» value);
+                public «$type» get«$name»() {
+                    «$itype» glist = _get«$name»();
+                    if(glist != null){
+                        «$type» list = new «$type»();
+                        for («$iename» i : glist)
+                            list.add(«$convget»);
+                        return list;
+                    }
+                    return null;
+                }
+                public void set«$name»(«$type» value) {
+                    if(value != null){
+                        «$itype» list = new «$itype»();
+                        for («$ename» i : value)
+                            list.add(«$convset»);
+                        _set«$name»(list);
+                    }else{
+                        _set«$name»(null);
+                    }
+                }
+                
+                ||
+            }
+ 
             when "$itype != $type"
             ||
             private native «$itype» _get«$name»();
             private native void _set«$name»(«$itype» value);
             public «$type» get«$name»() {
-                return AbstractEngine.toUTF16(_get«$name»());
+                «$itype» res = _get«$name»();
+                if(res != null)
+                    return AbstractEngine.toUTF16(res);
+                else
+                    return null;
             }
             public void set«$name»(«$type» value) {
                 if(value != null)

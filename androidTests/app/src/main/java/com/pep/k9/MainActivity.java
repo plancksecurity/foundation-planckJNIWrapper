@@ -14,7 +14,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Vector;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             try {
-                testPEpAliceBobJohn();
-                //testPEpTypes();
+                //testPEpAliceBobJohn();
+                testPEpTypes();
             }
             catch (Exception ex) {
                 Log.e("PEPTEST", "##################### TEST Exception ####################",ex);
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private String LoadAssetAsString(String fname) throws IOException {
+    private byte[] LoadAssetAsBuffer(String fname) throws IOException {
         AssetManager assetManager = getAssets();
         InputStream input;
 
@@ -69,9 +71,14 @@ public class MainActivity extends AppCompatActivity {
         input.read(buffer);
         input.close();
 
-        // byte buffer into a string
-        return new String(buffer);
+        // byte buffer
+        return buffer;
 
+    }
+
+    private String LoadAssetAsString(String fname) throws IOException {
+        // byte buffer into a string
+        return new String(LoadAssetAsBuffer(fname));
     }
     public void testPEpTypes() throws pEpException, IOException {
 
@@ -82,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
         e = new Engine();
 
         Message msg = new Message();
+
+        // Note : this looks like some target code, ins't it ?
 
         // Call getter before call to getter
         assert msg.getDir()==null;
@@ -103,6 +112,196 @@ public class MainActivity extends AppCompatActivity {
         assert msg.getComments()==null;
         assert msg.getOptFields()==null;
         assert msg.getEncFormat()==null;
+
+        // Call setter with non-null and check getter returns the same
+        msg.setDir(Message.Direction.Outgoing);
+        assert msg.getDir()==Message.Direction.Outgoing;
+
+        msg.setId("1234ID");
+        assert msg.getId().equals("1234ID");
+
+        msg.setShortmsg("ShrtMsg");
+        assert msg.getLongmsg().equals("ShrtMsg");
+
+        msg.setLongmsg("Loooooooooooooonger Message");
+        assert msg.getLongmsg().equals("Loooooooooooooonger Message");
+
+        msg.setLongmsgFormatted("<html/>");
+        assert msg.getLongmsgFormatted().equals("<html/>");
+
+        {
+            Vector<Blob> attachments = new Vector<Blob>();
+            Blob blb = new Blob();
+            blb.data = LoadAssetAsBuffer("0xC9C2EE39.asc");
+            blb.filename = "0xC9C2EE39.asc";
+            attachments.add(blb);
+            msg.setAttachments(attachments);
+            Vector<Blob> detach = msg.getAttachments();
+            Blob dblb = detach.firstElement();
+            assert dblb.filename.equals(blb.filename);
+            assert dblb.data.equals(blb.data);
+        }
+
+        {
+            Date now = new Date();
+
+            msg.setSent(now);
+            assert msg.getSent().equals(now);
+        }
+
+        {
+            Date now = new Date();
+
+            msg.setRecv(now);
+            assert msg.getRecv().equals(now);
+        }
+
+        {
+            Identity alice = new Identity();
+            alice.username = "Alice Test";
+            alice.address = "pep.test.alice@pep-project.org";
+            alice.user_id = "111";
+            alice.me = true;
+            alice.fpr = null;
+
+            msg.setFrom(alice);
+            Identity _alice = msg.getFrom();
+
+            assert _alice.username.equals("Alice Test");
+            assert _alice.address.equals("pep.test.alice@pep-project.org");
+            assert _alice.user_id.equals("111");
+            assert _alice.me == true;
+            assert _alice.fpr == null;
+        }
+
+        {
+            Vector<Identity> rcpts = new Vector<Identity>();
+            Identity alice = new Identity();
+            alice.username = "Alice Test";
+            alice.address = "pep.test.alice@pep-project.org";
+            alice.user_id = "111";
+            alice.me = true;
+            alice.fpr = null;
+            rcpts.add(alice);
+
+            msg.setTo(rcpts);
+            Vector<Identity> _rcpts = msg.getTo();
+            Identity _alice = _rcpts.firstElement();
+
+            assert _alice.username.equals("Alice Test");
+            assert _alice.address.equals("pep.test.alice@pep-project.org");
+            assert _alice.user_id.equals("111");
+            assert _alice.me == true;
+            assert _alice.fpr == null;
+        }
+
+        {
+            Identity alice = new Identity();
+            alice.username = "Alice Test";
+            alice.address = "pep.test.alice@pep-project.org";
+            alice.user_id = "111";
+            alice.me = true;
+            alice.fpr = null;
+
+            msg.setRecvBy(alice);
+            Identity _alice = msg.getRecvBy();
+
+            assert _alice.username.equals("Alice Test");
+            assert _alice.address.equals("pep.test.alice@pep-project.org");
+            assert _alice.user_id.equals("111");
+            assert _alice.me == true;
+            assert _alice.fpr == null;
+        }
+
+        {
+            Vector<Identity> rcpts = new Vector<Identity>();
+            Identity alice = new Identity();
+            alice.username = "Alice Test";
+            alice.address = "pep.test.alice@pep-project.org";
+            alice.user_id = "111";
+            alice.me = true;
+            alice.fpr = null;
+            rcpts.add(alice);
+
+            msg.setCc(rcpts);
+            Vector<Identity> _rcpts = msg.getCc();
+            Identity _alice = _rcpts.firstElement();
+
+            assert _alice.username.equals("Alice Test");
+            assert _alice.address.equals("pep.test.alice@pep-project.org");
+            assert _alice.user_id.equals("111");
+            assert _alice.me == true;
+            assert _alice.fpr == null;
+        }
+
+        {
+            Vector<Identity> rcpts = new Vector<Identity>();
+            Identity alice = new Identity();
+            alice.username = "Alice Test";
+            alice.address = "pep.test.alice@pep-project.org";
+            alice.user_id = "111";
+            alice.me = true;
+            alice.fpr = null;
+            rcpts.add(alice);
+
+            msg.setBcc(rcpts);
+            Vector<Identity> _rcpts = msg.getBcc();
+            Identity _alice = _rcpts.firstElement();
+
+            assert _alice.username.equals("Alice Test");
+            assert _alice.address.equals("pep.test.alice@pep-project.org");
+            assert _alice.user_id.equals("111");
+            assert _alice.me == true;
+            assert _alice.fpr == null;
+        }
+
+        {
+            Vector<String> strvec = new Vector<String>();
+            strvec.add("Blub");
+
+            msg.setInReplyTo(strvec);
+            Vector<String> _strvec = msg.getInReplyTo();
+
+            assert _strvec.firstElement().equals("Blub");
+        }
+
+        {
+            Vector<String> strvec = new Vector<String>();
+            strvec.add("Blub");
+
+            msg.setReferences(strvec);
+            Vector<String> _strvec = msg.getReferences();
+
+            assert _strvec.firstElement().equals("Blub");
+        }
+
+        {
+            Vector<String> strvec = new Vector<String>();
+            strvec.add("Blub");
+
+            msg.setKeywords(strvec);
+            Vector<String> _strvec = msg.getKeywords();
+
+            assert _strvec.firstElement().equals("Blub");
+        }
+
+        msg.setComments("No comment.");
+        assert msg.getComments().equals("No comment.");
+
+        {
+            ArrayList<Pair<String, String>> pairs = new ArrayList<Pair<String, String>>();
+            Pair<String,String> pair = new Pair<String,String>("left","right");
+            pairs.add(pair);
+
+            msg.setOptFields(pairs);
+            ArrayList<Pair<String, String>> _pairs = msg.getOptFields();
+            Pair<String,String> _pair = _pairs.get(0);
+            assert _pair.first.equals("left");
+            assert _pair.second.equals("right");
+        }
+
+        msg.setEncFormat(Message.EncFormat.PEP);
+        assert msg.getEncFormat()==Message.EncFormat.PEP;
 
         // Call setter with null call to getter
         msg.setDir(null);

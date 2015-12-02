@@ -273,6 +273,7 @@ namespace pEp {
             stringpair_list_t *sl = new_stringpair_list(NULL);
             stringpair_list_t *_sl;
             jint i;
+
             for (_sl = sl, i = 0; i < (int) size; i++) {
                 jobject pair = callObjectMethod(env, obj, "get", i);
                 jbyteArray first =

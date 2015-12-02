@@ -4,9 +4,9 @@ public class Pair<F, S> {
     public F first;
     public S second;
 
-    Pair() { }
+    public Pair() { }
 
-    Pair(F f, S s) {
+    public Pair(F f, S s) {
         first = f;
         second = s;
     }
