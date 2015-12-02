@@ -235,7 +235,7 @@ namespace pEp {
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
             assert(constructor);
             jmethodID constructor_pair = env->GetMethodID(clazz_pair, "<init>",
-                    "([B[B)V");
+                    "(Ljava/lang/Object;Ljava/lang/Object;)V");
             assert(constructor_pair);
 
             jobject obj = env->NewObject(clazz, constructor);
@@ -266,9 +266,9 @@ namespace pEp {
                 return NULL;
 
             jfieldID first_id = getFieldID(env, "org/pEp/jniadapter/Pair",
-                    "first", "Ljava/lang/Object");
+                    "first", "Ljava/lang/Object;");
             jfieldID second_id = getFieldID(env, "org/pEp/jniadapter/Pair",
-                    "second", "Ljava/lang/Object");
+                    "second", "Ljava/lang/Object;");
 
             stringpair_list_t *sl = new_stringpair_list(NULL);
             stringpair_list_t *_sl;
