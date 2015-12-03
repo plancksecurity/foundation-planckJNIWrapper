@@ -96,7 +96,12 @@ tstylesheet {
             private native «$itype» _get«$name»();
             private native void _set«$name»(«$itype» value);
             public «$type» get«$name»() {
-                return new «$type»(_get«$name»());
+                «$itype» res = _get«$name»();
+                if(res != null){
+                    return new «$type»(_get«$name»());
+                }else{
+                    return null;
+                }
             }
             public void set«$name»(«$type» value) {
                 if(value != null)

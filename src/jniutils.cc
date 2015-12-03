@@ -165,8 +165,10 @@ namespace pEp {
                 env->ReleaseByteArrayElements(_str, b, 0);
                 return _str;
             }
-            else {
+            else if (str) {
                 return env->NewByteArray(0);
+            } else {
+                return (jbyteArray) NULL;
             }
         }
 
