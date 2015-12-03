@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Vector;
 import java.util.Date;
 
@@ -48,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             try {
-                testPEpAliceBobJohn();
-                //testPEpTypes();
+                //testPEpAliceBobJohn();
+                testPEpTypes();
             }
             catch (Exception ex) {
                 Log.e("PEPTEST", "##################### TEST Exception ####################",ex);
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         // byte buffer into a string
         return new String(LoadAssetAsBuffer(fname));
     }
-    public void testPEpTypes() throws pEpException, IOException {
+    public void testPEpTypes() throws pEpException, IOException, AssertionError {
 
         Engine e;
 
@@ -93,41 +94,41 @@ public class MainActivity extends AppCompatActivity {
         // Note : this looks like some target code, ins't it ?
 
         // Call getter before call to getter
-        assert msg.getDir()==null;
-        assert msg.getId()==null;
-        assert msg.getLongmsg()==null;
-        assert msg.getLongmsg()==null;
-        assert msg.getLongmsgFormatted()==null;
-        assert msg.getAttachments()==null;
-        assert msg.getSent()==null;
-        assert msg.getRecv()==null;
-        assert msg.getFrom()==null;
-        assert msg.getTo()==null;
-        assert msg.getRecvBy()==null;
-        assert msg.getCc()==null;
-        assert msg.getBcc()==null;
-        assert msg.getInReplyTo()==null;
-        assert msg.getReferences()==null;
-        assert msg.getKeywords()==null;
-        assert msg.getComments()==null;
-        assert msg.getOptFields()==null;
-        assert msg.getEncFormat()==null;
+        if(!(msg.getDir()==null)) throw new AssertionError();
+        if(!(msg.getId()==null)) throw new AssertionError();
+        if(!(msg.getLongmsg()==null)) throw new AssertionError();
+        if(!(msg.getLongmsgFormatted()==null)) throw new AssertionError();
+        if(!(msg.getAttachments()==null)) throw new AssertionError();
+        if(!(msg.getSent()==null)) throw new AssertionError();
+        if(!(msg.getRecv()==null)) throw new AssertionError();
+        if(!(msg.getFrom()==null)) throw new AssertionError();
+        if(!(msg.getTo()==null)) throw new AssertionError();
+        if(!(msg.getRecvBy()==null)) throw new AssertionError();
+        if(!(msg.getCc()==null)) throw new AssertionError();
+        if(!(msg.getBcc()==null)) throw new AssertionError();
+        if(!(msg.getInReplyTo()==null)) throw new AssertionError();
+        if(!(msg.getReferences()==null)) throw new AssertionError();
+        if(!(msg.getKeywords()==null)) throw new AssertionError();
+        if(!(msg.getComments()==null)) throw new AssertionError();
+        if(!(msg.getOptFields()==null)) throw new AssertionError();
+        if(!(msg.getEncFormat()==null)) throw new AssertionError();
 
         // Call setter with non-null and check getter returns the same
         msg.setDir(Message.Direction.Outgoing);
-        assert msg.getDir()==Message.Direction.Outgoing;
+        if(!(msg.getDir()==Message.Direction.Outgoing)) throw new AssertionError();
 
         msg.setId("1234ID");
-        assert msg.getId().equals("1234ID");
+        if(!(msg.getId().equals("1234ID"))) throw new AssertionError();
+
 
         msg.setShortmsg("ShrtMsg");
-        assert msg.getLongmsg().equals("ShrtMsg");
+        if(!(msg.getShortmsg().equals("ShrtMsg"))) throw new AssertionError();
 
         msg.setLongmsg("Loooooooooooooonger Message");
-        assert msg.getLongmsg().equals("Loooooooooooooonger Message");
+        if(!(msg.getLongmsg().equals("Loooooooooooooonger Message"))) throw new AssertionError();
 
         msg.setLongmsgFormatted("<html/>");
-        assert msg.getLongmsgFormatted().equals("<html/>");
+        if(!(msg.getLongmsgFormatted().equals("<html/>"))) throw new AssertionError();
 
         {
             Vector<Blob> attachments = new Vector<Blob>();
@@ -138,22 +139,23 @@ public class MainActivity extends AppCompatActivity {
             msg.setAttachments(attachments);
             Vector<Blob> detach = msg.getAttachments();
             Blob dblb = detach.firstElement();
-            assert dblb.filename.equals(blb.filename);
-            assert dblb.data.equals(blb.data);
+            if(!(dblb.filename.equals(blb.filename))) throw new AssertionError();
+            if(!(Arrays.equals(dblb.data, blb.data))) throw new AssertionError();
         }
 
         {
             Date now = new Date();
 
             msg.setSent(now);
-            assert msg.getSent().equals(now);
+            Date res = msg.getSent();
+            if(!(res.equals(now))) throw new AssertionError();
         }
 
         {
             Date now = new Date();
 
             msg.setRecv(now);
-            assert msg.getRecv().equals(now);
+            if(!(msg.getRecv().equals(now))) throw new AssertionError();
         }
 
         {
@@ -167,11 +169,11 @@ public class MainActivity extends AppCompatActivity {
             msg.setFrom(alice);
             Identity _alice = msg.getFrom();
 
-            assert _alice.username.equals("Alice Test");
-            assert _alice.address.equals("pep.test.alice@pep-project.org");
-            assert _alice.user_id.equals("111");
-            assert _alice.me == true;
-            assert _alice.fpr == null;
+            if(!(_alice.username.equals("Alice Test"))) throw new AssertionError();
+            if(!(_alice.address.equals("pep.test.alice@pep-project.org"))) throw new AssertionError();
+            if(!(_alice.user_id.equals("111"))) throw new AssertionError();
+            if(!(_alice.me == true)) throw new AssertionError();
+            if(!(_alice.fpr == null)) throw new AssertionError();
         }
 
         {
@@ -188,11 +190,11 @@ public class MainActivity extends AppCompatActivity {
             Vector<Identity> _rcpts = msg.getTo();
             Identity _alice = _rcpts.firstElement();
 
-            assert _alice.username.equals("Alice Test");
-            assert _alice.address.equals("pep.test.alice@pep-project.org");
-            assert _alice.user_id.equals("111");
-            assert _alice.me == true;
-            assert _alice.fpr == null;
+            if(!(_alice.username.equals("Alice Test"))) throw new AssertionError();
+            if(!(_alice.address.equals("pep.test.alice@pep-project.org"))) throw new AssertionError();
+            if(!(_alice.user_id.equals("111"))) throw new AssertionError();
+            if(!(_alice.me == true)) throw new AssertionError();
+            if(!(_alice.fpr == null)) throw new AssertionError();
         }
 
         {
@@ -206,11 +208,11 @@ public class MainActivity extends AppCompatActivity {
             msg.setRecvBy(alice);
             Identity _alice = msg.getRecvBy();
 
-            assert _alice.username.equals("Alice Test");
-            assert _alice.address.equals("pep.test.alice@pep-project.org");
-            assert _alice.user_id.equals("111");
-            assert _alice.me == true;
-            assert _alice.fpr == null;
+            if(!(_alice.username.equals("Alice Test"))) throw new AssertionError();
+            if(!(_alice.address.equals("pep.test.alice@pep-project.org"))) throw new AssertionError();
+            if(!(_alice.user_id.equals("111"))) throw new AssertionError();
+            if(!(_alice.me == true)) throw new AssertionError();
+            if(!(_alice.fpr == null)) throw new AssertionError();
         }
 
         {
@@ -227,11 +229,11 @@ public class MainActivity extends AppCompatActivity {
             Vector<Identity> _rcpts = msg.getCc();
             Identity _alice = _rcpts.firstElement();
 
-            assert _alice.username.equals("Alice Test");
-            assert _alice.address.equals("pep.test.alice@pep-project.org");
-            assert _alice.user_id.equals("111");
-            assert _alice.me == true;
-            assert _alice.fpr == null;
+            if(!(_alice.username.equals("Alice Test"))) throw new AssertionError();
+            if(!(_alice.address.equals("pep.test.alice@pep-project.org"))) throw new AssertionError();
+            if(!(_alice.user_id.equals("111"))) throw new AssertionError();
+            if(!(_alice.me == true)) throw new AssertionError();
+            if(!(_alice.fpr == null)) throw new AssertionError();
         }
 
         {
@@ -248,11 +250,11 @@ public class MainActivity extends AppCompatActivity {
             Vector<Identity> _rcpts = msg.getBcc();
             Identity _alice = _rcpts.firstElement();
 
-            assert _alice.username.equals("Alice Test");
-            assert _alice.address.equals("pep.test.alice@pep-project.org");
-            assert _alice.user_id.equals("111");
-            assert _alice.me == true;
-            assert _alice.fpr == null;
+            if(!(_alice.username.equals("Alice Test"))) throw new AssertionError();
+            if(!(_alice.address.equals("pep.test.alice@pep-project.org"))) throw new AssertionError();
+            if(!(_alice.user_id.equals("111"))) throw new AssertionError();
+            if(!(_alice.me == true)) throw new AssertionError();
+            if(!(_alice.fpr == null)) throw new AssertionError();
         }
 
         {
@@ -262,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
             msg.setInReplyTo(strvec);
             Vector<String> _strvec = msg.getInReplyTo();
 
-            assert _strvec.firstElement().equals("Blub");
+            if(!(_strvec.firstElement().equals("Blub"))) throw new AssertionError();
         }
 
         {
@@ -272,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
             msg.setReferences(strvec);
             Vector<String> _strvec = msg.getReferences();
 
-            assert _strvec.firstElement().equals("Blub");
+            if(!(_strvec.firstElement().equals("Blub"))) throw new AssertionError();
         }
 
         {
@@ -282,11 +284,11 @@ public class MainActivity extends AppCompatActivity {
             msg.setKeywords(strvec);
             Vector<String> _strvec = msg.getKeywords();
 
-            assert _strvec.firstElement().equals("Blub");
+            if(!(_strvec.firstElement().equals("Blub"))) throw new AssertionError();
         }
 
         msg.setComments("No comment.");
-        assert msg.getComments().equals("No comment.");
+        if(!(msg.getComments().equals("No comment."))) throw new AssertionError();
 
         {
             ArrayList<Pair<String, String>> pairs = new ArrayList<Pair<String, String>>();
@@ -296,75 +298,75 @@ public class MainActivity extends AppCompatActivity {
             msg.setOptFields(pairs);
             ArrayList<Pair<String, String>> _pairs = msg.getOptFields();
             Pair<String,String> _pair = _pairs.get(0);
-            assert _pair.first.equals("left");
-            assert _pair.second.equals("right");
+            if(!(_pair.first.equals("left"))) throw new AssertionError();
+            if(!(_pair.second.equals("right"))) throw new AssertionError();
         }
 
         msg.setEncFormat(Message.EncFormat.PEP);
-        assert msg.getEncFormat()==Message.EncFormat.PEP;
+        if(!(msg.getEncFormat()==Message.EncFormat.PEP)) throw new AssertionError();
 
         // Call setter with null call to getter
         msg.setDir(null);
-        assert msg.getDir()==null;
+        if(!(msg.getDir()==null)) throw new AssertionError();
 
         msg.setId(null);
-        assert msg.getId()==null;
+        if(!(msg.getId()==null)) throw new AssertionError();
 
         msg.setShortmsg(null);
-        assert msg.getLongmsg()==null;
+        if(!(msg.getLongmsg()==null)) throw new AssertionError();
 
         msg.setLongmsg(null);
-        assert msg.getLongmsg()==null;
+        if(!(msg.getLongmsg()==null)) throw new AssertionError();
 
         msg.setLongmsgFormatted(null);
-        assert msg.getLongmsgFormatted()==null;
+        if(!(msg.getLongmsgFormatted()==null)) throw new AssertionError();
 
         msg.setAttachments(null);
-        assert msg.getAttachments()==null;
+        if(!(msg.getAttachments()==null)) throw new AssertionError();
 
         msg.setSent(null);
-        assert msg.getSent()==null;
+        if(!(msg.getSent()==null)) throw new AssertionError();
 
         msg.setRecv(null);
-        assert msg.getRecv()==null;
+        if(!(msg.getRecv()==null)) throw new AssertionError();
 
         msg.setFrom(null);
-        assert msg.getFrom()==null;
+        if(!(msg.getFrom()==null)) throw new AssertionError();
 
         msg.setTo(null);
-        assert msg.getTo()==null;
+        if(!(msg.getTo()==null)) throw new AssertionError();
 
         msg.setRecvBy(null);
-        assert msg.getRecvBy()==null;
+        if(!(msg.getRecvBy()==null)) throw new AssertionError();
 
         msg.setCc(null);
-        assert msg.getCc()==null;
+        if(!(msg.getCc()==null)) throw new AssertionError();
 
         msg.setBcc(null);
-        assert msg.getBcc()==null;
+        if(!(msg.getBcc()==null)) throw new AssertionError();
 
         msg.setInReplyTo(null);
-        assert msg.getInReplyTo()==null;
+        if(!(msg.getInReplyTo()==null)) throw new AssertionError();
 
         msg.setReferences(null);
-        assert msg.getReferences()==null;
+        if(!(msg.getReferences()==null)) throw new AssertionError();
 
         msg.setKeywords(null);
-        assert msg.getKeywords()==null;
+        if(!(msg.getKeywords()==null)) throw new AssertionError();
 
         msg.setComments(null);
-        assert msg.getComments()==null;
+        if(!(msg.getComments()==null)) throw new AssertionError();
 
         msg.setOptFields(null);
-        assert msg.getOptFields()==null;
+        if(!(msg.getOptFields()==null)) throw new AssertionError();
 
         msg.setEncFormat(null);
-        assert msg.getEncFormat()==null;
+        if(!(msg.getEncFormat()==null)) throw new AssertionError();
 
         Log.d("PEPTEST", "Test finished");
     }
 
-    public void testPEpAliceBobJohn() throws pEpException, IOException {
+    public void testPEpAliceBobJohn() throws pEpException, IOException, AssertionError {
         Engine e;
 
         // load
@@ -447,42 +449,90 @@ public class MainActivity extends AppCompatActivity {
             msg.setOptFields(pairs);
         }
 
+        byte[] gif = LoadAssetAsBuffer("spinner.gif");
+        byte[] png = LoadAssetAsBuffer("pep.png");
+        byte[] tbz = LoadAssetAsBuffer("yml2.tar.bz2");
+        {
+            Vector<Blob> attachments = new Vector<Blob>();
+            {
+                Blob b = new Blob();
+                b.data = png;
+                b.filename = "pep.png";
+                b.mime_type = "image/png";
+                attachments.add(b);
+            }
+            {
+                Blob b = new Blob();
+                b.data = gif;
+                b.filename = "spinner.gif";
+                b.mime_type = "image/png";
+                attachments.add(b);
+            }
+            {
+                Blob b = new Blob();
+                b.data = tbz;
+                b.filename = "yml.tar.bz2";
+                b.mime_type = "application/x-gtar";
+                attachments.add(b);
+            }
+            msg.setAttachments(attachments);
+        }
+
         msg.setDir(Message.Direction.Outgoing);
-        assert e.outgoing_message_color(msg).equals(Color.pEpRatingReliable);
+        if(!(e.outgoing_message_color(msg).equals(Color.pEpRatingReliable))) throw new AssertionError();
 
         Message enc = null;
         enc = e.encrypt_message(msg, null);
 
-        assert enc != null;
+        if(!(enc != null)) throw new AssertionError();
 
-        assert enc.getShortmsg().equals("pEp");
-        assert enc.getLongmsg().contains("pep-project.org");
+        if(!(enc.getShortmsg().equals("pEp"))) throw new AssertionError();
+        if(!(enc.getLongmsg().contains("pep-project.org"))) throw new AssertionError();
 
         Vector<Blob> attachments = enc.getAttachments();
-        assert e.toUTF16(attachments.get(1).data).startsWith("-----BEGIN PGP MESSAGE-----");
+        if(!(e.toUTF16(attachments.get(1).data).startsWith("-----BEGIN PGP MESSAGE-----"))) throw new AssertionError();
 
         Engine.decrypt_message_Return result = null;
         result = e.decrypt_message(enc);
-        assert result.dst.getShortmsg().equals("hello, world");
-        assert result.dst.getLongmsg().equals("this is a test");
+        if(!(result.dst.getShortmsg().equals("hello, world"))) throw new AssertionError();
+        if(!(result.dst.getLongmsg().equals("this is a test"))) throw new AssertionError();
 
         ArrayList<Pair<String, String>> _pairs = result.dst.getOptFields();
+        /* FIXME ?
         {
-            String fbz = null;
-            String rcvd = null;
+            byte msk = 0;
             for (Pair<String, String> _pair : _pairs) {
-                if (_pair.first.equals("Received"))
-                    rcvd = _pair.second;
-                if (_pair.first.equals("X-Foobaz"))
-                    fbz = _pair.second;
+                if (_pair.first.equals("Received")) {
+                    if(!(_pair.second.equals("in time"))) throw new AssertionError();
+                    msk |= 1;
+                }else if (_pair.first.equals("X-Foobaz")) {
+                    if(!(_pair.second.equals("of course"))) throw new AssertionError();
+                    msk |= 2;
+                }
             }
-            /* FIXME ?
-            assert rcvd!=null && rcvd.equals("in time");
-            assert fbz!=null && fbz.equals("of course");
-            */
-
+            if(!(msk == 3)) throw new AssertionError();
         }
+        */
 
+        {
+            Vector<Blob> detach = msg.getAttachments();
+            byte msk = 0;
+            for (Blob dblb : detach) {
+                if (dblb.filename.equals("pep.png")) {
+                    if(!(dblb.data.equals(png))) throw new AssertionError();
+                    if(!(dblb.mime_type.equals("image/png"))) throw new AssertionError();
+                    msk |= 1;
+                }else if (dblb.filename.equals("spinner.gif")) {
+                    if(!(dblb.data.equals(gif))) throw new AssertionError();
+                    if(!(dblb.mime_type.equals("image/gif"))) throw new AssertionError();
+                    msk |= 2;
+                }else if (dblb.filename.equals("yml2.tar.bz2")) {
+                    if(!(dblb.data.equals(tbz))) throw new AssertionError();
+                    if(!(dblb.mime_type.equals("application/x-gtar"))) throw new AssertionError();
+                    msk |= 4;
+                }
+            }
+            if(!(msk == 7)) throw new AssertionError();
+        }
     }
-
 }
