@@ -49,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             try {
-                //testPEpAliceBobJohn();
                 testPEpTypes();
+                testPEpAliceBobJohn();
             }
             catch (Exception ex) {
                 Log.e("PEPTEST", "##################### TEST Exception ####################",ex);
@@ -93,7 +93,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Note : this looks like some target code, ins't it ?
 
-        // Call getter before call to getter
+        // TEST : Call getter before call to getter
+
         if(!(msg.getDir()==null)) throw new AssertionError();
         if(!(msg.getId()==null)) throw new AssertionError();
         if(!(msg.getLongmsg()==null)) throw new AssertionError();
@@ -113,7 +114,9 @@ public class MainActivity extends AppCompatActivity {
         if(!(msg.getOptFields()==null)) throw new AssertionError();
         if(!(msg.getEncFormat()==null)) throw new AssertionError();
 
-        // Call setter with non-null and check getter returns the same
+        // TEST : Call setter with non-null
+        // and check getter returns the same
+
         msg.setDir(Message.Direction.Outgoing);
         if(!(msg.getDir()==Message.Direction.Outgoing)) throw new AssertionError();
 
@@ -308,15 +311,16 @@ public class MainActivity extends AppCompatActivity {
         msg.setEncFormat(Message.EncFormat.PEP);
         if(!(msg.getEncFormat()==Message.EncFormat.PEP)) throw new AssertionError();
 
-        // Call setter with null call to getter
+        // TEST : Call setter with null and then call getter
+
         msg.setDir(null);
-        if(!(msg.getDir()==null)) throw new AssertionError();
+        if(!(msg.getDir() == Message.Direction.Incoming)) throw new AssertionError();
 
         msg.setId(null);
         if(!(msg.getId()==null)) throw new AssertionError();
 
         msg.setShortmsg(null);
-        if(!(msg.getLongmsg()==null)) throw new AssertionError();
+        if(!(msg.getShortmsg()==null)) throw new AssertionError();
 
         msg.setLongmsg(null);
         if(!(msg.getLongmsg()==null)) throw new AssertionError();
@@ -364,9 +368,11 @@ public class MainActivity extends AppCompatActivity {
         if(!(msg.getOptFields()==null)) throw new AssertionError();
 
         msg.setEncFormat(null);
-        if(!(msg.getEncFormat()==null)) throw new AssertionError();
+        if(!(msg.getEncFormat()== Message.EncFormat.None)) throw new AssertionError();
 
         Log.d("PEPTEST", "Test finished");
+
+        e.close();
     }
 
     public void testPEpAliceBobJohn() throws pEpException, IOException, AssertionError {
@@ -381,8 +387,7 @@ public class MainActivity extends AppCompatActivity {
         Identity vb = new Identity();
         vb.fpr = "DB4713183660A12ABAFA7714EBE90D44146F62F4";
         String t = e.trustwords(vb);
-        System.out.print("Trustwords: ");
-        Log.d("PEPTEST", t);
+        if(!(t.equals("BAPTISMAL BERTRAND DIVERSITY SCOTSWOMAN TRANSDUCER MIGNONNE CETACEAN AUSTRAL BIPARTISAN JINNAH"))) throw new AssertionError();
 
         // Our test user :
         // pEp Test Alice (test key don't use) <pep.test.alice@pep-project.org>
@@ -468,14 +473,14 @@ public class MainActivity extends AppCompatActivity {
                 Blob b = new Blob();
                 b.data = gif;
                 b.filename = "spinner.gif";
-                b.mime_type = "image/png";
+                b.mime_type = "image/gif";
                 attachments.add(b);
             }
             {
                 Blob b = new Blob();
                 b.data = tbz;
-                b.filename = "yml.tar.bz2";
-                b.mime_type = "application/x-gtar";
+                b.filename = "yml2.tar.bz2";
+                b.mime_type = "application/octet-stream";
                 attachments.add(b);
             }
             msg.setAttachments(attachments);
@@ -490,7 +495,7 @@ public class MainActivity extends AppCompatActivity {
         if(!(enc != null)) throw new AssertionError();
 
         if(!(enc.getShortmsg().equals("pEp"))) throw new AssertionError();
-        if(!(enc.getLongmsg().contains("pep-project.org"))) throw new AssertionError();
+        if(!(enc.getLongmsg().contains("pEp-project.org"))) throw new AssertionError();
 
         Vector<Blob> attachments = enc.getAttachments();
         if(!(e.toUTF16(attachments.get(1).data).startsWith("-----BEGIN PGP MESSAGE-----"))) throw new AssertionError();
@@ -522,20 +527,21 @@ public class MainActivity extends AppCompatActivity {
             byte msk = 0;
             for (Blob dblb : detach) {
                 if (dblb.filename.equals("pep.png")) {
-                    if(!(dblb.data.equals(png))) throw new AssertionError();
+                    if(!(Arrays.equals(dblb.data, png))) throw new AssertionError();
                     if(!(dblb.mime_type.equals("image/png"))) throw new AssertionError();
                     msk |= 1;
                 }else if (dblb.filename.equals("spinner.gif")) {
-                    if(!(dblb.data.equals(gif))) throw new AssertionError();
+                    if(!(Arrays.equals(dblb.data, gif))) throw new AssertionError();
                     if(!(dblb.mime_type.equals("image/gif"))) throw new AssertionError();
                     msk |= 2;
                 }else if (dblb.filename.equals("yml2.tar.bz2")) {
-                    if(!(dblb.data.equals(tbz))) throw new AssertionError();
-                    if(!(dblb.mime_type.equals("application/x-gtar"))) throw new AssertionError();
+                    if(!(Arrays.equals(dblb.data, tbz))) throw new AssertionError();
+                    if(!(dblb.mime_type.equals("application/octet-stream"))) throw new AssertionError();
                     msk |= 4;
                 }
             }
             if(!(msk == 7)) throw new AssertionError();
         }
+        e.close();
     }
 }
