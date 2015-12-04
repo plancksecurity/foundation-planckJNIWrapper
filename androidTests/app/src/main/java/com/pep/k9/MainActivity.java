@@ -148,14 +148,17 @@ public class MainActivity extends AppCompatActivity {
 
             msg.setSent(now);
             Date res = msg.getSent();
-            if(!(res.equals(now))) throw new AssertionError();
+            // Conversion rounds to the second, java's Date is in millisecond.
+            if(!(java.lang.Math.abs(res.getTime() - now.getTime()) < 1000)) throw new AssertionError();
         }
 
         {
             Date now = new Date();
 
             msg.setRecv(now);
-            if(!(msg.getRecv().equals(now))) throw new AssertionError();
+            Date res = msg.getRecv();
+            // Conversion rounds to the second, java's Date is in millisecond.
+            if(!(java.lang.Math.abs(res.getTime() - now.getTime()) < 1000)) throw new AssertionError();
         }
 
         {
