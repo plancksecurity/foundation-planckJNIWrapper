@@ -95,7 +95,12 @@ public class MainActivity extends AppCompatActivity {
 
         // TEST : Call getter before call to getter
 
-        if(!(msg.getDir()==null)) throw new AssertionError();
+        // BUG : if not already instantiated, enum cannot be mapped
+        //       then getDir and getEncFormat return null.
+        Message.Direction _bug1 = Message.Direction.Incoming;
+        Message.EncFormat _bug2 = Message.EncFormat.None;
+
+        if(!(msg.getDir() == Message.Direction.Incoming)) throw new AssertionError();
         if(!(msg.getId()==null)) throw new AssertionError();
         if(!(msg.getLongmsg()==null)) throw new AssertionError();
         if(!(msg.getLongmsgFormatted()==null)) throw new AssertionError();
@@ -112,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         if(!(msg.getKeywords()==null)) throw new AssertionError();
         if(!(msg.getComments()==null)) throw new AssertionError();
         if(!(msg.getOptFields()==null)) throw new AssertionError();
-        if(!(msg.getEncFormat()==null)) throw new AssertionError();
+        if(!(msg.getEncFormat()==Message.EncFormat.None)) throw new AssertionError();
 
         // TEST : Call setter with non-null
         // and check getter returns the same
