@@ -97,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
 
         // BUG : if not already instantiated, enum cannot be mapped
         //       then getDir and getEncFormat return null.
-        Message.Direction _bug1 = Message.Direction.Incoming;
-        Message.EncFormat _bug2 = Message.EncFormat.None;
+        // Message.Direction _bug1 = Message.Direction.Incoming;
+        // Message.EncFormat _bug2 = Message.EncFormat.None;
 
         if(!(msg.getDir() == Message.Direction.Incoming)) throw new AssertionError();
         if(!(msg.getId()==null)) throw new AssertionError();
