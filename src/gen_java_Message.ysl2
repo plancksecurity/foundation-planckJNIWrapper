@@ -64,23 +64,27 @@ tstylesheet {
             `` apply "*", mode=value
             ;
 
-            static class Management {
-                public static final HashMap<Integer, «$jname»> tag =
-                        new HashMap<Integer, «$jname»>();
-            }
-
             public final int value;
 
-            «$jname»(int value) {
+            private static HashMap<Integer, «$jname»> intMap;
+
+            private «$jname»(int value) {
                 this.value = value;
-                fill(value);
             }
 
-            private void fill(int value) {
-                Management.tag.put(value, this);
+            public static «$jname» getByInt(int value){
+                if (intMap == null) {
+                    intMap = new HashMap<Integer, «$jname»>();
+                    for («$jname» s : «$jname».values()) {
+                        intMap.put(s.value, s);
+                    }
+                }
+                if (intMap.containsKey(value)) {
+                    return intMap.get(value);
+                }
+                return null;
             }
         }
-
         ||
     }
 
@@ -182,7 +186,7 @@ tstylesheet {
             ||
             private native int _get«$name»();
             public «$itype» get«$name»() {
-                return «$itype».Management.tag.get(_get«$name»());
+                return «$itype».getByInt(_get«$name»());
             }
             private native void _set«$name»(int value);
             public void set«$name»(«$itype» value) {
