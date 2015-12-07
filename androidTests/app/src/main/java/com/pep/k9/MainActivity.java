@@ -41,9 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action b§§ar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -51,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 testPEpTypes();
                 testPEpAliceBobJohn();
+                testKeyserverLookup();
             }
             catch (Exception ex) {
                 Log.e("PEPTEST", "##################### TEST Exception ####################",ex);
@@ -94,11 +92,6 @@ public class MainActivity extends AppCompatActivity {
         // Note : this looks like some target code, ins't it ?
 
         // TEST : Call getter before call to getter
-
-        // BUG : if not already instantiated, enum cannot be mapped
-        //       then getDir and getEncFormat return null.
-        // Message.Direction _bug1 = Message.Direction.Incoming;
-        // Message.EncFormat _bug2 = Message.EncFormat.None;
 
         if(!(msg.getDir() == Message.Direction.Incoming)) throw new AssertionError();
         if(!(msg.getId()==null)) throw new AssertionError();
@@ -547,6 +540,38 @@ public class MainActivity extends AppCompatActivity {
             }
             if(!(msk == 7)) throw new AssertionError();
         }
+        e.close();
+    }
+
+    public void testKeyserverLookup() throws pEpException, IOException, AssertionError, InterruptedException {
+
+        Engine e;
+
+        Log.d("PEPTEST", "Test loaded");
+
+        e = new Engine();
+
+        e.startKeyserverLookup();
+
+        Identity vb = new Identity();
+        vb.username = "pEpDontAssert";
+        vb.address = "vb@ulm.ccc.de";
+        vb.user_id = "SsI6H9";
+        e.updateIdentity(vb);
+
+        int count = 0;
+        while (count++ < 5000) {
+            Thread.sleep(1);
+        }
+
+        String fpr = e.updateIdentity(vb).fpr;
+
+        Log.d("PEPTEST", "keyserver test fpr");
+        Log.d("PEPTEST", fpr != null ? fpr : "NULL");
+        if(!(fpr != null)) throw new AssertionError();
+
+        e.stopKeyserverLookup();
+
         e.close();
     }
 }

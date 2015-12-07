@@ -117,6 +117,7 @@ public class AndroidHelper {
             optDir.mkdirs();
             assetPathExtract(c, "lib", optDir);
             assetPathExtract(c, "bin", optDir);
+            assetPathExtract(c, "libexec", optDir);
             new File(optDir, "var/cache/gnupg").mkdirs();
             new File(optDir, "var/lib/gnupg").mkdirs();
             new File(optDir, "var/run/gnupg").mkdirs();
