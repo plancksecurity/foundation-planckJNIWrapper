@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 testPEpTypes();
                 testPEpAliceBobJohn();
                 testKeyserverLookup();
+                testKeyGen();
             }
             catch (Exception ex) {
                 Log.e("PEPTEST", "##################### TEST Exception ####################",ex);
@@ -547,7 +548,7 @@ public class MainActivity extends AppCompatActivity {
 
         Engine e;
 
-        Log.d("PEPTEST", "Test loaded");
+        Log.d("PEPTEST", "Test keyserver lookup loaded");
 
         e = new Engine();
 
@@ -571,6 +572,28 @@ public class MainActivity extends AppCompatActivity {
         if(!(fpr != null)) throw new AssertionError();
 
         e.stopKeyserverLookup();
+
+        e.close();
+    }
+
+    public void testKeyGen() throws pEpException, IOException, AssertionError, InterruptedException {
+
+        Engine e;
+
+        Log.d("PEPTEST", "Test gen key loaded");
+
+        e = new Engine();
+
+        Identity newid = new Identity();
+        newid.username = "Name, User Name";
+        newid.address = "test.gen.key@pep-project.org";
+        newid.user_id = "P0l1231";
+
+        String fpr = e.myself(newid).fpr;
+
+        Log.d("PEPTEST", "keygen test fpr");
+        Log.d("PEPTEST", fpr != null ? fpr : "NULL");
+        if(!(fpr != null)) throw new AssertionError();
 
         e.close();
     }
