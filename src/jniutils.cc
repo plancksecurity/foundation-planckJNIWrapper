@@ -167,9 +167,10 @@ namespace pEp {
         {
             if (str && str[0]) {
                 jboolean isCopy;
-                jbyteArray _str = env->NewByteArray(strlen(str));
+                size_t l = strlen(str);
+                jbyteArray _str = env->NewByteArray(l);
                 jbyte *b = env->GetByteArrayElements(_str, &isCopy);
-                strcpy((char *)b, str);
+                memcpy((char *)b, str, l);
                 env->ReleaseByteArrayElements(_str, b, 0);
                 return _str;
             }
