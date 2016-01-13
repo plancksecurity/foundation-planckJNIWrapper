@@ -169,9 +169,7 @@ namespace pEp {
                 jboolean isCopy;
                 size_t l = strlen(str);
                 jbyteArray _str = env->NewByteArray(l);
-                jbyte *b = env->GetByteArrayElements(_str, &isCopy);
-                memcpy((char *)b, str, l);
-                env->ReleaseByteArrayElements(_str, b, 0);
+                env->SetByteArrayRegion(_str, 0, l, (jbyte*)str);
                 return _str;
             }
             else if (str) {
@@ -186,10 +184,10 @@ namespace pEp {
             if (str == NULL)
                 return NULL;
 
-            jboolean isCopy;
-            jbyte *b = env->GetByteArrayElements(str, &isCopy);
-            char *_str = strndup((char *)b, (size_t)env->GetArrayLength(str));
-            env->ReleaseByteArrayElements(str, b, JNI_ABORT);
+            size_t l = env->GetArrayLength(str);
+            char *_str = (char *) calloc(1,l+1);
+            assert(_str);
+            env->GetByteArrayRegion(str, 0, l, (jbyte*)_str);
             return _str;
         }
 
@@ -488,12 +486,8 @@ namespace pEp {
             jobject obj = env->NewObject(clazz, constructor);
             
             jfieldID fieldID = getFieldID(env, classname, "data", "[B");
-            jboolean isCopy;
             jbyteArray _data = env->NewByteArray((jsize) b->size);
-            jbyte *_b = env->GetByteArrayElements(_data, &isCopy);
-            memcpy((char *)_b, b->value, b->size);
-            env->ReleaseByteArrayElements(_data, _b, 0);
-
+            env->SetByteArrayRegion(_data, 0, b->size, (jbyte*)b->value);
             env->SetObjectField(obj, fieldID, reinterpret_cast<jobject>(_data));
 
             _setStringField(env, classname, obj, "mime_type", b->mime_type);
@@ -554,10 +548,7 @@ namespace pEp {
                 char *b = (char *) malloc(size);
                 assert(b);
 
-                jboolean isCopy;
-                jbyte *_b = env->GetByteArrayElements(_data, &isCopy);
-                memcpy(b, _b, size);
-                env->ReleaseByteArrayElements(_data, _b, JNI_ABORT);
+                env->GetByteArrayRegion(_data, 0, size, (jbyte*)b);
 
                 _bl = bloblist_add(_bl, b, size, mime_type, filename);
 
