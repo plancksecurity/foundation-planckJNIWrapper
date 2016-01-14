@@ -92,6 +92,8 @@ namespace pEp {
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);
         basic void keyCompromized(identity ident);
+        basic void keyResetTrust(identity ident);
+        basic void trustPersonalKey(identity ident);
         basic void importKey(string key);
     };
 

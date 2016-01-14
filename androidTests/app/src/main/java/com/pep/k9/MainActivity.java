@@ -501,8 +501,16 @@ public class MainActivity extends AppCompatActivity {
 
         Engine.decrypt_message_Return result = null;
         result = e.decrypt_message(enc);
+
         if(!(result.dst.getShortmsg().equals("hello, world"))) throw new AssertionError();
         if(!(result.dst.getLongmsg().equals("this is a test"))) throw new AssertionError();
+
+        /* TODO
+        if(!(result.color.equals(Color.pEpRatingReliable))) throw new AssertionError();
+        e.trustPersonalKey(john);
+        e.keyResetTrust(john);
+        e.keyCompromized(john);
+        */
 
         ArrayList<Pair<String, String>> _pairs = result.dst.getOptFields();
         /* FIXME ?

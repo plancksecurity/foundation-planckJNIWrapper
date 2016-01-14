@@ -96,6 +96,54 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyCompromized(
     ::key_compromized(session, _ident);
 }
 
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyResetTrust(
+        JNIEnv *env,
+        jobject obj,
+        jobject ident
+    )
+{
+    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+    pEp_identity *_ident = to_identity(env, ident);
+
+    if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
+        if (_ident->me)
+            ::myself(session, _ident);
+        else
+            ::update_identity(session, _ident);
+    }
+
+    if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
+        throw_pEp_Exception(env, PEP_CANNOT_FIND_IDENTITY);
+        return;
+    }
+
+    ::key_reset_trust(session, _ident);
+}
+
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_trustPersonalKey(
+        JNIEnv *env,
+        jobject obj,
+        jobject ident
+    )
+{
+    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+    pEp_identity *_ident = to_identity(env, ident);
+
+    if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
+        if (_ident->me)
+            ::myself(session, _ident);
+        else
+            ::update_identity(session, _ident);
+    }
+
+    if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
+        throw_pEp_Exception(env, PEP_CANNOT_FIND_IDENTITY);
+        return;
+    }
+
+    ::trust_personal_key(session, _ident);
+}
+
 JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_importKey(
         JNIEnv *env,
         jobject obj,
