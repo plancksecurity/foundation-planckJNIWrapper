@@ -46,10 +46,10 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             try {
-                testPEpTypes();
+                //testPEpTypes();
                 testPEpAliceBobJohn();
-                testKeyserverLookup();
-                testKeyGen();
+                //testKeyserverLookup();
+                //testKeyGen();
             }
             catch (Exception ex) {
                 Log.e("PEPTEST", "##################### TEST Exception ####################",ex);
@@ -437,6 +437,29 @@ public class MainActivity extends AppCompatActivity {
         to.add(bob);
         msg.setTo(to);
 
+        msg.setShortmsg("hello, world");
+        msg.setLongmsg("this is a test");
+
+        msg.setDir(Message.Direction.Outgoing);
+        Color aclr = e.outgoing_message_color(msg);
+        if(!(aclr.equals(Color.pEpRatingReliable))) throw new AssertionError();
+
+        e.trustPersonalKey(bob);
+        Color bclr = e.outgoing_message_color(msg);
+        if(!(bclr.equals(Color.pEpRatingTrusted))) throw new AssertionError();
+
+        e.keyResetTrust(bob);
+        Color cclr = e.outgoing_message_color(msg);
+        if(!(cclr.equals(Color.pEpRatingReliable))) throw new AssertionError();
+
+        e.keyCompromized(bob);
+        Color dclr = e.outgoing_message_color(msg);
+        if(!(dclr.equals(Color.pEpRatingUnencrypted))) throw new AssertionError();
+
+        e.keyResetTrust(bob);
+        Color oclr = e.outgoing_message_color(msg);
+        if(!(oclr.equals(Color.pEpRatingReliable))) throw new AssertionError();
+
         Vector<Identity> cc = new Vector<Identity>();
         cc.add(alice);
         msg.setCc(cc);
@@ -444,9 +467,6 @@ public class MainActivity extends AppCompatActivity {
         Vector<Identity> bcc = new Vector<Identity>();
         bcc.add(john);
         msg.setBcc(bcc);
-
-        msg.setShortmsg("hello, world");
-        msg.setLongmsg("this is a test");
 
         {
             ArrayList<Pair<String, String>> pairs = new ArrayList<Pair<String, String>>();
@@ -485,7 +505,6 @@ public class MainActivity extends AppCompatActivity {
             msg.setAttachments(attachments);
         }
 
-        msg.setDir(Message.Direction.Outgoing);
         if(!(e.outgoing_message_color(msg).equals(Color.pEpRatingReliable))) throw new AssertionError();
 
         Message enc = null;
@@ -504,13 +523,6 @@ public class MainActivity extends AppCompatActivity {
 
         if(!(result.dst.getShortmsg().equals("hello, world"))) throw new AssertionError();
         if(!(result.dst.getLongmsg().equals("this is a test"))) throw new AssertionError();
-
-        /* TODO
-        if(!(result.color.equals(Color.pEpRatingReliable))) throw new AssertionError();
-        e.trustPersonalKey(john);
-        e.keyResetTrust(john);
-        e.keyCompromized(john);
-        */
 
         ArrayList<Pair<String, String>> _pairs = result.dst.getOptFields();
         /* FIXME ?
