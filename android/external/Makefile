@@ -403,7 +403,7 @@ gpgme-install: $(LOCAL)/bin/gpg2 $(LOCAL)/lib/libgpgme.so
 EXTERNAL_GIT_REPOS += libetpan|https://github.com/fdik/libetpan.git?HEAD
 
 libetpan/libetpan-android-1.zip: libetpan.src.stamp
-	cd libetpan/build-android; ./build.sh
+	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) ./build.sh
 
 libetpan-build: libetpan/libetpan-android-1.zip
 
@@ -437,7 +437,7 @@ assets: clean-assets
 #------------------------------------------------------------------------------#
 # Clone update and archive external projects GIT repos
 # Local clone is in external/$project.git while 
-# slected commit is archived in external/$project
+# selected commit is archived in external/$project
 
 define per_repo_targets
 $(1).git.stamp:

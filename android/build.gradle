@@ -74,8 +74,8 @@ android {
     ext {
         pEpEngineZip = new File(pEpEngineAndroid, 'pEpEngine-android-1.zip')
         libEtPanZip = new File(libetpanAndroid, 'libetpan-android-1.zip')
-        libOpenSslZip = new File(libetpanAndroid, 'dependencies/openssl/openssl-android-1.zip')
-        libSaslZip = new File(libetpanAndroid, 'dependencies/cyrus-sasl/cyrus-sasl-android-1.zip')
+        // libOpenSslZip = new File(libetpanAndroid, 'dependencies/openssl/openssl-android-1.zip')
+        // libSaslZip = new File(libetpanAndroid, 'dependencies/cyrus-sasl/cyrus-sasl-android-1.zip')
     }
 
     // call source generation makefile target
@@ -121,8 +121,8 @@ android {
     task unzipDeps(type: Copy) {
         from zipTree(pEpEngineZip)
         from zipTree(libEtPanZip)
-        from zipTree(libOpenSslZip)
-        from zipTree(libSaslZip)
+        // from zipTree(libOpenSslZip)
+        // from zipTree(libSaslZip)
         into file("${buildDir}")
     }
 

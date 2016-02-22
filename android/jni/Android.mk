@@ -32,18 +32,23 @@ LOCAL_SRC_FILES := $(GPGBUILD)/lib/libksba.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := openssl
-LOCAL_SRC_FILES := ../build/openssl-android-1/libs/$(TARGET_ARCH_ABI)/libcrypto.a
-#\
-#                   ../build/openssl-android-1/libs/$(TARGET_ARCH_ABI)/libssl.a
-LOCAL_EXPORT_C_INCLUDES := build/openssl-android-1/include
-include $(PREBUILT_STATIC_LIBRARY)
+LOCAL_MODULE := libiconv
+LOCAL_SRC_FILES := $(GPGBUILD)/lib/libiconv.so
+include $(PREBUILT_SHARED_LIBRARY)
 
-include $(CLEAR_VARS)
-LOCAL_MODULE := cyrus-sasl
-LOCAL_SRC_FILES := ../build/cyrus-sasl-android-1/libs/$(TARGET_ARCH_ABI)/libsasl2.a
-LOCAL_EXPORT_C_INCLUDES := build/cyrus-sasl-android-1/include
-include $(PREBUILT_STATIC_LIBRARY)
+# include $(CLEAR_VARS)
+# LOCAL_MODULE := openssl
+# LOCAL_SRC_FILES := ../build/openssl-android-1/libs/$(TARGET_ARCH_ABI)/libcrypto.a
+# #\
+# #                   ../build/openssl-android-1/libs/$(TARGET_ARCH_ABI)/libssl.a
+# LOCAL_EXPORT_C_INCLUDES := build/openssl-android-1/include
+# include $(PREBUILT_STATIC_LIBRARY)
+# 
+# include $(CLEAR_VARS)
+# LOCAL_MODULE := cyrus-sasl
+# LOCAL_SRC_FILES := ../build/cyrus-sasl-android-1/libs/$(TARGET_ARCH_ABI)/libsasl2.a
+# LOCAL_EXPORT_C_INCLUDES := build/cyrus-sasl-android-1/include
+# include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libetpan
@@ -60,8 +65,9 @@ include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
-LOCAL_SHARED_LIBRARIES := libgpgme
-LOCAL_STATIC_LIBRARIES := pEpEngine libetpan openssl cyrus-sasl 
+LOCAL_SHARED_LIBRARIES := libgpgme libiconv
+LOCAL_STATIC_LIBRARIES := pEpEngine libetpan
+# openssl cyrus-sasl 
 LOCAL_CPP_FEATURES += exceptions
 LOCAL_SRC_FILES  := \
 		  ../../src/org_pEp_jniadapter_AbstractEngine.cc \
@@ -71,7 +77,7 @@ LOCAL_SRC_FILES  := \
 		  ../../src/basic_api.cc \
 		  ../../src/jniutils.cc
 LOCAL_C_INCLUDES := ../../src
-#LOCAL_LDLIBS    := -llog
+# LOCAL_LDLIBS    := -llog
 include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
