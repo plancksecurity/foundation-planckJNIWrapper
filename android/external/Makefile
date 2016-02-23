@@ -402,7 +402,7 @@ gpgme-install: $(LOCAL)/bin/gpg2 $(LOCAL)/lib/libgpgme.so
 
 EXTERNAL_GIT_REPOS += libetpan|https://github.com/fdik/libetpan.git?HEAD
 
-libetpan/libetpan-android-1.zip: libetpan.src.stamp
+libetpan/libetpan-android-1.zip: libiconv-install libetpan.src.stamp
 	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) ./build.sh
 
 libetpan-build: libetpan/libetpan-android-1.zip
