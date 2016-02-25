@@ -61,7 +61,6 @@ public class AndroidHelper {
 
         // Tell dynamic loader where to find libs
         // Add GnuPG's bin to PATH
-        libDir = new File(optDir, "lib");
         String appLibDir = "";
         try {
             appLibDir = new File(c.getApplicationInfo().nativeLibraryDir).getCanonicalPath();
@@ -69,12 +68,13 @@ public class AndroidHelper {
             e.printStackTrace();
             appLibDir = new File(c.getApplicationInfo().nativeLibraryDir).getAbsolutePath();
         }
-        File libDir = new File(optDir, "lib"); 
+
+        libDir = new File(optDir, "lib");
         setenv("LD_LIBRARY_PATH", appLibDir + ":" + 
                 libDir.getAbsolutePath() + ":" +
                 System.getenv("LD_LIBRARY_PATH"), true);
 
-        // Set HOME environment variable pointing to 
+        // Set HOME environment variable pointing to 
         // something like "/data/data/app.package.name/home"
         // pEpEngine use it to find management DB and gpg home
         homeDir = c.getDir("home", Context.MODE_PRIVATE);
