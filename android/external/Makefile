@@ -293,7 +293,7 @@ EXTERNAL_SRCS += libiconv-src
 EXTERNAL_SRCS_CLEAN += libiconv-clean
 
 libiconv/Makefile: libiconv.src.stamp
-	-patch -N -p1 --reject-file=- libiconv/m4/libtool.m4 libtool-Add-Android-Linux-support.patch
+	-patch -N -p1 --reject-file=- libiconv/m4/libtool.m4 libtool-Add-Android-Linux-support-iconv.patch
 	cp config.sub libiconv/build-aux
 	cp config.guess libiconv/build-aux
 	cp config.sub libiconv/libcharset/build-aux

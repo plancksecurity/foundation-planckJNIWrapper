@@ -77,7 +77,7 @@ LOCAL_SRC_FILES  := \
 		  ../../src/basic_api.cc \
 		  ../../src/jniutils.cc
 LOCAL_C_INCLUDES := ../../src
-# LOCAL_LDLIBS    := -llog
+LOCAL_LDLIBS    := -llog
 include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)

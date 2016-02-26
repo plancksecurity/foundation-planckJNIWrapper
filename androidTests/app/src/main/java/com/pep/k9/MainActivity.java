@@ -445,6 +445,7 @@ public class MainActivity extends AppCompatActivity {
         if(!(aclr.equals(Color.pEpRatingReliable))) throw new AssertionError();
 
         e.trustPersonalKey(bob);
+/*
         Color bclr = e.outgoing_message_color(msg);
         if(!(bclr.equals(Color.pEpRatingTrusted))) throw new AssertionError();
 
@@ -459,6 +460,7 @@ public class MainActivity extends AppCompatActivity {
         e.keyResetTrust(bob);
         Color oclr = e.outgoing_message_color(msg);
         if(!(oclr.equals(Color.pEpRatingReliable))) throw new AssertionError();
+*/
 
         Vector<Identity> cc = new Vector<Identity>();
         cc.add(alice);
