@@ -301,6 +301,7 @@ libiconv/Makefile: libiconv.src.stamp
 	cd libiconv && \
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
+				--enable-static \
 				--enable-maintainer-mode \
 				--host=$(HOST) \
 				--with-gnu-ld \

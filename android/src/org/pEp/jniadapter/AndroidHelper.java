@@ -144,7 +144,6 @@ public class AndroidHelper {
         System.loadLibrary("gpg-error");
         System.loadLibrary("assuan");
         System.loadLibrary("gpgme");
-        System.loadLibrary("iconv");
 
         // With lots of log 
         nativeSetup( "9:"+new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());

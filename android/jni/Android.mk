@@ -33,8 +33,8 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libiconv
-LOCAL_SRC_FILES := $(GPGBUILD)/lib/libiconv.so
-include $(PREBUILT_SHARED_LIBRARY)
+LOCAL_SRC_FILES := $(GPGBUILD)/lib/libiconv.a
+include $(PREBUILT_STATIC_LIBRARY)
 
 # include $(CLEAR_VARS)
 # LOCAL_MODULE := openssl
