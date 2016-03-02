@@ -56,13 +56,14 @@ namespace pEp {
         pEp_rating_cannot_decrypt > 1
         pEp_rating_have_no_key > 2
         pEp_rating_unencrypted > 3
-        pEp_rating_unreliable > 4
-        pEp_rating_reliable > 5
-        pEp_rating_yellow > 5
-        pEp_rating_trusted > 6
-        pEp_rating_green > 6
-        pEp_rating_trusted_and_anonymized > 7
-        pEp_rating_fully_anonymous > 8
+        pEp_rating_unencrypted_for_some > 4
+        pEp_rating_unreliable > 5
+        pEp_rating_reliable > 6
+        pEp_rating_yellow > 6
+        pEp_rating_trusted > 7
+        pEp_rating_green > 7
+        pEp_rating_trusted_and_anonymized > 8
+        pEp_rating_fully_anonymous > 9
 
         pEp_rating_mistrust > -1
         pEp_rating_red > -1

@@ -441,43 +441,26 @@ public class MainActivity extends AppCompatActivity {
         msg.setLongmsg("this is a test");
 
         msg.setDir(Message.Direction.Outgoing);
+
         Color aclr = e.outgoing_message_color(msg);
         if(!(aclr.equals(Color.pEpRatingReliable))) throw new AssertionError();
 
         e.trustPersonalKey(bob);
-        to = new Vector<Identity>();
-        to.add(bob);
-        msg.setTo(to);
         Color bclr = e.outgoing_message_color(msg);
         if(!(bclr.equals(Color.pEpRatingTrusted))) throw new AssertionError();
 
         e.keyResetTrust(bob);
-        e.updateIdentity(bob);
-        to = new Vector<Identity>();
-        to.add(bob);
-        msg.setTo(to);
         Color cclr = e.outgoing_message_color(msg);
         if(!(cclr.equals(Color.pEpRatingReliable))) throw new AssertionError();
 
-/*
         e.keyCompromized(bob);
-        e.updateIdentity(bob);
-        to = new Vector<Identity>();
-        to.add(bob);
-        msg.setTo(to);
         Color dclr = e.outgoing_message_color(msg);
         if(!(dclr.equals(Color.pEpRatingUnencrypted))) throw new AssertionError();
 
-        FIXME : keyResetTrust do not reset
-
         e.keyResetTrust(bob);
-        e.updateIdentity(bob);
-        to = new Vector<Identity>();
-        to.add(bob);
-        msg.setTo(to);
         Color oclr = e.outgoing_message_color(msg);
         if(!(oclr.equals(Color.pEpRatingReliable))) throw new AssertionError();
-*/
+
         Vector<Identity> cc = new Vector<Identity>();
         cc.add(alice);
         msg.setCc(cc);
