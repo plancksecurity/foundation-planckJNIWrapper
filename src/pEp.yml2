@@ -12,6 +12,8 @@ namespace pEp {
 
         pEp_init_cannot_load_gpgme						> 0x0110
         pEp_init_gpgme_init_failed						> 0x0111
+        pEp_init_no_gpg_home							> 0x0112
+        pEp_init_netpgp_init_failed						> 0x0113
 
         pEp_init_sqlite3_without_mutex					> 0x0120
         pEp_init_cannot_open_db							> 0x0121
@@ -25,6 +27,7 @@ namespace pEp {
         pEp_cannot_set_person							> 0x0381
         pEp_cannot_set_pgp_keypair						> 0x0382
         pEp_cannot_set_identity							> 0x0383
+        pEp_cannot_set_trust                            > 0x0384
         
         pEp_unencrypted									> 0x0400
         pEp_verified									> 0x0401
@@ -41,6 +44,8 @@ namespace pEp {
 
         pEp_cannot_create_key                           > 0x0601
         pEp_cannot_send_key                             > 0x0602
+
+        pEp_phrase_not_found                            > 0x0701
 
         pEp_commit_failed								> 0xff01
 
