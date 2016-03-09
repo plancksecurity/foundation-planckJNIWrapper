@@ -2,22 +2,24 @@ package com.pep.k9;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.support.v7.app.AppCompatActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-
+import android.widget.Button;
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import org.pEp.jniadapter.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Vector;
 import java.util.Date;
+import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,11 +27,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        ButterKnife.bind(this);
         Context c = getApplicationContext();
 
         Log.d("PEPTEST", "Helper Setup");
         AndroidHelper.setup(c);
+    }
+
+    @Bind(R.id.bRunGenKey) Button runGenKey;
+    @OnClick(R.id.bRunGenKey) public void runGenKey() {
+        new RunTestTask().execute();
     }
 
     @Override
@@ -45,19 +52,23 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            try {
-                //testPEpTypes();
-                testPEpAliceBobJohn();
-                //testKeyserverLookup();
-                //testKeyGen();
-            }
-            catch (Exception ex) {
-                Log.e("PEPTEST", "##################### TEST Exception ####################",ex);
-            }
+            new RunTestTask().execute();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void runTest() {
+        try {
+            //testPEpTypes();
+            //testPEpAliceBobJohn();
+            //testKeyserverLookup();
+            testKeyGen();
+        }
+        catch (Exception ex) {
+            Log.e("PEPTEST", "##################### TEST Exception ####################", ex);
+        }
     }
 
     private byte[] LoadAssetAsBuffer(String fname) throws IOException {
@@ -618,4 +629,35 @@ public class MainActivity extends AppCompatActivity {
 
         e.close();
     }
+
+
+    private class RunTestTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            runTest();
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.i("RunTestTask", "onPreExecute " + "Starting test");
+            runGenKey.setText("Running");
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Log.i("RunTestTask", "onPostExecute " + "Ended test");
+            runGenKey.setText("Done");
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+    }
+
 }
