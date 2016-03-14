@@ -95,6 +95,11 @@ namespace pEp {
                 returns Color color
             );
 
+        method identity_color(
+                in identity ident,
+                returns Color color
+            );
+
         basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);

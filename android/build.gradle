@@ -84,6 +84,11 @@ android {
         commandLine 'make', 'gensource'
     }
 
+    task cleanGenSource(type:Exec) {
+        workingDir '../src'
+        commandLine 'make', 'clean'
+    }
+
     // call external build (GnuPG, GPGME, etc)
     task buildExternal(type:Exec) {
         workingDir 'external'
@@ -160,6 +165,7 @@ android {
         ignoreExitValue = true
     }
     clean.dependsOn jniClean
+    jniClean.dependsOn cleanGenSource
     cleanExternal.dependsOn jniClean
     clean.dependsOn cleanExternalAssets
 
