@@ -157,6 +157,8 @@ libgcrypt/Makefile: libgcrypt/configure
 				--with-gpg-error-prefix=$(LOCAL) \
 				--prefix=$(LOCAL)
 	-patch -N -p1 --reject-file=- libgcrypt/tests/random.c libgcrypt-disable-hanging-random-test.patch
+	# force use of /dev/urandom
+	-sed -i 's/NAME_OF_DEV_RANDOM/NAME_OF_DEV_URANDOM/' libgcrypt/random/rndlinux.c
 
 libgcrypt/src/.libs/libgcrypt.so: $(LOCAL)/lib/libgpg-error.so libgcrypt/Makefile
 	$(MAKE) -C libgcrypt
