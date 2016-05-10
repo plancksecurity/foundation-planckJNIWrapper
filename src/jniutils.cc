@@ -409,13 +409,9 @@ namespace pEp {
             pEp_identity *ident = new_identity(NULL, NULL, NULL, NULL);
 
             ident->address = _getStringField(env, classname, obj, "address");
-            ident->address_size = ident->address ?strlen(ident->address) : 0;
             ident->fpr = _getStringField(env, classname, obj, "fpr");
-            ident->fpr_size = ident->fpr ? strlen(ident->fpr) : 0;
             ident->user_id = _getStringField(env, classname, obj, "user_id");
-            ident->user_id_size = ident->user_id ? strlen(ident->user_id) : 0;
             ident->username = _getStringField(env, classname, obj, "username");
-            ident->username_size = ident->username ? strlen(ident->username) : 0;
 
             jfieldID comm_type_id = getFieldID(env, classname, "comm_type", "I");
             ident->comm_type = (PEP_comm_type) (int) env->GetIntField(obj, comm_type_id);
