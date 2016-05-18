@@ -11,6 +11,7 @@ function "toC" {
         when "$type='bloblist'" > bloblist_t
         when "$type='stringpairlist'" > stringpair_list_t
         when "$type='direction'" > PEP_msg_direction
+        when "$type='bool'" > bool
 
         otherwise value "$type";
     }

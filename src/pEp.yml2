@@ -100,13 +100,25 @@ namespace pEp {
                 returns Color color
             );
 
-        basic string trustwords(identity ident);
+	method blacklist_is_listed(
+		in string fpr,
+		returns bool listed
+		);
+	
+	method blacklist_retrive(
+		returns stringlist blacklist
+		);
+	basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);
         basic void keyCompromized(identity ident);
         basic void keyResetTrust(identity ident);
         basic void trustPersonalKey(identity ident);
         basic void importKey(string key);
+	basic void blacklist_add(string fpr);
+	basic void blacklist_delete(string fpr);
+	basic void config_passive_mode(bool enable)
+
     };
 
     struct message {
