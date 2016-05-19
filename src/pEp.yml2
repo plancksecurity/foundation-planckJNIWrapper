@@ -111,9 +111,9 @@ namespace pEp {
         basic void keyResetTrust(identity ident);
         basic void trustPersonalKey(identity ident);
         basic void importKey(string key);
-        basic void blacklist_add(string fpr);
-        basic void blacklist_delete(string fpr);
-        basic bool blacklist_is_listed(string fpr);
+        // basic void blacklist_add(string fpr);
+        // basic void blacklist_delete(string fpr);
+        // basic bool blacklist_is_listed(string fpr);
         basic void config_passive_mode(bool enable);
     
     };

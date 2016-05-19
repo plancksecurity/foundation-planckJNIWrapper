@@ -175,12 +175,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_config_passive_mode(
 {
     PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
 
-    PEP_STATUS status = ::config_passive_mode(session, (bool)enable);
-    if (status != PEP_STATUS_OK) {
-        throw_pEp_Exception(env, status);
-        return;
-    }
-
+    ::config_passive_mode(session, (bool)enable);
 }
 
 } // extern "C"
