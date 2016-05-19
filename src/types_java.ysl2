@@ -34,7 +34,7 @@ function "toJavaDeclare" {
         when "$type='stringpairlist'" | # cannot declare "stringpairlist"
         when "$type='message'" > Message
         when "$type='Color'" > Color
-        when "$type='bool'" > Boolean
+        //when "$type='bool'" > boolean
 
         otherwise error | # cannot declare "«$type»"
     }
@@ -45,6 +45,7 @@ function "toSig" {
 
     choose {
         when "$type='string'" error | # cannot declare "string"
+        when "$type='bool'" > Z
         otherwise {
             > L
             choose {
@@ -75,6 +76,7 @@ function "toIntermediate" {
         when "$type='identity'" > _Identity
         when "$type='identitylist'" > Vector<_Identity>
         when "$type='bloblist'" > Vector<_Blob>
+        when "$type='bool'" > boolean
 
         otherwise call "toJava" with "type", "$type";
     }

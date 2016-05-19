@@ -40,6 +40,8 @@ tstylesheet {
         choose {
             when "$ptype = 'string'"
             |> «$pitype» _«$pname» = «$pname».getBytes();
+            when "$ptype = 'bool'"
+            |> «$pitype» _«$pname» = «$pname».booleanValue();
             otherwise
             |> «$pitype» _«$pname» = new «$pitype»(«$pname»);
         }
