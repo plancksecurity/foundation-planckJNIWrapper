@@ -100,14 +100,11 @@ namespace pEp {
                 returns Color color
             );
 
-	method blacklist_is_listed(
-		in string fpr,
-		returns bool listed
-		);
 	
-	method blacklist_retrive(
-		returns stringlist blacklist
-		);
+//	method blacklist_retrive(
+//		creates stringlist blacklist
+//		);
+
 	basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);
@@ -117,7 +114,8 @@ namespace pEp {
         basic void importKey(string key);
 	basic void blacklist_add(string fpr);
 	basic void blacklist_delete(string fpr);
-	basic void config_passive_mode(bool enable)
+	basic void config_passive_mode(bool enable);
+	basic bool blacklist_is_listed(string fpr);
 
     };
 
