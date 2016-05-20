@@ -50,7 +50,7 @@ tstylesheet {
                 |> «@name»(_«$pname»);
             when "@type = 'identity'"
                 |> return new Identity(«@name»(_«$pname»));
-            when "@type = 'identity'"
+            when "@type = 'bool'"
                 |> return new Boolean(«@name»(_«$pname»));
             otherwise
                 |> return AbstractEngine.toUTF16(«@name»(_«$pname»));

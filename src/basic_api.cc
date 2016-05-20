@@ -1,4 +1,5 @@
 #include <pEp/keymanagement.h>
+#include <pEp/blacklist.h>
 
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
@@ -176,6 +177,74 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_config_1passive_1mode(
     PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
 
     ::config_passive_mode(session, (bool)enable);
+}
+
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1add(
+        JNIEnv *env,
+        jobject obj,
+        jbyteArray fpr
+    )
+{
+    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+    char *_fpr = to_string(env, fpr);
+
+    if(_fpr == NULL){
+        throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
+        return;
+    }
+    
+    PEP_STATUS status = ::blacklist_add(session, _fpr);
+    if (status != PEP_STATUS_OK) {
+        throw_pEp_Exception(env, status);
+        return;
+    }
+
+}
+
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1delete(
+        JNIEnv *env,
+        jobject obj,
+        jbyteArray fpr
+    )
+{
+    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+    char *_fpr = to_string(env, fpr);
+
+    if(_fpr == NULL){
+        throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
+        return;
+    }
+    
+    PEP_STATUS status = ::blacklist_add(session, _fpr);
+    if (status != PEP_STATUS_OK) {
+        throw_pEp_Exception(env, status);
+        return;
+    }
+
+}
+
+JNIEXPORT jboolean JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1is_1listed(
+        JNIEnv *env,
+        jobject obj,
+        jbyteArray fpr
+    )
+{
+    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+    char *_fpr = to_string(env, fpr);
+    bool _listed = 0;
+
+    if(_fpr == NULL){
+        throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
+        return 0;
+    }
+    
+    PEP_STATUS status = ::blacklist_is_listed(session, _fpr, &_listed);
+    if (status != PEP_STATUS_OK) {
+        throw_pEp_Exception(env, status);
+        return 0;
+    }
+
+    return (jboolean)_listed;
 }
 
 } // extern "C"
