@@ -167,7 +167,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_importKey(
 
 }
 
-JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_config_passive_mode(
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_config_1passive_1mode(
         JNIEnv *env,
         jobject obj,
         jboolean enable
