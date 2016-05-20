@@ -23,7 +23,7 @@ function "toJavaDeclare" {
     param "type";
 
     choose {
-        when "$type='stringlist'" error | # cannot declare "stringlist"
+        when "$type='stringlist'" > Vector<String>
         when "$type='string'" error | # cannot declare "string"
         when "$type='message'" > Message
         when "$type='identity'" > _Identity

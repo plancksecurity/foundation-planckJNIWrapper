@@ -11,6 +11,7 @@ tstylesheet {
         ||
         #include <assert.h>
         #include <pEp/message_api.h>
+        #include <pEp/blacklist.h>
         #include "org_pEp_jniadapter_«@name».h"
         #include "throw_pEp_exception.hh"
         #include "jniutils.hh"
@@ -81,6 +82,11 @@ tstylesheet {
                     with "jnitype", "'jlong'";
                     with "retname", "$retname";
                     with "sig", "'(J)V'";
+                }
+
+                when "$rettype = 'stringlist'" apply "parm[returns|creates]", mode=return{
+                    with "name", "'result'";
+                    with "retname", "$retname";
                 }
 
                 otherwise error | # not implemented: return type "«$rettype»"

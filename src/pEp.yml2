@@ -100,9 +100,9 @@ namespace pEp {
                 returns Color color
             );
 
-        // method blacklist_retrive(
-        //	    creates stringlist blacklist
-        //    );
+        method blacklist_retrieve(
+                returns stringlist blacklist
+            );
 
         basic string trustwords(identity ident);
         basic identity myself(identity ident);
