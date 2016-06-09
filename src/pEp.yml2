@@ -56,7 +56,7 @@ namespace pEp {
         pEp_unknown_error								> -1
     };
 
-    enum color {
+    enum Color {
         pEp_rating_undefined > 0
         pEp_rating_cannot_decrypt > 1
         pEp_rating_have_no_key > 2
@@ -76,6 +76,10 @@ namespace pEp {
         pEp_rating_under_attack > -3
     };
 
+    enum DecryptFlags {
+        pEp_decrypt_flag_own_private_key > 1
+    };
+
     interface Engine {
         method encrypt_message(
                 in message src,
@@ -87,7 +91,8 @@ namespace pEp {
                 in message src,
                 creates message dst,
                 creates stringlist keylist,
-                returns Color color
+                returns Color color,
+                returns DecryptFlags flags
             );
 
         method outgoing_message_color(

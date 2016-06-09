@@ -12,6 +12,8 @@ function "toC" {
         when "$type='stringpairlist'" > stringpair_list_t
         when "$type='direction'" > PEP_msg_direction
         when "$type='bool'" > bool
+        when "$type='DecryptFlags'" > PEP_decrypt_flags_t
+        when "$type='Color'" > PEP_color
 
         otherwise value "$type";
     }

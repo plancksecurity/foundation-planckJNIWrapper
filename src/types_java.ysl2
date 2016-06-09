@@ -60,6 +60,7 @@ function "toSig" {
                 when "$type='stringpairlist'" > java/util/ArrayList
                 when "$type='message'" > org/pEp/jniadapter/Message
                 when "$type='Color'" > org/pEp/jniadapter/Color
+                when "$type='DecryptFlags'" > org/pEp/jniadapter/DecryptFlags
             }
             > ;
         }
@@ -77,6 +78,7 @@ function "toIntermediate" {
         when "$type='identitylist'" > Vector<_Identity>
         when "$type='bloblist'" > Vector<_Blob>
         when "$type='bool'" > boolean
+        when "$type='DecryptFlags'" > DecryptFlags
 
         otherwise call "toJava" with "type", "$type";
     }

@@ -160,7 +160,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_importKey(
     }
 
     
-    PEP_STATUS status = ::import_key(session, _key, strlen(_key));
+    PEP_STATUS status = ::import_key(session, _key, strlen(_key), NULL);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
         return;

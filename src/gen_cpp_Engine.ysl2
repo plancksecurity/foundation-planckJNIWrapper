@@ -222,8 +222,8 @@ tstylesheet {
         const "name", "name(*[3])";
 
         choose {
-            when "$type = 'Color'"
-                | PEP_color _«$name»;
+            when "ancestor::namespace/child::enum[@name=$type]"
+                | √$type _«$name»;
             otherwise
                 | √$type *_«$name»;
         }
