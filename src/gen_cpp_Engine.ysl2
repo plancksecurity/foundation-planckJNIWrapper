@@ -39,10 +39,20 @@ tstylesheet {
         {
             PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
 
-            `` apply "parm[in]", mode=in
-            `` apply "parm[creates|returns]", mode=out
+        ||
 
-            PEP_STATUS status = ::«@name»(session`apply "parm", mode=call``if "@name = 'encrypt_message'" > , PEP_enc_PEP`);
+        apply "parm[in]", mode=in;
+        choose {
+            when "count(parm[returns|creates]) > 1" {
+                apply "parm[creates|returns]", mode=out
+            }
+            when "count(parm[returns|creates]) = 1" {
+                apply "parm[creates|returns]", mode=out with "name", "'result'";
+            }
+        }
+        ||
+
+            PEP_STATUS status = ::«@name»(session`apply "parm", mode=call`);
             if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) |`> |`
                     status < PEP_STATUS_OK |`> |`
                     status >= PEP_TRUSTWORD_NOT_FOUND) {
@@ -68,11 +78,10 @@ tstylesheet {
             }
 
             when "count(parm[returns|creates]) = 1" choose {
-                when "$rettype = 'Color'" apply "parm[returns|creates]", mode=return {
+                when "ancestor::namespace/child::enum[@name=$rettype]" apply "parm[returns|creates]", mode=return {
                     with "name", "'result'";
                     with "jtype", "$jtype";
                     with "jnitype", "'jint'";
-                    with "retname", "$retname";
                     with "sig", "'(I)V'";
                 }
 
@@ -80,13 +89,11 @@ tstylesheet {
                     with "name", "'result'";
                     with "jtype", "$jtype";
                     with "jnitype", "'jlong'";
-                    with "retname", "$retname";
                     with "sig", "'(J)V'";
                 }
 
                 when "$rettype = 'stringlist'" apply "parm[returns|creates]", mode=return{
                     with "name", "'result'";
-                    with "retname", "$retname";
                 }
 
                 otherwise error | # not implemented: return type "«$rettype»"
@@ -126,14 +133,14 @@ tstylesheet {
         param "name", "name(*[3])";
         param "jnitype" choose {
             when "$type = 'message'" > jlong
-            when "$type = 'Color'" > jint
+            when "ancestor::namespace/child::enum[@name=$type]" > jint
             when "$type = 'stringlist'" > jbyteArray
             otherwise >
         }
         param "retname", "$name";
         param "sig" choose {
             when "$type = 'message'" > (J)V
-            when "$type = 'Color'" > (I)V
+            when "ancestor::namespace/child::enum[@name=$type]" > (I)V
             when "$type = 'stringlist'" > (Ljava.lang.Object;)V
             otherwise > ()V
         }
@@ -147,19 +154,20 @@ tstylesheet {
 
             ||
 
-            when "$jtype = 'Color'"
+            when "ancestor::namespace/child::enum[@name=$jtype]" {
+            const "ljtype" call "lcase" with "text","$jtype";
             ||
             jobject «$name»_ = NULL;
             {
-                jclass clazz_color = findClass(env, "org/pEp/jniadapter/Color");
-                assert(clazz_color);
-                jmethodID method_values = env->GetStaticMethodID(clazz_color, "values",
-                        "()[Lorg/pEp/jniadapter/Color;");
+                jclass clazz_«$ljtype» = findClass(env, "org/pEp/jniadapter/«$jtype»");
+                assert(clazz_«$ljtype»);
+                jmethodID method_values = env->GetStaticMethodID(clazz_«$ljtype», "values",
+                        "()[Lorg/pEp/jniadapter/«$jtype»;");
                 assert(method_values);
-                jfieldID field_value = env->GetFieldID(clazz_color, "value", "I");
+                jfieldID field_value = env->GetFieldID(clazz_«$ljtype», "value", "I");
                 assert(field_value);
 
-                jobjectArray values = (jobjectArray) env->CallStaticObjectMethod(clazz_color,
+                jobjectArray values = (jobjectArray) env->CallStaticObjectMethod(clazz_«$ljtype»,
                         method_values);
                 assert(values);
 
@@ -168,7 +176,7 @@ tstylesheet {
                     jobject element = env->GetObjectArrayElement(values, i);
                     assert(element);
                     jint value = env->GetIntField(element, field_value);
-                    if (value == (jint) _color) {
+                    if (value == (jint) _«$name») {
                         «$name»_ = element;
                         break;
                     }
@@ -176,6 +184,7 @@ tstylesheet {
             }
 
             ||
+            }
 
             otherwise {
                 | jobject «$name»_ = NULL;
@@ -218,8 +227,8 @@ tstylesheet {
     }
 
     template "parm", mode=out {
+        param "name", "name(*[3])";
         const "type", "name(*[2])";
-        const "name", "name(*[3])";
 
         choose {
             when "ancestor::namespace/child::enum[@name=$type]"
@@ -234,8 +243,23 @@ tstylesheet {
         const "name", "name(*[3])";
      
         > , 
-        if "$dir = 'creates' or $dir = 'returns'" > &
-        > _«$name»
+
+        choose {
+            when "$dir = 'Cconst'"
+                value "*[3]";
+            when "$dir = 'creates' or $dir = 'returns'" {
+                > &
+                choose {
+                    when "count(../parm[returns|creates]) = 1"
+                        > _result
+                    otherwise
+                        > _«$name»
+                }
+            }
+            otherwise {
+                > _«$name»
+            }
+        }
     }
 
     function "mangle" {

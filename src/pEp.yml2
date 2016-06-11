@@ -84,7 +84,8 @@ namespace pEp {
         method encrypt_message(
                 in message src,
                 in stringlist extra,
-                creates message dst
+                creates message dst,
+                Cconst PEP_enc_format encformat "PEP_enc_PEP"
             );
         
         method decrypt_message(
