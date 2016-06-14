@@ -189,9 +189,8 @@ tstylesheet {
             otherwise {
                 | jobject «$name»_ = NULL;
                 indent(0);
-                if "$retname != 'result'" > if (_«$retname») 
-                > {\n
                 ||
+                if (_«$retname») {
                     jclass clazz_«$name»_ = findClass(env, "org/pEp/jniadapter/«$jtype»");
                     assert(clazz_«$name»_);
                     jmethodID constructor_«$name»_ = env->GetMethodID(clazz_«$name»_, "<init>", "«$sig»");
