@@ -42,14 +42,7 @@ tstylesheet {
         ||
 
         apply "parm[in]", mode=in;
-        choose {
-            when "count(parm[returns|creates]) > 1" {
-                apply "parm[creates|returns]", mode=out
-            }
-            when "count(parm[returns|creates]) = 1" {
-                apply "parm[creates|returns]", mode=out with "name", "'result'";
-            }
-        }
+        apply "parm[creates|returns]", mode=out;
         ||
 
             PEP_STATUS status = ::«@name»(session`apply "parm", mode=call`);
@@ -75,33 +68,38 @@ tstylesheet {
 
                 apply "parm[returns|creates]", mode=setresult
                     with "jtype" > org/pEp/jniadapter/Engine$_«@name»_Return
+
+                ||
+                    return result_;
+                ||
             }
 
-            when "count(parm[returns|creates]) = 1" choose {
-                when "ancestor::namespace/child::enum[@name=$rettype]" apply "parm[returns|creates]", mode=return {
-                    with "name", "'result'";
-                    with "jtype", "$jtype";
-                    with "jnitype", "'jint'";
-                    with "sig", "'(I)V'";
+            when "count(parm[returns|creates]) = 1" {
+                choose {
+                    when "ancestor::namespace/child::enum[@name=$rettype]" apply "parm[returns|creates]", mode=return {
+                        with "jtype", "$jtype";
+                        with "jnitype", "'jint'";
+                        with "sig", "'(I)V'";
+                    }
+
+                    when "$rettype = 'message'" apply "parm[returns|creates]", mode=return {
+                        with "jtype", "$jtype";
+                        with "jnitype", "'jlong'";
+                        with "sig", "'(J)V'";
+                    }
+
+                    when "$rettype = 'stringlist'" apply "parm[returns|creates]", mode=return;
+
+                    otherwise error | # not implemented: return type "«$rettype»";
                 }
 
-                when "$rettype = 'message'" apply "parm[returns|creates]", mode=return {
-                    with "name", "'result'";
-                    with "jtype", "$jtype";
-                    with "jnitype", "'jlong'";
-                    with "sig", "'(J)V'";
-                }
-
-                when "$rettype = 'stringlist'" apply "parm[returns|creates]", mode=return{
-                    with "name", "'result'";
-                }
-
-                otherwise error | # not implemented: return type "«$rettype»"
+                ||
+                    return «name(parm[returns|creates]/*[3])»_;
+                ||
             }
         }
 
         ||
-            return result_;
         }
 
         ||
@@ -189,8 +187,9 @@ tstylesheet {
             otherwise {
                 | jobject «$name»_ = NULL;
                 indent(0);
+                if "$retname != 'result'" > if (_«$retname») 
+                > {\n
                 ||
-                if (_«$retname») {
                     jclass clazz_«$name»_ = findClass(env, "org/pEp/jniadapter/«$jtype»");
                     assert(clazz_«$name»_);
                     jmethodID constructor_«$name»_ = env->GetMethodID(clazz_«$name»_, "<init>", "«$sig»");
@@ -247,13 +246,7 @@ tstylesheet {
             when "$dir = 'Cconst'"
                 value "*[3]";
             when "$dir = 'creates' or $dir = 'returns'" {
-                > &
-                choose {
-                    when "count(../parm[returns|creates]) = 1"
-                        > _result
-                    otherwise
-                        > _«$name»
-                }
+                > &_«$name»
             }
             otherwise {
                 > _«$name»
