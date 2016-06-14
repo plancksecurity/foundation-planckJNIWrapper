@@ -116,6 +116,11 @@ namespace pEp {
                 returns stringlist blacklist
             );
 
+        method own_message_private_key_details(
+                in message msg,
+                returns identity ident 
+            );
+
         basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);
