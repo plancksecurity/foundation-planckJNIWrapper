@@ -101,6 +101,12 @@ namespace pEp {
                 returns Color color
             );
 
+        method get_identity(
+                in string address,
+                in string userid,
+                returns identity ident
+            );
+
         method identity_color(
                 in identity ident,
                 returns Color color

@@ -82,7 +82,7 @@ tstylesheet {
                         with "sig", "'(I)V'";
                     }
 
-                    when "$rettype = 'message'" apply "parm[returns|creates]", mode=return {
+                    when "$rettype = 'message' or $rettype = 'identity'" apply "parm[returns|creates]", mode=return {
                         with "jtype", "$jtype";
                         with "jnitype", "'jlong'";
                         with "sig", "'(J)V'";
@@ -267,7 +267,7 @@ tstylesheet {
 
     template "parm", mode=sig {
         const "name", "name(*[3])";
-        > ,\n        jobject «$name»
+        > ,\n        `call "jni_type" with "type", "name(*[2])"` «$name»
     }
 }
 

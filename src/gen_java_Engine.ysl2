@@ -85,7 +85,6 @@ tstylesheet {
 
     template "method", mode=plain {
         const "convert", "count(parm/stringlist|parm/string|parm/identity) > 0";
-        const "convertreturn", "count(parm[returns]/stringlist|parm[returns]/string|parm[returns]/identity) > 0";
         const "singlereturn", "count(parm/creates|parm/returns) = 1";
         const "multireturn", "count(parm/creates|parm/returns) > 1";
 
@@ -125,8 +124,10 @@ tstylesheet {
             apply "parm", mode=convertIn;
 
             if "$singlereturn" choose {
-                when "$convertreturn"
+                when "count(parm[returns]/stringlist|parm[returns]/string) > 0"
                     |> return AbstractEngine.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
+                when "count(parm[returns]/identity) > 0"
+                    |> return new Identity(_«@name»(`apply "parm[in]", mode=call;`));
                 otherwise
                     |> return _«@name»(`apply "parm[in]", mode=call;`);
             }
