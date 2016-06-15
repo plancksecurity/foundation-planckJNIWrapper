@@ -1,23 +1,14 @@
 package org.pEp.jniadapter;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.Scanner;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
-import android.content.Intent;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
-import java.lang.reflect.InvocationTargetException;
+import java.io.*;
 import java.lang.reflect.Method;
+import java.util.Scanner;
 
 public class AndroidHelper {
     static {
@@ -145,11 +136,14 @@ public class AndroidHelper {
         System.loadLibrary("assuan");
         System.loadLibrary("gpgme");
 
-        // With lots of log 
-        nativeSetup( "9:"+new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());
+        if (BuildConfig.DEBUG) {
+            // With lots of log
+            nativeSetup("9:" + new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());
+        } else {
+            // With almost no log
+            nativeSetup("0:" + new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());
+        }
 
-        // With almost no log 
-        //nativeSetup( "0:"+new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());
     }
 
     public static void setup(Context c) {
