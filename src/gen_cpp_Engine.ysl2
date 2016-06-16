@@ -152,6 +152,14 @@ tstylesheet {
 
             ||
 
+            when "$type = 'identity'"
+            ||
+            jobject «$name»_ = NULL;
+            if (_«$retname»)
+                «$name»_ = from_identity(env, _«$retname»);
+
+            ||
+
             when "ancestor::namespace/child::enum[@name=$jtype]" {
             const "ljtype" call "lcase" with "text","$jtype";
             ||
