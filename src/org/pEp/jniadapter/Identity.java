@@ -5,7 +5,7 @@ public class Identity {
     public String fpr;
     public String user_id;
     public String username;
-    CommType comm_type;
+    public CommType comm_type;
     public String lang;
     public boolean me;
 

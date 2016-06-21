@@ -5,7 +5,7 @@ public class _Identity {
     public byte[] fpr;
     public byte[] user_id;
     public byte[] username;
-    int comm_type;
+    public int comm_type;
     public byte[] lang;
     public boolean me;
 
