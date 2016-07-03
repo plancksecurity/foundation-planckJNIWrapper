@@ -29,7 +29,7 @@ public class AndroidHelper {
     private static File tmpDir;
         
     // TODO : Increment when needed.
-    public static int VERSION_CODE = 0;
+    public static int ENGINE_VERSION_CODE = 799;
 
     private static File shareDir;
 
@@ -87,6 +87,7 @@ public class AndroidHelper {
     public static void assetsSetup(Context c) {
         envSetup(c);
         boolean needUpgrade = needNewAssets();
+        Log.i(TAG, "assetsSetup: " + needUpgrade);
 
         // If system.db still not here, then go get it in the assets.
         if (dBfile.exists() && needUpgrade){
@@ -211,7 +212,7 @@ public class AndroidHelper {
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(versionFile);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-            outputStreamWriter.write(String.valueOf(VERSION_CODE) + "\n");
+            outputStreamWriter.write(String.valueOf(ENGINE_VERSION_CODE) + "\n");
             outputStreamWriter.close();
             fileOutputStream.close();
         } catch (Exception e) {
@@ -220,7 +221,7 @@ public class AndroidHelper {
     }
 
     public static boolean needNewAssets() {
-        return VERSION_CODE != getInstalledVersion();
+        return ENGINE_VERSION_CODE != getInstalledVersion();
     }
 
     // TODO: replace with native impl, less prone to failure.
