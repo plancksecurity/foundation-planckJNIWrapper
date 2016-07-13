@@ -66,6 +66,8 @@ namespace pEp {
                 throw std::invalid_argument(std::string(fieldname));
             }
 
+            env->DeleteLocalRef(clazz);
+
             return field;
         }
 
@@ -86,6 +88,8 @@ namespace pEp {
                 throw std::invalid_argument(std::string(methodname));
             }
 
+            env->DeleteLocalRef(clazz);
+
             return env->CallIntMethod(obj, method);
         }
 
@@ -105,6 +109,8 @@ namespace pEp {
                 env->ThrowNew(ex, methodname);
                 throw std::invalid_argument(std::string(methodname));
             }
+
+            env->DeleteLocalRef(clazz);
 
             return env->CallLongMethod(obj, method);
         }
@@ -128,6 +134,8 @@ namespace pEp {
                 throw std::invalid_argument(std::string(methodname));
             }
 
+            env->DeleteLocalRef(clazz);
+
             return env->CallObjectMethod(obj, method, index);
         }
 
@@ -149,6 +157,8 @@ namespace pEp {
                 env->ThrowNew(ex, methodname);
                 throw std::invalid_argument(std::string(methodname));
             }
+
+            env->DeleteLocalRef(clazz);
 
             return env->CallBooleanMethod(obj, method, o);
         }
@@ -208,6 +218,8 @@ namespace pEp {
                 callBooleanMethod(env, obj, "add", o);
             }
 
+            env->DeleteLocalRef(clazz);
+
             return obj;
         }
 
@@ -261,6 +273,9 @@ namespace pEp {
                         first, second);
                 callBooleanMethod(env, obj, "add", pair);
             }
+
+            env->DeleteLocalRef(clazz);
+            env->DeleteLocalRef(clazz_pair);
 
             return obj;
         }
@@ -321,6 +336,9 @@ namespace pEp {
             jclass clazz = findClass(env, "java/util/Date");
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "(J)V");
             assert(constructor);
+
+            env->DeleteLocalRef(clazz);
+
             return env->NewObject(clazz, constructor, (jlong) t);
         }
 
@@ -371,6 +389,8 @@ namespace pEp {
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
             assert(constructor);
             jobject obj = env->NewObject(clazz, constructor);
+
+            env->DeleteLocalRef(clazz);
             
             if (ident) {
                 _setStringField(env, classname, obj, "address", ident->address);
@@ -385,6 +405,7 @@ namespace pEp {
 
                 jfieldID me_id = getFieldID(env, classname, "me", "Z");
                 env->SetBooleanField(obj, me_id, (jboolean) ident->me);
+
             }
 
             return obj;
@@ -397,6 +418,7 @@ namespace pEp {
             jbyteArray field =
                 reinterpret_cast<jbyteArray>(env->GetObjectField(obj,
                             fieldID));
+
             return to_string(env, field);
         }
 
@@ -446,6 +468,8 @@ namespace pEp {
                 callBooleanMethod(env, obj, "add", o);
             }
 
+            env->DeleteLocalRef(clazz);
+
             return obj;
         }
 
@@ -481,11 +505,12 @@ namespace pEp {
             assert(constructor);
             jobject obj = env->NewObject(clazz, constructor);
             
+            env->DeleteLocalRef(clazz);
+
             jfieldID fieldID = getFieldID(env, classname, "data", "[B");
             jbyteArray _data = env->NewByteArray((jsize) b->size);
             env->SetByteArrayRegion(_data, 0, b->size, (jbyte*)b->value);
             env->SetObjectField(obj, fieldID, reinterpret_cast<jobject>(_data));
-
             _setStringField(env, classname, obj, "mime_type", b->mime_type);
             _setStringField(env, classname, obj, "filename", b->filename);
 
@@ -502,6 +527,8 @@ namespace pEp {
             assert(constructor);
             jobject obj = env->NewObject(clazz, constructor);
             assert(obj);
+
+            env->DeleteLocalRef(clazz);
 
             bloblist_t *_bl;
             for (_bl = bl; _bl && _bl->value; _bl = _bl->next) {
