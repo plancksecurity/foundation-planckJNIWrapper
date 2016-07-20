@@ -337,9 +337,12 @@ namespace pEp {
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "(J)V");
             assert(constructor);
 
+            jobject result =  env->NewObject(clazz, constructor, (jlong) t);
+
             env->DeleteLocalRef(clazz);
 
-            return env->NewObject(clazz, constructor, (jlong) t);
+            return result;
+
         }
 
         timestamp *to_timestamp(JNIEnv *env, jobject date)
