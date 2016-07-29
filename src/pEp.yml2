@@ -80,6 +80,12 @@ namespace pEp {
         pEp_decrypt_flag_own_private_key > 1
     };
 
+    enum SyncHandshakeResult {
+        sync_handshake_cancel   > -1
+        sync_handshake_accepted > 0
+        sync_handshake_rejected > 1
+    }
+
     interface Engine {
         method encrypt_message(
                 in message src,
