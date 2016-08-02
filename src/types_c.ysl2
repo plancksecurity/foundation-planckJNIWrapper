@@ -14,6 +14,7 @@ function "toC" {
         when "$type='bool'" > bool
         when "$type='DecryptFlags'" > PEP_decrypt_flags_t
         when "$type='Color'" > PEP_color
+        when "$type='SyncHandshakeResult'" > sync_handshake_result
 
         otherwise value "$type";
     }

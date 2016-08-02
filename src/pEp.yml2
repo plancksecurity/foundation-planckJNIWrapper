@@ -84,7 +84,7 @@ namespace pEp {
         sync_handshake_cancel   > -1
         sync_handshake_accepted > 0
         sync_handshake_rejected > 1
-    }
+    };
 
     interface Engine {
         method encrypt_message(

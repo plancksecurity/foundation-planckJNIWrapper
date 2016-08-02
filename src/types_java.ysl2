@@ -1,4 +1,4 @@
-function "toJava" {
+		function "toJava" {
     param "type";
 
     choose {
@@ -61,6 +61,7 @@ function "toSig" {
                 when "$type='message'" > org/pEp/jniadapter/Message
                 when "$type='Color'" > org/pEp/jniadapter/Color
                 when "$type='DecryptFlags'" > org/pEp/jniadapter/DecryptFlags
+                when "$type='SyncHandshakeResult'" > org/pEp/jniadapter/SyncHandshakeResult
             }
             > ;
         }
@@ -79,6 +80,7 @@ function "toIntermediate" {
         when "$type='bloblist'" > Vector<_Blob>
         when "$type='bool'" > boolean
         when "$type='DecryptFlags'" > DecryptFlags
+        when "$type='SyncHandshakeResult'" > SyncHandshakeResult
 
         otherwise call "toJava" with "type", "$type";
     }
