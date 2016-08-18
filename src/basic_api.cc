@@ -179,6 +179,18 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_config_1passive_1mode(
     ::config_passive_mode(session, (bool)enable);
 }
 
+
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_config_unencrypted_subject(
+        JNIEnv *env,
+        jobject obj,
+        jboolean enable
+    )
+{
+    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+
+    ::config_unencrypted_subject(session, (bool)enable);
+}
+
 JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1add(
         JNIEnv *env,
         jobject obj,

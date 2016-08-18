@@ -145,7 +145,8 @@ namespace pEp {
         basic void blacklist_delete(string fpr);
         basic bool blacklist_is_listed(string fpr);
         basic void config_passive_mode(bool enable);
-    
+        basic void config_unencrypted_subject(bool enable);
+
     };
 
     struct message {
