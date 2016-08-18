@@ -93,6 +93,13 @@ namespace pEp {
                 creates message dst,
                 Cconst PEP_enc_format encformat "PEP_enc_PEP"
             );
+
+        method encrypt_message_for_self(
+                in identity target,
+                in message src,
+                creates message dst,
+                Cconst PEP_enc_format encformat "PEP_enc_PEP"
+            );
         
         method decrypt_message(
                 in message src,
