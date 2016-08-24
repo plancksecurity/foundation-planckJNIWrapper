@@ -149,6 +149,7 @@ libgcrypt/configure: libgcrypt.src.stamp libgcrypt/configure.ac
 	cd libgcrypt && ./autogen.sh
 
 libgcrypt/Makefile: libgcrypt/configure 
+	-patch -N -p1 --reject-file=- libgcrypt/Makefile.am libgcrypt-disable-docs.patch
 	cd libgcrypt && \
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
