@@ -180,7 +180,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_config_1passive_1mode(
 }
 
 
-JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_config_unencrypted_subject(
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_config_1unencrypted_1subject(
         JNIEnv *env,
         jobject obj,
         jboolean enable

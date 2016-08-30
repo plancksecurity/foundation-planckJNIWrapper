@@ -4,7 +4,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
-def pEpAppPackageName = hasProperty('pEpAppPackageName') ? pEpAppPackageName : "com.pep.k9"
+def pEpAppPackageName = hasProperty('pEpAppPackageName') ? pEpAppPackageName : "pep.android.k9"
 
 def externalInstallDir = file('external/data/data/' + pEpAppPackageName + '/app_opt')
 def externalIncludePath = new File(externalInstallDir, 'include').absolutePath
