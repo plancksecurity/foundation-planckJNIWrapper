@@ -57,23 +57,27 @@ namespace pEp {
     };
 
     enum Color {
-        pEp_rating_undefined > 0
-        pEp_rating_cannot_decrypt > 1
-        pEp_rating_have_no_key > 2
-        pEp_rating_unencrypted > 3
-        pEp_rating_unencrypted_for_some > 4
-        pEp_rating_unreliable > 5
-        pEp_rating_reliable > 6
-        pEp_rating_yellow > 6
-        pEp_rating_trusted > 7
-        pEp_rating_green > 7
-        pEp_rating_trusted_and_anonymized > 8
-        pEp_rating_fully_anonymous > 9
+        PEP_color_no_color > 0
+        PEP_color_yellow > 1
+        PEP_color_green > 2
+        PEP_color_red > -1
+    };
 
-        pEp_rating_mistrust > -1
-        pEp_rating_red > -1
-        pEp_rating_b0rken > -2
-        pEp_rating_under_attack > -3
+    enum Rating {
+        PEP_rating_undefined > 0
+        PEP_rating_cannot_decrypt > 1
+        PEP_rating_have_no_key > 2
+        PEP_rating_unencrypted > 3
+        PEP_rating_unencrypted_for_some > 4
+        PEP_rating_unreliable > 5
+        PEP_rating_reliable > 6
+        PEP_rating_trusted > 7
+        PEP_rating_trusted_and_anonymized > 8
+        PEP_rating_fully_anonymous > 9
+
+        PEP_rating_mistrust > -1
+        PEP_rating_b0rken > -2
+        PEP_rating_under_attack > -3
     };
 
     enum DecryptFlags {
@@ -91,7 +95,8 @@ namespace pEp {
                 in message src,
                 in stringlist extra,
                 creates message dst,
-                Cconst PEP_enc_format encformat "PEP_enc_PEP"
+                Cconst PEP_enc_format encformat "PEP_enc_PEP",
+                Cconst PEP_encrypt_flags flage "0"
             );
 
         method encrypt_message_for_self(
@@ -105,13 +110,13 @@ namespace pEp {
                 in message src,
                 creates message dst,
                 creates stringlist keylist,
-                returns Color color,
+                returns Rating rating,
                 returns DecryptFlags flags
             );
 
-        method outgoing_message_color(
+        method outgoing_message_rating(
                 in message msg,
-                returns Color color
+                returns Rating rating
             );
 
         method get_identity(
@@ -120,9 +125,9 @@ namespace pEp {
                 returns identity ident
             );
 
-        method identity_color(
+        method identity_rating(
                 in identity ident,
-                returns Color color
+                returns Rating rating
             );
 
         method blacklist_retrieve(
@@ -146,6 +151,7 @@ namespace pEp {
         basic bool blacklist_is_listed(string fpr);
         basic void config_passive_mode(bool enable);
         basic void config_unencrypted_subject(bool enable);
+        basic void deliver_handshake_result(SyncHandshakeResult result);
 
     };
 

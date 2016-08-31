@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <pthread.h>
 #include <pEp/keymanagement.h>
+#include <pEp/message_api.h>
+#include <pEp/sync.h>
 
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
@@ -85,7 +87,7 @@ extern "C" {
         return ident;
     }
 
-    static void *start_routine(void *arg)
+    static void *keyserver_thread_routine(void *arg)
     {
         PEP_STATUS status = do_keymanagement(retrieve_next_identity, arg);
 
@@ -117,7 +119,7 @@ extern "C" {
 
         try {
             thread_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "keyserverThread", "J");
-            queue_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "queueThread", "J");
+            queue_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "keyserverQueue", "J");
         }
         catch (std::exception& ex) {
             assert(0);
@@ -135,7 +137,7 @@ extern "C" {
         queue = new locked_queue< pEp_identity * >();
         env->SetLongField(obj, queue_handle, (jlong) queue);
 
-        pthread_create(thread, NULL, start_routine, (void *) queue);
+        pthread_create(thread, NULL, keyserver_thread_routine, (void *) queue);
         register_examine_function(session, examine_identity, (void *) queue);
     }
 
@@ -154,7 +156,7 @@ extern "C" {
 
         try {
             thread_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "keyserverThread", "J");
-            queue_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "queueThread", "J");
+            queue_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "keyserverQueue", "J");
         }
         catch (std::exception& ex) {
             assert(0);
@@ -177,6 +179,142 @@ extern "C" {
         free(thread);
     }
 
+    /////////////////////////////////////////////////////////////////////////
+    // Sync message callbacks, queue, and thread
+    /////////////////////////////////////////////////////////////////////////
+
+    // Called by sync thread only
+    PEP_STATUS show_handshake(void *obj, pEp_identity *me, pEp_identity *partner)
+    {
+        // TODO : callback
+
+        return PEP_STATUS_OK;
+    }
+
+    PEP_STATUS message_to_send(void *obj, message *msg)
+    {
+        // TODO : callback
+
+        return PEP_STATUS_OK;
+    }
+
+    int inject_sync_msg(void *msg, void *arg)
+    {
+        locked_queue< message * > *queue = (locked_queue< message * > *) arg;
+        queue->push_back(message_dup((message*)msg));
+        return 0;
+    }
+
+    void *retrieve_next_sync_msg(void *arg)
+    {
+        locked_queue< message * > *queue = (locked_queue< message * > *) arg;
+
+        while (!queue->size())
+            // TODO: add blocking dequeue 
+            usleep(100000);
+
+        void *msg = queue->front();
+        queue->pop_front();
+        return msg;
+    }
+
+    static void *sync_thread_routine(void *arg)
+    {
+        PEP_STATUS status = do_keymanagement(retrieve_next_identity, arg);
+
+        locked_queue< message * > *queue = (locked_queue< message * > *) arg;
+
+        while (queue->size()) {
+            message *msg = queue->front();
+            queue->pop_front();
+            free_message(msg);
+        }
+
+        delete queue;
+
+        return (void *) status;
+    }
+
+    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_startSync(
+            JNIEnv *env,
+            jobject obj
+        )
+    {
+        PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+
+        pthread_t *thread = NULL;
+        locked_queue< message * > *queue = NULL;
+
+        jfieldID thread_handle;
+        jfieldID queue_handle;
+
+        try {
+            thread_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "syncThread", "J");
+            queue_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "syncQueue", "J");
+        }
+        catch (std::exception& ex) {
+            assert(0);
+            return;
+        }
+
+        thread = (pthread_t *) env->GetLongField(obj, thread_handle);
+        if (thread)
+            return;
+ 
+        thread = (pthread_t *) calloc(1, sizeof(pthread_t));
+        assert(thread);
+        env->SetLongField(obj, thread_handle, (jlong) thread);
+
+        queue = new locked_queue< message * >();
+        env->SetLongField(obj, queue_handle, (jlong) queue);
+
+        pthread_create(thread, NULL, sync_thread_routine, (void *) queue);
+
+        register_sync_callbacks(session,
+                                (void *) queue,
+                                message_to_send,
+                                show_handshake, 
+                                inject_sync_msg,
+                                retrieve_next_sync_msg);
+    }
+
+    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_stopSync(
+            JNIEnv *env,
+            jobject obj
+        )
+    {
+        PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+
+        pthread_t *thread = NULL;
+        locked_queue< message * > *queue = NULL;
+
+        jfieldID thread_handle;
+        jfieldID queue_handle;
+
+        try {
+            thread_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "syncThread", "J");
+            queue_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "syncQueue", "J");
+        }
+        catch (std::exception& ex) {
+            assert(0);
+            return;
+        }
+
+        thread = (pthread_t *) env->GetLongField(obj, thread_handle);
+        if (!thread)
+            return;
+ 
+        queue = (locked_queue< message * > *) env->GetLongField(obj, queue_handle);
+
+        env->SetLongField(obj, queue_handle, (jlong) 0);
+        env->SetLongField(obj, thread_handle, (jlong) 0);
+
+        register_sync_callbacks(session, NULL, NULL, NULL, NULL, NULL);
+
+        queue->push_front(NULL);
+        pthread_join(*thread, NULL);
+        free(thread);
+    }
 } // extern "C"
 
 

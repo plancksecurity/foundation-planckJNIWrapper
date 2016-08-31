@@ -1,5 +1,6 @@
 #include <pEp/keymanagement.h>
 #include <pEp/blacklist.h>
+#include <pEp/sync.h>
 
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
@@ -257,6 +258,23 @@ JNIEXPORT jboolean JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1is_1listed(
     }
 
     return (jboolean)_listed;
+}
+
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_sync_1hanshake_1result(
+        JNIEnv *env,
+        jobject obj,
+        jint result
+    )
+{
+    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+    
+    PEP_STATUS status = 
+        ::deliverHandshakeResult(session, (sync_handshake_result) result);
+
+    if (status != PEP_STATUS_OK) {
+        throw_pEp_Exception(env, status);
+        return;
+    }
 }
 
 } // extern "C"

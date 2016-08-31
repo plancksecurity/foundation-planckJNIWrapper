@@ -28,10 +28,16 @@ abstract class AbstractEngine implements AutoCloseable {
     }
 
     private long keyserverThread;
-    private long queueThread;
+    private long keyserverQueue;
+
+    private long syncThread;
+    private long syncQueue;
 
     public native void startKeyserverLookup();
     public native void stopKeyserverLookup();
+
+    public native void startSync();
+    public native void stopSync();
 
     public static byte[] toUTF8(String str) {
         if (str == null)
@@ -40,7 +46,6 @@ abstract class AbstractEngine implements AutoCloseable {
         try {
             String _str = Normalizer.normalize(str, Normalizer.Form.NFC);
             byte _buf[] = _str.getBytes("UTF-8");
-            // F*ck you, Java !
             byte _cpy[] = new byte[_buf.length];
             System.arraycopy(_buf,0,_cpy,0,_buf.length);
             return _cpy;
