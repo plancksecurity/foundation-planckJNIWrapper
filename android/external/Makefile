@@ -413,6 +413,53 @@ libetpan-build: libetpan/libetpan-android-1.zip
 
 libetpan-cleanzip: 
 	rm -f libetpan/libetpan-android-1.zip
+
+#------------------------------------------------------------------------------#
+# uuid
+
+# using released package from debian. official ftp wasn't available today
+ossp-uuid_1.6.2.orig.tar.gz:
+	wget http://http.debian.net/debian/pool/main/o/ossp-uuid/ossp-uuid_1.6.2.orig.tar.gz
+	md5sum -c ossp-uuid_1.6.2.orig.tar.gz.md5
+
+uuid.src.stamp: ossp-uuid_1.6.2.orig.tar.gz
+	tar xvfz ossp-uuid_1.6.2.orig.tar.gz
+	mv uuid-1.6.2 uuid
+	touch $@
+
+uuid-src: uuid.src.stamp
+
+uuid-clean:
+	rm -rf uuid
+	rm -rf uuid.src.stamp
+
+EXTERNAL_SRCS += uuid-src
+EXTERNAL_SRCS_CLEAN += uuid-clean
+
+uuid/Makefile: uuid.src.stamp
+	sed -i 's,AC_CHECK_VA_COPY(),,' uuid/uuid.ac
+	cd uuid && autoconf 
+	-patch -N -p1 --reject-file=- uuid/libtool.m4 libtool-Add-Android-Linux-support-iconv.patch
+	cp config.sub uuid
+	cp config.guess uuid
+	cd uuid && \
+		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+			./configure \
+				--enable-static \
+				--host=$(HOST) \
+				--with-gnu-ld \
+				--prefix=$(LOCAL)
+
+uuid/.libs/libuuid.so: uuid/Makefile
+	$(MAKE) -C uuid
+
+$(LOCAL)/lib/uuid.so: uuid/.libs/libuuid.so
+	$(MAKE) -C uuid DESTDIR=$(DESTDIR) prefix=$(prefix) install
+	ls -l $(LOCAL)/lib/uuid.so
+
+uuid-build: uuid/.libs/libuuid.so
+
+uuid-install: $(LOCAL)/lib/uuid.so
 #------------------------------------------------------------------------------#
 # assets for Android app
 
