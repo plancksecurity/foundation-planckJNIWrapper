@@ -36,6 +36,11 @@ LOCAL_MODULE := libiconv
 LOCAL_SRC_FILES := $(GPGBUILD)/lib/libiconv.a
 include $(PREBUILT_STATIC_LIBRARY)
 
+include $(CLEAR_VARS)
+LOCAL_MODULE := libuuid
+LOCAL_SRC_FILES := $(GPGBUILD)/lib/libuuid.a
+include $(PREBUILT_STATIC_LIBRARY)
+
 # include $(CLEAR_VARS)
 # LOCAL_MODULE := openssl
 # LOCAL_SRC_FILES := ../build/openssl-android-1/libs/$(TARGET_ARCH_ABI)/libcrypto.a
@@ -65,8 +70,8 @@ include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
-LOCAL_SHARED_LIBRARIES := libgpgme libiconv
-LOCAL_STATIC_LIBRARIES := pEpEngine libetpan
+LOCAL_SHARED_LIBRARIES := libgpgme 
+LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid
 # openssl cyrus-sasl 
 LOCAL_CPP_FEATURES += exceptions
 LOCAL_SRC_FILES  := \

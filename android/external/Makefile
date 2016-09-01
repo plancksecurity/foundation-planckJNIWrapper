@@ -16,7 +16,7 @@ PEP_PACKAGE_NAME ?= com.pep.k9
 
 all: build assets
 
-build: showsetup libetpan-build gnupg-install gpgme-install
+build: showsetup libetpan-build gnupg-install gpgme-install uuid-install
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
@@ -409,10 +409,10 @@ EXTERNAL_GIT_REPOS += libetpan|https://github.com/fdik/libetpan.git?HEAD
 libetpan/libetpan-android-1.zip: libiconv-install libetpan.src.stamp
 	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) ./build.sh
 
-libetpan-build: libetpan/libetpan-android-1.zip
+libetpan-build: libetpan/build-android/libetpan-android-1.zip
 
 libetpan-cleanzip: 
-	rm -f libetpan/libetpan-android-1.zip
+	rm -f libetpan/build-android/libetpan-android-1.zip
 
 #------------------------------------------------------------------------------#
 # uuid
@@ -453,13 +453,16 @@ uuid/Makefile: uuid.src.stamp
 uuid/.libs/libuuid.so: uuid/Makefile
 	$(MAKE) -C uuid
 
-$(LOCAL)/lib/uuid.so: uuid/.libs/libuuid.so
-	$(MAKE) -C uuid DESTDIR=$(DESTDIR) prefix=$(prefix) install
-	ls -l $(LOCAL)/lib/uuid.so
+$(LOCAL)/lib/libuuid.so: uuid/.libs/libuuid.so
+	# install fails copying uuid cmdline tool, but libs are copied ...
+	-$(MAKE) -C uuid DESTDIR=$(DESTDIR) prefix=$(prefix) install
+	echo "****** THIS ERROR WAS WILLINGLY IGNORED ******"
+	ls -l $(LOCAL)/lib/libuuid.so
 
 uuid-build: uuid/.libs/libuuid.so
 
-uuid-install: $(LOCAL)/lib/uuid.so
+uuid-install: $(LOCAL)/lib/libuuid.so
+
 #------------------------------------------------------------------------------#
 # assets for Android app
 
@@ -551,6 +554,7 @@ clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install libetpan-cleanzip
 	libassuan-build libassuan-install \
 	libksba-build libksba-install \
 	libiconv-build libiconv-install \
+	uuid-build uuid-install \
 	gnupg-build  gnupg-install\
 	gpgme-build  gpgme-install\
 	curl-build curl-install \
