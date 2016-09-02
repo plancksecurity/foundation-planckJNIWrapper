@@ -22,12 +22,14 @@ namespace pEp {
         pEp_key_not_found						        > 0x0201
         pEp_key_has_ambig_name					        > 0x0202
         pEp_get_key_failed						        > 0x0203
+        pEp_cannot_export_key                           > 0x0204
         
         pEp_cannot_find_identity						> 0x0301
         pEp_cannot_set_person							> 0x0381
         pEp_cannot_set_pgp_keypair						> 0x0382
         pEp_cannot_set_identity							> 0x0383
         pEp_cannot_set_trust                            > 0x0384
+        pEp_key_blacklisted                             > 0x0385
         
         pEp_unencrypted									> 0x0400
         pEp_verified									> 0x0401
@@ -47,8 +49,31 @@ namespace pEp {
 
         pEp_phrase_not_found                            > 0x0701
 
-        pEp_commit_failed								> 0xff01
+        pEp_send_function_not_registered                > 0x0801
+	    pEp_contraints_violated                         > 0x0802
+	    pEp_cannot_encode                               > 0x0803
 
+	    pEp_sync_no_trustwords_callback                 > 0x0901
+        pEp_sync_illegal_message                        > 0x0902
+        pEp_sync_no_inject_callback                     > 0x0903
+
+   	    pEp_sequence_violated                           > 0x0970
+        pEp_cannot_increase_sequence                    > 0x0971
+        pEp_cannot_set_sequence_value                   > 0x0972
+        pEp_own_sequence                                > 0x097f
+
+        pEp_sync_statemachine_error                     > 0x0980
+        pEp_sync_no_trust                               > 0x0981
+        pEp_statemachine_invalid_state                  > 0x0982
+        pEp_statemachine_invalid_event                  > 0x0983
+        pEp_statemachine_invalid_condition              > 0x0984
+        pEp_statemachine_invalid_action                 > 0x0985
+
+        pEp_commit_failed								> 0xff01
+        pEp_message_consumed                            > 0xff02
+
+
+        pEp_record_not_found                            > -6
         pEp_cannot_create_temp_file                     > -5
         pEp_illegal_value                               > -4
         pEp_buffer_too_small                            > -3
@@ -64,20 +89,20 @@ namespace pEp {
     };
 
     enum Rating {
-        PEP_rating_undefined > 0
-        PEP_rating_cannot_decrypt > 1
-        PEP_rating_have_no_key > 2
-        PEP_rating_unencrypted > 3
-        PEP_rating_unencrypted_for_some > 4
-        PEP_rating_unreliable > 5
-        PEP_rating_reliable > 6
-        PEP_rating_trusted > 7
-        PEP_rating_trusted_and_anonymized > 8
-        PEP_rating_fully_anonymous > 9
+        pEp_rating_undefined > 0
+        pEp_rating_cannot_decrypt > 1
+        pEp_rating_have_no_key > 2
+        pEp_rating_unencrypted > 3
+        pEp_rating_unencrypted_for_some > 4
+        pEp_rating_unreliable > 5
+        pEp_rating_reliable > 6
+        pEp_rating_trusted > 7
+        pEp_rating_trusted_and_anonymized > 8
+        pEp_rating_fully_anonymous > 9
 
-        PEP_rating_mistrust > -1
-        PEP_rating_b0rken > -2
-        PEP_rating_under_attack > -3
+        pEp_rating_mistrust > -1
+        pEp_rating_b0rken > -2
+        pEp_rating_under_attack > -3
     };
 
     enum DecryptFlags {
