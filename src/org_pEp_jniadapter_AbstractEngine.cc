@@ -15,6 +15,10 @@ extern "C" {
     using namespace pEp::JNIAdapter;
     using namespace pEp::utility;
 
+    int inject_sync_msg(void *msg, void *arg);
+
+    static locked_queue< message * > *sync_queue = NULL;
+
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_init(
             JNIEnv *env,
             jobject me
@@ -43,6 +47,8 @@ extern "C" {
 
         jlong _session = (jlong) session;
         env->SetLongField(me, handle, _session);
+
+        register_sync_callbacks(session, NULL, NULL, NULL, inject_sync_msg, NULL);
     }
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_release(
@@ -201,6 +207,13 @@ extern "C" {
     int inject_sync_msg(void *msg, void *arg)
     {
         locked_queue< message * > *queue = (locked_queue< message * > *) arg;
+
+        if(queue == NULL)
+            queue = sync_queue;
+
+        if(queue == NULL)
+            return 1;
+
         queue->push_back(message_dup((message*)msg));
         return 0;
     }
@@ -270,6 +283,8 @@ extern "C" {
 
         pthread_create(thread, NULL, sync_thread_routine, (void *) queue);
 
+        sync_queue = queue;
+
         register_sync_callbacks(session,
                                 (void *) queue,
                                 message_to_send,
@@ -310,6 +325,8 @@ extern "C" {
         env->SetLongField(obj, thread_handle, (jlong) 0);
 
         register_sync_callbacks(session, NULL, NULL, NULL, NULL, NULL);
+
+        sync_queue = NULL;
 
         queue->push_front(NULL);
         pthread_join(*thread, NULL);
