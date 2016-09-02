@@ -4,7 +4,7 @@ tstylesheet {
     include ./textutils.ysl2
     include ./types_java.ysl2
 
-    template "/namespace[@name='pEp']" apply "struct|enum", 0;
+    template "/namespace[@name='pEp']" apply "struct|enum|exception", 0;
 
     template "struct" {
         const "cname" call "toJava" with "type", "@name";
@@ -45,7 +45,7 @@ tstylesheet {
             ||
     }
 
-    template "enum" {
+    template "enum|exception" {
         const "jname" call "toJava" with "type", "@name";
         document("org/pEp/jniadapter/{$jname}.java", "text")
             ||
@@ -57,7 +57,7 @@ tstylesheet {
             ||
     }
 
-    template "enum", mode=inner {
+    template "enum|exception", mode=inner {
         const "jname" call "CamelCase" with "text", "@name";
         ||
         public enum «$jname» {

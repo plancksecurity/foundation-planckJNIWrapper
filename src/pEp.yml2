@@ -7,7 +7,7 @@ decl struct @name;
 decl basic @type @name;
 
 namespace pEp {
-    exception pEp_status {
+    exception Status {
         pEp_status_ok									> 0
 
         pEp_init_cannot_load_gpgme						> 0x0110
