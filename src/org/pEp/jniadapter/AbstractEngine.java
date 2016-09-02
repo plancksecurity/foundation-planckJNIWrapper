@@ -10,6 +10,9 @@ abstract class AbstractEngine implements AutoCloseable {
         System.loadLibrary("pEpJNI");
     }
 
+
+    private Sync.MessageToSendCallback messageToSendCallback;
+    private Sync.showHandshakeCallback showHandshakeCallback;
     private native void init() throws pEpException;
     private native void release();
 
@@ -142,6 +145,31 @@ abstract class AbstractEngine implements AutoCloseable {
             result.set(i, toUTF16(list.get(i)));
 
         return result;
+    }
+
+    public void setMessageToSendCallback(Sync.MessageToSendCallback messageToSendCallback) {
+        this.messageToSendCallback = messageToSendCallback;
+    }
+
+    public void setShowHandshakeCallback(Sync.showHandshakeCallback showHandshakeCallback) {
+        this.showHandshakeCallback = showHandshakeCallback;
+    }
+
+    //Call From C is not a good name only for sample purposes
+    public void callFrom_C_ShowHandshake(Identity myself, Identity partner) {
+        if (showHandshakeCallback != null) {
+            showHandshakeCallback.showHandshake(myself, partner);
+        } else {
+            throw new RuntimeException("Callback not set");
+        }
+    }
+
+    public void callFrom_C_MessageToSend (Message message) {
+        if (messageToSendCallback != null) {
+            messageToSendCallback.messageToSend(message);
+        } else {
+            throw new RuntimeException("Callback not set");
+        }
     }
 }
 
