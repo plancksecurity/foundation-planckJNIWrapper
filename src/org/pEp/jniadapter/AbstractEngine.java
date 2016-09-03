@@ -155,21 +155,22 @@ abstract class AbstractEngine implements AutoCloseable {
         this.showHandshakeCallback = showHandshakeCallback;
     }
 
-    //Call From C is not a good name only for sample purposes
-    public void callFrom_C_ShowHandshake(Identity myself, Identity partner) {
+    public int showHandshakeCallFromC(Identity myself, Identity partner) {
         if (showHandshakeCallback != null) {
             showHandshakeCallback.showHandshake(myself, partner);
         } else {
             throw new RuntimeException("Callback not set");
         }
+        return 0;
     }
 
-    public void callFrom_C_MessageToSend (Message message) {
+    public int messageToSendCallFromC (Message message) {
         if (messageToSendCallback != null) {
             messageToSendCallback.messageToSend(message);
         } else {
             throw new RuntimeException("Callback not set");
         }
+        return 0;
     }
 }
 

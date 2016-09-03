@@ -17,8 +17,6 @@ extern "C" {
 
     int inject_sync_msg(void *msg, void *arg);
 
-    static locked_queue< message * > *sync_queue = NULL;
-
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_init(
             JNIEnv *env,
             jobject me
@@ -189,21 +187,59 @@ extern "C" {
     // Sync message callbacks, queue, and thread
     /////////////////////////////////////////////////////////////////////////
 
+    static locked_queue< message * > *sync_queue = NULL;
+    static jobject sync_obj = NULL;
+    static JavaVM* sync_jvm = NULL;
+
     // Called by sync thread only
     PEP_STATUS show_handshake(void *obj, pEp_identity *me, pEp_identity *partner)
     {
-        // TODO : callback
+        JNIEnv* env;
+        jobject me_ = NULL;
+        jobject partner_ = NULL;
 
-        return PEP_STATUS_OK;
+        sync_jvm->AttachCurrentThread(&env, NULL);
+
+        jclass clazz = env->GetObjectClass(sync_obj);
+        jmethodID methodID = env->GetMethodID(
+            clazz, 
+            "showHandshakeCallFromC", 
+            "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;)I");
+
+        me_ = from_identity(env, me);
+        partner_ = from_identity(env, partner);
+
+        jint result = env->CallIntMethod(sync_obj, methodID, me_, partner_);
+
+        return (PEP_STATUS) result;
     }
 
+    // Called by sync thread only
     PEP_STATUS message_to_send(void *obj, message *msg)
     {
-        // TODO : callback
+        JNIEnv* env;
+        jobject msg_ = NULL;
 
-        return PEP_STATUS_OK;
+        sync_jvm->AttachCurrentThread(&env, NULL);
+
+        jclass clazz = env->GetObjectClass(sync_obj);
+        jmethodID methodID = env->GetMethodID(
+            clazz, 
+            "messageToSendCallFromC", 
+            "(Lorg/pEp/jniadapter/Message;)I");
+
+        jclass clazz_msg_ = findClass(env, "org/pEp/jniadapter/Message");
+        assert(clazz_msg_);
+        jmethodID constructor_msg_ = env->GetMethodID(clazz_msg_, "<init>", "(J)V");
+        assert(constructor_msg_);
+        msg_ = env->NewObject(clazz_msg_, constructor_msg_, (jlong) msg);
+
+        jint result = env->CallIntMethod(sync_obj, methodID, msg_);
+
+        return (PEP_STATUS) result;
     }
 
+    // called indirectly by decrypt message 
     int inject_sync_msg(void *msg, void *arg)
     {
         locked_queue< message * > *queue = (locked_queue< message * > *) arg;
@@ -281,9 +317,14 @@ extern "C" {
         queue = new locked_queue< message * >();
         env->SetLongField(obj, queue_handle, (jlong) queue);
 
-        pthread_create(thread, NULL, sync_thread_routine, (void *) queue);
-
+        // for inject and retreive calls
         sync_queue = queue;
+
+        // for callbacks
+        env->GetJavaVM(&sync_jvm);
+        sync_obj = env->NewGlobalRef(obj);
+
+        pthread_create(thread, NULL, sync_thread_routine, (void *) queue);
 
         register_sync_callbacks(session,
                                 (void *) queue,
@@ -327,6 +368,7 @@ extern "C" {
         register_sync_callbacks(session, NULL, NULL, NULL, NULL, NULL);
 
         sync_queue = NULL;
+        sync_obj = NULL;
 
         queue->push_front(NULL);
         pthread_join(*thread, NULL);
