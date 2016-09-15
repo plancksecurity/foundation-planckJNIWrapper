@@ -12,6 +12,7 @@ tstylesheet {
         #include <assert.h>
         #include <pEp/message_api.h>
         #include <pEp/blacklist.h>
+        #include <pEp/openpgp_compat.h>
         #include "org_pEp_jniadapter_«@name».h"
         #include "throw_pEp_exception.hh"
         #include "jniutils.hh"
@@ -89,6 +90,7 @@ tstylesheet {
                     }
 
                     when "$rettype = 'stringlist'" apply "parm[returns|creates]", mode=return;
+                    when "$rettype = 'stringpairlist'" apply "parm[returns|creates]", mode=return;
 
                     otherwise error | # not implemented: return type "«$rettype»";
                 }
@@ -159,6 +161,14 @@ tstylesheet {
                 «$name»_ = from_identity(env, _«$retname»);
 
             ||
+                    
+            when "$type = 'stringpairlist'"
+            ||
+            jobject «$name»_ = NULL;
+            if (_«$retname»)
+                «$name»_ = from_stringpairlist(env, _«$retname»);
+
+            ||
 
             when "ancestor::namespace/child::enum[@name=$jtype]" {
             const "ljtype" call "lcase" with "text","$jtype";
@@ -227,6 +237,8 @@ tstylesheet {
         choose {
             when "$type = 'message'"
                 | message *_«$name» = (message *) callLongMethod(env, «$name», "getHandle");
+            when "$type='bool'"
+                | bool _«$name» = (bool) «$name»;
             otherwise
                 | √$type *_«$name» = to_«$type»(env, «$name»);
         }

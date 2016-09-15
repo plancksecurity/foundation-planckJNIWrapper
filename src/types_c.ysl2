@@ -26,6 +26,7 @@ function "jni_type" {
     choose {
         when "../enum[@name=$type]" > jint
         when "$type = 'string'" > jbyteArray
+        when "$type='bool'" > jboolean
         otherwise > jobject
     }
 }

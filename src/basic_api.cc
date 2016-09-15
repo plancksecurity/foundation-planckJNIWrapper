@@ -260,16 +260,55 @@ JNIEXPORT jboolean JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1is_1listed(
     return (jboolean)_listed;
 }
 
-JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_sync_1hanshake_1result(
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_accept_1sync_1hanshake(
         JNIEnv *env,
         jobject obj,
-        jint result
+        jobject ident
+    )
+
+{
+    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+    pEp_identity *_ident = to_identity(env, ident);
+    
+    PEP_STATUS status = 
+        ::deliverHandshakeResult(session, _ident, SYNC_HANDSHAKE_ACCEPTED);
+
+    if (status != PEP_STATUS_OK) {
+        throw_pEp_Exception(env, status);
+        return;
+    }
+}
+
+
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_reject_sync_1hanshake(
+        JNIEnv *env,
+        jobject obj,
+        jobject ident
     )
 {
     PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+    pEp_identity *_ident = to_identity(env, ident);
     
     PEP_STATUS status = 
-        ::deliverHandshakeResult(session, (sync_handshake_result) result);
+        ::deliverHandshakeResult(session, _ident, SYNC_HANDSHAKE_REJECTED);
+
+    if (status != PEP_STATUS_OK) {
+        throw_pEp_Exception(env, status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_cancel_sync_1hanshake(
+        JNIEnv *env,
+        jobject obj,
+        jobject ident
+    )
+{
+    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+    pEp_identity *_ident = to_identity(env, ident);
+    
+    PEP_STATUS status = 
+        ::deliverHandshakeResult(session, _ident, SYNC_HANDSHAKE_CANCEL);
 
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);

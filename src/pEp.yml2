@@ -164,6 +164,11 @@ namespace pEp {
                 returns identity ident 
             );
 
+        method OpenPGP_list_keyinfo(
+                in string pattern,
+                returns stringpairlist keyinfoList
+            );
+
         basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);
@@ -176,7 +181,9 @@ namespace pEp {
         basic bool blacklist_is_listed(string fpr);
         basic void config_passive_mode(bool enable);
         basic void config_unencrypted_subject(bool enable);
-        basic void deliver_handshake_result(SyncHandshakeResult result);
+        basic void accept_sync_handshake_result(identity ident);
+        basic void reject_sync_handshake_result(identity ident);
+        basic void cancel_sync_handshake_result(identity ident);
 
     };
 

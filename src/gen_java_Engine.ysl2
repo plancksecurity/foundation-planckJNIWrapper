@@ -12,6 +12,7 @@ tstylesheet {
             ||
             package org.pEp.jniadapter;
 
+            import java.util.ArrayList;
             import java.util.Vector;
 
             final public class «$cname» extends AbstractEngine {
@@ -86,7 +87,7 @@ tstylesheet {
     }
 
     template "method", mode=plain {
-        const "convert", "count(parm/stringlist|parm/string|parm/identity) > 0";
+        const "convert", "count(parm/stringlist|parm/stringpairlist|parm/string|parm/identity) > 0";
         const "singlereturn", "count(parm/creates|parm/returns) = 1";
         const "multireturn", "count(parm/creates|parm/returns) > 1";
 
@@ -128,6 +129,18 @@ tstylesheet {
             if "$singlereturn" choose {
                 when "count(parm[returns]/stringlist|parm[returns]/string) > 0"
                     |> return AbstractEngine.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
+                when "count(parm[returns]/stringpairlist) > 0"
+                    ||
+                        ArrayList<Pair<byte[], byte[]>> glist = _«@name»(`apply "parm[in]", mode=call;`);
+                        if(glist != null){
+                            ArrayList<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
+                            for (Pair<byte[],byte[]> i : glist)
+                                list.add(new Pair<String, String>(AbstractEngine.toUTF16(i.first), AbstractEngine.toUTF16(i.second)));
+                            return list;
+                        }
+                        return null;
+                    ||
+
                 when "count(parm[returns]/identity) > 0"
                     |> return new Identity(_«@name»(`apply "parm[in]", mode=call;`));
                 otherwise
