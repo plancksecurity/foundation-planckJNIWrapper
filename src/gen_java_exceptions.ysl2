@@ -12,7 +12,7 @@ tstylesheet {
         |   }
         | }
 
-        apply "namespace/exception[@name='pEp_status']", 0;
+        apply "namespace/exception[@name='Status']", 0;
     }
 
     function "exception" {
