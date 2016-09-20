@@ -45,8 +45,6 @@ extern "C" {
 
         jlong _session = (jlong) session;
         env->SetLongField(me, handle, _session);
-
-        register_sync_callbacks(session, NULL, NULL, NULL, inject_sync_msg, NULL);
     }
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_release(
@@ -187,7 +185,6 @@ extern "C" {
     // Sync message callbacks, queue, and thread
     /////////////////////////////////////////////////////////////////////////
 
-    static locked_queue< message * > *sync_queue = NULL;
     static jobject sync_obj = NULL;
     static JavaVM* sync_jvm = NULL;
 
@@ -242,13 +239,10 @@ extern "C" {
     // called indirectly by decrypt message 
     int inject_sync_msg(void *msg, void *arg)
     {
-        locked_queue< message * > *queue = (locked_queue< message * > *) arg;
-
-        if(queue == NULL)
-            queue = sync_queue;
-
-        if(queue == NULL)
+        if(arg == NULL)
             return 1;
+
+        locked_queue< message * > *queue = (locked_queue< message * > *) arg;
 
         queue->push_back(message_dup((message*)msg));
         return 0;
@@ -317,9 +311,6 @@ extern "C" {
         queue = new locked_queue< message * >();
         env->SetLongField(obj, queue_handle, (jlong) queue);
 
-        // for inject and retreive calls
-        sync_queue = queue;
-
         // for callbacks
         env->GetJavaVM(&sync_jvm);
         sync_obj = env->NewGlobalRef(obj);
@@ -365,9 +356,8 @@ extern "C" {
         env->SetLongField(obj, queue_handle, (jlong) 0);
         env->SetLongField(obj, thread_handle, (jlong) 0);
 
-        register_sync_callbacks(session, NULL, NULL, NULL, NULL, NULL);
+        unregister_sync_callbacks(session);
 
-        sync_queue = NULL;
         sync_obj = NULL;
 
         queue->push_front(NULL);
