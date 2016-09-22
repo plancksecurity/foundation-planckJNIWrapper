@@ -139,8 +139,9 @@ extern "C" {
         queue = new locked_queue< pEp_identity * >();
         env->SetLongField(obj, queue_handle, (jlong) queue);
 
-        pthread_create(thread, NULL, keyserver_thread_routine, (void *) queue);
         register_examine_function(session, examine_identity, (void *) queue);
+
+        pthread_create(thread, NULL, keyserver_thread_routine, (void *) queue);
     }
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_stopKeyserverLookup(
@@ -261,11 +262,20 @@ extern "C" {
         return msg;
     }
 
+    typedef struct _sync_thread_arg {
+        PEP_SESSION session;
+        locked_queue< message * > *queue;
+    } sync_thread_arg;
+
+
     static void *sync_thread_routine(void *arg)
     {
-        PEP_STATUS status = do_keymanagement(retrieve_next_identity, arg);
+        sync_thread_arg *a = (sync_thread_arg*)arg;
+        PEP_SESSION session = (PEP_SESSION) a->session;
 
-        locked_queue< message * > *queue = (locked_queue< message * > *) arg;
+        PEP_STATUS status = do_sync_protocol(session, a->queue);
+
+        locked_queue< message * > *queue = (locked_queue< message * > *) a->queue;
 
         while (queue->size()) {
             message *msg = queue->front();
@@ -274,6 +284,7 @@ extern "C" {
         }
 
         delete queue;
+        free(a);
 
         return (void *) status;
     }
@@ -315,14 +326,18 @@ extern "C" {
         env->GetJavaVM(&sync_jvm);
         sync_obj = env->NewGlobalRef(obj);
 
-        pthread_create(thread, NULL, sync_thread_routine, (void *) queue);
-
         register_sync_callbacks(session,
                                 (void *) queue,
                                 message_to_send,
                                 show_handshake, 
                                 inject_sync_msg,
                                 retrieve_next_sync_msg);
+
+        sync_thread_arg *a = (sync_thread_arg*) malloc(sizeof(sync_thread_arg));
+        assert(a);
+        a->session = session;
+        a->queue = queue; 
+        pthread_create(thread, NULL, sync_thread_routine, (void *) a);
     }
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_stopSync(
