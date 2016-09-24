@@ -242,7 +242,7 @@ extern "C" {
         if(arg == NULL)
             return 1;
 
-        locked_queue< message * > *queue = (locked_queue< message * > *) arg;
+        locked_queue< sync_msg_t * > *queue = (locked_queue< sync_msg_t * > *) arg;
 
         queue->push_back(message_dup((message*)msg));
         return 0;
@@ -250,7 +250,7 @@ extern "C" {
 
     void *retrieve_next_sync_msg(void *arg)
     {
-        locked_queue< message * > *queue = (locked_queue< message * > *) arg;
+        locked_queue< sync_msg_t * > *queue = (locked_queue< sync_msg_t * > *) arg;
 
         while (!queue->size())
             // TODO: add blocking dequeue 
@@ -265,7 +265,7 @@ extern "C" {
     {
         PEP_STATUS status = do_keymanagement(retrieve_next_identity, arg);
 
-        locked_queue< message * > *queue = (locked_queue< message * > *) arg;
+        locked_queue< sync_msg_t * > *queue = (locked_queue< sync_msg_t * > *) arg;
 
         while (queue->size()) {
             message *msg = queue->front();
@@ -286,7 +286,7 @@ extern "C" {
         PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
 
         pthread_t *thread = NULL;
-        locked_queue< message * > *queue = NULL;
+        locked_queue< sync_msg_t * > *queue = NULL;
 
         jfieldID thread_handle;
         jfieldID queue_handle;
@@ -308,7 +308,7 @@ extern "C" {
         assert(thread);
         env->SetLongField(obj, thread_handle, (jlong) thread);
 
-        queue = new locked_queue< message * >();
+        queue = new locked_queue< sync_msg_t * >();
         env->SetLongField(obj, queue_handle, (jlong) queue);
 
         // for callbacks
@@ -333,7 +333,7 @@ extern "C" {
         PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
 
         pthread_t *thread = NULL;
-        locked_queue< message * > *queue = NULL;
+        locked_queue< sync_msg_t * > *queue = NULL;
 
         jfieldID thread_handle;
         jfieldID queue_handle;
@@ -351,7 +351,7 @@ extern "C" {
         if (!thread)
             return;
  
-        queue = (locked_queue< message * > *) env->GetLongField(obj, queue_handle);
+        queue = (locked_queue< sync_msg_t * > *) env->GetLongField(obj, queue_handle);
 
         env->SetLongField(obj, queue_handle, (jlong) 0);
         env->SetLongField(obj, thread_handle, (jlong) 0);
