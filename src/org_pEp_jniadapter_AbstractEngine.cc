@@ -249,7 +249,7 @@ extern "C" {
 
         locked_queue< sync_msg_t * > *queue = (locked_queue< sync_msg_t * > *) arg;
 
-        queue->push_back(message_dup((message*)msg));
+        queue->push_back((sync_msg_t *)msg);
         return 0;
     }
 
@@ -268,7 +268,7 @@ extern "C" {
 
     typedef struct _sync_thread_arg {
         PEP_SESSION session;
-        locked_queue< message * > *queue;
+        locked_queue< sync_msg_t * > *queue;
     } sync_thread_arg;
 
 
@@ -282,9 +282,9 @@ extern "C" {
         locked_queue< sync_msg_t * > *queue = (locked_queue< sync_msg_t * > *) arg;
 
         while (queue->size()) {
-            message *msg = queue->front();
+            sync_msg_t *msg = queue->front();
             queue->pop_front();
-            free_message(msg);
+            free_sync_msg(msg);
         }
 
         delete queue;
