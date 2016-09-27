@@ -204,6 +204,8 @@ extern "C" {
             "showHandshakeCallFromC", 
             "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;)I");
 
+        env->DeleteLocalRef(clazz);
+
         me_ = from_identity(env, me);
         partner_ = from_identity(env, partner);
 
@@ -225,6 +227,8 @@ extern "C" {
             clazz, 
             "messageToSendCallFromC", 
             "(Lorg/pEp/jniadapter/Message;)I");
+
+        env->DeleteLocalRef(clazz);
 
         jclass clazz_msg_ = findClass(env, "org/pEp/jniadapter/Message");
         assert(clazz_msg_);
