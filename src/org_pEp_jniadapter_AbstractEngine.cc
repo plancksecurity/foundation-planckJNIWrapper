@@ -16,6 +16,7 @@ extern "C" {
     using namespace pEp::utility;
 
     int inject_sync_msg(void *msg, void *arg);
+    static PEP_SESSION sync_session = NULL;
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_init(
             JNIEnv *env,
@@ -34,6 +35,14 @@ extern "C" {
         }
 
         assert(session);
+
+        if(sync_session != NULL){
+            status = attach_sync_session(session, sync_session);
+            if (status != PEP_STATUS_OK) {
+                throw_pEp_Exception(env, status);
+                return;
+            }
+        }
         
         try {
             handle = getFieldID(env, "org/pEp/jniadapter/Engine", "handle", "J");
@@ -64,8 +73,10 @@ extern "C" {
         }
 
         session = (PEP_SESSION) env->GetLongField(me, handle);
-        if (session)
+        if (session){
             release(session);
+            detach_sync_session(session);
+        }
         else
             env->SetLongField(me, handle, jlong(0));
     }
@@ -341,6 +352,9 @@ extern "C" {
         assert(a);
         a->session = session;
         a->queue = queue; 
+        
+        sync_session = session;
+
         pthread_create(thread, NULL, sync_thread_routine, (void *) a);
     }
 
@@ -374,6 +388,8 @@ extern "C" {
 
         env->SetLongField(obj, queue_handle, (jlong) 0);
         env->SetLongField(obj, thread_handle, (jlong) 0);
+
+        sync_session = NULL;
 
         unregister_sync_callbacks(session);
 
