@@ -74,7 +74,7 @@ JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_updateIdentity(
     return from_identity(env, _ident);
 }
 
-JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyCompromized(
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyMistrusted(
         JNIEnv *env,
         jobject obj,
         jobject ident
@@ -95,7 +95,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyCompromized(
         return;
     }
 
-    ::key_compromized(session, _ident);
+    ::key_mistrusted(session, _ident);
 }
 
 JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyResetTrust(
@@ -228,7 +228,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1delete(
         return;
     }
     
-    PEP_STATUS status = ::blacklist_add(session, _fpr);
+    PEP_STATUS status = ::blacklist_delete(session, _fpr);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
         return;
