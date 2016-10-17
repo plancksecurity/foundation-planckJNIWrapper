@@ -198,29 +198,22 @@ extern "C" {
     /////////////////////////////////////////////////////////////////////////
 
     static jobject sync_obj = NULL;
-    static JavaVM* sync_jvm = NULL;
+    static JNIEnv* sync_env = NULL;
+    static jmethodID showHandShakeMethodID = NULL; 
+    static jmethodID messageToSendMethodID = NULL;
+    static jclass messageClass = NULL;
+    static jmethodID messageConstructorMethodID = NULL;
 
     // Called by sync thread only
     PEP_STATUS show_handshake(void *obj, pEp_identity *me, pEp_identity *partner)
     {
-        JNIEnv* env;
         jobject me_ = NULL;
         jobject partner_ = NULL;
 
-        sync_jvm->AttachCurrentThread(&env, NULL);
+        me_ = from_identity(sync_env, me);
+        partner_ = from_identity(sync_env, partner);
 
-        jclass clazz = env->GetObjectClass(sync_obj);
-        jmethodID methodID = env->GetMethodID(
-            clazz, 
-            "showHandshakeCallFromC", 
-            "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;)I");
-
-        env->DeleteLocalRef(clazz);
-
-        me_ = from_identity(env, me);
-        partner_ = from_identity(env, partner);
-
-        jint result = env->CallIntMethod(sync_obj, methodID, me_, partner_);
+        jint result = sync_env->CallIntMethod(sync_obj, showHandShakeMethodID, me_, partner_);
 
         return (PEP_STATUS) result;
     }
@@ -228,26 +221,11 @@ extern "C" {
     // Called by sync thread only
     PEP_STATUS message_to_send(void *obj, message *msg)
     {
-        JNIEnv* env;
         jobject msg_ = NULL;
 
-        sync_jvm->AttachCurrentThread(&env, NULL);
+        msg_ = sync_env->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
 
-        jclass clazz = env->GetObjectClass(sync_obj);
-        jmethodID methodID = env->GetMethodID(
-            clazz, 
-            "messageToSendCallFromC", 
-            "(Lorg/pEp/jniadapter/Message;)I");
-
-        env->DeleteLocalRef(clazz);
-
-        jclass clazz_msg_ = findClass(env, "org/pEp/jniadapter/Message");
-        assert(clazz_msg_);
-        jmethodID constructor_msg_ = env->GetMethodID(clazz_msg_, "<init>", "(J)V");
-        assert(constructor_msg_);
-        msg_ = env->NewObject(clazz_msg_, constructor_msg_, (jlong) msg);
-
-        jint result = env->CallIntMethod(sync_obj, methodID, msg_);
+        jint result = sync_env->CallIntMethod(sync_obj, messageToSendMethodID, msg_);
 
         return (PEP_STATUS) result;
     }
@@ -277,16 +255,41 @@ extern "C" {
         return msg;
     }
 
-    typedef struct _sync_thread_arg {
+    typedef struct _sync_thread_arg_t {
         PEP_SESSION session;
         locked_queue< sync_msg_t * > *queue;
-    } sync_thread_arg;
+        JavaVM* sync_jvm;
+    } sync_thread_arg_t;
 
 
     static void *sync_thread_routine(void *arg)
     {
-        sync_thread_arg *a = (sync_thread_arg*)arg;
+        sync_thread_arg_t *a = (sync_thread_arg_t*)arg;
         PEP_SESSION session = (PEP_SESSION) a->session;
+
+        a->sync_jvm->AttachCurrentThread(&sync_env, NULL);
+
+        jclass clazz = sync_env->GetObjectClass(sync_obj);
+
+        showHandShakeMethodID = sync_env->GetMethodID(
+            clazz, 
+            "showHandshakeCallFromC", 
+            "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;)I");
+        assert(showHandShakeMethodID);
+
+        messageToSendMethodID = sync_env->GetMethodID(
+            clazz, 
+            "messageToSendCallFromC", 
+            "(Lorg/pEp/jniadapter/Message;)I");
+        assert(messageToSendMethodID);
+
+        sync_env->DeleteLocalRef(clazz);
+
+        messageClass = findClass(sync_env, "org/pEp/jniadapter/Message");
+        assert(messageClass);
+
+        messageConstructorMethodID = sync_env->GetMethodID(messageClass, "<init>", "(J)V");
+        assert(messageConstructorMethodID);
 
         PEP_STATUS status = do_sync_protocol(session, a->queue);
 
@@ -297,6 +300,10 @@ extern "C" {
             queue->pop_front();
             free_sync_msg(msg);
         }
+
+        sync_env->DeleteLocalRef(messageClass);
+
+        a->sync_jvm->DetachCurrentThread();
 
         delete queue;
         free(a);
@@ -338,8 +345,14 @@ extern "C" {
         env->SetLongField(obj, queue_handle, (jlong) queue);
 
         // for callbacks
-        env->GetJavaVM(&sync_jvm);
         sync_obj = env->NewGlobalRef(obj);
+        sync_thread_arg_t *a = (sync_thread_arg_t*) malloc(sizeof(sync_thread_arg_t));
+        assert(a);
+        a->session = session;
+        a->queue = queue; 
+        env->GetJavaVM(&a->sync_jvm);
+        
+        sync_session = session;
 
         register_sync_callbacks(session,
                                 (void *) queue,
@@ -348,12 +361,6 @@ extern "C" {
                                 inject_sync_msg,
                                 retrieve_next_sync_msg);
 
-        sync_thread_arg *a = (sync_thread_arg*) malloc(sizeof(sync_thread_arg));
-        assert(a);
-        a->session = session;
-        a->queue = queue; 
-        
-        sync_session = session;
 
         pthread_create(thread, NULL, sync_thread_routine, (void *) a);
     }
