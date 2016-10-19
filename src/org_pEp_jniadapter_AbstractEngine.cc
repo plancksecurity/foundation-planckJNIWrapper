@@ -345,7 +345,10 @@ extern "C" {
         sync_thread_arg_t *a = (sync_thread_arg_t*) malloc(sizeof(sync_thread_arg_t));
         assert(a);
         a->session = session;
-        a->queue = queue; 
+        a->queue = queue;
+        messageClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/Message")));
+        messageConstructorMethodID = env->GetMethodID(messageClass, "<init>", "(J)V");
+
         env->GetJavaVM(&a->sync_jvm);
         
         sync_session = session;
@@ -357,10 +360,7 @@ extern "C" {
                                 inject_sync_msg,
                                 retrieve_next_sync_msg);
 
-        messageClass = findClass(env, "org/pEp/jniadapter/Message");
-        assert(messageClass);
-        messageConstructorMethodID = env->GetMethodID(messageClass, "<init>", "(J)V");
-        assert(messageConstructorMethodID);
+
         pthread_create(thread, NULL, sync_thread_routine, (void *) a);
     }
 
