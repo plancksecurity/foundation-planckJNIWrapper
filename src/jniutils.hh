@@ -8,6 +8,14 @@
 #include <pEp/identity_list.h>
 #include <pEp/bloblist.h>
 
+#if 1 // Enable if log needed
+#include <android/log.h>
+#define  LOG_TAG    "PEPJNIUTILS"
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
+#else
+#define  LOGD(...)
+#endif
+
 namespace pEp {
     namespace utility {
         using namespace std;

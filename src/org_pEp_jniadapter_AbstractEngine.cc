@@ -221,6 +221,7 @@ extern "C" {
     // Called by sync thread only
     PEP_STATUS message_to_send(void *obj, message *msg)
     {
+    LOGD("Message To Send");
         jobject msg_ = NULL;
 
         msg_ = sync_env->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
@@ -266,7 +267,6 @@ extern "C" {
     {
         sync_thread_arg_t *a = (sync_thread_arg_t*)arg;
         PEP_SESSION session = (PEP_SESSION) a->session;
-
         a->sync_jvm->AttachCurrentThread(&sync_env, NULL);
 
         jclass clazz = sync_env->GetObjectClass(sync_obj);
@@ -274,7 +274,7 @@ extern "C" {
         showHandShakeMethodID = sync_env->GetMethodID(
             clazz, 
             "showHandshakeCallFromC", 
-            "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;)I");
+            "(Lorg/pEp/jniadapter/Identity;Lorg/pEp/jniadapter/Identity;)I");
         assert(showHandShakeMethodID);
 
         messageToSendMethodID = sync_env->GetMethodID(
@@ -285,11 +285,6 @@ extern "C" {
 
         sync_env->DeleteLocalRef(clazz);
 
-        messageClass = findClass(sync_env, "org/pEp/jniadapter/Message");
-        assert(messageClass);
-
-        messageConstructorMethodID = sync_env->GetMethodID(messageClass, "<init>", "(J)V");
-        assert(messageConstructorMethodID);
 
         PEP_STATUS status = do_sync_protocol(session, a->queue);
 
@@ -316,6 +311,7 @@ extern "C" {
             jobject obj
         )
     {
+    LOGD("Start Sync");
         PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
 
         pthread_t *thread = NULL;
@@ -361,7 +357,10 @@ extern "C" {
                                 inject_sync_msg,
                                 retrieve_next_sync_msg);
 
-
+        messageClass = findClass(env, "org/pEp/jniadapter/Message");
+        assert(messageClass);
+        messageConstructorMethodID = env->GetMethodID(messageClass, "<init>", "(J)V");
+        assert(messageConstructorMethodID);
         pthread_create(thread, NULL, sync_thread_routine, (void *) a);
     }
 

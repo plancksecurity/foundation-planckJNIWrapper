@@ -11,14 +11,6 @@
 #include <time64.h>
 #endif
 
-#if 0 // Enable if log needed
-#include <android/log.h>
-#define  LOG_TAG    "PEPJNIUTILS"
-#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
-#else
-#define  LOGD(...)
-#endif
-
 namespace pEp {
     namespace JNIAdapter {
         jclass findClass(JNIEnv *env, const char *classname)
@@ -316,15 +308,15 @@ namespace pEp {
             if (!ts)
                 return (jobject) NULL;
 
-            LOGD("/* Seconds (0-60) */  FROM   :%d", ts->tm_sec);    
-            LOGD("/* Minutes (0-59) */         :%d", ts->tm_min);    
-            LOGD("/* Hours (0-23) */           :%d", ts->tm_hour);   
-            LOGD("/* Day of the month (1-31) */:%d", ts->tm_mday);   
-            LOGD("/* Month (0-11) */           :%d", ts->tm_mon);    
-            LOGD("/* Year - 1900 */            :%d", ts->tm_year);   
+            //LOGD("/* Seconds (0-60) */  FROM   :%d", ts->tm_sec);
+            //LOGD("/* Minutes (0-59) */         :%d", ts->tm_min);    
+            //LOGD("/* Hours (0-23) */           :%d", ts->tm_hour);   
+            //LOGD("/* Day of the month (1-31) */:%d", ts->tm_mday);   
+            //LOGD("/* Month (0-11) */           :%d", ts->tm_mon);    
+            //LOGD("/* Year - 1900 */            :%d", ts->tm_year);   
 
             time64_t t = timegm64(ts)*1000;
-            LOGD( "TimeGM returns : %lld", t);
+            //LOGD( "TimeGM returns : %lld", t);
             jclass clazz = findClass(env, "java/util/Date");
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "(J)V");
             assert(constructor);
@@ -343,7 +335,7 @@ namespace pEp {
                 return NULL;
 
             jlong t = callLongMethod(env, date, "getTime");
-            LOGD( "Set Time to : %lld", t);
+            //LOGD( "Set Time to : %lld", t);
             timestamp *ts = (timestamp*)calloc(1, sizeof(timestamp));
             assert(ts);
             if (ts == NULL)
@@ -353,12 +345,12 @@ namespace pEp {
                 time64_t clock = t/1000;
                 gmtime64_r(&clock, ts);
 
-                LOGD("/* Seconds (0-60) */  TO     :%d", ts->tm_sec);    
-                LOGD("/* Minutes (0-59) */         :%d", ts->tm_min);    
-                LOGD("/* Hours (0-23) */           :%d", ts->tm_hour);   
-                LOGD("/* Day of the month (1-31) */:%d", ts->tm_mday);   
-                LOGD("/* Month (0-11) */           :%d", ts->tm_mon);    
-                LOGD("/* Year - 1900 */            :%d", ts->tm_year);   
+                //LOGD("/* Seconds (0-60) */  TO     :%d", ts->tm_sec);    
+                //LOGD("/* Minutes (0-59) */         :%d", ts->tm_min);    
+                //LOGD("/* Hours (0-23) */           :%d", ts->tm_hour);   
+                //LOGD("/* Day of the month (1-31) */:%d", ts->tm_mday);   
+                //LOGD("/* Month (0-11) */           :%d", ts->tm_mon);    
+                //LOGD("/* Year - 1900 */            :%d", ts->tm_year);   
             }
 
             return ts;
