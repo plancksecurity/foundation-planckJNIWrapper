@@ -207,6 +207,7 @@ extern "C" {
     // Called by sync thread only
     PEP_STATUS show_handshake(void *obj, pEp_identity *me, pEp_identity *partner)
     {
+        LOGD("ShowHandshake");
         jobject me_ = NULL;
         jobject partner_ = NULL;
 
