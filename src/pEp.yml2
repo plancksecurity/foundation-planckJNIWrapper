@@ -71,6 +71,7 @@ namespace pEp {
 
         pEp_commit_failed								> 0xff01
         pEp_message_consumed                            > 0xff02
+        pEp_message_discarded                           > 0xff03
 
 
         pEp_record_not_found                            > -6
@@ -181,9 +182,9 @@ namespace pEp {
         basic bool blacklist_is_listed(string fpr);
         basic void config_passive_mode(bool enable);
         basic void config_unencrypted_subject(bool enable);
-        basic void accept_sync_handshake_result(identity ident);
-        basic void reject_sync_handshake_result(identity ident);
-        basic void cancel_sync_handshake_result(identity ident);
+        basic void accept_sync_handshake(identity ident);
+        basic void reject_sync_handshake(identity ident);
+        basic void cancel_sync_handshake(identity ident);
 
     };
 

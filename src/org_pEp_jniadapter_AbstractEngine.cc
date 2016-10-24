@@ -202,6 +202,7 @@ extern "C" {
     static jmethodID showHandShakeMethodID = NULL; 
     static jmethodID messageToSendMethodID = NULL;
     static jclass messageClass = NULL;
+    static jclass identityClass = NULL;
     static jmethodID messageConstructorMethodID = NULL;
 
     // Called by sync thread only
@@ -211,8 +212,8 @@ extern "C" {
         jobject me_ = NULL;
         jobject partner_ = NULL;
 
-        me_ = from_identity(sync_env, me);
-        partner_ = from_identity(sync_env, partner);
+        me_ = from_identity(sync_env, me, identityClass);
+        partner_ = from_identity(sync_env, partner, identityClass);
 
         jint result = sync_env->CallIntMethod(sync_obj, showHandShakeMethodID, me_, partner_);
 
@@ -273,9 +274,9 @@ extern "C" {
         jclass clazz = sync_env->GetObjectClass(sync_obj);
 
         showHandShakeMethodID = sync_env->GetMethodID(
-            clazz, 
-            "showHandshakeCallFromC", 
-            "(Lorg/pEp/jniadapter/Identity;Lorg/pEp/jniadapter/Identity;)I");
+            clazz,
+            "showHandshakeCallFromC",
+            "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;)I");
         assert(showHandShakeMethodID);
 
         messageToSendMethodID = sync_env->GetMethodID(
@@ -348,6 +349,7 @@ extern "C" {
         a->session = session;
         a->queue = queue;
         messageClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/Message")));
+        identityClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/_Identity")));
         messageConstructorMethodID = env->GetMethodID(messageClass, "<init>", "(J)V");
 
         env->GetJavaVM(&a->sync_jvm);
@@ -399,8 +401,13 @@ extern "C" {
         sync_session = NULL;
 
         unregister_sync_callbacks(session);
+        env->DeleteGlobalRef(sync_obj);
+        env->DeleteGlobalRef(messageClass);
+        env->DeleteGlobalRef(identityClass);
 
         sync_obj = NULL;
+        messageClass = NULL;
+        identityClass = NULL;
 
         queue->push_front(NULL);
         pthread_join(*thread, NULL);

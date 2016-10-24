@@ -21,7 +21,7 @@ tstylesheet {
         document "org/pEp/jniadapter/{$name}.java", "text" {
             | package org.pEp.jniadapter;
             |
-            | class «$name» extends pEpException {
+            | public class «$name» extends pEpException {
             |   public «$name»(String message) {
             |     super(message);
             |   }

@@ -55,6 +55,30 @@ namespace pEp {
             return field;
         }
 
+        //TODO: fix/generalize/clean patch added to make keysync work using globalref to class
+        jfieldID getFieldID(
+                JNIEnv *env,
+                const char *classname,
+                const char *fieldname,
+                const char *signature,
+                const jclass clazz
+            )
+        {
+
+            jfieldID field = env->GetFieldID(clazz, fieldname, signature);
+            assert(field);
+
+            if (field == NULL) {
+                jclass ex = env->FindClass("java/lang/NoSuchFieldError");
+                assert(ex);
+                env->ThrowNew(ex, fieldname);
+                throw std::invalid_argument(std::string(fieldname));
+            }
+
+
+            return field;
+        }
+
         jint callIntMethod(
                 JNIEnv *env,
                 jobject obj,
@@ -363,6 +387,19 @@ namespace pEp {
                 jfieldID fieldID = getFieldID(env, classname, name, "[B");
                 env->SetObjectField(obj, fieldID,
                         reinterpret_cast<jobject>(from_string(env, value)));
+
+            }
+        }
+
+        //TODO: fix/generalize/clean patch added to make keysync work using globalref to class
+        static void _setStringField(JNIEnv *env, const char *classname,
+                jobject obj, const char *name, const char *value, const jclass clazz)
+        {
+            if (value) {
+                jfieldID fieldID = getFieldID(env, classname, name, "[B", clazz);
+                env->SetObjectField(obj, fieldID,
+                        reinterpret_cast<jobject>(from_string(env, value)));
+
             }
         }
 
@@ -393,6 +430,35 @@ namespace pEp {
                 jfieldID me_id = getFieldID(env, classname, "me", "Z");
                 env->SetBooleanField(obj, me_id, (jboolean) ident->me);
 
+            }
+
+            return obj;
+        }
+
+        //TODO: fix/generalize/clean patch added to make keysync work using globalref to class
+        jobject from_identity(JNIEnv *env, pEp_identity *ident, jclass identityClass)
+        {
+            if (!ident)
+                return (jobject) NULL;
+
+            static const char *classname = "org/pEp/jniadapter/_Identity";
+            jmethodID constructor = env->GetMethodID(identityClass, "<init>", "()V");
+            assert(constructor);
+            jobject obj = env->NewObject(identityClass, constructor);
+
+            if (ident) {
+                _setStringField(env, classname, obj, "address", ident->address, identityClass);
+                _setStringField(env, classname, obj, "fpr", ident->fpr, identityClass);
+                _setStringField(env, classname, obj, "user_id", ident->user_id, identityClass);
+                _setStringField(env, classname, obj, "username", ident->username, identityClass);
+
+                jfieldID comm_type_id = getFieldID(env, classname, "comm_type", "I", identityClass);
+                env->SetIntField(obj, comm_type_id, (jint) (int) ident->comm_type);
+
+                _setStringField(env, classname, obj, "lang", ident->lang, identityClass);
+
+                jfieldID me_id = getFieldID(env, classname, "me", "Z", identityClass);
+                env->SetBooleanField(obj, me_id, (jboolean) ident->me);
             }
 
             return obj;

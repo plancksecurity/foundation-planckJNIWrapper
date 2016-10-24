@@ -155,7 +155,10 @@ abstract class AbstractEngine implements AutoCloseable {
         this.showHandshakeCallback = showHandshakeCallback;
     }
 
-    public int showHandshakeCallFromC(Identity myself, Identity partner) {
+    public int showHandshakeCallFromC(_Identity _myself, _Identity _partner) {
+        Identity myself = new Identity(_myself);
+        Identity partner = new Identity(_partner);
+
         if (showHandshakeCallback != null) {
             showHandshakeCallback.showHandshake(myself, partner);
         } else {

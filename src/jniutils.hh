@@ -114,6 +114,14 @@ namespace pEp {
                 const char *signature
             );
 
+            jfieldID getFieldID(
+                JNIEnv *env,
+                const char *classname,
+                const char *fieldname,
+                const char *signature,
+                const jclass clazz
+            );
+
         jint callIntMethod(
                 JNIEnv *env,
                 jobject obj,
@@ -155,6 +163,7 @@ namespace pEp {
         timestamp *to_timestamp(JNIEnv *env, jobject date);
 
         jobject from_identity(JNIEnv *env, pEp_identity *ident);
+        jobject from_identity(JNIEnv *env, pEp_identity *ident, jclass identityClass);
         pEp_identity *to_identity(JNIEnv *env, jobject obj);
 
         jobject from_identitylist(JNIEnv *env, identity_list *il);
