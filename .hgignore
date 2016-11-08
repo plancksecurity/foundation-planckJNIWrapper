@@ -11,6 +11,7 @@ syntax: glob
 *.so
 *.orig
 *~
+.DS_Store
 
 # ignore generated files
 
@@ -21,6 +22,10 @@ throw_pEp_exception.*
 Color.java
 Engine.java
 Message.java
+DecryptFlags.java
+Rating.java
+Status.java
+SyncHandshakeResult.java
 
 # ignore vim workspace
 
