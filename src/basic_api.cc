@@ -2,6 +2,10 @@
 #include <pEp/blacklist.h>
 #include <pEp/sync.h>
 
+#ifndef ANDROID
+#include <string.h>
+#endif
+
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
 
