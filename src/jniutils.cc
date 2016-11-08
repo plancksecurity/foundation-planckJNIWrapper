@@ -5,11 +5,12 @@
 #include <time.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <string.h>
 #include <string>
 
 #ifdef ANDROID
 #include <time64.h>
+#else
+#include <string.h>
 #endif
 
 namespace pEp {
