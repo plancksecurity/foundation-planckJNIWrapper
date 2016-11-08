@@ -9,6 +9,9 @@
 
 #ifdef ANDROID
 #include <time64.h>
+#define time_t time64_t
+#define timegm timegm64
+#define gmtime_r gmtime64_r
 #else
 #include <string.h>
 #endif
@@ -341,7 +344,7 @@ namespace pEp {
             //LOGD("/* Month (0-11) */           :%d", ts->tm_mon);    
             //LOGD("/* Year - 1900 */            :%d", ts->tm_year);   
 
-            time64_t t = timegm64(ts)*1000;
+            time_t t = timegm(ts)*1000;
             //LOGD( "TimeGM returns : %lld", t);
             jclass clazz = findClass(env, "java/util/Date");
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "(J)V");
@@ -368,8 +371,8 @@ namespace pEp {
                 return NULL;
 
             if (t){
-                time64_t clock = t/1000;
-                gmtime64_r(&clock, ts);
+                time_t clock = t/1000;
+                gmtime_r(&clock, ts);
 
                 //LOGD("/* Seconds (0-60) */  TO     :%d", ts->tm_sec);    
                 //LOGD("/* Minutes (0-59) */         :%d", ts->tm_min);    
