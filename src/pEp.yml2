@@ -70,8 +70,8 @@ namespace pEp {
         pEp_statemachine_invalid_action                 > 0x0985
 
         pEp_commit_failed								> 0xff01
-        pEp_message_consumed                            > 0xff02
-        pEp_message_discarded                           > 0xff03
+        pEp_message_consume                             > 0xff02
+        pEp_message_ignore                              > 0xff03
 
 
         pEp_record_not_found                            > -6
