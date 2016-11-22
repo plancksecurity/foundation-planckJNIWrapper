@@ -435,6 +435,8 @@ namespace pEp {
                 jfieldID me_id = getFieldID(env, classname, "me", "Z");
                 env->SetBooleanField(obj, me_id, (jboolean) ident->me);
 
+                jfieldID flags_id = getFieldID(env, classname, "flags", "I");
+                env->SetIntField(obj, flags_id, (jint) (int) ident->flags);
             }
 
             return obj;
@@ -464,6 +466,9 @@ namespace pEp {
 
                 jfieldID me_id = getFieldID(env, classname, "me", "Z", identityClass);
                 env->SetBooleanField(obj, me_id, (jboolean) ident->me);
+
+                jfieldID flags_id = getFieldID(env, classname, "flags", "I", identityClass);
+                env->SetIntField(obj, flags_id, (jint) (int) ident->flags);
             }
 
             return obj;
@@ -505,6 +510,9 @@ namespace pEp {
 
             jfieldID me_id = getFieldID(env, classname, "me", "Z");
             ident->me = (bool) env->GetBooleanField(obj, me_id);
+            
+            jfieldID flags_id = getFieldID(env, classname, "flags", "I");
+            ident->flags = (identity_flags_t) (int) env->GetIntField(obj, flags_id);
 
             return ident;
         }

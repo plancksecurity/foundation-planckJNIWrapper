@@ -112,6 +112,12 @@ namespace pEp {
         PEP_decrypt_flag_discarded > 4
     };
 
+    enum IdentityFlags {
+        PEP_idf_not_for_sync > 1
+        PEP_idf_list > 2
+        PEP_idf_devicegroup > 256
+    };
+
     enum SyncHandshakeResult {
         sync_handshake_cancel   > -1
         sync_handshake_accepted > 0
@@ -124,7 +130,7 @@ namespace pEp {
                 in stringlist extra,
                 creates message dst,
                 Cconst PEP_enc_format encformat "PEP_enc_PEP",
-                Cconst PEP_encrypt_flags flage "0"
+                Cconst PEP_encrypt_flags flags "0"
             );
 
         method encrypt_message_for_self(

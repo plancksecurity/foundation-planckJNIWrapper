@@ -8,6 +8,7 @@ public class Identity {
     public CommType comm_type;
     public String lang;
     public boolean me;
+    public int flags;
 
     public Identity() {
         this.me = false;
@@ -27,6 +28,7 @@ public class Identity {
         comm_type = CommType.Management.tag.get(i.comm_type);
         lang = AbstractEngine.toUTF16(i.lang);
         me = i.me;
+        flags = i.flags;
     }
 }
 
