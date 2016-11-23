@@ -155,6 +155,12 @@ tstylesheet {
                 return result;
             ||
 
+            if "not($singlereturn) and not($multireturn)"
+            ||
+                _«@name»(`apply "parm[in]", mode=call;`);
+                return;
+            ||
+                
             ||
             }
             ||

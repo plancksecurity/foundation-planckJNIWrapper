@@ -109,7 +109,7 @@ namespace pEp {
     enum DecryptFlags {
         pEp_decrypt_flag_own_private_key > 1
         PEP_decrypt_flag_consumed > 2
-        PEP_decrypt_flag_discarded > 4
+        PEP_decrypt_flag_ignored > 4
     };
 
     enum IdentityFlags {
@@ -145,6 +145,7 @@ namespace pEp {
                 creates message dst,
                 creates stringlist keylist,
                 returns Rating rating,
+                /* TODO replace with int, this is a OR of multipla DecryptFlags */
                 returns DecryptFlags flags
             );
 
@@ -176,6 +177,16 @@ namespace pEp {
         method OpenPGP_list_keyinfo(
                 in string pattern,
                 returns stringpairlist keyinfoList
+            );
+
+        method set_identity_flags(
+                in identity ident,
+                in int flags
+            );
+
+        method unset_identity_flags(
+                in identity ident,
+                in int flags
             );
 
         basic string trustwords(identity ident);

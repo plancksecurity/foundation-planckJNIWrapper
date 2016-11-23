@@ -28,12 +28,18 @@ tstylesheet {
 
     template "method" {
         const "mangled" call "mangle";
-        const "rettype", "name(parm[creates|returns]/*[2])";
-        const "retname", "name(parm[creates|returns]/*[3])";
-        const "jtype" call "toJavaDeclare" with "type", "$rettype";
+        const "returning", "count(parm/creates|parm/returns)";
+        const "CretType" choose {
+            when "$returning = 0" > void
+            when "$returning > 0" > jobject
+        }
+        const "CretDefault" choose {
+            when "$returning = 0" > 
+            when "$returning > 0" > NULL
+        }
 
         ||
-        JNIEXPORT jobject JNICALL «$mangled»(
+        JNIEXPORT «$CretType» JNICALL «$mangled»(
                 JNIEnv *env,
                 jobject obj`apply "parm[in]", mode=sig`
             )
@@ -51,13 +57,13 @@ tstylesheet {
                     status < PEP_STATUS_OK |`> |`
                     status >= PEP_TRUSTWORD_NOT_FOUND) {
                 throw_pEp_Exception(env, status);
-                return NULL;
+                return «$CretDefault»;
             }
 
         ||
 
         choose {
-            when "count(parm[returns|creates]) > 1" {
+            when "$returning > 1" {
                 apply "parm[returns|creates]", mode=return;
 
                 apply "parm[1]", mode=return {
@@ -75,16 +81,17 @@ tstylesheet {
                 ||
             }
 
-            when "count(parm[returns|creates]) = 1" {
+            when "$returning = 1" {
+                const "rettype", "name(parm[creates|returns]/*[2])";
                 choose {
                     when "ancestor::namespace/child::enum[@name=$rettype]" apply "parm[returns|creates]", mode=return {
-                        with "jtype", "$jtype";
+                        with "jtype", call "toJavaDeclare" with "type", "$rettype";
                         with "jnitype", "'jint'";
                         with "sig", "'(I)V'";
                     }
 
                     when "$rettype = 'message' or $rettype = 'identity'" apply "parm[returns|creates]", mode=return {
-                        with "jtype", "$jtype";
+                        with "jtype", call "toJavaDeclare" with "type", "$rettype";
                         with "jnitype", "'jlong'";
                         with "sig", "'(J)V'";
                     }
@@ -239,6 +246,8 @@ tstylesheet {
                 | message *_«$name» = (message *) callLongMethod(env, «$name», "getHandle");
             when "$type='bool'"
                 | bool _«$name» = (bool) «$name»;
+            when "$type='int'"
+                | int _«$name» = (int) «$name»;
             otherwise
                 | √$type *_«$name» = to_«$type»(env, «$name»);
         }

@@ -14,6 +14,7 @@ function "toJava" {
         when "$type='message'" > Message
         when "$type='void'" > void
         when "$type='bool'" > Boolean
+        when "$type='int'" > Integer
 
         otherwise call "CamelCase" with "text", "$type";
     }
@@ -82,6 +83,7 @@ function "toIntermediate" {
         when "$type='bool'" > boolean
         when "$type='DecryptFlags'" > DecryptFlags
         when "$type='SyncHandshakeResult'" > int
+        when "$type='int'" > int
 
         otherwise call "toJava" with "type", "$type";
     }
