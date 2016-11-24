@@ -82,25 +82,7 @@ tstylesheet {
             }
 
             when "$returning = 1" {
-                const "rettype", "name(parm[creates|returns]/*[2])";
-                choose {
-                    when "ancestor::namespace/child::enum[@name=$rettype]" apply "parm[returns|creates]", mode=return {
-                        with "jtype", call "toJavaDeclare" with "type", "$rettype";
-                        with "jnitype", "'jint'";
-                        with "sig", "'(I)V'";
-                    }
-
-                    when "$rettype = 'message' or $rettype = 'identity'" apply "parm[returns|creates]", mode=return {
-                        with "jtype", call "toJavaDeclare" with "type", "$rettype";
-                        with "jnitype", "'jlong'";
-                        with "sig", "'(J)V'";
-                    }
-
-                    when "$rettype = 'stringlist'" apply "parm[returns|creates]", mode=return;
-                    when "$rettype = 'stringpairlist'" apply "parm[returns|creates]", mode=return;
-
-                    otherwise error | # not implemented: return type "«$rettype»";
-                }
+                apply "parm[returns|creates]", mode=return;
 
                 ||
                     return «name(parm[returns|creates]/*[3])»_;
@@ -139,14 +121,14 @@ tstylesheet {
         param "jtype" call "toJava" with "type", "$type";
         param "name", "name(*[3])";
         param "jnitype" choose {
-            when "$type = 'message'" > jlong
+            when "$type = 'message' or $type = 'identity'" > jlong
             when "ancestor::namespace/child::enum[@name=$type]" > jint
             when "$type = 'stringlist'" > jbyteArray
             otherwise >
         }
         param "retname", "$name";
         param "sig" choose {
-            when "$type = 'message'" > (J)V
+            when "$type = 'message' or $type = 'identity'" > (J)V
             when "ancestor::namespace/child::enum[@name=$type]" > (I)V
             when "$type = 'stringlist'" > (Ljava.lang.Object;)V
             otherwise > ()V
@@ -177,7 +159,7 @@ tstylesheet {
 
             ||
 
-            when "ancestor::namespace/child::enum[@name=$jtype]" {
+            when "ancestor::namespace/child::enum[@name=$type]" {
             const "ljtype" call "lcase" with "text","$jtype";
             ||
             jobject «$name»_ = NULL;

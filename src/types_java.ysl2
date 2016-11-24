@@ -2,43 +2,26 @@ function "toJava" {
     param "type";
 
     choose {
-        when "$type='stringlist'" > Vector<String>
-        when "$type='string'" > String
-        when "$type='message'" > Message
-        when "$type='identity'" > Identity
-        when "$type='identitylist'" > Vector<Identity>
-        when "$type='timestamp'" > Date
-        when "$type='EncFormat'" > Message.EncFormat
-        when "$type='bloblist'" > Vector<Blob>
-        when "$type='stringpairlist'" > ArrayList<Pair<String, String>>
-        when "$type='message'" > Message
-        when "$type='void'" > void
         when "$type='bool'" > Boolean
         when "$type='int'" > Integer
+        when "$type='string'" > String
+        when "$type='timestamp'" > Date
+        when "$type='void'" > void
+
+        when "$type='identity'" > Identity
+        when "$type='message'" > Message
+
+        when "$type='bloblist'" > Vector<Blob>
+        when "$type='identitylist'" > Vector<Identity>
+        when "$type='stringlist'" > Vector<String>
+        when "$type='stringpairlist'" > ArrayList<Pair<String, String>>
+
+        when "$type='Color'" > Color
+        when "$type='DecryptFlags'" > DecryptFlags
+        when "$type='EncFormat'" > Message.EncFormat
+        when "$type='Rating'" > Rating
 
         otherwise call "CamelCase" with "text", "$type";
-    }
-}
-
-function "toJavaDeclare" {
-    param "type";
-
-    choose {
-        when "$type='stringlist'" > Vector<String>
-        when "$type='string'" error | # cannot declare "string"
-        when "$type='message'" > Message
-        when "$type='identity'" > _Identity
-        when "$type='identitylist'" | # cannot declare "identitylist"
-        when "$type='timestamp'" | # cannot declare "timestamp"
-        when "$type='EncFormat'" > Message.EncFormat
-        when "$type='bloblist'" | # cannot declare "bloblist"
-        when "$type='stringpairlist'" | # cannot declare "stringpairlist"
-        when "$type='message'" > Message
-        when "$type='Color'" > Color
-        when "$type='Rating'" > Rating
-        //when "$type='bool'" > boolean
-
-        otherwise error | # cannot declare "«$type»"
     }
 }
 
@@ -51,19 +34,22 @@ function "toSig" {
         otherwise {
             > L
             choose {
-                when "$type='stringlist'" > java/util/Vector
-                when "$type='string'" error | # cannot declare "string"
-                when "$type='message'" > org/pEp/jniadapter/Message
-                when "$type='identity'" > org/pEp/jniadapter/_Identity
-                when "$type='identitylist'" > java/util/Vector
                 when "$type='timestamp'" > java/util/Date
-                when "$type='EncFormat'" > org/pEp/jniadapter/Message/EncFormat
-                when "$type='bloblist'" > java/util/Vector
-                when "$type='stringpairlist'" > java/util/ArrayList
+
+                when "$type='identity'" > org/pEp/jniadapter/_Identity
                 when "$type='message'" > org/pEp/jniadapter/Message
+
+                when "$type='bloblist'" > java/util/Vector
+                when "$type='identitylist'" > java/util/Vector
+                when "$type='stringlist'" > java/util/Vector
+                when "$type='stringpairlist'" > java/util/ArrayList
+
                 when "$type='Color'" > org/pEp/jniadapter/Color
-                when "$type='Rating'" > org/pEp/jniadapter/Rating
                 when "$type='DecryptFlags'" > org/pEp/jniadapter/DecryptFlags
+                when "$type='EncFormat'" > org/pEp/jniadapter/Message/EncFormat
+                when "$type='Rating'" > org/pEp/jniadapter/Rating
+
+                otherwise error | # cannot declare "«$type»"
             }
             > ;
         }
@@ -74,16 +60,15 @@ function "toIntermediate" {
     param "type";
 
     choose {
-        when "$type='stringlist'" > Vector<byte[]>
-        when "$type='stringpairlist'" > ArrayList<Pair<byte[], byte[]>>
+        when "$type='bool'" > boolean
+        when "$type='int'" > int
         when "$type='string'" > byte[]
+
+        when "$type='bloblist'" > Vector<_Blob>
         when "$type='identity'" > _Identity
         when "$type='identitylist'" > Vector<_Identity>
-        when "$type='bloblist'" > Vector<_Blob>
-        when "$type='bool'" > boolean
-        when "$type='DecryptFlags'" > DecryptFlags
-        when "$type='SyncHandshakeResult'" > int
-        when "$type='int'" > int
+        when "$type='stringlist'" > Vector<byte[]>
+        when "$type='stringpairlist'" > ArrayList<Pair<byte[], byte[]>>
 
         otherwise call "toJava" with "type", "$type";
     }
