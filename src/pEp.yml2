@@ -189,6 +189,10 @@ namespace pEp {
                 in int flags
             );
 
+        method own_identities_retrieve(
+                returns identitylist identities
+            );
+
         basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);
