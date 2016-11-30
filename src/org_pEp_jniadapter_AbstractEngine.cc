@@ -208,7 +208,6 @@ extern "C" {
     // Called by sync thread only
     PEP_STATUS show_handshake(void *obj, pEp_identity *me, pEp_identity *partner)
     {
-        LOGD("ShowHandshake");
         jobject me_ = NULL;
         jobject partner_ = NULL;
 
@@ -223,7 +222,6 @@ extern "C" {
     // Called by sync thread only
     PEP_STATUS message_to_send(void *obj, message *msg)
     {
-    LOGD("Message To Send");
         jobject msg_ = NULL;
 
         msg_ = sync_env->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
@@ -245,15 +243,30 @@ extern "C" {
         return 0;
     }
 
-    void *retrieve_next_sync_msg(void *arg)
+    void *retrieve_next_sync_msg(void *arg, time_t *timeout)
     {
         locked_queue< sync_msg_t * > *queue = (locked_queue< sync_msg_t * > *) arg;
 
-        while (!queue->size())
+        time_t now, end;
+        void *msg;
+
+        if(*timeout == 0){
+            now = time(NULL);
+            end = now + *timeout;
+        }
+
+        while (!queue->size()){
             // TODO: add blocking dequeue 
             usleep(100000);
 
-        void *msg = queue->front();
+            if(*timeout == 0){
+                now = time(NULL);
+                if(now > end)
+                    return NULL;
+            }
+        }
+
+        msg = queue->front();
         queue->pop_front();
         return msg;
     }
