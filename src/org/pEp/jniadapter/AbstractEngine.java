@@ -12,7 +12,7 @@ abstract class AbstractEngine implements AutoCloseable {
 
 
     private Sync.MessageToSendCallback messageToSendCallback;
-    private Sync.showHandshakeCallback showHandshakeCallback;
+    private Sync.notifyHandshakeCallback notifyHandshakeCallback;
     private native void init() throws pEpException;
     private native void release();
 
@@ -151,16 +151,16 @@ abstract class AbstractEngine implements AutoCloseable {
         this.messageToSendCallback = messageToSendCallback;
     }
 
-    public void setShowHandshakeCallback(Sync.showHandshakeCallback showHandshakeCallback) {
-        this.showHandshakeCallback = showHandshakeCallback;
+    public void setnotifyHandshakeCallback(Sync.notifyHandshakeCallback notifyHandshakeCallback) {
+        this.notifyHandshakeCallback = notifyHandshakeCallback;
     }
 
-    public int showHandshakeCallFromC(_Identity _myself, _Identity _partner) {
+    public int notifyHandshakeCallFromC(_Identity _myself, _Identity _partner, SyncHandshakeSignal _signal) {
         Identity myself = new Identity(_myself);
         Identity partner = new Identity(_partner);
 
-        if (showHandshakeCallback != null) {
-            showHandshakeCallback.showHandshake(myself, partner);
+        if (notifyHandshakeCallback != null) {
+            notifyHandshakeCallback.notifyHandshake(myself, partner, _signal);
         } else {
             throw new RuntimeException("Callback not set");
         }
