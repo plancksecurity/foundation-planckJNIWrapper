@@ -125,12 +125,13 @@ namespace pEp {
     };
 
     enum SyncHandshakeSignal {
-        sync_handshake_dismiss_dialog > 0
-        sync_handshake_show_dialog > 1
-        sync_handshake_success > 2
-        sync_handshake_failure > 3
-        sync_device_added > 4
-        sync_group_created > 5
+        sync_notify_undefined > 0
+        sync_notify_init_add_our_device > 1
+        sync_notify_init_add_other_device > 2
+        sync_notify_init_form_group > 3
+        sync_notify_timeout > 4
+        sync_notify_accepted_device_added > 5
+        sync_notify_accepted_group_created > 6
     };
 
     interface Engine {
