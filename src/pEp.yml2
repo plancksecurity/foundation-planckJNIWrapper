@@ -53,7 +53,7 @@ namespace pEp {
 	    pEp_contraints_violated                         > 0x0802
 	    pEp_cannot_encode                               > 0x0803
 
-	    pEp_sync_no_trustwords_callback                 > 0x0901
+	    pEp_sync_no_notify_callback                     > 0x0901
         pEp_sync_illegal_message                        > 0x0902
         pEp_sync_no_inject_callback                     > 0x0903
 
@@ -122,6 +122,15 @@ namespace pEp {
         sync_handshake_cancel   > -1
         sync_handshake_accepted > 0
         sync_handshake_rejected > 1
+    };
+
+    enum SyncHandshakeSignal {
+        sync_handshake_dismiss_dialog > 0
+        sync_handshake_show_dialog > 1
+        sync_handshake_success > 2
+        sync_handshake_failure > 3
+        sync_device_added > 4
+        sync_group_created > 5
     };
 
     interface Engine {

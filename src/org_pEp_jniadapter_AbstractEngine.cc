@@ -199,23 +199,48 @@ extern "C" {
 
     static jobject sync_obj = NULL;
     static JNIEnv* sync_env = NULL;
-    static jmethodID showHandShakeMethodID = NULL; 
+    static jmethodID notifyHandShakeMethodID = NULL; 
     static jmethodID messageToSendMethodID = NULL;
     static jclass messageClass = NULL;
     static jclass identityClass = NULL;
     static jmethodID messageConstructorMethodID = NULL;
 
     // Called by sync thread only
-    PEP_STATUS show_handshake(void *obj, pEp_identity *me, pEp_identity *partner)
+    PEP_STATUS notify_handshake(void *obj, pEp_identity *me, pEp_identity *partner, sync_handshake_signal signal)
     {
-        LOGD("ShowHandshake");
         jobject me_ = NULL;
         jobject partner_ = NULL;
 
         me_ = from_identity(sync_env, me, identityClass);
         partner_ = from_identity(sync_env, partner, identityClass);
 
-        jint result = sync_env->CallIntMethod(sync_obj, showHandShakeMethodID, me_, partner_);
+        jobject signal_ = NULL;
+        {
+            jclass clazz_signal = findClass(sync_env, "org/pEp/jniadapter/SyncHandshakeSignal");
+            assert(clazz_signal);
+            jmethodID method_values = sync_env->GetStaticMethodID(clazz_signal, "values",
+                    "()[Lorg/pEp/jniadapter/SyncHandshakeSignal;");
+            assert(method_values);
+            jfieldID field_value = sync_env->GetFieldID(clazz_signal, "value", "I");
+            assert(field_value);
+        
+            jobjectArray values = (jobjectArray) sync_env->CallStaticObjectMethod(clazz_signal,
+                    method_values);
+            assert(values);
+        
+            jsize values_size = sync_env->GetArrayLength(values);
+            for (jsize i = 0; i < values_size; i++) {
+                jobject element = sync_env->GetObjectArrayElement(values, i);
+                assert(element);
+                jint value = sync_env->GetIntField(element, field_value);
+                if (value == (jint) signal) {
+                    signal_ = element;
+                    break;
+                }
+            }
+        }
+
+        jint result = sync_env->CallIntMethod(sync_obj, notifyHandShakeMethodID, me_, partner_, signal_);
 
         return (PEP_STATUS) result;
     }
@@ -223,7 +248,6 @@ extern "C" {
     // Called by sync thread only
     PEP_STATUS message_to_send(void *obj, message *msg)
     {
-    LOGD("Message To Send");
         jobject msg_ = NULL;
 
         msg_ = sync_env->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
@@ -245,15 +269,30 @@ extern "C" {
         return 0;
     }
 
-    void *retrieve_next_sync_msg(void *arg)
+    void *retrieve_next_sync_msg(void *arg, time_t *timeout)
     {
         locked_queue< sync_msg_t * > *queue = (locked_queue< sync_msg_t * > *) arg;
 
-        while (!queue->size())
+        time_t now, end;
+        void *msg;
+
+        if(*timeout == 0){
+            now = time(NULL);
+            end = now + *timeout;
+        }
+
+        while (!queue->size()){
             // TODO: add blocking dequeue 
             usleep(100000);
 
-        void *msg = queue->front();
+            if(*timeout == 0){
+                now = time(NULL);
+                if(now > end)
+                    return NULL;
+            }
+        }
+
+        msg = queue->front();
         queue->pop_front();
         return msg;
     }
@@ -273,11 +312,11 @@ extern "C" {
 
         jclass clazz = sync_env->GetObjectClass(sync_obj);
 
-        showHandShakeMethodID = sync_env->GetMethodID(
+        notifyHandShakeMethodID = sync_env->GetMethodID(
             clazz,
-            "showHandshakeCallFromC",
+            "notifyHandshakeCallFromC",
             "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;)I");
-        assert(showHandShakeMethodID);
+        assert(notifyHandShakeMethodID);
 
         messageToSendMethodID = sync_env->GetMethodID(
             clazz, 
@@ -359,7 +398,7 @@ extern "C" {
         register_sync_callbacks(session,
                                 (void *) queue,
                                 message_to_send,
-                                show_handshake, 
+                                notify_handshake, 
                                 inject_sync_msg,
                                 retrieve_next_sync_msg);
 

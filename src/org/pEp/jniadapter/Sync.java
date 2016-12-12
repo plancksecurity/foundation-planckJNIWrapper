@@ -14,8 +14,8 @@ public interface Sync {
         void messageToSend(Message message);
     }
 
-    interface showHandshakeCallback {
-        void showHandshake(Identity myself, Identity partner);
+    interface notifyHandshakeCallback {
+        void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal);
     }
 
 }
