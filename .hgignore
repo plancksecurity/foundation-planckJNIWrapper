@@ -51,7 +51,16 @@ androidTests/build
 androidTests/.idea
 androidTests/androidTests.iml
 androidTests/app/app.iml
-
+.gradle
+android/.externalNativeBuild
+android/android.iml
+android/gradle/wrapper/gradle-wrapper.properties
+android/gradlew
+android/gradlew.bat
+androidTests/gradle/wrapper/gradle-wrapper.properties
+androidTests/gradlew
+androidTests/gradlew.bat
+src/org.tar.gz
 
 syntax: regexp
 android/external/[^.]*
