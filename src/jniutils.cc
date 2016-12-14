@@ -285,6 +285,12 @@ namespace pEp {
                 jobject pair = env->NewObject(clazz_pair, constructor_pair,
                         first, second);
                 callBooleanMethod(env, obj, "add", pair);
+
+                env->DeleteLocalRef(first);
+                env->DeleteLocalRef(second);
+                env->DeleteLocalRef(pair);
+
+
             }
 
             env->DeleteLocalRef(clazz);
