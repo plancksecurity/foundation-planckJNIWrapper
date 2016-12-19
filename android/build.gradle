@@ -110,11 +110,19 @@ android {
         commandLine 'make', 'clean-assets', 'PEP_PACKAGE_NAME='+pEpAppPackageName
     }
 
-    // call pEpEngine Build 
-    task buildpEpEngine(type:Exec) {
+    task buildpEpEngineDebug(type:Exec) {
         workingDir pEpEngineAndroid
         environment['GPGME_INCLUDE_PATH'] = externalIncludePath
         environment['LIBETPAN_PATH'] = libetpanAndroid.absolutePath
+        commandLine './build.sh'
+    }
+
+    // call pEpEngine Build 
+    task buildpEpEngineRelease(type:Exec) {
+        workingDir pEpEngineAndroid
+        environment['GPGME_INCLUDE_PATH'] = externalIncludePath
+        environment['LIBETPAN_PATH'] = libetpanAndroid.absolutePath
+        environment['NDEBUG'] = 'NO_DEBUG_PLEASE'
         commandLine './build.sh'
     }
 
@@ -171,9 +179,9 @@ android {
 
     if(buildAutomatic=="true"){
 
-        buildpEpEngine.dependsOn buildExternal
+        buildpEpEngineRelease.dependsOn buildExternal
         externalAssets.dependsOn buildExternal
-        unzipDeps.dependsOn buildpEpEngine
+        unzipDeps.dependsOn buildpEpEngineRelease
         cpDBAssets.dependsOn buildpEpEngineSystemDB
 
         clean.dependsOn cleanExternal
