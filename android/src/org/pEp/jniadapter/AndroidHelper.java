@@ -29,7 +29,7 @@ public class AndroidHelper {
     private static File tmpDir;
         
     // TODO : Increment when needed.
-    public static int ENGINE_VERSION_CODE = 1220;
+    public static int ENGINE_VERSION_CODE = 1510;
 
     private static File shareDir;
 
