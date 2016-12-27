@@ -315,7 +315,7 @@ extern "C" {
         notifyHandShakeMethodID = sync_env->GetMethodID(
             clazz,
             "notifyHandshakeCallFromC",
-            "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;)I");
+            "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/SyncHandshakeSignal;)I");
         assert(notifyHandShakeMethodID);
 
         messageToSendMethodID = sync_env->GetMethodID(
