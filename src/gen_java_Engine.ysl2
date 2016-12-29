@@ -43,6 +43,8 @@ tstylesheet {
             |> «$pitype» _«$pname» = «$pname».getBytes();
             when "$ptype = 'bool'"
             |> «$pitype» _«$pname» = «$pname».booleanValue();
+            when "$ptype = 'int'"
+            |> «$pitype» _«$pname» = «$pname»; 
             when "ancestor::namespace/child::enum[@name=$ptype]"
             |> «$pitype» _«$pname» = «$pname».value;
             otherwise

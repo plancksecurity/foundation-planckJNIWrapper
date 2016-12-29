@@ -320,5 +320,27 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_cancel_sync_1handshake(
     }
 }
 
+JNIEXPORT jbyteArray JNICALL Java_org_pEp_jniadapter_Engine_getCrashdumpLog(
+        JNIEnv *env,
+        jobject obj,
+        jint maxlines
+    )
+{
+    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+
+    int _maxlines = (int) maxlines;
+    char *_logdata;
+
+    PEP_STATUS status = ::get_crashdump_log(session, _maxlines, &_logdata);
+    if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) ||
+            status < PEP_STATUS_OK ||
+            status >= PEP_TRUSTWORD_NOT_FOUND) {
+        throw_pEp_Exception(env, status);
+        return NULL;
+    }
+
+    return from_string(env, _logdata);
+}
+
 } // extern "C"
 

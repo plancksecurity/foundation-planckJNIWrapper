@@ -218,6 +218,7 @@ namespace pEp {
         basic void accept_sync_handshake(identity ident);
         basic void reject_sync_handshake(identity ident);
         basic void cancel_sync_handshake(identity ident);
+        basic string getCrashdumpLog(int maxlines);
 
     };
 
