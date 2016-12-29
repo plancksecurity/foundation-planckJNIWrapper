@@ -30,5 +30,11 @@ public class Identity {
         me = i.me;
         flags = i.flags;
     }
+
+    @Override
+    public String toString() {
+        return address + "::" + username + "\n" +
+                user_id + "::" + fpr;
+    }
 }
 
