@@ -276,7 +276,7 @@ extern "C" {
         time_t now, end;
         void *msg;
 
-        if(*timeout == 0){
+        if(timeout && *timeout != 0){
             now = time(NULL);
             end = now + *timeout;
         }
@@ -285,7 +285,7 @@ extern "C" {
             // TODO: add blocking dequeue 
             usleep(100000);
 
-            if(*timeout == 0){
+            if(timeout && *timeout != 0){
                 now = time(NULL);
                 if(now > end)
                     return NULL;
