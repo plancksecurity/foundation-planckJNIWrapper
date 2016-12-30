@@ -253,6 +253,7 @@ namespace pEp {
                 jbyteArray a = reinterpret_cast<jbyteArray>(o);
                 char * str = to_string(env, a);
                 _sl = stringlist_add(_sl, str);
+                env->DeleteLocalRef(o);
                 free(str);
             }
 
@@ -329,6 +330,7 @@ namespace pEp {
                 char *first_str = to_string(env, first);
                 char *second_str = to_string(env, second);
                 stringpair_t *sp = new_stringpair(first_str, second_str);
+                env->DeleteLocalRef(pair);
                 free(first_str);
                 free(second_str);
 
@@ -484,11 +486,12 @@ namespace pEp {
                 const char *name)
         {
             jfieldID fieldID = getFieldID(env, classname, name, "[B");
-            jbyteArray field =
-                reinterpret_cast<jbyteArray>(env->GetObjectField(obj,
-                            fieldID));
+            jobject fobj = env->GetObjectField(obj, fieldID);
 
-            return to_string(env, field);
+            char *res =  to_string(env, reinterpret_cast<jbyteArray>(fobj));
+
+            env->DeleteLocalRef(fobj);
+            return res;
         }
 
         pEp_identity *to_identity(JNIEnv *env, jobject obj)
@@ -561,6 +564,7 @@ namespace pEp {
                 jobject o = callObjectMethod(env, obj, "get", i);
                 pEp_identity* ident = to_identity(env, o);
                 _il = identity_list_add(_il, ident);
+                env->DeleteLocalRef(o);
             }
 
             return il;
@@ -647,6 +651,7 @@ namespace pEp {
 
                 _bl = bloblist_add(_bl, b, size, mime_type, filename);
 
+                env->DeleteLocalRef(o);
                 free(mime_type);
                 free(filename);
             }

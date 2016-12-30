@@ -26,6 +26,8 @@ DecryptFlags.java
 Rating.java
 Status.java
 SyncHandshakeResult.java
+IdentityFlags.java
+SyncHandshakeSignal.java
 
 # ignore vim workspace
 
