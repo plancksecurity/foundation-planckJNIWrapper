@@ -203,6 +203,7 @@ extern "C" {
     static jmethodID messageToSendMethodID = NULL;
     static jclass messageClass = NULL;
     static jclass identityClass = NULL;
+    static jclass signalClass = NULL;
     static jmethodID messageConstructorMethodID = NULL;
 
     // Called by sync thread only
@@ -216,15 +217,14 @@ extern "C" {
 
         jobject signal_ = NULL;
         {
-            jclass clazz_signal = findClass(sync_env, "org/pEp/jniadapter/SyncHandshakeSignal");
-            assert(clazz_signal);
-            jmethodID method_values = sync_env->GetStaticMethodID(clazz_signal, "values",
+            assert(signalClass);
+            jmethodID method_values = sync_env->GetStaticMethodID(signalClass, "values",
                     "()[Lorg/pEp/jniadapter/SyncHandshakeSignal;");
             assert(method_values);
-            jfieldID field_value = sync_env->GetFieldID(clazz_signal, "value", "I");
+            jfieldID field_value = sync_env->GetFieldID(signalClass, "value", "I");
             assert(field_value);
         
-            jobjectArray values = (jobjectArray) sync_env->CallStaticObjectMethod(clazz_signal,
+            jobjectArray values = (jobjectArray) sync_env->CallStaticObjectMethod(signalClass,
                     method_values);
             assert(values);
         
@@ -389,6 +389,7 @@ extern "C" {
         a->queue = queue;
         messageClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/Message")));
         identityClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/_Identity")));
+        signalClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/SyncHandshakeSignal")));
         messageConstructorMethodID = env->GetMethodID(messageClass, "<init>", "(J)V");
 
         env->GetJavaVM(&a->sync_jvm);
@@ -443,10 +444,12 @@ extern "C" {
         env->DeleteGlobalRef(sync_obj);
         env->DeleteGlobalRef(messageClass);
         env->DeleteGlobalRef(identityClass);
+        env->DeleteGlobalRef(signalClass);
 
         sync_obj = NULL;
         messageClass = NULL;
         identityClass = NULL;
+        signalClass = NULL;
 
         queue->push_front(NULL);
         pthread_join(*thread, NULL);
