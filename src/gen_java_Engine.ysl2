@@ -89,7 +89,7 @@ tstylesheet {
     }
 
     template "method", mode=plain {
-        const "convert", "count(parm/stringlist|parm/stringpairlist|parm/string|parm/identity) > 0";
+        const "convert", "count(parm/stringlist|parm/stringpairlist|parm/string|parm/identity|parm/identitylist) > 0";
         const "singlereturn", "count(parm/creates|parm/returns) = 1";
         const "multireturn", "count(parm/creates|parm/returns) > 1";
 
@@ -129,6 +129,9 @@ tstylesheet {
             apply "parm", mode=convertIn;
 
             if "$singlereturn" choose {
+
+                // TODO factorize type conversion with multireturn and gen_java_message.java
+
                 when "count(parm[returns]/stringlist|parm[returns]/string) > 0"
                     |> return AbstractEngine.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
                 when "count(parm[returns]/stringpairlist) > 0"
@@ -145,6 +148,17 @@ tstylesheet {
 
                 when "count(parm[returns]/identity) > 0"
                     |> return new Identity(_«@name»(`apply "parm[in]", mode=call;`));
+                when "count(parm[returns]/identitylist) > 0"
+                    ||
+                        Vector<_Identity> glist = _«@name»(`apply "parm[in]", mode=call;`);
+                        if(glist != null){
+                            Vector<Identity> list = new Vector<Identity>();
+                            for (_Identity i : glist)
+                                list.add(new Identity(i));
+                            return list;
+                        }
+                        return null;
+                    ||
                 otherwise
                     |> return _«@name»(`apply "parm[in]", mode=call;`);
             }
