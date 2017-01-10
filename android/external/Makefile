@@ -11,7 +11,7 @@
 NDK_ABI ?= arm
 NDK_TOOLCHAIN_VERSION ?= 4.8
 APP_ABI ?= armeabi-v7a
-APP_PLATFORM ?= android-15
+APP_PLATFORM ?= android-18
 PEP_PACKAGE_NAME ?= com.pep.k9
 
 all: build assets
@@ -57,8 +57,8 @@ NDK_TOOLCHAIN_BASE=$(ANDROID_NDK_HOME)/toolchains/$(NDK_TOOLCHAIN)/prebuilt/$(ND
 
 # include Android's build flags
 TARGET_ARCH_ABI = $(APP_ABI)
+#include $(ANDROID_NDK_HOME)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 include $(ANDROID_NDK_HOME)/toolchains/$(NDK_TOOLCHAIN)/setup.mk
-
 CC := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-gcc --sysroot=$(NDK_SYSROOT)
 LD := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-ld
 AR := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-ar

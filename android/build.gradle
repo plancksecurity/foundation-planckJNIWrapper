@@ -6,8 +6,6 @@ def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 def pEpAppPackageName = hasProperty('pEpAppPackageName') ? pEpAppPackageName : "pep.android.k9"
 
-def externalInstallDir = file('external/data/data/' + pEpAppPackageName + '/app_opt')
-def externalIncludePath = new File(externalInstallDir, 'include').absolutePath
 def libetpanAndroid = file('external/libetpan/build-android')
 
 def pEpEngineAndroid = new File(new File(pEpEngineSrc), 'build-android')
@@ -32,13 +30,19 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 18
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+
+        externalNativeBuild {
+            ndkBuild {
+                abiFilters "armeabi-v7a"
+            }
+        }
     }
     
     sourceSets {
@@ -49,9 +53,6 @@ android {
             // where to find generated Java source
             java.srcDirs = ['../src', 'src']
 
-            // disable automatic ndk-build call, which ignore our Android.mk
-            jni.srcDirs = []
-            jniLibs.srcDir 'libs'
             assets.srcDirs = ['assets', 'external/assets']
         }
     }
@@ -66,16 +67,31 @@ android {
 
     buildTypes {
         release {
+            jniDebuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            jniDebuggable true
+            externalNativeBuild {
+                ndkBuild {
+                    arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1', 'NDK_APPLICATION_MK=/home/huss/src/pEpJNIAdapter/android/jni/Application.mk'
+                }
+            }
+        }
+    }
+
+    externalNativeBuild {
+        ndkBuild {
+            path 'jni/Android.mk'
         }
     }
 
     ext {
+        //FIXME> improve that build to be able to build without the need of unzip deps // Get rid of unziping
         pEpEngineZip = new File(pEpEngineAndroid, 'pEpEngine-android-1.zip')
         libEtPanZip = new File(libetpanAndroid, 'libetpan-android-1.zip')
-        // libOpenSslZip = new File(libetpanAndroid, 'dependencies/openssl/openssl-android-1.zip')
-        // libSaslZip = new File(libetpanAndroid, 'dependencies/cyrus-sasl/cyrus-sasl-android-1.zip')
     }
 
     // call source generation makefile target
@@ -110,32 +126,10 @@ android {
         commandLine 'make', 'clean-assets', 'PEP_PACKAGE_NAME='+pEpAppPackageName
     }
 
-    task buildpEpEngineDebug(type:Exec) {
-        workingDir pEpEngineAndroid
-        environment['GPGME_INCLUDE_PATH'] = externalIncludePath
-        environment['LIBETPAN_PATH'] = libetpanAndroid.absolutePath
-        commandLine './build.sh'
-    }
-
-    // call pEpEngine Build 
-    task buildpEpEngineRelease(type:Exec) {
-        workingDir pEpEngineAndroid
-        environment['GPGME_INCLUDE_PATH'] = externalIncludePath
-        environment['LIBETPAN_PATH'] = libetpanAndroid.absolutePath
-        environment['NDEBUG'] = 'NO_DEBUG_PLEASE'
-        commandLine './build.sh'
-    }
-
-    task cleanpEpEngine(type:Exec) {
-        commandLine 'rm', '-f', pEpEngineZip.absolutePath
-    }
-
     // unzip some of the dependencies 
     task unzipDeps(type: Copy) {
         from zipTree(pEpEngineZip)
         from zipTree(libEtPanZip)
-        // from zipTree(libOpenSslZip)
-        // from zipTree(libSaslZip)
         into file("${buildDir}")
     }
 
@@ -155,60 +149,21 @@ android {
     preBuild.dependsOn(cpDBAssets)
     preBuild.dependsOn(externalAssets)
 
-    // call regular ndk-build(.cmd) script from app directory
-    task jniBuild(type: Exec) {
-        // In case ndk-gdb works one day, add: 'NDK_DEBUG=1',
-        commandLine getNdkBuildCmd(), 'V=1', 'GPGBUILD='+externalInstallDir.absolutePath
-    }
-    jniBuild.dependsOn genSources
-    jniBuild.dependsOn unzipDeps
+    unzipDeps.dependsOn buildExternal
 
-    // Ensure this is done before java build
-    tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn jniBuild
-    }
+    //Should be modified to build automatic only build external not engine or engine db
 
-    task jniClean(type: Exec) {
-        commandLine getNdkBuildCmd(), 'clean', 'GPGBUILD='+externalInstallDir.absolutePath
-        ignoreExitValue = true
-    }
-    clean.dependsOn jniClean
-    jniClean.dependsOn cleanGenSource
-    cleanExternal.dependsOn jniClean
-    clean.dependsOn cleanExternalAssets
+//    if(buildAutomatic=="true"){
+//
+//        buildpEpEngineDebug.dependsOn buildExternal
+//        externalAssets.dependsOn buildExternal
+//        unzipDeps.dependsOn buildpEpEngineDebug
+//        cpDBAssets.dependsOn buildpEpEngineSystemDB
+//
+//        clean.dependsOn cleanExternal
+//        clean.dependsOn cleanpEpEngine
+//    }
 
-    if(buildAutomatic=="true"){
-
-        buildpEpEngineRelease.dependsOn buildExternal
-        externalAssets.dependsOn buildExternal
-        unzipDeps.dependsOn buildpEpEngineRelease
-        cpDBAssets.dependsOn buildpEpEngineSystemDB
-
-        clean.dependsOn cleanExternal
-        clean.dependsOn cleanpEpEngine
-    }
-
-}
-
-def getNdkDir() {
-    if (System.env.ANDROID_NDK != null)
-        return System.env.ANDROID_NDK
-
-    Properties properties = new Properties()
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
-    def ndkdir = properties.getProperty('ndk.dir', null)
-    if (ndkdir == null)
-        throw new GradleException("NDK location not found. Define location with ndk.dir in the local.properties file or with an ANDROID_NDK environment variable.")
-
-    return ndkdir
-}
-
-def getNdkBuildCmd() {
-    def ndkbuild = getNdkDir() + "/ndk-build"
-    if (Os.isFamily(Os.FAMILY_WINDOWS))
-        ndkbuild += ".cmd"
-
-    return ndkbuild
 }
 
 
