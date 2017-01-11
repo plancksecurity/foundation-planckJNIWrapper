@@ -1,5 +1,7 @@
 LOCAL_PATH:= $(call my-dir)
 
+GPGBUILD:= $(LOCAL_PATH)/../external/data/data/pep.android.k9/app_opt
+
 include $(CLEAR_VARS)
 LOCAL_MODULE := libassuan
 LOCAL_SRC_FILES := $(GPGBUILD)/lib/libassuan.so
@@ -41,38 +43,19 @@ LOCAL_MODULE := libuuid
 LOCAL_SRC_FILES := $(GPGBUILD)/lib/libuuid.a
 include $(PREBUILT_STATIC_LIBRARY)
 
-# include $(CLEAR_VARS)
-# LOCAL_MODULE := openssl
-# LOCAL_SRC_FILES := ../build/openssl-android-1/libs/$(TARGET_ARCH_ABI)/libcrypto.a
-# #\
-# #                   ../build/openssl-android-1/libs/$(TARGET_ARCH_ABI)/libssl.a
-# LOCAL_EXPORT_C_INCLUDES := build/openssl-android-1/include
-# include $(PREBUILT_STATIC_LIBRARY)
-# 
-# include $(CLEAR_VARS)
-# LOCAL_MODULE := cyrus-sasl
-# LOCAL_SRC_FILES := ../build/cyrus-sasl-android-1/libs/$(TARGET_ARCH_ABI)/libsasl2.a
-# LOCAL_EXPORT_C_INCLUDES := build/cyrus-sasl-android-1/include
-# include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libetpan
-LOCAL_SRC_FILES := ../build/libetpan-android-1/libs/$(TARGET_ARCH_ABI)/libetpan.a
-LOCAL_EXPORT_C_INCLUDES := build/libetpan-android-1/include
+LOCAL_SRC_FILES := $(LOCAL_PATH)/../build/libetpan-android-1/libs/$(TARGET_ARCH_ABI)/libetpan.a
+LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)/../build/libetpan-android-1/include
 LOCAL_EXPORT_LDLIBS := -lz
 include $(PREBUILT_STATIC_LIBRARY)
 
-include $(CLEAR_VARS)
-LOCAL_MODULE := pEpEngine
-LOCAL_SRC_FILES := ../build/pEpEngine-android-1/libs/$(TARGET_ARCH_ABI)/libpEpEngine.a
-LOCAL_EXPORT_C_INCLUDES := build/pEpEngine-android-1/include
-include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
-LOCAL_SHARED_LIBRARIES := libgpgme 
+LOCAL_SHARED_LIBRARIES := libgpgme libassuan libcurl libgcrypt libgpg-error
 LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid
-# openssl cyrus-sasl 
 LOCAL_CPP_FEATURES += exceptions
 LOCAL_SRC_FILES  := \
 		  ../../src/org_pEp_jniadapter_AbstractEngine.cc \
@@ -81,7 +64,10 @@ LOCAL_SRC_FILES  := \
 		  ../../src/throw_pEp_exception.cc \
 		  ../../src/basic_api.cc \
 		  ../../src/jniutils.cc
-LOCAL_C_INCLUDES := ../../src
+
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../build/pEpEngine-android-1/include
+LOCAL_C_INCLUDES += ../../src
+LOCAL_C_INCLUDES += $(GPGBUILD)/include
 LOCAL_LDLIBS    := -llog
 include $(BUILD_SHARED_LIBRARY)
 
@@ -89,4 +75,8 @@ include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNIAndroidHelper
 LOCAL_SHARED_LIBRARIES := libgpgme
 LOCAL_SRC_FILES  := org_pEp_jniadapter_AndroidHelper.cc
+
 include $(BUILD_SHARED_LIBRARY)
+
+$(call import-add-path,$(LOCAL_PATH)/../../../pEpEngine)
+$(call import-module, build-android/jni/)
