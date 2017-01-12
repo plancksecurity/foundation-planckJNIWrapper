@@ -4,9 +4,9 @@
 #include <pthread.h>
 #include <errno.h>
 #include <jni.h>
-#include <pEp/stringpair.h>
-#include <pEp/identity_list.h>
-#include <pEp/bloblist.h>
+#include <stringpair.h>
+#include <identity_list.h>
+#include <bloblist.h>
 
 #if 0 // Enable if log needed
 #include <android/log.h>

@@ -8,7 +8,6 @@ def pEpAppPackageName = hasProperty('pEpAppPackageName') ? pEpAppPackageName : "
 
 def libetpanAndroid = file('external/libetpan/build-android')
 
-def pEpEngineAndroid = new File(new File(pEpEngineSrc), 'build-android')
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 
 buildscript {
@@ -25,7 +24,7 @@ allprojects {
         jcenter()
     }
 }
-    
+
 apply plugin: 'com.android.library'
 
 android {
@@ -44,7 +43,7 @@ android {
             }
         }
     }
-    
+
     sourceSets {
         main {
 
@@ -90,7 +89,6 @@ android {
 
     ext {
         //FIXME> improve that build to be able to build without the need of unzip deps // Get rid of unziping
-        // pEpEngineZip = new File(pEpEngineAndroid, 'pEpEngine-android-1.zip')
         libEtPanZip = new File(libetpanAndroid, 'libetpan-android-1.zip')
     }
 
@@ -126,20 +124,19 @@ android {
         commandLine 'make', 'clean-assets', 'PEP_PACKAGE_NAME='+pEpAppPackageName
     }
 
-    // unzip some of the dependencies 
+    // unzip some of the dependencies
     task unzipDeps(type: Copy) {
-        //from zipTree(pEpEngineZip)
         from zipTree(libEtPanZip)
         into file("${buildDir}")
     }
 
-    // builds pEpEnginge's system.db 
+    // builds pEpEnginge's system.db
     task buildpEpEngineSystemDB(type:Exec) {
         workingDir pEpEngineDB
         commandLine 'make', 'system.db'
     }
 
-    // copy pEpEnginge's system.db to asset 
+    // copy pEpEnginge's system.db to asset
     task cpDBAssets(type: Copy) {
         from file(new File(pEpEngineDB, 'system.db'))
         into 'assets'

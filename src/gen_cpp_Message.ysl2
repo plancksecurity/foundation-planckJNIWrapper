@@ -16,7 +16,7 @@ tstylesheet {
             #include <stdint.h>
             #include <stdlib.h>
             #include <assert.h>
-            #include <pEp/«@name».h>
+            #include <«@name».h>
 
             #include "jniutils.hh"
             #include "org_pEp_jniadapter_«$jname».h"
