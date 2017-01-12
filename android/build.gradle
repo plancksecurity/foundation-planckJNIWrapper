@@ -90,7 +90,7 @@ android {
 
     ext {
         //FIXME> improve that build to be able to build without the need of unzip deps // Get rid of unziping
-        pEpEngineZip = new File(pEpEngineAndroid, 'pEpEngine-android-1.zip')
+        // pEpEngineZip = new File(pEpEngineAndroid, 'pEpEngine-android-1.zip')
         libEtPanZip = new File(libetpanAndroid, 'libetpan-android-1.zip')
     }
 
@@ -128,7 +128,7 @@ android {
 
     // unzip some of the dependencies 
     task unzipDeps(type: Copy) {
-        from zipTree(pEpEngineZip)
+        //from zipTree(pEpEngineZip)
         from zipTree(libEtPanZip)
         into file("${buildDir}")
     }
@@ -148,6 +148,7 @@ android {
     // This ensures that assets are populated before collecting resources.
     preBuild.dependsOn(cpDBAssets)
     preBuild.dependsOn(externalAssets)
+    preBuild.dependsOn(genSources)
 
     unzipDeps.dependsOn buildExternal
 
