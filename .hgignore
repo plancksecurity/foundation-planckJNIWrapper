@@ -53,6 +53,7 @@ androidTests/build
 androidTests/.idea
 androidTests/androidTests.iml
 androidTests/app/app.iml
+android/.idea
 .gradle
 android/.externalNativeBuild
 android/android.iml
