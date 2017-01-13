@@ -132,7 +132,7 @@ tstylesheet {
 
                 // TODO factorize type conversion with multireturn and gen_java_message.java
 
-                when "count(parm[returns]/stringlist|parm[returns]/string) > 0"
+                when "count(parm[returns][stringlist|string|sstring]) > 0"
                     |> return AbstractEngine.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
                 when "count(parm[returns]/stringpairlist) > 0"
                     ||

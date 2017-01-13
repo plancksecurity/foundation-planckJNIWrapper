@@ -3,7 +3,7 @@ function "toC" {
 
     choose {
         when "$type='stringlist'" > stringlist_t
-        when "$type='string'" > char
+        when "$type='string' or $type='sstring'" > char
         when "$type='identity'" > pEp_identity
         when "$type='identitylist'" > identity_list
         when "$type='timestamp'" > timestamp
@@ -25,7 +25,7 @@ function "jni_type" {
 
     choose {
         when "../enum[@name=$type]" > jint
-        when "$type = 'string'" > jbyteArray
+        when "$type = 'string' or $type = 'sstring'" > jbyteArray
         when "$type='bool'" > jboolean
         when "$type='int'" > jint
         otherwise > jobject

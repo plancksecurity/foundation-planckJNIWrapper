@@ -31,6 +31,8 @@ tstylesheet {
         const "returning", "count(parm/creates|parm/returns)";
         const "CretType" choose {
             when "$returning = 0" > void
+            when "$returning = 1" 
+                call "jni_type" with "type", "name(parm[returns|creates]/*[2])";
             when "$returning > 0" > jobject
         }
         const "CretDefault" choose {
@@ -124,13 +126,22 @@ tstylesheet {
         param "name", "name(*[3])";
 
         choose {
-            when "$type = 'stringlist' or $type = 'stringpairlist' or $type = 'identity' or $type = 'identitylist'"
-            ||
-            jobject «$name»_ = NULL;
-            if (_«$name»)
-                «$name»_ = from_«$type»(env, _«$name»);
+            when "$type = 'stringlist' or $type = 'string' or $type = 'sstring' or $type = 'stringpairlist' or $type = 'identity' or $type = 'identitylist'"
+            {
+                const "jnitype" call "jni_type" with "type", "$type";
+                const "from_type" choose {
+                    when "$type = 'sstring'"
+                        > from_string
+                    otherwise
+                        > from_«$type»
+                }
+                ||
+                «$jnitype» «$name»_ = NULL;
+                if (_«$name»)
+                    «$name»_ = «$from_type»(env, _«$name»);
 
-            ||
+                ||
+            }
 
             when "ancestor::namespace/child::enum[@name=$type]" {
                 const "ljtype" call "lcase" with "text","$jtype";
@@ -203,6 +214,10 @@ tstylesheet {
         choose {
             when "ancestor::namespace/child::enum[@name=$type]"
                 | √$type _«$name»;
+            when "$type='sstring'"{
+                | char * _«$name»;
+                | size_t _«$name»_size;
+            }
             otherwise
                 | √$type *_«$name»;
         }
@@ -210,6 +225,7 @@ tstylesheet {
 
     template "parm", mode=call {
         const "dir", "name(*[1])";
+        const "type", "name(*[2])";
         const "name", "name(*[3])";
      
         > , 
@@ -217,12 +233,12 @@ tstylesheet {
         choose {
             when "$dir = 'Cconst'"
                 value "*[3]";
-            when "$dir = 'creates' or $dir = 'returns'" {
+            when "($dir = 'creates' or $dir = 'returns') and $type='sstring'"
+                > &_«$name», &_«$name»_size
+            when "$dir = 'creates' or $dir = 'returns'" 
                 > &_«$name»
-            }
-            otherwise {
+            otherwise 
                 > _«$name»
-            }
         }
     }
 
