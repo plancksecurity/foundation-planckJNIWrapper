@@ -284,7 +284,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_accept_1sync_1handshake(
 }
 
 
-JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_reject_sync_1handshake(
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_reject_1sync_1handshake(
         JNIEnv *env,
         jobject obj,
         jobject ident
@@ -302,7 +302,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_reject_sync_1handshake(
     }
 }
 
-JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_cancel_sync_1handshake(
+JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_cancel_1sync_1handshake(
         JNIEnv *env,
         jobject obj,
         jobject ident
