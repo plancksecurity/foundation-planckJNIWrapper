@@ -93,9 +93,19 @@ android {
     }
 
     // call source generation makefile target
-    task genSources(type:Exec) {
+    task genSources(type:Exec, dependsOn: 'genpEpEngineSyncSources') {
         workingDir '../src'
         commandLine 'make', 'gensource'
+    }
+
+    task genpEpEngineSyncSources(type:Exec, dependsOn: 'genpEpEngineAsn1Sources') {
+        workingDir '../../pEpEngine'
+        commandLine 'make', '-C', 'sync'
+    }
+
+    task genpEpEngineAsn1Sources(type:Exec) {
+        workingDir '../../pEpEngine'
+        commandLine 'make', '-C', 'asn.1', 'generate'
     }
 
     task cleanGenSource(type:Exec) {
@@ -104,7 +114,7 @@ android {
     }
 
     // call external build (GnuPG, GPGME, etc)
-    task buildExternal(type:Exec) {
+    task buildExternal(type:Exec, dependsOn: 'genSources') {
         workingDir 'external'
         commandLine 'make', 'build', 'PEP_PACKAGE_NAME='+pEpAppPackageName
     }
@@ -125,7 +135,7 @@ android {
     }
 
     // unzip some of the dependencies
-    task unzipDeps(type: Copy) {
+    task unzipDeps(type: Copy, dependsOn: 'buildExternal') {
         from zipTree(libEtPanZip)
         into file("${buildDir}")
     }
@@ -137,7 +147,7 @@ android {
     }
 
     // copy pEpEnginge's system.db to asset
-    task cpDBAssets(type: Copy) {
+    task cpDBAssets(type: Copy, dependsOn: 'buildpEpEngineSystemDB') {
         from file(new File(pEpEngineDB, 'system.db'))
         into 'assets'
     }
@@ -145,13 +155,13 @@ android {
     // This ensures that assets are populated before collecting resources.
     preBuild.dependsOn(cpDBAssets)
     preBuild.dependsOn(externalAssets)
-    preBuild.dependsOn(genSources)
 
-    unzipDeps.dependsOn buildExternal
+    //unzipDeps.dependsOn buildExternal
 
     //Should be modified to build automatic only build external not engine or engine db
 
-//    if(buildAutomatic=="true"){
+    if(buildAutomatic == "true") {
+        preBuild.dependsOn(genSources)
 //
 //        buildpEpEngineDebug.dependsOn buildExternal
 //        externalAssets.dependsOn buildExternal
@@ -160,7 +170,7 @@ android {
 //
 //        clean.dependsOn cleanExternal
 //        clean.dependsOn cleanpEpEngine
-//    }
+    }
 
 }
 
