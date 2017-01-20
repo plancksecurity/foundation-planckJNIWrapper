@@ -1,6 +1,8 @@
 package org.pEp.jniadapter;
 
-public class Identity {
+import java.io.Serializable;
+
+public class Identity implements Serializable{
     public String address;
     public String fpr;
     public String user_id;
