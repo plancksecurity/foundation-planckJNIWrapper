@@ -10,6 +10,11 @@ import org.pEp.jniadapter.pEpException;
 
 public interface Sync {
 
+     
+    interface NeedsFastPollCallback {
+        void needsFastPollCallFromC(Boolean fast_poll_needed);
+    }
+
     interface MessageToSendCallback {
         void messageToSend(Message message);
     }

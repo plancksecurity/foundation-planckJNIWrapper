@@ -199,6 +199,7 @@ extern "C" {
 
     static jobject sync_obj = NULL;
     static JNIEnv* sync_env = NULL;
+    static jmethodID needsFastPollMethodID = NULL; 
     static jmethodID notifyHandShakeMethodID = NULL; 
     static jmethodID messageToSendMethodID = NULL;
     static jclass messageClass = NULL;
@@ -276,10 +277,14 @@ extern "C" {
         time_t now, end;
         void *msg;
 
+        jboolean needs_fast_poll = (timeout != NULL);
+
         if(timeout && *timeout != 0){
             now = time(NULL);
             end = now + *timeout;
         }
+
+        sync_env->CallVoidMethod(sync_obj, needsFastPollMethodID, needs_fast_poll);
 
         while (!queue->size()){
             // TODO: add blocking dequeue 
@@ -311,6 +316,12 @@ extern "C" {
         a->sync_jvm->AttachCurrentThread(&sync_env, NULL);
 
         jclass clazz = sync_env->GetObjectClass(sync_obj);
+
+        needsFastPollMethodID = sync_env->GetMethodID(
+            clazz,
+            "needsFastPollCallFromC",
+            "(Z)I");
+        assert(needsFastPollMethodID);
 
         notifyHandShakeMethodID = sync_env->GetMethodID(
             clazz,
