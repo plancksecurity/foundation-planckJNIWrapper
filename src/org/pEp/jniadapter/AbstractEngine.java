@@ -156,6 +156,10 @@ abstract class AbstractEngine implements AutoCloseable {
         this.notifyHandshakeCallback = notifyHandshakeCallback;
     }
 
+    public void setNeedsFastPollCallback(Sync.NeedsFastPollCallback needsFastPollCallback) {
+        this.needsFastPollCallback = needsFastPollCallback;
+    }
+
     public int needsFastPollCallFromC(boolean fast_poll_needed) {
         if (needsFastPollCallback != null) {
             needsFastPollCallback.needsFastPollCallFromC(fast_poll_needed);
