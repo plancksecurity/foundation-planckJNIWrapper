@@ -74,8 +74,10 @@ extern "C" {
 
         session = (PEP_SESSION) env->GetLongField(me, handle);
         if (session){
+            if(sync_session != NULL){
+                detach_sync_session(session);
+            }
             release(session);
-            detach_sync_session(session);
         }
         else
             env->SetLongField(me, handle, jlong(0));
