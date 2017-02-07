@@ -286,7 +286,7 @@ extern "C" {
             end = now + *timeout;
         }
 
-        sync_env->CallVoidMethod(sync_obj, needsFastPollMethodID, needs_fast_poll);
+        sync_env->CallIntMethod(sync_obj, needsFastPollMethodID, needs_fast_poll);
 
         while (!queue->size()){
             // TODO: add blocking dequeue 

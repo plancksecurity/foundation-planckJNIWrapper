@@ -13,6 +13,7 @@ abstract class AbstractEngine implements AutoCloseable {
 
     private Sync.MessageToSendCallback messageToSendCallback;
     private Sync.notifyHandshakeCallback notifyHandshakeCallback;
+    private Sync.NeedsFastPollCallback needsFastPollCallback;
     private native void init() throws pEpException;
     private native void release();
 
@@ -155,9 +156,9 @@ abstract class AbstractEngine implements AutoCloseable {
         this.notifyHandshakeCallback = notifyHandshakeCallback;
     }
 
-    public int needsFastPollCallFromC(Boolean fast_poll_needed) {
+    public int needsFastPollCallFromC(boolean fast_poll_needed) {
         if (needsFastPollCallback != null) {
-            needsFastPollCallback.needsFastPoll(fast_poll_needed);
+            needsFastPollCallback.needsFastPollCallFromC(fast_poll_needed);
         } else {
             throw new RuntimeException("Callback not set");
         }
