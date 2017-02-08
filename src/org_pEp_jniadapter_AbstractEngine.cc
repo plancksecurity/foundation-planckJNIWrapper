@@ -279,7 +279,7 @@ extern "C" {
         time_t now, end;
         void *msg;
 
-        jboolean needs_fast_poll = (timeout != NULL);
+        jboolean needs_fast_poll = (*timeout != 0);
 
         if(timeout && *timeout != 0){
             now = time(NULL);
