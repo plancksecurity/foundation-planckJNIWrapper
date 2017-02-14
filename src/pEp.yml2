@@ -211,6 +211,15 @@ namespace pEp {
                 in bool full
             );
 
+        method get_message_trustwords(
+                in message msg,
+                in stringlist keylist,
+                in identity receivedby,
+                in string lang,
+                returns string words,
+                in bool full
+            );
+
         basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);
