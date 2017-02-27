@@ -24,7 +24,9 @@ abstract class AbstractEngine implements AutoCloseable {
     }
 
     public AbstractEngine() throws pEpException {
-        init();
+        synchronized (AbstractEngine.class) {
+            init();
+        }
     }
 
     final public void close() {
