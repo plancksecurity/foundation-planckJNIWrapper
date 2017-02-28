@@ -30,7 +30,9 @@ abstract class AbstractEngine implements AutoCloseable {
     }
 
     final public void close() {
-        release();
+        synchronized (AbstractEngine.class){
+            release();
+        }
     }
 
     private long keyserverThread;
