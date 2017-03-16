@@ -149,7 +149,8 @@ namespace pEp {
                 in identity target,
                 in message src,
                 creates message dst,
-                Cconst PEP_enc_format encformat "PEP_enc_PEP"
+                Cconst PEP_enc_format encformat "PEP_enc_PEP",
+                Cconst PEP_encrypt_flags flags "0"
             );
         
         method decrypt_message(
