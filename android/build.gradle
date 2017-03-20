@@ -1,7 +1,5 @@
 // Android pEp JNI adapter Aar gradle build script
 
-import org.apache.tools.ant.taskdefs.condition.Os
-
 def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 def pEpAppPackageName = hasProperty('pEpAppPackageName') ? pEpAppPackageName : "pep.android.k9"
@@ -152,26 +150,13 @@ android {
         into 'assets'
     }
 
+    if(buildAutomatic == "true") {
+        buildpEpEngineSystemDB.dependsOn(unzipDeps)
+    }
+
     // This ensures that assets are populated before collecting resources.
     preBuild.dependsOn(cpDBAssets)
     preBuild.dependsOn(externalAssets)
-
-    //unzipDeps.dependsOn buildExternal
-
-    //Should be modified to build automatic only build external not engine or engine db
-
-    if(buildAutomatic == "true") {
-        preBuild.dependsOn(genSources)
-//
-//        buildpEpEngineDebug.dependsOn buildExternal
-//        externalAssets.dependsOn buildExternal
-//        unzipDeps.dependsOn buildpEpEngineDebug
-//        cpDBAssets.dependsOn buildpEpEngineSystemDB
-//
-//        clean.dependsOn cleanExternal
-//        clean.dependsOn cleanpEpEngine
-    }
-
 }
 
 
