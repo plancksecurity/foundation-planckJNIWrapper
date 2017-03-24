@@ -71,7 +71,7 @@ abstract class AbstractEngine implements AutoCloseable {
         Vector<byte[]> result = new Vector<byte[]>(list.size());
 
         for (int i=0; i<list.size(); i++)
-            result.set(i, toUTF8(list.get(i)));
+            result.add(toUTF8(list.get(i)));
 
         return result;
     }
