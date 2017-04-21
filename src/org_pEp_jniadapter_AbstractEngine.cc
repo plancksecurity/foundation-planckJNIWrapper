@@ -299,6 +299,15 @@ extern "C" {
             }
         }
 
+        if(timeout && *timeout != 0){
+            // put back remaining time in timeout
+            now = time(NULL);
+            if(now < end)
+                *timeout = end - now;
+            else
+                *timeout = 0;
+        }
+
         msg = queue->front();
         queue->pop_front();
         return msg;
