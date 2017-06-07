@@ -162,6 +162,13 @@ namespace pEp {
                 returns DecryptFlags flags
             );
 
+        method re_evaluate_message_rating(
+                in message src,
+                Cconst stringlist x_keylist "NULL",
+                Cconst Rating x_enc_status "PEP_rating_undefined",
+                returns Rating rating
+            );
+
         method outgoing_message_rating(
                 in message msg,
                 returns Rating rating
