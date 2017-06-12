@@ -589,6 +589,7 @@ namespace pEp {
             env->SetObjectField(obj, fieldID, reinterpret_cast<jobject>(_data));
             _setStringField(env, classname, obj, "mime_type", b->mime_type);
             _setStringField(env, classname, obj, "filename", b->filename);
+            _setStringField(env, classname, obj, "content_id", b->content_id);
 
             return obj;
         }
@@ -629,7 +630,7 @@ namespace pEp {
             jclass clazz = findClass(env, classname);
             jfieldID data_id = getFieldID(env, classname, "data", "[B");
 
-            bloblist_t *bl = new_bloblist(NULL, 0, NULL, NULL);
+            bloblist_t *bl = new_bloblist(NULL, 0, NULL, NULL, NULL);
             bloblist_t *_bl;
             jint i;
             for (_bl = bl, i = 0; i < (int) size; i++) {
@@ -638,6 +639,8 @@ namespace pEp {
                         "mime_type");
                 char *filename = _getStringField(env, classname, o,
                         "filename");
+                char *content_id = _getStringField(env, classname, o,
+                        "content_id");
 
                 jbyteArray _data =
                     reinterpret_cast<jbyteArray>(env->GetObjectField(o,
@@ -649,11 +652,12 @@ namespace pEp {
 
                 env->GetByteArrayRegion(_data, 0, size, (jbyte*)b);
 
-                _bl = bloblist_add(_bl, b, size, mime_type, filename);
+                _bl = bloblist_add(_bl, b, size, mime_type, filename, content_id);
 
                 env->DeleteLocalRef(o);
                 free(mime_type);
                 free(filename);
+                free(content_id);
             }
 
             return bl;
