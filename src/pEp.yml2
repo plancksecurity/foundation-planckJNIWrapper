@@ -231,7 +231,7 @@ namespace pEp {
             );
 
         method get_languagelist(
-                returns stringlist languagelist
+                returns string languagelist
             );
 
         basic string trustwords(identity ident);
