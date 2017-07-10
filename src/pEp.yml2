@@ -230,6 +230,10 @@ namespace pEp {
                 in bool full
             );
 
+        method get_languagelist(
+                returns stringlist languagelist
+            );
+
         basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);
