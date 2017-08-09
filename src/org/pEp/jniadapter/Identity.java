@@ -9,16 +9,9 @@ public class Identity implements Serializable{
     public String username;
     public CommType comm_type;
     public String lang;
-    public boolean me;
     public int flags;
 
     public Identity() {
-        this.me = false;
-        comm_type = CommType.PEP_ct_unknown;
-    }
-
-    public Identity(boolean me) {
-        this.me = me;
         comm_type = CommType.PEP_ct_unknown;
     }
 
@@ -29,7 +22,6 @@ public class Identity implements Serializable{
         username = AbstractEngine.toUTF16(i.username);
         comm_type = CommType.Management.tag.get(i.comm_type);
         lang = AbstractEngine.toUTF16(i.lang);
-        me = i.me;
         flags = i.flags;
     }
 

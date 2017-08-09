@@ -7,15 +7,9 @@ public class _Identity {
     public byte[] username;
     public int comm_type;
     public byte[] lang;
-    public boolean me;
     public int flags;
 
     public _Identity() {
-        this.me = false;
-    }
-
-    public _Identity(boolean me) {
-        this.me = me;
     }
 
     public _Identity(Identity i) {
@@ -25,7 +19,6 @@ public class _Identity {
         username = AbstractEngine.toUTF8(i.username);
         comm_type = i.comm_type.value;
         lang = AbstractEngine.toUTF8(i.lang);
-        me = i.me;
         flags = i.flags;
     }
 }
