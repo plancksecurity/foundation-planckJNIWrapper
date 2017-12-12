@@ -46,7 +46,7 @@ $(LIBRARY): org_pEp_jniadapter_AbstractEngine.o org_pEp_jniadapter_Engine.o org_
 	ar -r $@ *.o
 
 $(SHARED): $(LIBRARY)
-	c++ -shared -o $(SHARED) $(LDFLAGS) -lpEpEngine *.o
+	$(CXX) $(CXXFLAGS) -shared -o $(SHARED) $(LDFLAGS) -lpEpEngine *.o
 
 org/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2
 	yml2proc -y gen_java_exceptions.ysl2 $< -o $@

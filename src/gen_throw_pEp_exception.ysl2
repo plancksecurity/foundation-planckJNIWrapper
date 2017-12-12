@@ -24,7 +24,7 @@ tstylesheet {
     template "namespace"
         ||
         #include <assert.h>
-        #include <pEpEngine.h>
+        #include <pEp/pEpEngine.h>
         #include "throw_pEp_exception.hh"
 
         namespace pEp {

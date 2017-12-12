@@ -10,9 +10,9 @@ tstylesheet {
     template "interface" document("org_pEp_jniadapter_{@name}.cc", "text")
         ||
         #include <assert.h>
-        #include <message_api.h>
-        #include <blacklist.h>
-        #include <openpgp_compat.h>
+        #include <pEp/message_api.h>
+        #include <pEp/blacklist.h>
+        #include <pEp/openpgp_compat.h>
         #include "org_pEp_jniadapter_«@name».h"
         #include "throw_pEp_exception.hh"
         #include "jniutils.hh"

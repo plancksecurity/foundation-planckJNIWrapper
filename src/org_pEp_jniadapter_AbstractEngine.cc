@@ -4,9 +4,9 @@
 #include <unistd.h>
 #include <assert.h>
 #include <pthread.h>
-#include <keymanagement.h>
-#include <message_api.h>
-#include <sync.h>
+#include <pEp/keymanagement.h>
+#include <pEp/message_api.h>
+#include <pEp/sync.h>
 
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
