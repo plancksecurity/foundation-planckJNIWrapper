@@ -1,5 +1,5 @@
 LOCAL_PATH:= $(call my-dir)
-
+ENGINE_PATH := $(LOCAL_PATH)/../../../pEpEngine
 GPGBUILD:= $(LOCAL_PATH)/../external/data/data/pep.android.k9/app_opt
 
 include $(CLEAR_VARS)
@@ -51,6 +51,8 @@ LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)/../build/libetpan-android-1/include
 LOCAL_EXPORT_LDLIBS := -lz
 include $(PREBUILT_STATIC_LIBRARY)
 
+#Take out Engine Headers
+$(shell sh $(ENGINE_PATH)/build-android/takeOutHeaderFiles.sh $(ENGINE_PATH))
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
@@ -65,8 +67,6 @@ LOCAL_SRC_FILES  := \
 		  ../../src/basic_api.cc \
 		  ../../src/jniutils.cc
 
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/../build/pEpEngine-android-1/include
-LOCAL_C_INCLUDES += ../../src
 LOCAL_C_INCLUDES += $(GPGBUILD)/include
 LOCAL_LDLIBS    := -llog
 include $(BUILD_SHARED_LIBRARY)
@@ -77,6 +77,5 @@ LOCAL_SHARED_LIBRARIES := libgpgme
 LOCAL_SRC_FILES  := org_pEp_jniadapter_AndroidHelper.cc
 
 include $(BUILD_SHARED_LIBRARY)
-
-$(call import-add-path,$(LOCAL_PATH)/../../../pEpEngine)
+$(call import-add-path,$(ENGINE_PATH))
 $(call import-module, build-android/jni/)
