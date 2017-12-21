@@ -324,7 +324,7 @@ extern "C" {
     {
         sync_thread_arg_t *a = (sync_thread_arg_t*)arg;
         PEP_SESSION session = (PEP_SESSION) a->session;
-        a->sync_jvm->AttachCurrentThread(&sync_env, NULL);
+        a->sync_jvm->AttachCurrentThread((void **) &sync_env, NULL);
 
         jclass clazz = sync_env->GetObjectClass(sync_obj);
 
