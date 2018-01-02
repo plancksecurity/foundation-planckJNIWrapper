@@ -141,7 +141,7 @@ namespace pEp {
                 in message src,
                 in stringlist extra,
                 creates message dst,
-                in EncFormat enc_format,
+                Cconst PEP_enc_format encformat "PEP_enc_PEP",
                 Cconst PEP_encrypt_flags flags "0"
             );
 
