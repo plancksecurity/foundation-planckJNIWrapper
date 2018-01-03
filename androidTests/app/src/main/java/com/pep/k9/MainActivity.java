@@ -2,7 +2,6 @@ package com.pep.k9;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
@@ -13,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
@@ -53,20 +51,23 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
+    private String PEP_OWN_USER_ID = "pEp_own_userId";
+
     private StringBuilder text;
     private Integer testingTimes;
     private List<Identity> generatedIdentities;
 
-    @Bind(R.id.content) ViewGroup rootView;
+    @BindView(R.id.content) ViewGroup rootView;
     private long outgoingColorAcumulative = 0L;
 
     @Override
@@ -249,24 +250,24 @@ public class MainActivity extends AppCompatActivity {
         writeToFile(tag + " " + added);
     }
 
-    @Bind(R.id.bRunTypes) Button runTypes;
-    @Bind(R.id.bRunAliceBob) Button runIntegration;
-    @Bind(R.id.bRunServerLookup) Button runLookup;
-    @Bind(R.id.bRunGenKey) Button runGenKey;
-    @Bind(R.id.encrypt_and_decrypt) Button runEncryptAndDecrypt;
-    @Bind(R.id.encrypt_and_decrypt_without_key) Button runEncryptAndDecryptWithoutKey;
-    @Bind(R.id.ratings) Button runRatings;
-    @Bind(R.id.black_list) Button runBlackList;
-    @Bind(R.id.black_list_and_send) Button runBlackListAndSendMessage;
-    @Bind(R.id.black_list_and_delete) Button runBlackListAndDelete;
-    @Bind(R.id.unencrypted_subject) Button runUnencryptedSubject;
-    @Bind(R.id.passive_mode) Button runPassiveMode;
-    @Bind(R.id.message_from_me_green) Button runMessageFromMeIsGreen;
-    @Bind(R.id.message_me) Button runMessageMe;
-    @Bind(R.id.times_to_test) EditText timesToTest;
-    @Bind(R.id.outgoing_color) Button runOutgoingColor;
-    @Bind(R.id.identity_rating) Button runIdentityRating;
-    @Bind(R.id.deblacklist) Button runDeblacklist;
+    @BindView(R.id.bRunTypes) Button runTypes;
+    @BindView(R.id.bRunAliceBob) Button runIntegration;
+    @BindView(R.id.bRunServerLookup) Button runLookup;
+    @BindView(R.id.bRunGenKey) Button runGenKey;
+    @BindView(R.id.encrypt_and_decrypt) Button runEncryptAndDecrypt;
+    @BindView(R.id.encrypt_and_decrypt_without_key) Button runEncryptAndDecryptWithoutKey;
+    @BindView(R.id.ratings) Button runRatings;
+    @BindView(R.id.black_list) Button runBlackList;
+    @BindView(R.id.black_list_and_send) Button runBlackListAndSendMessage;
+    @BindView(R.id.black_list_and_delete) Button runBlackListAndDelete;
+    @BindView(R.id.unencrypted_subject) Button runUnencryptedSubject;
+    @BindView(R.id.passive_mode) Button runPassiveMode;
+    @BindView(R.id.message_from_me_green) Button runMessageFromMeIsGreen;
+    @BindView(R.id.message_me) Button runMessageMe;
+    @BindView(R.id.times_to_test) EditText timesToTest;
+    @BindView(R.id.outgoing_color) Button runOutgoingColor;
+    @BindView(R.id.identity_rating) Button runIdentityRating;
+    @BindView(R.id.deblacklist) Button runDeblacklist;
 
     @OnClick(R.id.bRunTypes)
     public void runTypes() {
@@ -524,8 +525,7 @@ public class MainActivity extends AppCompatActivity {
             Identity alice = new Identity();
             alice.username = "Alice Test";
             alice.address = "pep.test.alice@pep-project.org";
-            alice.user_id = "111";
-            alice.me = true;
+            alice.user_id = PEP_OWN_USER_ID;
             alice.fpr = null;
 
             msg.setFrom(alice);
@@ -534,8 +534,8 @@ public class MainActivity extends AppCompatActivity {
             if (!(_alice.username.equals("Alice Test"))) throw new AssertionError();
             if (!(_alice.address.equals("pep.test.alice@pep-project.org")))
                 throw new AssertionError();
-            if (!(_alice.user_id.equals("111"))) throw new AssertionError();
-            if (!(_alice.me == true)) throw new AssertionError();
+            if (!(_alice.user_id.equals(PEP_OWN_USER_ID))) throw new AssertionError();
+            if (!(Objects.equals(_alice.user_id, PEP_OWN_USER_ID))) throw new AssertionError();
             if (!(_alice.fpr == null)) throw new AssertionError();
         }
 
@@ -544,8 +544,7 @@ public class MainActivity extends AppCompatActivity {
             Identity alice = new Identity();
             alice.username = "Alice Test";
             alice.address = "pep.test.alice@pep-project.org";
-            alice.user_id = "111";
-            alice.me = true;
+            alice.user_id = PEP_OWN_USER_ID;
             alice.fpr = null;
             rcpts.add(alice);
 
@@ -556,8 +555,7 @@ public class MainActivity extends AppCompatActivity {
             if (!(_alice.username.equals("Alice Test"))) throw new AssertionError();
             if (!(_alice.address.equals("pep.test.alice@pep-project.org")))
                 throw new AssertionError();
-            if (!(_alice.user_id.equals("111"))) throw new AssertionError();
-            if (!(_alice.me == true)) throw new AssertionError();
+            if (!(_alice.user_id.equals(PEP_OWN_USER_ID))) throw new AssertionError();
             if (!(_alice.fpr == null)) throw new AssertionError();
         }
 
@@ -565,8 +563,7 @@ public class MainActivity extends AppCompatActivity {
             Identity alice = new Identity();
             alice.username = "Alice Test";
             alice.address = "pep.test.alice@pep-project.org";
-            alice.user_id = "111";
-            alice.me = true;
+            alice.user_id = PEP_OWN_USER_ID;
             alice.fpr = null;
 
             msg.setRecvBy(alice);
@@ -575,8 +572,7 @@ public class MainActivity extends AppCompatActivity {
             if (!(_alice.username.equals("Alice Test"))) throw new AssertionError();
             if (!(_alice.address.equals("pep.test.alice@pep-project.org")))
                 throw new AssertionError();
-            if (!(_alice.user_id.equals("111"))) throw new AssertionError();
-            if (!(_alice.me == true)) throw new AssertionError();
+            if (!(_alice.user_id.equals(PEP_OWN_USER_ID))) throw new AssertionError();
             if (!(_alice.fpr == null)) throw new AssertionError();
         }
 
@@ -585,8 +581,7 @@ public class MainActivity extends AppCompatActivity {
             Identity alice = new Identity();
             alice.username = "Alice Test";
             alice.address = "pep.test.alice@pep-project.org";
-            alice.user_id = "111";
-            alice.me = true;
+            alice.user_id = PEP_OWN_USER_ID;
             alice.fpr = null;
             rcpts.add(alice);
 
@@ -597,8 +592,7 @@ public class MainActivity extends AppCompatActivity {
             if (!(_alice.username.equals("Alice Test"))) throw new AssertionError();
             if (!(_alice.address.equals("pep.test.alice@pep-project.org")))
                 throw new AssertionError();
-            if (!(_alice.user_id.equals("111"))) throw new AssertionError();
-            if (!(_alice.me == true)) throw new AssertionError();
+            if (!(_alice.user_id.equals(PEP_OWN_USER_ID))) throw new AssertionError();
             if (!(_alice.fpr == null)) throw new AssertionError();
         }
 
@@ -607,8 +601,7 @@ public class MainActivity extends AppCompatActivity {
             Identity alice = new Identity();
             alice.username = "Alice Test";
             alice.address = "pep.test.alice@pep-project.org";
-            alice.user_id = "111";
-            alice.me = true;
+            alice.user_id = PEP_OWN_USER_ID;
             alice.fpr = null;
             rcpts.add(alice);
 
@@ -619,8 +612,7 @@ public class MainActivity extends AppCompatActivity {
             if (!(_alice.username.equals("Alice Test"))) throw new AssertionError();
             if (!(_alice.address.equals("pep.test.alice@pep-project.org")))
                 throw new AssertionError();
-            if (!(_alice.user_id.equals("111"))) throw new AssertionError();
-            if (!(_alice.me == true)) throw new AssertionError();
+            if (!(_alice.user_id.equals(PEP_OWN_USER_ID))) throw new AssertionError();
             if (!(_alice.fpr == null)) throw new AssertionError();
         }
 
@@ -748,9 +740,9 @@ public class MainActivity extends AppCompatActivity {
         // trustwords
         testTrustwords(engine);
 
-        Identity alice = loadAliceFromEngine(engine);
+        Identity alice = loadFromAliceFromEngine(engine);
 
-        Identity bob = loadBobFromEngine(engine);
+        Identity bob = loadToBobFromEngine(engine);
 
         Identity john = loadJohnFromEngine(engine);
 
@@ -794,16 +786,16 @@ public class MainActivity extends AppCompatActivity {
         // trustwords
         testTrustwords(engine);
 
-        Identity alice = loadAliceFromEngine(engine);
+        Identity alice = loadFromAliceFromEngine(engine);
 
         String fingerprint = alice.fpr;
         addToBlacklistInEngine(engine, fingerprint);
 
         alice = myselfInEngine(engine, alice);
 
-        if (!fingerprint.equals(alice.fpr)) {
-            throw new AssertionError();
-        }
+        //if (!fingerprint.equals(PEP_OWN_USER_ID)) {
+        //    throw new AssertionError("fingerprint was " + fingerprint + " instead of PEP_OWN_USER_ID");
+        //}
 
         removeFromBlacklistOnEngine(engine, alice.fpr);
         engine.close();
@@ -820,9 +812,9 @@ public class MainActivity extends AppCompatActivity {
         // trustwords
         testTrustwords(engine);
 
-        Identity alice = loadAliceFromEngine(engine);
+        Identity alice = loadFromAliceFromEngine(engine);
 
-        Identity bob = loadBobFromEngine(engine);
+        Identity bob = loadToBobFromEngine(engine);
 
         // message
         Message msg = setupMessage(alice, bob);
@@ -852,9 +844,9 @@ public class MainActivity extends AppCompatActivity {
         // trustwords
         testTrustwords(engine);
 
-        Identity alice = loadAliceFromEngine(engine);
+        Identity alice = loadFromAliceFromEngine(engine);
 
-        Identity bob = loadBobFromEngine(engine);
+        Identity bob = loadToBobFromEngine(engine);
 
         // message
         long time = System.currentTimeMillis();
@@ -877,14 +869,15 @@ public class MainActivity extends AppCompatActivity {
         // trustwords
         testTrustwords(engine);
 
-        Identity alice = loadAliceFromEngine(engine);
-        Identity bob = loadBobFromEngine(engine);
-
-        String fingerprint = bob.fpr;
+        Identity aliceFrom = loadFromAliceFromEngine(engine);
+        Identity bobTo = loadToBobFromEngine(engine);
+        String fingerprint = bobTo.fpr;
         addToBlacklistInEngine(engine, fingerprint);
+//        myselfInEngine(engine, aliceFrom);
+  //      updateIdentityOnEngine(engine, bobTo);
 
         // message
-        Message msg = setupMessage(alice, bob);
+        Message msg = setupMessage(aliceFrom, bobTo);
 
         ArrayList<Pair<String, String>> pairs = new ArrayList<>();
         pairs.add(new Pair<>("Received", "in time"));
@@ -922,7 +915,7 @@ public class MainActivity extends AppCompatActivity {
         // trustwords
         testTrustwords(engine);
 
-        Identity bob = loadBobFromEngine(engine);
+        Identity bob = loadToBobFromEngine(engine);
 
         String fingerprint = bob.fpr;
         addToBlacklistInEngine(engine, fingerprint);
@@ -990,9 +983,9 @@ public class MainActivity extends AppCompatActivity {
         // trustwords
         testTrustwords(engine);
 
-        Identity alice = loadAliceFromEngine(engine);
+        Identity alice = loadFromAliceFromEngine(engine);
 
-        Identity bob = loadBobFromEngine(engine);
+        Identity bob = loadToBobFromEngine(engine);
 
         // message
         Message msg = setupMessage(alice, bob);
@@ -1012,9 +1005,9 @@ public class MainActivity extends AppCompatActivity {
         engine = new Engine();
         log("engine.new Engine()", String.valueOf(System.currentTimeMillis() - lastTime));
 
-        Identity alice = loadAliceFromEngine(engine);
+        Identity alice = loadFromAliceFromEngine(engine);
 
-        Identity bob = loadBobFromEngine(engine);
+        Identity bob = loadToBobFromEngine(engine);
 
         // message
         Message msg = setupMessage(alice, bob);
@@ -1037,9 +1030,9 @@ public class MainActivity extends AppCompatActivity {
         engine = new Engine();
         log("engine.new Engine()", String.valueOf(System.currentTimeMillis() - lastTime));
 
-        Identity alice = loadAliceFromEngine(engine);
+        Identity alice = loadFromAliceFromEngine(engine);
 
-        Identity bob = loadBobFromEngine(engine);
+        Identity bob = loadToBobFromEngine(engine);
 
         removeFromBlacklistOnEngine(engine, bob.fpr);
         // message
@@ -1047,7 +1040,7 @@ public class MainActivity extends AppCompatActivity {
 
         log("Test deblacklistRating after remove blacklist", getOutgoingMessageRatingFromEngine(engine, msg).name());
 
-        if (!(getOutgoingMessageRatingFromEngine(engine, msg).equals(Rating.pEpRatingReliable))) {
+        if (!(getOutgoingMessageRatingFromEngine(engine, msg).value >= Rating.pEpRatingReliable.value)) {
             throw new AssertionError();
         }
 
@@ -1082,7 +1075,7 @@ public class MainActivity extends AppCompatActivity {
         engine = new Engine();
         log("engine.new Engine()", String.valueOf(System.currentTimeMillis() - lastTime));
 
-        Identity alice = loadAliceFromEngine(engine);
+        Identity alice = loadFromAliceFromEngine(engine);
 
         // message
         Message msg = setupMessage(alice, alice);
@@ -1097,7 +1090,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (!(encriptedMessage != null)) throw new AssertionError();
 
-        if (!(encriptedMessage.getShortmsg().equals("pEp"))) throw new AssertionError();
+        if (!(encriptedMessage.getShortmsg().equals("p≡p"))) throw new AssertionError();
         if (!(encriptedMessage.getLongmsg().contains("pEp-project.org")))
             throw new AssertionError();
 
@@ -1119,7 +1112,7 @@ public class MainActivity extends AppCompatActivity {
         engine = new Engine();
         log("engine.new Engine()", String.valueOf(System.currentTimeMillis() - lastTime));
 
-        Identity alice = loadAliceFromEngine(engine);
+        Identity alice = loadFromAliceFromEngine(engine);
 
         // message
         Message msg = setupMessage(alice, alice);
@@ -1146,10 +1139,10 @@ public class MainActivity extends AppCompatActivity {
         engine = new Engine();
         log("engine.new Engine()", String.valueOf(System.currentTimeMillis() - lastTime));
 
-        Identity alice = loadAliceFromEngine(engine);
+        Identity alice = loadFromAliceFromEngine(engine);
 
-        Identity bob = loadBobFromEngine(engine);
-
+        Identity bob = loadToBobFromEngine(engine);
+        updateIdentityOnEngine(engine, bob);
         // message
         Message msg = setupMessage(alice, bob);
 
@@ -1179,9 +1172,9 @@ public class MainActivity extends AppCompatActivity {
         engine = new Engine();
         log("engine.new Engine()", String.valueOf(System.currentTimeMillis() - lastTime));
 
-        Identity alice = loadAliceFromEngine(engine);
+        Identity alice = loadFromAliceFromEngine(engine);
 
-        Identity bob = loadBobFromEngine(engine);
+        Identity bob = loadToBobFromEngine(engine);
 
         // message
         Message msg = setupMessage(alice, bob);
@@ -1209,7 +1202,7 @@ public class MainActivity extends AppCompatActivity {
         engine = new Engine();
         log("engine.new Engine()", String.valueOf(System.currentTimeMillis() - lastTime));
 
-        Identity alice = loadAliceFromEngine(engine);
+        Identity alice = loadFromAliceFromEngine(engine);
 
         Identity bob = loadBobFromEngineWithoutKey(engine);
 
@@ -1257,7 +1250,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private Identity loadBobFromEngine(Engine engine) throws IOException {
+    private Identity loadToBobFromEngine(Engine engine) throws IOException {
         //
         // Other peers :
         // pEp Test Bob (test key, don't use) <pep.test.bob@pep-project.org> 
@@ -1272,6 +1265,7 @@ public class MainActivity extends AppCompatActivity {
         bob.fpr = "BFCDB7F301DEEEBBF947F29659BFF488C9C2EE39";
 
         updateIdentityOnEngine(engine, bob);
+        log("bob fpr", bob.fpr);
         return bob;
     }
 
@@ -1306,7 +1300,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private Identity loadAliceFromEngine(Engine engine) throws IOException {
+    private Identity loadFromAliceFromEngine(Engine engine) throws IOException {
         // Our test user :
         // pEp Test Alice (test key don't use) <pep.test.alice@pep-project.org>
         //         6FF00E97
@@ -1316,14 +1310,14 @@ public class MainActivity extends AppCompatActivity {
         Identity alice = new Identity();
         alice.username = "Alice Test";
         alice.address = "pep.test.alice@pep-project.org";
-        alice.user_id = "pEp_own_userId";
-        alice.me = true;
+        alice.user_id = PEP_OWN_USER_ID;
         alice.fpr = "4ABE3AAF59AC32CFE4F86500A9411D176FF00E97";
 
         long lastTime = System.currentTimeMillis();
-        myselfInEngine(engine, alice);
+        alice = myselfInEngine(engine, alice);
         log("engine.myself", String.valueOf(System.currentTimeMillis() - lastTime));
 
+        log("alice fpr", alice.fpr);
         return alice;
     }
 
@@ -1350,7 +1344,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupRatingToMyself(Engine engine, Message msg) throws pEpException {
         Rating aliceRating = getOutgoingMessageRatingFromEngine(engine, msg);
-        if (!(aliceRating.equals(Rating.pEpRatingReliable))) throw new AssertionError();
+        if (!(aliceRating.equals(Rating.pEpRatingReliable))) throw new AssertionError("Alice rating was "+ aliceRating.name() + " instead of reliable");
     }
 
     private synchronized Rating getOutgoingMessageRatingFromEngine(Engine engine, Message msg) throws pEpException {
@@ -1402,15 +1396,12 @@ public class MainActivity extends AppCompatActivity {
 
     @NonNull
     private Engine.decrypt_message_Return encrypAndDecryptMessage(Engine engine, Message msg) throws pEpException {
-        if (!(getOutgoingMessageRatingFromEngine(engine, msg).equals(Rating.pEpRatingReliable)))
-            throw new AssertionError();
-
         Message encriptedMessage = null;
         encriptedMessage = encryptMessageOnEngine(engine, msg);
 
         if (!(encriptedMessage != null)) throw new AssertionError();
 
-        if (!(encriptedMessage.getShortmsg().equals("pEp"))) throw new AssertionError();
+        if (!(encriptedMessage.getShortmsg().equals("p≡p"))) throw new AssertionError("short message was " + encriptedMessage.getShortmsg());
         if (!(encriptedMessage.getLongmsg().contains("pEp-project.org")))
             throw new AssertionError();
 

@@ -238,7 +238,6 @@ public class UnitActivity extends AppCompatActivity {
         alice.username = "Alice Test";
         alice.address = "pep.test.alice@pep-project.org";
         alice.user_id = "pEp_own_userId";
-        alice.me = true;
         alice.fpr = "4ABE3AAF59AC32CFE4F86500A9411D176FF00E97";
 
         long lastTime = System.currentTimeMillis();
