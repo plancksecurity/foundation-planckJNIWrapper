@@ -1,6 +1,7 @@
 package com.pep.k9;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -61,6 +62,11 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String PASSED = "PASSED";
+    public static final String TESTING = "TESTING";
+    public static final String NOT_TESTED = "NOT TESTED";
+    public static final String FAILED = "FAILED";
+    public static final String TESTED = "TESTED";
     private String PEP_OWN_USER_ID = "pEp_own_userId";
 
     private StringBuilder text;
@@ -68,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Identity> generatedIdentities;
 
     @BindView(R.id.content) ViewGroup rootView;
-    private long outgoingColorAcumulative = 0L;
+    private long outgoingColorAccumulative = 0L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         text.append("\n");
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void generateNoteOnSD(String filename) {
         try {
             File rootParent = new File(Environment.getExternalStorageDirectory(), "pEpTest");
@@ -143,11 +150,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void removeDirectory(File directory) {
         if (directory.isDirectory()) {
             String[] children = directory.list();
-            for (int i = 0; i < children.length; i++) {
-                File file = new File(directory, children[i]);
+            for (String child : children) {
+                File file = new File(directory, child);
                 if (file.isDirectory()) {
                     removeDirectory(file);
                 } else {
@@ -193,9 +201,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
             String[] children = sourceLocation.list();
-            for (int i = 0; i < children.length; i++) {
-                copyDirectory(new File(sourceLocation, children[i]),
-                        new File(targetLocation, children[i]));
+            for (String child : children) {
+                copyDirectory(new File(sourceLocation, child),
+                        new File(targetLocation, child));
             }
         } else {
 
@@ -271,43 +279,43 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bRunTypes)
     public void runTypes() {
-        runTypes.setText("TESTING");
+        runTypes.setText(TESTING);
         new RunTestTask().execute(1);
     }
     @OnClick(R.id.bRunAliceBob)
     public void runIntegration() {
-        runIntegration.setText("TESTING");
+        runIntegration.setText(TESTING);
         new RunTestTask().execute(6);
     }
     @OnClick(R.id.bRunServerLookup)
     public void runLookup() {
-        runLookup.setText("TESTING");
+        runLookup.setText(TESTING);
         new RunTestTask().execute(2);
     }
     @OnClick(R.id.bRunGenKey)
     public void runGenKey() {
-        runGenKey.setText("TESTING");
+        runGenKey.setText(TESTING);
         new RunTestTask().execute(0);
     }
     @OnClick(R.id.encrypt_and_decrypt)
     public void runEncryptAndDecrypt() {
-        runEncryptAndDecrypt.setText("TESTING");
+        runEncryptAndDecrypt.setText(TESTING);
         new RunTestTask().execute(3);
     }
     @OnClick(R.id.encrypt_and_decrypt_without_key)
     public void runEncryptAndDecryptWithoutKey() {
-        runEncryptAndDecryptWithoutKey.setText("TESTING");
+        runEncryptAndDecryptWithoutKey.setText(TESTING);
         new RunTestTask().execute(4);
     }
     @OnClick(R.id.ratings)
     public void runRatings() {
-        runRatings.setText("TESTING");
+        runRatings.setText(TESTING);
         new RunTestTask().execute(5);
     }
 
     @OnClick(R.id.deblacklist)
     public void runDeblack() {
-        runDeblacklist.setText("TESTING");
+        runDeblacklist.setText(TESTING);
         new RunTestTask().execute(16);
     }
 
@@ -315,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
     public void runAllTests() {
         Toast.makeText(this, "Testing started. Please, don't touch anything ò.ó", Toast.LENGTH_LONG).show();
         testingTimes = Integer.valueOf(timesToTest.getText().toString());
-        runGenKey.setText("TESTING");
+        runGenKey.setText(TESTING);
         new RunAllTestsTask().execute(0);
     }
 
@@ -414,6 +422,7 @@ public class MainActivity extends AppCompatActivity {
         testIdetntityRating();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private byte[] LoadAssetAsBuffer(String fname) throws IOException {
         AssetManager assetManager = getAssets();
         InputStream input;
@@ -489,7 +498,7 @@ public class MainActivity extends AppCompatActivity {
         if (!(msg.getLongmsgFormatted().equals("<html/>"))) throw new AssertionError();
 
         {
-            Vector<Blob> attachments = new Vector<Blob>();
+            Vector<Blob> attachments = new Vector<>();
             Blob blb = new Blob();
             blb.data = LoadAssetAsBuffer("0xC9C2EE39.asc");
             blb.filename = "0xC9C2EE39.asc";
@@ -540,7 +549,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         {
-            Vector<Identity> rcpts = new Vector<Identity>();
+            Vector<Identity> rcpts = new Vector<>();
             Identity alice = new Identity();
             alice.username = "Alice Test";
             alice.address = "pep.test.alice@pep-project.org";
@@ -577,7 +586,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         {
-            Vector<Identity> rcpts = new Vector<Identity>();
+            Vector<Identity> rcpts = new Vector<>();
             Identity alice = new Identity();
             alice.username = "Alice Test";
             alice.address = "pep.test.alice@pep-project.org";
@@ -597,7 +606,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         {
-            Vector<Identity> rcpts = new Vector<Identity>();
+            Vector<Identity> rcpts = new Vector<>();
             Identity alice = new Identity();
             alice.username = "Alice Test";
             alice.address = "pep.test.alice@pep-project.org";
@@ -617,7 +626,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         {
-            Vector<String> strvec = new Vector<String>();
+            Vector<String> strvec = new Vector<>();
             strvec.add("Blub");
 
             msg.setInReplyTo(strvec);
@@ -627,7 +636,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         {
-            Vector<String> strvec = new Vector<String>();
+            Vector<String> strvec = new Vector<>();
             strvec.add("Blub");
 
             msg.setReferences(strvec);
@@ -637,7 +646,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         {
-            Vector<String> strvec = new Vector<String>();
+            Vector<String> strvec = new Vector<>();
             strvec.add("Blub");
 
             msg.setKeywords(strvec);
@@ -650,8 +659,8 @@ public class MainActivity extends AppCompatActivity {
         if (!(msg.getComments().equals("No comment."))) throw new AssertionError();
 
         {
-            ArrayList<Pair<String, String>> pairs = new ArrayList<Pair<String, String>>();
-            Pair<String, String> pair = new Pair<String, String>("left", "right");
+            ArrayList<Pair<String, String>> pairs = new ArrayList<>();
+            Pair<String, String> pair = new Pair<>("left", "right");
             pairs.add(pair);
 
             msg.setOptFields(pairs);
@@ -827,7 +836,7 @@ public class MainActivity extends AppCompatActivity {
         logStart("outgoing_message_rating", String.valueOf(time));
         engine.outgoing_message_rating(msg);
         long outgoingColorCalculus = System.currentTimeMillis() - time;
-        outgoingColorAcumulative +=outgoingColorCalculus;
+        outgoingColorAccumulative +=outgoingColorCalculus;
         logEnd("outgoing_message_rating", String.valueOf(outgoingColorCalculus));
 
         engine.close();
@@ -890,7 +899,7 @@ public class MainActivity extends AppCompatActivity {
 
         attachToMessage(msg, gif, png, tbz);
 
-        Message encriptedMessage = null;
+        Message encriptedMessage;
         encriptedMessage = encryptMessageOnEngine(engine, msg);
 
         if (encriptedMessage != null) throw new AssertionError();
@@ -929,13 +938,13 @@ public class MainActivity extends AppCompatActivity {
         }
         // message
 
-        getBlacklist(engine);
+        getBlackList(engine);
 
         engine.close();
         log("TEST: ", "blacklist + delete from blacklist finished");
     }
 
-    private Vector<String> getBlacklist(Engine engine) throws pEpException {
+    private Vector<String> getBlackList(Engine engine) throws pEpException {
         long lastTime = System.currentTimeMillis();
         logStart("blacklist_retrieve", String.valueOf(lastTime));
         Vector<String> blacklist = engine.blacklist_retrieve();
@@ -1085,21 +1094,21 @@ public class MainActivity extends AppCompatActivity {
         pairs.add(new Pair<>("X-Foobaz", "of course"));
         msg.setOptFields(pairs);
 
-        Message encriptedMessage = null;
-        encriptedMessage = encryptMessageOnEngine(engine, msg);
+        Message encryptedMessage;
+        encryptedMessage = encryptMessageOnEngine(engine, msg);
 
-        if (!(encriptedMessage != null)) throw new AssertionError();
+        if (encryptedMessage == null) throw new AssertionError();
 
-        if (!(encriptedMessage.getShortmsg().equals("p≡p"))) throw new AssertionError();
-        if (!(encriptedMessage.getLongmsg().contains("pEp-project.org")))
+        if (!(encryptedMessage.getShortmsg().equals("p≡p"))) throw new AssertionError();
+        if (!(encryptedMessage.getLongmsg().contains("pEp-project.org")))
             throw new AssertionError();
 
-        Vector<Blob> attachments = encriptedMessage.getAttachments();
-        if (!(engine.toUTF16(attachments.get(1).data).startsWith("-----BEGIN PGP MESSAGE-----")))
+        Vector<Blob> attachments = encryptedMessage.getAttachments();
+        if (!(Engine.toUTF16(attachments.get(1).data).startsWith("-----BEGIN PGP MESSAGE-----")))
             throw new AssertionError();
 
         Engine.decrypt_message_Return result = null;
-        decryptMessageOnEngine(engine, encriptedMessage);
+        decryptMessageOnEngine(engine, encryptedMessage);
 
         engine.close();
         log("TEST: ", "Test encrypt and decrypt from myself finished");
@@ -1156,10 +1165,10 @@ public class MainActivity extends AppCompatActivity {
         engine.config_unencrypted_subject(true);
         logEnd("config_unencrypted_subject", String.valueOf(System.currentTimeMillis() - time));
 
-        Message encriptedMessage = null;
-        encriptedMessage = encryptMessageOnEngine(engine, msg);
+        Message encryptedMessage;
+        encryptedMessage = encryptMessageOnEngine(engine, msg);
 
-        if (!encriptedMessage.getShortmsg().equals(msg.getShortmsg())) throw new AssertionError();
+        if (!encryptedMessage.getShortmsg().equals(msg.getShortmsg())) throw new AssertionError();
 
         engine.close();
         log("TEST: ", "Test unencrypted subject finished");
@@ -1396,21 +1405,21 @@ public class MainActivity extends AppCompatActivity {
 
     @NonNull
     private Engine.decrypt_message_Return encrypAndDecryptMessage(Engine engine, Message msg) throws pEpException {
-        Message encriptedMessage = null;
-        encriptedMessage = encryptMessageOnEngine(engine, msg);
+        Message encryptedMessage;
+        encryptedMessage = encryptMessageOnEngine(engine, msg);
 
-        if (!(encriptedMessage != null)) throw new AssertionError();
+        if (encryptedMessage == null) throw new AssertionError();
 
-        if (!(encriptedMessage.getShortmsg().equals("p≡p"))) throw new AssertionError("short message was " + encriptedMessage.getShortmsg());
-        if (!(encriptedMessage.getLongmsg().contains("pEp-project.org")))
+        if (!(encryptedMessage.getShortmsg().equals("p≡p"))) throw new AssertionError("short message was " + encryptedMessage.getShortmsg());
+        if (!(encryptedMessage.getLongmsg().contains("pEp-project.org")))
             throw new AssertionError();
 
-        Vector<Blob> attachments = encriptedMessage.getAttachments();
-        if (!(engine.toUTF16(attachments.get(1).data).startsWith("-----BEGIN PGP MESSAGE-----")))
+        Vector<Blob> attachments = encryptedMessage.getAttachments();
+        if (!(Engine.toUTF16(attachments.get(1).data).startsWith("-----BEGIN PGP MESSAGE-----")))
             throw new AssertionError();
 
-        Engine.decrypt_message_Return result = null;
-        result = decryptMessageOnEngine(engine, encriptedMessage);
+        Engine.decrypt_message_Return result;
+        result = decryptMessageOnEngine(engine, encryptedMessage);
 
         if (!(result.dst.getShortmsg().equals("hello, world"))) throw new AssertionError();
         if (!(result.dst.getLongmsg().equals("this is a test"))) throw new AssertionError();
@@ -1437,26 +1446,30 @@ public class MainActivity extends AppCompatActivity {
         Vector<Blob> detach = msg.getAttachments();
         byte msk = 0;
         for (Blob dblb : detach) {
-            if (dblb.filename.equals("pep.png")) {
-                if (!(Arrays.equals(dblb.data, png))) throw new AssertionError();
-                if (!(dblb.mime_type.equals("image/png"))) throw new AssertionError();
-                msk |= 1;
-            } else if (dblb.filename.equals("spinner.gif")) {
-                if (!(Arrays.equals(dblb.data, gif))) throw new AssertionError();
-                if (!(dblb.mime_type.equals("image/gif"))) throw new AssertionError();
-                msk |= 2;
-            } else if (dblb.filename.equals("yml2.tar.bz2")) {
-                if (!(Arrays.equals(dblb.data, tbz))) throw new AssertionError();
-                if (!(dblb.mime_type.equals("application/octet-stream")))
-                    throw new AssertionError();
-                msk |= 4;
+            switch (dblb.filename) {
+                case "pep.png":
+                    if (!(Arrays.equals(dblb.data, png))) throw new AssertionError();
+                    if (!(dblb.mime_type.equals("image/png"))) throw new AssertionError();
+                    msk |= 1;
+                    break;
+                case "spinner.gif":
+                    if (!(Arrays.equals(dblb.data, gif))) throw new AssertionError();
+                    if (!(dblb.mime_type.equals("image/gif"))) throw new AssertionError();
+                    msk |= 2;
+                    break;
+                case "yml2.tar.bz2":
+                    if (!(Arrays.equals(dblb.data, tbz))) throw new AssertionError();
+                    if (!(dblb.mime_type.equals("application/octet-stream")))
+                        throw new AssertionError();
+                    msk |= 4;
+                    break;
             }
         }
         if (!(msk == 7)) throw new AssertionError();
     }
 
     private void attachToMessage(Message msg, byte[] gif, byte[] png, byte[] tbz) {
-        Vector<Blob> attachments = new Vector<Blob>();
+        Vector<Blob> attachments = new Vector<>();
         {
             Blob b = new Blob();
             b.data = png;
@@ -1554,6 +1567,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Set<Integer> executedTasks = new HashSet<>();
 
+    @SuppressLint("StaticFieldLeak")
     private class RunAllTestsTask extends AsyncTask<Integer, Integer, Integer> {
 
         @Override
@@ -1563,9 +1577,11 @@ public class MainActivity extends AppCompatActivity {
                 switch (integer) {
                     case 0:
                         if (!executedTasks.contains(0)) {
+                            /*
                             for (int i = 0; i< testingTimes; i++) {
-                                //runTestKeyGen();
+                                runTestKeyGen();
                             }
+                            */
                             executedTasks.add(0);
                             return 0;
                         }
@@ -1692,7 +1708,7 @@ public class MainActivity extends AppCompatActivity {
                             for (int i = 0; i< testingTimes; i++) {
                                 runOutgoingColorTest();
                             }
-                            log("outgoing average", String.valueOf(outgoingColorAcumulative/testingTimes));
+                            log("outgoing average", String.valueOf(outgoingColorAccumulative /testingTimes));
                             executedTasks.add(14);
                             return 14;
                         }
@@ -1734,87 +1750,87 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(integer);
             switch (integer) {
                 case 0:
-                    runGenKey.setText("NOT TESTED");
-                    runTypes.setText("TESTING");
+                    runGenKey.setText(NOT_TESTED);
+                    runTypes.setText(TESTING);
                     new RunAllTestsTask().execute(1);
                     break;
                 case 1:
-                    runTypes.setText("PASSED");
-                    runLookup.setText("TESTING");
+                    runTypes.setText(PASSED);
+                    runLookup.setText(TESTING);
                     new RunAllTestsTask().execute(2);
                     break;
                 case 2:
-                    runLookup.setText("PASSED");
-                    runEncryptAndDecrypt.setText("TESTING");
+                    runLookup.setText(PASSED);
+                    runEncryptAndDecrypt.setText(TESTING);
                     new RunAllTestsTask().execute(3);
                     break;
                 case 3:
-                    runEncryptAndDecrypt.setText("PASSED");
-                    runEncryptAndDecryptWithoutKey.setText("TESTING");
+                    runEncryptAndDecrypt.setText(PASSED);
+                    runEncryptAndDecryptWithoutKey.setText(TESTING);
                     new RunAllTestsTask().execute(4);
                     break;
                 case 4:
-                    runEncryptAndDecryptWithoutKey.setText("PASSED");
-                    runRatings.setText("TESTING");
+                    runEncryptAndDecryptWithoutKey.setText(PASSED);
+                    runRatings.setText(TESTING);
                     new RunAllTestsTask().execute(5);
                     break;
                 case 5:
-                    runRatings.setText("PASSED");
-                    runIntegration.setText("TESTING");
+                    runRatings.setText(PASSED);
+                    runIntegration.setText(TESTING);
                     new RunAllTestsTask().execute(6);
                     break;
                 case 6:
-                    runIntegration.setText("PASSED");
-                    runBlackList.setText("TESTING");
+                    runIntegration.setText(PASSED);
+                    runBlackList.setText(TESTING);
                     new RunAllTestsTask().execute(7);
                     break;
                 case 7:
-                    runBlackList.setText("PASSED");
-                    runBlackListAndSendMessage.setText("TESTING");
+                    runBlackList.setText(PASSED);
+                    runBlackListAndSendMessage.setText(TESTING);
                     new RunAllTestsTask().execute(8);
                     break;
                 case 8:
-                    runBlackListAndSendMessage.setText("PASSED");
-                    runBlackListAndDelete.setText("TESTING");
+                    runBlackListAndSendMessage.setText(PASSED);
+                    runBlackListAndDelete.setText(TESTING);
                     new RunAllTestsTask().execute(9);
                     break;
                 case 9:
-                    runBlackListAndDelete.setText("PASSED");
-                    runUnencryptedSubject.setText("TESTING");
+                    runBlackListAndDelete.setText(PASSED);
+                    runUnencryptedSubject.setText(TESTING);
                     new RunAllTestsTask().execute(10);
                     break;
                 case 10:
-                    runUnencryptedSubject.setText("PASSED");
-                    runPassiveMode.setText("TESTING");
+                    runUnencryptedSubject.setText(PASSED);
+                    runPassiveMode.setText(TESTING);
                     new RunAllTestsTask().execute(11);
                     break;
                 case 11:
-                    runPassiveMode.setText("PASSED");
-                    runMessageMe.setText("TESTING");
+                    runPassiveMode.setText(PASSED);
+                    runMessageMe.setText(TESTING);
                     new RunAllTestsTask().execute(12);
                     break;
                 case 12:
-                    runMessageMe.setText("PASSED");
-                    runMessageFromMeIsGreen.setText("TESTING");
+                    runMessageMe.setText(PASSED);
+                    runMessageFromMeIsGreen.setText(TESTING);
                     new RunAllTestsTask().execute(13);
                     break;
                 case 13:
-                    runMessageFromMeIsGreen.setText("PASSED");
-                    runOutgoingColor.setText("TESTING");
+                    runMessageFromMeIsGreen.setText(PASSED);
+                    runOutgoingColor.setText(TESTING);
                     new RunAllTestsTask().execute(14);
                     break;
                 case 14:
-                    runOutgoingColor.setText("PASSED");
-                    runIdentityRating.setText("TESTING");
+                    runOutgoingColor.setText(PASSED);
+                    runIdentityRating.setText(TESTING);
                     new RunAllTestsTask().execute(15);
                     break;
                 case 15:
-                    runIdentityRating.setText("PASSED");
-                    runDeblacklist.setText("TESTING");
+                    runIdentityRating.setText(PASSED);
+                    runDeblacklist.setText(TESTING);
                     new RunAllTestsTask().execute(16);
                     break;
                 case 16:
-                    runDeblacklist.setText("PASSED");
+                    runDeblacklist.setText(PASSED);
                     generateNoteOnSD("dump_test_engine");
                     break;
             }
@@ -1826,76 +1842,77 @@ public class MainActivity extends AppCompatActivity {
             super.onProgressUpdate(values);
             switch (values[0]) {
                 case 0:
-                    runGenKey.setText("FAILED");
+                    runGenKey.setText(FAILED);
                     new RunAllTestsTask().execute(1);
                     break;
                 case 1:
-                    runLookup.setText("FAILED");
+                    runLookup.setText(FAILED);
                     new RunAllTestsTask().execute(2);
                     break;
                 case 2:
-                    runLookup.setText("FAILED");
+                    runLookup.setText(FAILED);
                     new RunAllTestsTask().execute(3);
                     break;
                 case 3:
-                    runEncryptAndDecryptWithoutKey.setText("FAILED");
+                    runEncryptAndDecryptWithoutKey.setText(FAILED);
                     new RunAllTestsTask().execute(4);
                     break;
                 case 4:
-                    runEncryptAndDecrypt.setText("FAILED");
+                    runEncryptAndDecrypt.setText(FAILED);
                     new RunAllTestsTask().execute(5);
                     break;
                 case 5:
-                    runEncryptAndDecryptWithoutKey.setText("FAILED");
+                    runEncryptAndDecryptWithoutKey.setText(FAILED);
                     new RunAllTestsTask().execute(6);
                 case 6:
-                    runRatings.setText("FAILED");
+                    runRatings.setText(FAILED);
                     new RunAllTestsTask().execute(7);
                     break;
                 case 7:
-                    runBlackList.setText("FAILED");
+                    runBlackList.setText(FAILED);
                     new RunAllTestsTask().execute(8);
                     break;
                 case 8:
-                    runBlackListAndSendMessage.setText("FAILED");
+                    runBlackListAndSendMessage.setText(FAILED);
                     new RunAllTestsTask().execute(9);
                     break;
                 case 9:
-                    runBlackListAndDelete.setText("FAILED");
+                    runBlackListAndDelete.setText(FAILED);
                     new RunAllTestsTask().execute(10);
                     break;
                 case 10:
-                    runUnencryptedSubject.setText("FAILED");
+                    runUnencryptedSubject.setText(FAILED);
                     new RunAllTestsTask().execute(11);
                     break;
                 case 11:
-                    runMessageMe.setText("FAILED");
+                    runMessageMe.setText(FAILED);
                     new RunAllTestsTask().execute(12);
                     break;
                 case 12:
-                    runMessageMe.setText("FAILED");
+                    runMessageMe.setText(FAILED);
                     new RunAllTestsTask().execute(13);
                     break;
                 case 13:
-                    runMessageFromMeIsGreen.setText("FAILED");
+                    runMessageFromMeIsGreen.setText(FAILED);
                     new RunAllTestsTask().execute(14);
                     break;
                 case 14:
-                    runMessageFromMeIsGreen.setText("FAILED");
+                    runMessageFromMeIsGreen.setText(FAILED);
                     new RunAllTestsTask().execute(14);
                     break;
                 case 15:
-                    runIdentityRating.setText("FAILED");
+                    runIdentityRating.setText(FAILED);
                     new RunAllTestsTask().execute(15);
                     break;
                 case 16:
-                    runDeblacklist.setText("FAILED");
+                    runDeblacklist.setText(FAILED);
                     generateNoteOnSD("dump_test_engine");
                     break;
             }
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class RunTestTask extends AsyncTask<Integer, Void, Integer> {
 
         @Override
@@ -1945,28 +1962,28 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(integer);
             switch (integer) {
                 case 0:
-                    runGenKey.setText("TESTED");
+                    runGenKey.setText(TESTED);
                     break;
                 case 1:
-                    runTypes.setText("TESTED");
+                    runTypes.setText(TESTED);
                     break;
                 case 2:
-                    runLookup.setText("TESTED");
+                    runLookup.setText(TESTED);
                     break;
                 case 3:
-                    runEncryptAndDecrypt.setText("TESTED");
+                    runEncryptAndDecrypt.setText(TESTED);
                     break;
                 case 4:
-                    runEncryptAndDecryptWithoutKey.setText("TESTED");
+                    runEncryptAndDecryptWithoutKey.setText(TESTED);
                     break;
                 case 5:
-                    runRatings.setText("TESTED");
+                    runRatings.setText(TESTED);
                     break;
                 case 6:
-                    runIntegration.setText("TESTED");
+                    runIntegration.setText(TESTED);
                     break;
                 case 16:
-                    runDeblacklist.setText("TESTED");
+                    runDeblacklist.setText(TESTED);
                     break;
             }
             Log.i("RunAllTestsTask", "onPostExecute " + "Ended test");

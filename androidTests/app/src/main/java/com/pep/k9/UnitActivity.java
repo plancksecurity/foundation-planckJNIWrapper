@@ -4,13 +4,13 @@ import android.content.res.AssetManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Engine;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Pair;
-import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.pEpException;
 
 import java.io.IOException;
@@ -26,15 +26,15 @@ public class UnitActivity extends AppCompatActivity {
         setContentView(R.layout.activity_unit);
 
         try {
-            messageAfterDecriptionShouldBeTheSame();
-            messageAfterDecriptionWithoutKeyShouldKeepBreaks();
-            messageAfterDecriptionShouldKeepBreaks();
+            messageAfterDecryptionShouldBeTheSame();
+            messageAfterDecryptionWithoutKeyShouldKeepBreaks();
+            messageAfterDecryptionShouldKeepBreaks();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void messageAfterDecriptionWithoutKeyShouldKeepBreaks() throws Exception {
+    public void messageAfterDecryptionWithoutKeyShouldKeepBreaks() throws Exception {
         Engine engine;
         engine = new Engine();
 
@@ -64,13 +64,13 @@ public class UnitActivity extends AppCompatActivity {
         pairs.add(new Pair<>("X-Foobaz", "of course"));
         msg.setOptFields(pairs);
 
-        Message encriptedMessage = null;
-        encriptedMessage = encryptMessageOnEngine(engine, msg);
+        Message encryptedMessage;
+        encryptedMessage = encryptMessageOnEngine(engine, msg);
 
-        Vector<Blob> attachments = encriptedMessage.getAttachments();
+        Vector<Blob> attachments = encryptedMessage.getAttachments();
 
-        Engine.decrypt_message_Return result = null;
-        result = decryptMessageOnEngine(engine, encriptedMessage);
+        Engine.decrypt_message_Return result;
+        result = decryptMessageOnEngine(engine, encryptedMessage);
 
         engine.close();
 
@@ -79,7 +79,7 @@ public class UnitActivity extends AppCompatActivity {
         }
     }
 
-    public void messageAfterDecriptionShouldKeepBreaks() throws Exception {
+    public void messageAfterDecryptionShouldKeepBreaks() throws Exception {
         Engine engine;
         engine = new Engine();
 
@@ -98,33 +98,33 @@ public class UnitActivity extends AppCompatActivity {
         msg.setShortmsg("hello, world");
         msg.setLongmsg("thisis\nastest");
 
+        ArrayList<Pair<String, String>> pairs = new ArrayList<>();
+        pairs.add(new Pair<>("X-Foobaz", "of course"));
+        msg.setOptFields(pairs);
+
+        Message encryptedMessage;
+        encryptedMessage = encryptMessageOnEngine(engine, msg);
+
+        Vector<Blob> attachments = encryptedMessage.getAttachments();
+
+        Engine.decrypt_message_Return result;
+        result = decryptMessageOnEngine(engine, encryptedMessage);
+
+        engine.close();
+
         msg.setDir(Message.Direction.Outgoing);
 
         Vector<Identity> cc = new Vector<>();
         cc.add(alice);
         msg.setCc(cc);
 
-        ArrayList<Pair<String, String>> pairs = new ArrayList<>();
         pairs.add(new Pair<>("Received", "in time"));
-        pairs.add(new Pair<>("X-Foobaz", "of course"));
-        msg.setOptFields(pairs);
-
-        Message encriptedMessage = null;
-        encriptedMessage = encryptMessageOnEngine(engine, msg);
-
-        Vector<Blob> attachments = encriptedMessage.getAttachments();
-
-        Engine.decrypt_message_Return result = null;
-        result = decryptMessageOnEngine(engine, encriptedMessage);
-
-        engine.close();
-
         if (!result.dst.getLongmsg().equals(msg.getLongmsg())) {
             throw new RuntimeException("FAILED: " +result.dst.getLongmsg()+" not equals to "+msg.getLongmsg());
         }
     }
 
-    public void messageAfterDecriptionShouldBeTheSame() throws Exception {
+    public void messageAfterDecryptionShouldBeTheSame() throws Exception {
         Engine engine;
         engine = new Engine();
 
@@ -140,13 +140,13 @@ public class UnitActivity extends AppCompatActivity {
         pairs.add(new Pair<>("X-Foobaz", "of course"));
         msg.setOptFields(pairs);
 
-        Message encriptedMessage = null;
-        encriptedMessage = encryptMessageOnEngine(engine, msg);
+        Message encryptedMessage;
+        encryptedMessage = encryptMessageOnEngine(engine, msg);
 
-        Vector<Blob> attachments = encriptedMessage.getAttachments();
+        Vector<Blob> attachments = encryptedMessage.getAttachments();
 
-        Engine.decrypt_message_Return result = null;
-        result = decryptMessageOnEngine(engine, encriptedMessage);
+        Engine.decrypt_message_Return result;
+        result = decryptMessageOnEngine(engine, encryptedMessage);
 
         engine.close();
 
@@ -178,12 +178,16 @@ public class UnitActivity extends AppCompatActivity {
     private Engine.decrypt_message_Return decryptMessageOnEngine(Engine engine, Message encriptedMessage) throws pEpException {
         long lastTime = System.currentTimeMillis();
         Engine.decrypt_message_Return decrypt_message_return = engine.decrypt_message(encriptedMessage);
+        long time = System.currentTimeMillis() - lastTime;
+        Log.d("time", " " + time);
         return decrypt_message_return;
     }
 
     private Message encryptMessageOnEngine(Engine engine, Message msg) throws pEpException {
         long lastTime = System.currentTimeMillis();
         Message message = engine.encrypt_message(msg, null);
+        long time = System.currentTimeMillis() - lastTime;
+        Log.d("time", " " + time);
         return message;
     }
 
@@ -224,6 +228,8 @@ public class UnitActivity extends AppCompatActivity {
     private void updateIdentityOnEngine(Engine engine, Identity identity) {
         long lastTime = System.currentTimeMillis();
         engine.updateIdentity(identity);
+        long time = System.currentTimeMillis() - lastTime;
+        Log.d("time", " " + time);
     }
 
     @NonNull
@@ -242,6 +248,8 @@ public class UnitActivity extends AppCompatActivity {
 
         long lastTime = System.currentTimeMillis();
         myselfInEngine(engine, alice);
+        long time = System.currentTimeMillis() - lastTime;
+        Log.d("time", " " + time);
 
         return alice;
     }
@@ -249,6 +257,8 @@ public class UnitActivity extends AppCompatActivity {
     private void importKeyFromEngine(Engine engine, String filename) throws IOException {
         long lastTime = System.currentTimeMillis();
         engine.importKey(LoadAssetAsString(filename));
+        long time = System.currentTimeMillis() - lastTime;
+        Log.d("time", " " + time);
     }
 
     private String LoadAssetAsString(String fname) throws IOException {
@@ -256,6 +266,7 @@ public class UnitActivity extends AppCompatActivity {
         return new String(LoadAssetAsBuffer(fname));
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private byte[] LoadAssetAsBuffer(String fname) throws IOException {
         AssetManager assetManager = getAssets();
         InputStream input;
@@ -273,7 +284,6 @@ public class UnitActivity extends AppCompatActivity {
     }
 
     private Identity myselfInEngine(Engine engine, Identity identity) {
-        Identity myself = engine.myself(identity);
-        return myself;
+        return engine.myself(identity);
     }
 }

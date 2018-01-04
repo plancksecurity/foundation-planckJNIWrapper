@@ -15,7 +15,7 @@ public class PEpUnitaryStuff {
         }
     }
 
-    public static void shouldDoSomeStuff() throws Exception {
+    private static void shouldDoSomeStuff() throws Exception {
         Engine engine;
         engine = new Engine();
 
