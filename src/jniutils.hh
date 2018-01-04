@@ -7,6 +7,7 @@
 #include <pEp/stringpair.h>
 #include <pEp/identity_list.h>
 #include <pEp/bloblist.h>
+#include <pEp/message.h>
 
 #if 0 // Enable if log needed
 #include <android/log.h>
@@ -171,6 +172,8 @@ namespace pEp {
 
         jobject from_bloblist(JNIEnv *env, bloblist_t *bl);
         bloblist_t *to_bloblist(JNIEnv *env, jobject obj);
+
+        PEP_enc_format to_EncFormat(JNIEnv *env, jobject obj);
     };
 };
 

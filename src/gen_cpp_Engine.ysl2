@@ -198,6 +198,8 @@ tstylesheet {
         choose {
             when "$type = 'message'"
                 | message *_«$name» = (message *) callLongMethod(env, «$name», "getHandle");
+            when "$type='EncFormat'"
+                | √$type _«$name» = to_«$type»(env, «$name»);
             when "$type='bool'"
                 | bool _«$name» = (bool) «$name»;
             when "$type='int'"
