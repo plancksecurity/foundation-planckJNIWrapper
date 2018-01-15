@@ -10,7 +10,7 @@ def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 
 buildscript {
     repositories {
-        //jcenter()
+        jcenter()
         //maven {url 'https://maven.google.com'}
         google()
     }
@@ -22,7 +22,7 @@ buildscript {
 
 allprojects {
     repositories {
-        //jcenter()
+        jcenter()
         google()
     }
 }
