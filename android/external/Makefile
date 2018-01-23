@@ -324,7 +324,7 @@ libiconv-install: $(LOCAL)/lib/libiconv.so
 #------------------------------------------------------------------------------#
 # gnupg
 
-EXTERNAL_GIT_REPOS += gnupg|git://git.gnupg.org/gnupg.git?gnupg-2.0.29
+EXTERNAL_GIT_REPOS += gnupg|git://git.gnupg.org/gnupg.git?gnupg-2.0.30
 
 gnupg/configure: gnupg.src.stamp gnupg/configure.ac 
 	cd gnupg && ./autogen.sh
