@@ -28,10 +28,6 @@ tstylesheet {
     template "basic" {
         const "itype" call "toIntermediate" with "type", "@type";
         const "jtype" call "toJava" with "type", "@type";
-        const "ptype", "name(parm/*[1])";
-        const "pitype" call "toIntermediate" with "type", "$ptype";
-        const "pjtype" call "toJava" with "type", "$ptype";
-        const "pname", "name(parm/*[2])";
 
         ||
         private native «$itype» «@name»(`apply "parm/*", mode=basic_iparm`);
