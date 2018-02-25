@@ -237,6 +237,7 @@ namespace pEp {
         basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);
+        basic identity setOwnKey(identity ident, string fpr);
         basic void keyMistrusted(identity ident);
         basic void keyResetTrust(identity ident);
         basic void trustPersonalKey(identity ident);

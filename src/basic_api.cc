@@ -75,6 +75,22 @@ JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_updateIdentity(
     return from_identity(env, _ident);
 }
 
+JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_setOwnKey(
+        JNIEnv *env,
+        jobject obj,
+        jobject ident,
+        jbyteArray fpr
+    )
+{
+    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
+    pEp_identity *_ident = to_identity(env, ident);
+    char *_fpr = to_string(env, fpr);
+
+    ::set_own_key(session, _ident, _fpr);
+
+    return from_identity(env, _ident);
+}
+
 JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyMistrusted(
         JNIEnv *env,
         jobject obj,
@@ -311,6 +327,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_cancel_1sync_1handshake(
 JNIEXPORT jbyteArray JNICALL Java_org_pEp_jniadapter_Engine_getCrashdumpLog(
         JNIEnv *env,
         jobject obj,
+        jint dummy,
         jint maxlines
     )
 {

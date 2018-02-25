@@ -34,36 +34,87 @@ tstylesheet {
         const "pname", "name(parm/*[2])";
 
         ||
-        private native «$itype» «@name»(«$pitype» «$pname»);
+        private native «$itype» «@name»(`apply "parm/*", mode=basic_iparm`);
 
-        public «$jtype» «@name»(«$pjtype» «$pname») {
+        public «$jtype» «@name»(`apply "parm/*", mode=basic_parm`) {
         ||
-        choose {
-            when "$ptype = 'string'"
-            |> «$pitype» _«$pname» = «$pname».getBytes();
-            when "$ptype = 'bool'"
-            |> «$pitype» _«$pname» = «$pname».booleanValue();
-            when "$ptype = 'int'"
-            |> «$pitype» _«$pname» = «$pname»; 
-            when "ancestor::namespace/child::enum[@name=$ptype]"
-            |> «$pitype» _«$pname» = «$pname».value;
-            otherwise
-            |> «$pitype» _«$pname» = new «$pitype»(«$pname»);
-        }
+        apply "parm/*", mode=basic_parm_set;
         choose {
             when "@type = 'void'"
-                |> «@name»(_«$pname»);
+                |> «@name»(`apply "parm/*", mode=basic_parm_name`);
             when "@type = 'identity'"
-                |> return new Identity(«@name»(_«$pname»));
+                |> return new Identity(«@name»(`apply "parm/*", mode=basic_parm_name`));
             when "@type = 'bool'"
-                |> return new Boolean(«@name»(_«$pname»));
+                |> return new Boolean(«@name»(`apply "parm/*", mode=basic_parm_name`));
             otherwise
-                |> return AbstractEngine.toUTF16(«@name»(_«$pname»));
+                |> return AbstractEngine.toUTF16(«@name»(`apply "parm/*", mode=basic_parm_name`));
         }
         ||
         }
 
         ||
+    }
+    
+    template "*", mode=basic_parm_name choose {
+        when "position() mod 2" {
+            if "position() = 1 and name(.)='int'"
+                > 23, 
+            if "position() > 1" > , 
+        }
+        otherwise {
+            > _«name(.)»
+        }
+    }
+
+    template "*", mode=basic_parm choose {
+        when "position() mod 2" {
+            if "position() > 1" > , 
+            choose {
+                when "name(.) = 'string'"
+                    > String 
+                when "name(.) = 'identity'"
+                    > Identity 
+                when "name(.) = 'bool'"
+                    > Boolean 
+                otherwise
+                    > «name(.)» 
+            }
+        }
+        otherwise {
+            > «name(.)»
+        }
+    }
+
+    template "*", mode=basic_iparm choose {
+        when "position() mod 2" {
+            const "pitype" call "toIntermediate" with "type", "name(.)";
+            if "position() = 1 and name(.)='int'"
+                > int dummy, 
+            if "position() > 1" > , 
+            > «$pitype» 
+        }
+        otherwise {
+            > «name(.)»
+        }
+    }
+
+    template "*", mode=basic_parm_set {
+        const "ptype", "name(preceding-sibling::*[1])";
+        const "pname", "name(.)";
+        const "pitype" call "toIntermediate" with "type", "$ptype";
+
+        if "not(position() mod 2)" choose {
+            when "$ptype = 'string'"
+            | «$pitype» _«$pname» = «$pname».getBytes();
+            when "$ptype = 'bool'"
+            | «$pitype» _«$pname» = «$pname».booleanValue();
+            when "$ptype = 'int'"
+            | «$pitype» _«$pname» = «$pname»; 
+            when "ancestor::namespace/child::enum[@name=$ptype]"
+            | «$pitype» _«$pname» = «$pname».value;
+            otherwise
+            | «$pitype» _«$pname» = new «$pitype»(«$pname»);
+        }
     }
 
     function "returnJava" {
