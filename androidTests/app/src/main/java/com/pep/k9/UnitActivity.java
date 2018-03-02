@@ -185,7 +185,7 @@ public class UnitActivity extends AppCompatActivity {
 
     private Message encryptMessageOnEngine(Engine engine, Message msg) throws pEpException {
         long lastTime = System.currentTimeMillis();
-        Message message = engine.encrypt_message(msg, null);
+        Message message = engine.encrypt_message(msg, null, Message.EncFormat.PEP);
         long time = System.currentTimeMillis() - lastTime;
         Log.d("time", " " + time);
         return message;

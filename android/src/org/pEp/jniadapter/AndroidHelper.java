@@ -221,7 +221,8 @@ public class AndroidHelper {
     }
 
     public static boolean needNewAssets() {
-        return ENGINE_VERSION_CODE != getInstalledVersion();
+        return true;
+        //return ENGINE_VERSION_CODE != getInstalledVersion();
     }
 
     // TODO: replace with native impl, less prone to failure.

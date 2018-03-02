@@ -5,7 +5,7 @@ android {
     buildToolsVersion '25.0.2'
 
     defaultConfig {
-        applicationId "pep.android.k9"
+        applicationId "pep.android.k9.materials"
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1

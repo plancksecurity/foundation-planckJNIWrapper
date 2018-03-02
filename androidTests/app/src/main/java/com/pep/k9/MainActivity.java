@@ -1437,7 +1437,7 @@ public class MainActivity extends AppCompatActivity {
     private Message encryptMessageOnEngine(Engine engine, Message msg) throws pEpException {
         long lastTime = System.currentTimeMillis();
         logStart("engine.encrypt_message", String.valueOf(lastTime));
-        Message message = engine.encrypt_message(msg, null);
+        Message message = engine.encrypt_message(msg, null, Message.EncFormat.PEP);
         logEnd("engine.encrypt_message", String.valueOf(System.currentTimeMillis() - lastTime));
         return message;
     }

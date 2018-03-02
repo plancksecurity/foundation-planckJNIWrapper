@@ -36,7 +36,7 @@ public class PEpUnitaryStuff {
         cc.add(new Identity());
         msg.setCc(cc);
 
-        Message encriptedMessage = engine.encrypt_message(msg, null);
+        Message encriptedMessage = engine.encrypt_message(msg, null, Message.EncFormat.PEP);
         Engine.decrypt_message_Return decrypt_message_return = engine.decrypt_message(encriptedMessage);
 
         if (!decrypt_message_return.dst.getLongmsg().equals(message)) {
