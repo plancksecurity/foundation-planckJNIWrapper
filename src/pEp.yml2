@@ -14,6 +14,9 @@ namespace pEp {
         pEp_init_gpgme_init_failed						> 0x0111
         pEp_init_no_gpg_home							> 0x0112
         pEp_init_netpgp_init_failed						> 0x0113
+        pEp_init_cannot_determine_gpg_version           > 0x0114
+        pEp_init_unsupported_gpg_version                > 0x0115
+        pEp_init_cannot_config_gpg_agent                > 0x0116
 
         pEp_init_sqlite3_without_mutex					> 0x0120
         pEp_init_cannot_open_db							> 0x0121
@@ -23,6 +26,8 @@ namespace pEp {
         pEp_key_has_ambig_name					        > 0x0202
         pEp_get_key_failed						        > 0x0203
         pEp_cannot_export_key                           > 0x0204
+        pEp_cannot_edit_key                             > 0x0205
+        pEp_key_unsuitable                              > 0x0206
         
         pEp_cannot_find_identity						> 0x0301
         pEp_cannot_set_person							> 0x0381
@@ -30,7 +35,11 @@ namespace pEp {
         pEp_cannot_set_identity							> 0x0383
         pEp_cannot_set_trust                            > 0x0384
         pEp_key_blacklisted                             > 0x0385
-        
+        pEp_cannot_find_person                          > 0x0386
+
+        pEp_cannot_find_alias                           > 0x0391
+        pEp_cannot_set_alias                            > 0x0392
+
         pEp_unencrypted									> 0x0400
         pEp_verified									> 0x0401
         pEp_decrypted									> 0x0402
@@ -43,6 +52,8 @@ namespace pEp {
         pEp_cannot_decrypt_unknown						> 0x04ff
 
         pEp_trustword_not_found							> 0x0501
+        pEp_trustwords_fpr_wrong_length					> 0x0502
+        pEp_trustwords_duplicate_fpr                    > 0x0503
 
         pEp_cannot_create_key                           > 0x0601
         pEp_cannot_send_key                             > 0x0602
@@ -68,6 +79,7 @@ namespace pEp {
         pEp_statemachine_invalid_event                  > 0x0983
         pEp_statemachine_invalid_condition              > 0x0984
         pEp_statemachine_invalid_action                 > 0x0985
+        pEp_statemachine_inhibited_event                > 0x0986
 
         pEp_commit_failed								> 0xff01
         pEp_message_consume                             > 0xff02
@@ -80,6 +92,9 @@ namespace pEp {
         pEp_buffer_too_small                            > -3
         pEp_out_of_memory								> -2
         pEp_unknown_error								> -1
+
+
+        pEp_version_mismatch                            > -7
     };
 
     enum Color {
