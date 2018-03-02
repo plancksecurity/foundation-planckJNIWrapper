@@ -9,7 +9,7 @@
 # TODO: get params from the outside for multiarch build
 
 NDK_ABI ?= arm
-NDK_TOOLCHAIN_VERSION ?= 4.8
+NDK_TOOLCHAIN_VERSION ?= 4.9
 APP_ABI ?= armeabi-v7a
 APP_PLATFORM ?= android-18
 PEP_PACKAGE_NAME ?= com.pep.k9
@@ -57,8 +57,9 @@ NDK_TOOLCHAIN_BASE=$(ANDROID_NDK_HOME)/toolchains/$(NDK_TOOLCHAIN)/prebuilt/$(ND
 
 # include Android's build flags
 TARGET_ARCH_ABI = $(APP_ABI)
-#include $(ANDROID_NDK_HOME)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
-include $(ANDROID_NDK_HOME)/toolchains/$(NDK_TOOLCHAIN)/setup.mk
+include $(ANDROID_NDK_HOME)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
+#include $(ANDROID_NDK_HOME)/toolchains/$(NDK_TOOLCHAIN)/setup.mk
+
 CC := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-gcc --sysroot=$(NDK_SYSROOT)
 LD := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-ld
 AR := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-ar
@@ -366,7 +367,7 @@ gnupg-install: $(LOCAL)/bin/gpg2
 #------------------------------------------------------------------------------#
 # gpgme
 
-EXTERNAL_GIT_REPOS += gpgme|git://git.gnupg.org/gpgme.git?gpgme-1.6.0
+EXTERNAL_GIT_REPOS += gpgme|git://git.gnupg.org/gpgme.git?gpgme-1.8.0
 
 gpgme/configure: gpgme.src.stamp gpgme/configure.ac 
 	cd gpgme && ./autogen.sh 
@@ -390,6 +391,7 @@ gpgme/Makefile: gpgme/configure
 				--disable-g13-test \
 				--prefix=$(prefix)
 
+	sed -i $$'s/#define error_t int/#ifndef error_t\\\n#define error_t int\\\n#endif/g' gpgme/config.h
 
 gpgme/src/.libs/libgpgme.so: gpgme/Makefile
 	$(MAKE) -C gpgme
