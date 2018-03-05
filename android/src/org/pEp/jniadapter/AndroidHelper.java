@@ -29,7 +29,7 @@ public class AndroidHelper {
     private static File tmpDir;
         
     // TODO : Increment when needed.
-    public static int ENGINE_VERSION_CODE = 1780;
+    public static int ENGINE_VERSION_CODE = 2552;
 
     private static File shareDir;
 
@@ -221,8 +221,7 @@ public class AndroidHelper {
     }
 
     public static boolean needNewAssets() {
-        return true;
-        //return ENGINE_VERSION_CODE != getInstalledVersion();
+        return ENGINE_VERSION_CODE != getInstalledVersion();
     }
 
     // TODO: replace with native impl, less prone to failure.
