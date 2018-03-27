@@ -382,16 +382,14 @@ gpgme/Makefile: gpgme/configure
 				--with-gpg-error-prefix=$(LOCAL) \
 				--with-libassuan-prefix=$(LOCAL) \
 				--enable-fixed-path=$(prefix)/bin \
-				--without-g13 \
 				--disable-glibtest \
 				--disable-gpg-test \
 				--disable-gpgsm-test \
 				--disable-gpgconf-test \
-				--disable-parallel-test \
 				--disable-g13-test \
-				--prefix=$(prefix)
+				--prefix=$(prefix) \
+				--enable-languages=cl
 
-	sed -i $$'s/#define error_t int/#ifndef error_t\\\n#define error_t int\\\n#endif/g' gpgme/config.h
 
 gpgme/src/.libs/libgpgme.so: gpgme/Makefile
 	$(MAKE) -C gpgme
