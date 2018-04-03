@@ -1,6 +1,6 @@
 LOCAL_PATH:= $(call my-dir)
 ENGINE_PATH := $(LOCAL_PATH)/../../../pEpEngine
-GPGBUILD:= $(LOCAL_PATH)/../external/data/data/pep.android.k9.materials/app_opt
+GPGBUILD:= $(LOCAL_PATH)/../external/data/data/security.pEp/app_opt
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libassuan
