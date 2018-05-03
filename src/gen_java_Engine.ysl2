@@ -137,21 +137,21 @@ tstylesheet {
 
     template "method", mode=plain {
         const "convert", "count(parm/stringlist|parm/stringpairlist|parm/string|parm/identity|parm/identitylist) > 0";
-        const "singlereturn", "count(parm/creates|parm/returns|parms/inout) = 1";
-        const "multireturn", "count(parm/creates|parm/returns|parms/inout) > 1";
+        const "singlereturn", "count(parm/creates|parm/returns) = 1";
+        const "multireturn", "count(parm/creates|parm/returns) > 1";
 
         if "$multireturn" {
             if "$convert"
             ||
             private class _«@name»_Return {
-            `` apply "parm[creates|returns|inout]", 1, mode=intermediate with "public", 1;
+            `` apply "parm[creates|returns]", 1, mode=intermediate with "public", 1;
             }
 
             ||
 
             ||
             public class «@name»_Return {
-            `` apply "parm[creates|returns|inout]", 1, mode=java with "public", 1;
+            `` apply "parm[creates|returns]", 1, mode=java with "public", 1;
             }
 
             ||
@@ -214,7 +214,7 @@ tstylesheet {
             ||
                 _«@name»_Return _result = _«@name»(`apply "parm[in|inout]", mode=call;`);
                 «@name»_Return result = new «@name»_Return();
-                `` apply "parm[creates|returns|inout]", mode=convertOut;
+                `` apply "parm[creates|returns]", mode=convertOut;
                 return result;
             ||
 
