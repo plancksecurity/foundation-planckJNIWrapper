@@ -170,7 +170,7 @@ namespace pEp {
             );
 
         method decrypt_message(
-                in message src,
+                inout message src,
                 creates message dst,
                 creates stringlist keylist,
                 returns Rating rating,

@@ -28,11 +28,11 @@ tstylesheet {
 
     template "method" {
         const "mangled" call "mangle";
-        const "returning", "count(parm/creates|parm/returns)";
+        const "returning", "count(parm/creates|parm/returns|parm/inout)";
         const "CretType" choose {
             when "$returning = 0" > void
             when "$returning = 1" 
-                call "jni_type" with "type", "name(parm[returns|creates]/*[2])";
+                call "jni_type" with "type", "name(parm[returns|creates|inout]/*[2])";
             when "$returning > 0" > jobject
         }
         const "CretDefault" choose {
@@ -43,14 +43,14 @@ tstylesheet {
         ||
         JNIEXPORT «$CretType» JNICALL «$mangled»(
                 JNIEnv *env,
-                jobject obj`apply "parm[in]", mode=sig`
+                jobject obj`apply "parm[in|inout]", mode=sig`
             )
         {
             PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
 
         ||
 
-        apply "parm[in]", mode=in;
+        apply "parm[in|inout]", mode=in;
         apply "parm[creates|returns]", mode=out;
         ||
 
@@ -64,7 +64,7 @@ tstylesheet {
 
         ||
 
-        apply "parm[returns|creates]", mode=return;
+        apply "parm[returns|creates|inout]", mode=return;
 
         choose {
             when "$returning > 1" {
@@ -78,7 +78,7 @@ tstylesheet {
                     result_ = env->NewObject(clazz_result_, constructor_result_, obj);
                 ||
 
-                apply "parm[returns|creates]", mode=setresult
+                apply "parm[returns|creates|inout]", mode=setresult
                     with "jtype" > org/pEp/jniadapter/Engine$_«@name»_Return
 
                 ||
@@ -89,7 +89,7 @@ tstylesheet {
             when "$returning = 1" {
 
                 ||
-                    return «name(parm[returns|creates]/*[3])»_;
+                    return «name(parm[returns|creates|inout]/*[3])»_;
                 ||
             }
         }

@@ -137,21 +137,21 @@ tstylesheet {
 
     template "method", mode=plain {
         const "convert", "count(parm/stringlist|parm/stringpairlist|parm/string|parm/identity|parm/identitylist) > 0";
-        const "singlereturn", "count(parm/creates|parm/returns) = 1";
-        const "multireturn", "count(parm/creates|parm/returns) > 1";
+        const "singlereturn", "count(parm/creates|parm/returns|parms/inout) = 1";
+        const "multireturn", "count(parm/creates|parm/returns|parms/inout) > 1";
 
         if "$multireturn" {
             if "$convert"
             ||
             private class _«@name»_Return {
-            `` apply "parm[creates|returns]", 1, mode=intermediate with "public", 1;
+            `` apply "parm[creates|returns|inout]", 1, mode=intermediate with "public", 1;
             }
 
             ||
 
             ||
             public class «@name»_Return {
-            `` apply "parm[creates|returns]", 1, mode=java with "public", 1;
+            `` apply "parm[creates|returns|inout]", 1, mode=java with "public", 1;
             }
 
             ||
@@ -160,14 +160,14 @@ tstylesheet {
         if "$convert"
         ||
         private native `call "returnInter"` _«@name»(
-        `` apply "parm[in]", 2, mode=intermediate
+        `` apply "parm[in|inout]", 2, mode=intermediate
             ) throws pEpException;
 
         ||
 
         ||
         public `if "not($convert)" > native ``call "returnJava"` «@name»(
-        `` apply "parm[in]", 2, mode=java
+        `` apply "parm[in|inout]", 2, mode=java
             ) throws pEpException`if "not($convert)" > ;`
         ||
 
@@ -212,9 +212,9 @@ tstylesheet {
 
             if "$multireturn"
             ||
-                _«@name»_Return _result = _«@name»(`apply "parm[in]", mode=call;`);
+                _«@name»_Return _result = _«@name»(`apply "parm[in|inout]", mode=call;`);
                 «@name»_Return result = new «@name»_Return();
-                `` apply "parm[creates|returns]", mode=convertOut;
+                `` apply "parm[creates|returns|inout]", mode=convertOut;
                 return result;
             ||
 
@@ -272,7 +272,7 @@ tstylesheet {
         const "type", "name(*[2])";
         const "name" call "lcase" with "text", "name(*[3])";
 
-        if "$dir = 'in'" choose {
+        if "$dir = 'in' or $dir = 'inout'" choose {
             when "$type = 'string' or $type = 'stringlist'"
                 | ¡$type _«$name» = AbstractEngine.toUTF8(«$name»);
             when "$type = 'identity'"
