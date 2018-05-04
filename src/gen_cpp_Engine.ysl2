@@ -78,7 +78,7 @@ tstylesheet {
                     result_ = env->NewObject(clazz_result_, constructor_result_, obj);
                 ||
 
-                apply "parm[returns|creates]", mode=setresult
+                apply "parm[returns|creates|inout[../int]]", mode=setresult
                     with "jtype" > org/pEp/jniadapter/Engine$_«@name»_Return
 
                 ||
@@ -89,7 +89,7 @@ tstylesheet {
             when "$returning = 1" {
 
                 ||
-                    return «name(parm[returns|creates]/*[3])»_;
+                    return «name(parm[returns|creates|inout[../int]]/*[3])»_;
                 ||
             }
         }
@@ -102,25 +102,39 @@ tstylesheet {
 
     template "parm", mode=setresult {
         param "jtype";
-        const "sig" call "toSig" with "type", "name(*[2])";
+        const "dir", "name(*[1])";
+        const "type", "name(*[2])";
         const "name", "name(*[3])";
+        const "sig" call "toSig" with "type", "$type";
+
         ||
         jfieldID «$name»_field = getFieldID(env, "«$jtype»",
                     "«$name»", "«$sig»");
-        if («$name»_)
-            env->SetObjectField(result_, «$name»_field, «$name»_);
         ||
-        if "$name = 'dst'"
-        ||
-        else
-            env->SetObjectField(result_, «$name»_field, src);
-        ||
+
+        choose {
+            when "$type='int'"
+                | env->SetIntField(result_, «$name»_field, _«$name»);
+            otherwise {
+                ||
+                if («$name»_)
+                    env->SetObjectField(result_, «$name»_field, «$name»_);
+                ||
+                if "$name = 'dst'"
+                ||
+                else
+                    env->SetObjectField(result_, «$name»_field, src);
+                ||
+            }
+        }
+
         ||
 
         ||
     }
 
     template "parm", mode=return {
+        param "dir", "name(*[1])";
         param "type", "name(*[2])";
         param "jtype" call "toJava" with "type", "$type";
         param "name", "name(*[3])";
@@ -174,7 +188,6 @@ tstylesheet {
 
                 ||
             }
-
             otherwise { 
                 ||
                 jobject «$name»_ = NULL;
@@ -203,10 +216,8 @@ tstylesheet {
                 | √$type _«$name» = to_«$type»(env, «$name»);
             when "$type='bool'"
                 | bool _«$name» = (bool) «$name»;
-            when "$type='int' and $dir='in'"
+            when "$type='int'"
                 | int _«$name» = (int) «$name»;
-            when "$type='int' and $dir='inout'"
-                | √$type _«$name» = to_Integer(env, «$name»);
             otherwise
                 | √$type *_«$name» = to_«$type»(env, «$name»);
         }

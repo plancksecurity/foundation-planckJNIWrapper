@@ -3,7 +3,7 @@ function "toJava" {
 
     choose {
         when "$type='bool'" > Boolean
-        when "$type='int'" > Integer
+        when "$type='int'" > int
         when "$type='string' or $type='sstring'" > String
         when "$type='timestamp'" > Date
         when "$type='void'" > void
@@ -63,8 +63,7 @@ function "toIntermediate" {
 
     choose {
         when "$type='bool'" > boolean
-        when "$type='int' and $dir!='inout'" > int
-        when "$type='int' and $dir='inout'" > Integer
+        when "$type='int'" > int
         when "$type='string' or $type='sstring'" > byte[]
 
         when "$type='bloblist'" > Vector<_Blob>

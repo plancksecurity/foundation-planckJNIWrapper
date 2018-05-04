@@ -28,8 +28,7 @@ function "jni_type" {
         when "../enum[@name=$type]" > jint
         when "$type = 'string' or $type = 'sstring'" > jbyteArray
         when "$type='bool'" > jboolean
-        when "$type='int' and $dir!='inout'" > jint
-        when "$type='int' and $dir='inout'" > jobject
+        when "$type='int'" > jint
         otherwise > jobject
     }
 }

@@ -137,21 +137,21 @@ tstylesheet {
 
     template "method", mode=plain {
         const "convert", "count(parm/stringlist|parm/stringpairlist|parm/string|parm/identity|parm/identitylist) > 0";
-        const "singlereturn", "count(parm/creates|parm/returns) = 1";
-        const "multireturn", "count(parm/creates|parm/returns) > 1";
+        const "singlereturn", "count(parm/creates|parm/returns|parm/inout[../int]) = 1";
+        const "multireturn", "count(parm/creates|parm/returns|parm/inout[../int]) > 1";
 
         if "$multireturn" {
             if "$convert"
             ||
             private class _«@name»_Return {
-            `` apply "parm[creates|returns]", 1, mode=intermediate with "public", 1;
+            `` apply "parm[creates|returns|inout[../int]]", 1, mode=intermediate with "public", 1;
             }
 
             ||
 
             ||
             public class «@name»_Return {
-            `` apply "parm[creates|returns]", 1, mode=java with "public", 1;
+            `` apply "parm[creates|returns|inout[../int]]", 1, mode=java with "public", 1;
             }
 
             ||
