@@ -214,7 +214,7 @@ tstylesheet {
             ||
                 _«@name»_Return _result = _«@name»(`apply "parm[in|inout]", mode=call;`);
                 «@name»_Return result = new «@name»_Return();
-                `` apply "parm[creates|returns]", mode=convertOut;
+                `` apply "parm[creates|returns|inout[../int]]", mode=convertOut;
                 return result;
             ||
 
