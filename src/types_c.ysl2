@@ -22,12 +22,14 @@ function "toC" {
 
 function "jni_type" {
     param "type";
+    param "dir";
 
     choose {
         when "../enum[@name=$type]" > jint
         when "$type = 'string' or $type = 'sstring'" > jbyteArray
         when "$type='bool'" > jboolean
-        when "$type='int'" > jint
+        when "$type='int' and $dir!='inout'" > jint
+        when "$type='int' and $dir='inout'" > jobject
         otherwise > jobject
     }
 }

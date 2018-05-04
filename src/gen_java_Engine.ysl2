@@ -242,7 +242,8 @@ tstylesheet {
         indent(0);
 
         if "$public" > public 
-        > †$type «translate($name,'-','_')»
+        call "toJava" with "type", "$type";
+        >  «translate($name,'-','_')»
         choose {
             when "$public" > ;
             otherwise if "position()!=last()" > ,
@@ -259,7 +260,8 @@ tstylesheet {
         indent(0);
 
         if "$public" > public 
-        > ¡$type «translate($name,'-','_')»
+        call "toIntermediate" with "type", "$type", with "dir", "$dir";
+        >  «translate($name,'-','_')»
         choose {
             when "$public" > ;
             otherwise if "position()!=last()" > ,

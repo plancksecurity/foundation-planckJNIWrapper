@@ -186,6 +186,26 @@ namespace pEp {
             return env->ThrowNew(ex, ex_name);
         }
 
+        jobject from_Integer(JNIEnv *env, int val)
+        {
+            assert(env);
+            jclass clazz = findClass(env, "java/lang/Integer");
+            jmethodID constructor = env->GetMethodID(clazz, "<init>", "(I)V");
+            assert(constructor);
+            jobject obj = env->NewObject(clazz, constructor, val);
+            assert(obj);
+
+            env->DeleteLocalRef(clazz);
+            return obj;
+        }
+
+        int to_Integer(JNIEnv *env, jobject obj)
+        {
+            assert(env && obj);
+            int _val = callIntMethod(env, obj, "intValue");
+            return _val;
+        }
+
         jbyteArray from_string(JNIEnv *env, const char *str)
         {
             if (str && str[0]) {

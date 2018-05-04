@@ -151,6 +151,9 @@ namespace pEp {
 
         jint outOfMemory(JNIEnv *env);
 
+        jobject from_Integer(JNIEnv *env, int val);
+        int to_Integer(JNIEnv *env, jobject obj);
+
         jbyteArray from_string(JNIEnv *env, const char *str);
         char *to_string(JNIEnv *env, jbyteArray str);
 

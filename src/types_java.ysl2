@@ -35,6 +35,7 @@ function "toSig" {
             > L
             choose {
                 when "$type='timestamp'" > java/util/Date
+                when "$type='int'" > java/lang/Integer
 
                 when "$type='identity'" > org/pEp/jniadapter/_Identity
                 when "$type='message'" > org/pEp/jniadapter/Message
@@ -58,10 +59,12 @@ function "toSig" {
 
 function "toIntermediate" {
     param "type";
+    param "dir";
 
     choose {
         when "$type='bool'" > boolean
-        when "$type='int'" > int
+        when "$type='int' and $dir!='inout'" > int
+        when "$type='int' and $dir='inout'" > Integer
         when "$type='string' or $type='sstring'" > byte[]
 
         when "$type='bloblist'" > Vector<_Blob>

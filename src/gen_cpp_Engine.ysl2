@@ -192,6 +192,7 @@ tstylesheet {
     }
 
     template "parm", mode=in {
+        const "dir", "name(*[1])";
         const "type", "name(*[2])";
         const "name", "name(*[3])";
 
@@ -202,8 +203,10 @@ tstylesheet {
                 | √$type _«$name» = to_«$type»(env, «$name»);
             when "$type='bool'"
                 | bool _«$name» = (bool) «$name»;
-            when "$type='int'"
+            when "$type='int' and $dir='in'"
                 | int _«$name» = (int) «$name»;
+            when "$type='int' and $dir='inout'"
+                | √$type _«$name» = to_Integer(env, «$name»);
             otherwise
                 | √$type *_«$name» = to_«$type»(env, «$name»);
         }
@@ -237,8 +240,10 @@ tstylesheet {
                 value "*[3]";
             when "($dir = 'creates' or $dir = 'returns') and $type='sstring'"
                 > &_«$name», &_«$name»_size
-            when "$dir = 'creates' or $dir = 'returns'" 
+            when "$dir = 'creates' or $dir = 'returns'"
                 > &_«$name»
+            when "$dir = 'inout' and $type='int'"
+                > (unsigned int *) &_«$name»
             otherwise 
                 > _«$name»
         }
@@ -257,7 +262,7 @@ tstylesheet {
 
     template "parm", mode=sig {
         const "name", "name(*[3])";
-        > ,\n        `call "jni_type" with "type", "name(*[2])"` «$name»
+        > ,\n        `call "jni_type" with "type", "name(*[2])", with "dir", "name(*[1])"` «$name»
     }
 }
 
