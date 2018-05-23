@@ -281,6 +281,7 @@ curl-install: $(LOCAL)/lib/libcurl.so
 # using released package instead
 libiconv-1.14.tar.gz:
 	wget https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+	sha256sum -c libiconv-1.14.tar.gz.sha256
 
 libiconv.src.stamp: libiconv-1.14.tar.gz
 	tar xvfz libiconv-1.14.tar.gz
@@ -420,7 +421,7 @@ libetpan-cleanzip:
 # using released package from debian. official ftp wasn't available today
 ossp-uuid_1.6.2.orig.tar.gz:
 	wget http://http.debian.net/debian/pool/main/o/ossp-uuid/ossp-uuid_1.6.2.orig.tar.gz
-	md5sum -c ossp-uuid_1.6.2.orig.tar.gz.md5
+	sha256sum -c ossp-uuid_1.6.2.orig.tar.gz.sha256
 
 uuid.src.stamp: ossp-uuid_1.6.2.orig.tar.gz
 	tar xvfz ossp-uuid_1.6.2.orig.tar.gz
