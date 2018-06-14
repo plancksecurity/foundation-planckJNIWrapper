@@ -107,10 +107,19 @@ tstylesheet {
         const "name", "name(*[3])";
         const "sig" call "toSig" with "type", "$type";
 
-        ||
-        jfieldID «$name»_field = getFieldID(env, "«$jtype»",
-                    "«$name»", "«$sig»");
-        ||
+
+        choose {
+            when "$type='int'"
+                ||
+                jfieldID «$name»_field = env->GetFieldID(clazz_result_, "«$name»", "I");
+                ||
+            otherwise {
+                ||
+                jfieldID «$name»_field = getFieldID(env, "«$jtype»", "«$name»", "«$sig»");
+                ||
+
+            }
+        }
 
         choose {
             when "$type='int'"
