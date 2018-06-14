@@ -160,6 +160,14 @@ namespace pEp {
                 Cconst PEP_encrypt_flags flags "0"
             );
 
+        method encrypt_message_and_add_priv_key(
+                in message src,
+                creates message dst,
+                in string fpr,
+                Cconst PEP_enc_format encformat "PEP_enc_PEP",
+                Cconst PEP_encrypt_flags flags "0"
+            );
+
         method encrypt_message_for_self(
                 in identity target,
                 in message src,
