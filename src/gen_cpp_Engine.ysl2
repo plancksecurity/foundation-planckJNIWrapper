@@ -264,6 +264,8 @@ tstylesheet {
                 > &_«$name»
             when "$dir = 'inout' and $type='int'"
                 > (unsigned int *) &_«$name»
+            when "$dir = 'inout' and $type='stringlist'"
+                > &_«$name»
             otherwise 
                 > _«$name»
         }

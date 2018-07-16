@@ -126,6 +126,7 @@ namespace pEp {
         PEP_decrypt_flag_consumed > 2
         PEP_decrypt_flag_ignored > 4
         PEP_decrypt_flag_src_modified > 8
+        PEP_decrypt_flag_untrusted_server > 0x100
     };
 
     enum IdentityFlags {
@@ -181,7 +182,7 @@ namespace pEp {
         method decrypt_message(
                 inout message src,
                 creates message dst,
-                creates stringlist keylist,
+                inout stringlist keylist,
                 returns Rating rating,
                 inout int flags
             );
