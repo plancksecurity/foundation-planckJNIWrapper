@@ -8,6 +8,11 @@ LOCAL_SRC_FILES := $(GPGBUILD)/lib/libassuan.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE := libnpth
+LOCAL_SRC_FILES := $(GPGBUILD)/lib/libnpth.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
 LOCAL_MODULE := libcurl
 LOCAL_SRC_FILES := $(GPGBUILD)/lib/libcurl.so
 include $(PREBUILT_SHARED_LIBRARY)
@@ -56,7 +61,7 @@ $(shell sh $(ENGINE_PATH)/build-android/takeOutHeaderFiles.sh $(ENGINE_PATH))
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
-LOCAL_SHARED_LIBRARIES := libgpgme libassuan libcurl libgcrypt libgpg-error
+LOCAL_SHARED_LIBRARIES := libgpgme libassuan libcurl libgcrypt libgpg-error libnpth
 LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid
 LOCAL_CPP_FEATURES += exceptions
 LOCAL_CFLAGS += -DHAVE_PTHREADS

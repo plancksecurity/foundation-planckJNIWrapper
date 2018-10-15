@@ -25,7 +25,7 @@ JNIEXPORT jint JNICALL Java_org_pEp_jniadapter_AndroidHelper_nativeSetup
     gpgme_set_global_flag("debug", cdebugflag);
     env->ReleaseStringUTFChars(debugflag, cdebugflag);
     gpgme_set_global_flag ("disable-gpgconf", "");
-    gpgme_set_global_flag ("gpg-name", "gpg2");
+    gpgme_set_global_flag ("gpg-name", "gpg");
 
     return 0;
 }
