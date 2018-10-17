@@ -193,7 +193,7 @@ libassuan/Makefile: libassuan/configure
 	cd libassuan && \
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
-				-F-disable-largefile \
+				--disable-largefile \
 				--host=$(HOST) \
 				--with-gpg-error-prefix=$(LOCAL) \
 				--prefix=$(LOCAL)
