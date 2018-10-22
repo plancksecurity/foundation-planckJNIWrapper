@@ -24,7 +24,10 @@ JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_trustwords(
     size_t wsize;
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
-        ::update_identity(session, _ident);
+        if (_ident->me)
+            ::myself(session, _ident);
+        else
+            ::update_identity(session, _ident);
     }
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -56,8 +59,13 @@ JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_myself(
     PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     pEp_identity *_ident = to_identity(env, ident);
 
-    ::myself(session, _ident);
+    PEP_STATUS status = ::myself(session, _ident);
 
+    if (status != PEP_STATUS_OK) {
+        LOGD("Failed Myself: 0x%04x\\n", status);
+        throw_pEp_Exception(env, status);
+        return NULL;
+    }
     return from_identity(env, _ident);
 }
 
@@ -86,7 +94,13 @@ JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_setOwnKey(
     pEp_identity *_ident = to_identity(env, ident);
     char *_fpr = to_string(env, fpr);
 
-    ::set_own_key(session, _ident, _fpr);
+    PEP_STATUS status = ::set_own_key(session, _ident, _fpr);
+
+    if (status != PEP_STATUS_OK) {
+        LOGD("Failed setOwnKey: 0x%04x\\n", status);
+        throw_pEp_Exception(env, status);
+        return NULL;
+    }
 
     return from_identity(env, _ident);
 }
@@ -101,7 +115,10 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyMistrusted(
     pEp_identity *_ident = to_identity(env, ident);
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
-        ::update_identity(session, _ident);
+        if (_ident->me)
+            ::myself(session, _ident);
+        else
+            ::update_identity(session, _ident);
     }
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -122,7 +139,10 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyResetTrust(
     pEp_identity *_ident = to_identity(env, ident);
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
-        ::update_identity(session, _ident);
+        if (_ident->me)
+            ::myself(session, _ident);
+        else
+            ::update_identity(session, _ident);
     }
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -143,7 +163,10 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_trustPersonalKey(
     pEp_identity *_ident = to_identity(env, ident);
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
-        ::update_identity(session, _ident);
+        if (_ident->me)
+            ::myself(session, _ident);
+        else
+            ::update_identity(session, _ident);
     }
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
