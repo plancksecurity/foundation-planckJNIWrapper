@@ -66,8 +66,8 @@ CC := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
 CXX := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang++
 RANLIB := $(ANDROID_NDK_HOME)/bin/$(HOST)-ranlib
 
-#-D_FILE_OFFSET_BITS=64 -DLARGEFILE_SOURCE=1
-CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC -g -O0
+
+CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC -D_FILE_OFFSET_BITS=64 -DLARGEFILE_SOURCE=1
 LDFLAGS += -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie
 
 # change 'release' to 'debug' for unoptimized debug builds
@@ -105,7 +105,7 @@ showsetup:
 #------------------------------------------------------------------------------#
 # libgpg-error
 
-EXTERNAL_GIT_REPOS += libgpg-error|git://git.gnupg.org/libgpg-error.git?libgpg-error-1.32
+EXTERNAL_GIT_REPOS += libgpg-error|git://git.gnupg.org/libgpg-error.git?libgpg-error-1.20
 
 libgpg-error/configure: libgpg-error.src.stamp libgpg-error/configure.ac 
 	cd libgpg-error && ./autogen.sh
@@ -124,15 +124,15 @@ libgpg-error/Makefile: libgpg-error/configure
 			--prefix=$(LOCAL)
 	ls -l libgpg-error/libtool
 	# brute force and ignorance to make libtool comply with android style
-	#sed -i 's,^fast_install=.*,fast_install=needless,' libgpg-error/libtool
-	#sed -i 's,^version_type=.*,version_type=none,' libgpg-error/libtool
-	#sed -i 's,^shlibpath_overrides_runpath=.*,shlibpath_overrides_runpath=yes,' libgpg-error/libtool
-	#sed -i 's,^library_names_spec=.*,library_names_spec="\\$$libname\\$$release\\$$shared_ext",' libgpg-error/libtool
-	#sed -i 's,^soname_spec=.*,soname_spec="\\$$libname\\$$release\\$$shared_ext",' libgpg-error/libtool
-	#sed -i 's,^finish_cmds=.*,finish_cmds="",' libgpg-error/libtool
-	#sed -i 's,^sys_lib_dlsearch_path_spec=.*,sys_lib_dlsearch_path_spec="/lib /usr/lib",' libgpg-error/libtool
+	sed -i 's,^fast_install=.*,fast_install=needless,' libgpg-error/libtool
+	sed -i 's,^version_type=.*,version_type=none,' libgpg-error/libtool
+	sed -i 's,^shlibpath_overrides_runpath=.*,shlibpath_overrides_runpath=yes,' libgpg-error/libtool
+	sed -i 's,^library_names_spec=.*,library_names_spec="\\$$libname\\$$release\\$$shared_ext",' libgpg-error/libtool
+	sed -i 's,^soname_spec=.*,soname_spec="\\$$libname\\$$release\\$$shared_ext",' libgpg-error/libtool
+	sed -i 's,^finish_cmds=.*,finish_cmds="",' libgpg-error/libtool
+	sed -i 's,^sys_lib_dlsearch_path_spec=.*,sys_lib_dlsearch_path_spec="/lib /usr/lib",' libgpg-error/libtool
 
-libgpg-error/src/.libs/libgpg-error.so: libgpg-error/Makefile
+libgpg-error/src/.libs/libgpg-error.so: libgpg-error/Makefile 
 	$(MAKE) -C libgpg-error
 
 libgpg-error-build: libgpg-error/src/.libs/libgpg-error.so
@@ -146,27 +146,23 @@ libgpg-error-install: $(LOCAL)/lib/libgpg-error.so
 #------------------------------------------------------------------------------#
 # libgcrypt
 
-EXTERNAL_GIT_REPOS += libgcrypt|git://git.gnupg.org/libgcrypt.git?libgcrypt-1.8.3
+EXTERNAL_GIT_REPOS += libgcrypt|git://git.gnupg.org/libgcrypt.git?libgcrypt-1.6.4
 
-libgcrypt/configure: libgcrypt.src.stamp libgcrypt/configure.ac
+libgcrypt/configure: libgcrypt.src.stamp libgcrypt/configure.ac 
 	cd libgcrypt && ./autogen.sh
 
-libgcrypt/Makefile: libgcrypt/configure
+libgcrypt/Makefile: libgcrypt/configure 
 	-patch -N -p1 --reject-file=- libgcrypt/Makefile.am libgcrypt-disable-docs.patch
-	-sed -i 's/$$(doc) tests//' libgcrypt/Makefile.am
-
 	cd libgcrypt && \
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
+				--enable-maintainer-mode \
 				--host=$(HOST) \
 				--with-gpg-error-prefix=$(LOCAL) \
 				--prefix=$(LOCAL)
 	-patch -N -p1 --reject-file=- libgcrypt/tests/random.c libgcrypt-disable-hanging-random-test.patch
 	# force use of /dev/urandom
 	-sed -i 's/NAME_OF_DEV_RANDOM/NAME_OF_DEV_URANDOM/' libgcrypt/random/rndlinux.c
-	-sed -i 's/doc tests//' libgcrypt/Makefile
-	-sed -i 's/$$(doc) tests//' libgcrypt/Makefile
-
 
 libgcrypt/src/.libs/libgcrypt.so: $(LOCAL)/lib/libgpg-error.so libgcrypt/Makefile
 	$(MAKE) -C libgcrypt
@@ -182,22 +178,21 @@ libgcrypt-install: $(LOCAL)/lib/libgcrypt.so
 #------------------------------------------------------------------------------#
 # libassuan
 
-EXTERNAL_GIT_REPOS += libassuan|git://git.gnupg.org/libassuan.git?libassuan-2.5.1
+EXTERNAL_GIT_REPOS += libassuan|git://git.gnupg.org/libassuan.git?libassuan-2.3.0
 
-libassuan/configure: libassuan.src.stamp libassuan/configure.ac
+libassuan/configure: libassuan.src.stamp libassuan/configure.ac 
 	cd libassuan && ./autogen.sh && autoreconf --install --force --verbose
 
 libassuan/Makefile: libassuan/configure
 	-patch -N -p1 --reject-file=- libassuan/m4/libtool.m4 libtool-Add-Android-Linux-support.patch
-	-sed -i 's/$$(doc) tests//' libassuan/Makefile.am
 	cd libassuan && \
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
+				--enable-maintainer-mode \
 				--disable-largefile \
 				--host=$(HOST) \
 				--with-gpg-error-prefix=$(LOCAL) \
 				--prefix=$(LOCAL)
-	-sed -i 's/$$(doc) tests//' libassuan/Makefile
 
 libassuan/src/.libs/libassuan.so: $(LOCAL)/lib/libgpg-error.so libassuan/Makefile
 	$(MAKE) -C libassuan
@@ -213,23 +208,20 @@ libassuan-install: $(LOCAL)/lib/libassuan.so
 #------------------------------------------------------------------------------#
 # libksba
 
-EXTERNAL_GIT_REPOS += libksba|git://git.gnupg.org/libksba.git?libksba-1.3.5
+EXTERNAL_GIT_REPOS += libksba|git://git.gnupg.org/libksba.git?libksba-1.3.4
 
-libksba/configure: libksba.src.stamp libksba/configure.ac
+libksba/configure: libksba.src.stamp libksba/configure.ac 
 	cd libksba && ./autogen.sh
 
 libksba/Makefile: $(LOCAL)/lib/libgpg-error.so libksba/configure
 	-patch -N -p1 --reject-file=- libksba/m4/libtool.m4 libtool-Add-Android-Linux-support.patch
-	-sed -i 's/$${tests} doc//' libksba/Makefile.am
-
 	cd libksba && \
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
+				--enable-maintainer-mode \
 				--host=$(HOST) \
 				--with-gpg-error-prefix=$(LOCAL) \
 				--prefix=$(LOCAL)
-	-sed -i 's/$${tests} doc//' libksba/Makefile
-
 
 libksba/src/.libs/libksba.so: libksba/Makefile
 	$(MAKE) -C libksba
@@ -246,7 +238,7 @@ libksba-install: $(LOCAL)/lib/libksba.so
 #------------------------------------------------------------------------------#
 # npth
 
-EXTERNAL_GIT_REPOS += npth|git://git.gnupg.org/npth.git?npth-1.6
+EXTERNAL_GIT_REPOS += npth|git://git.gnupg.org/npth.git?npth-1.2
 
 npth/configure: npth.src.stamp npth/configure.ac
 	cd npth && ./autogen.sh
@@ -255,10 +247,10 @@ npth/Makefile: $(LOCAL)/lib/libgpg-error.so npth/configure
 	cd npth && \
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 		./configure $(CONFIGURE_ARGS) \
+				--enable-maintainer-mode \
         		--host=$(HOST) \
 				--with-gpg-error-prefix=$(LOCAL) \
 				--prefix=$(LOCAL)
-
 
 npth/src/.libs/libnpth.so: npth/Makefile
 	$(MAKE) -C npth
@@ -276,7 +268,7 @@ npth-install: $(LOCAL)/lib/libnpth.so
 
 EXTERNAL_GIT_REPOS += curl|https://github.com/bagder/curl?curl-7_45_0
 
-curl/configure: curl.src.stamp curl/configure.ac
+curl/configure: curl.src.stamp curl/configure.ac 
 	cd curl && ./buildconf
 
 curl/Makefile: curl/configure
@@ -346,6 +338,7 @@ libiconv/Makefile: libiconv.src.stamp
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
 				--enable-static \
+				--enable-maintainer-mode \
 				--host=$(HOST) \
 				--with-gnu-ld \
 				--prefix=$(LOCAL)
@@ -364,9 +357,9 @@ libiconv-install: $(LOCAL)/lib/libiconv.so
 #------------------------------------------------------------------------------#
 # gnupg
 
-EXTERNAL_GIT_REPOS += gnupg|git://git.gnupg.org/gnupg.git?gnupg-2.2.10
+EXTERNAL_GIT_REPOS += gnupg|git://git.gnupg.org/gnupg.git?gnupg-2.0.30
 
-gnupg/configure: gnupg.src.stamp gnupg/configure.ac
+gnupg/configure: gnupg.src.stamp gnupg/configure.ac 
 	cd gnupg && ./autogen.sh
 
 gnupg/Makefile: gnupg/configure
@@ -389,16 +382,16 @@ gnupg/Makefile: gnupg/configure
 				--disable-gpgsm \
 				--prefix=$(prefix)
 
-gnupg/g10/gpg: $(LOCAL)/lib/libgpg-error.so $(LOCAL)/lib/libgcrypt.so $(LOCAL)/lib/libksba.so $(LOCAL)/lib/libnpth.so $(LOCAL)/lib/libassuan.so $(LOCAL)/lib/libnpth.so $(LOCAL)/lib/libcurl.so $(LOCAL)/lib/libiconv.so gnupg/Makefile
+gnupg/g10/gpg2: $(LOCAL)/lib/libgpg-error.so $(LOCAL)/lib/libgcrypt.so $(LOCAL)/lib/libksba.so $(LOCAL)/lib/libnpth.so $(LOCAL)/lib/libassuan.so $(LOCAL)/lib/libcurl.so $(LOCAL)/lib/libiconv.so gnupg/Makefile
 	$(MAKE) -C gnupg
 
-$(LOCAL)/bin/gpg: gnupg/g10/gpg gnupg/configure
+$(LOCAL)/bin/gpg2: gnupg/g10/gpg2 gnupg/configure
 	$(MAKE) -C gnupg prefix=$(LOCAL) install
-	ls -l $(LOCAL)/bin/gpg
+	ls -l $(LOCAL)/bin/gpg2
 
-gnupg-build: gnupg/g10/gpg
+gnupg-build: gnupg/g10/gpg2
 
-gnupg-install: $(LOCAL)/bin/gpg
+gnupg-install: $(LOCAL)/bin/gpg2
 	install -d $(LOCAL)/etc/gnupg
 	install -d $(LOCAL)/var/run/gnupg
 	install -d $(LOCAL)/var/cache/gnupg
@@ -406,7 +399,7 @@ gnupg-install: $(LOCAL)/bin/gpg
 #------------------------------------------------------------------------------#
 # gpgme
 
-EXTERNAL_GIT_REPOS += gpgme|git://git.gnupg.org/gpgme.git?gpgme-1.12.0
+EXTERNAL_GIT_REPOS += gpgme|git://git.gnupg.org/gpgme.git?gpgme-1.8.0
 
 gpgme/configure: gpgme.src.stamp gpgme/configure.ac
 	cd gpgme && ./autogen.sh
@@ -419,8 +412,6 @@ endif
 
 gpgme/Makefile: gpgme/configure
 	-patch -N -p1 --reject-file=- gpgme/m4/libtool.m4 libtool-Add-Android-Linux-support.patch
-	-sed -i 's/$${tests} doc//' gpgme/Makefile.am
-
 	cd gpgme && \
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
@@ -429,7 +420,6 @@ gpgme/Makefile: gpgme/configure
 				--enable-maintainer-mode \
 				--with-gpg-error-prefix=$(LOCAL) \
 				--with-libassuan-prefix=$(LOCAL) \
-				--with-npth-prefix=$(LOCAL) \
 				--enable-fixed-path=$(prefix)/bin \
 				--disable-glibtest \
 				--disable-gpg-test \
@@ -438,7 +428,6 @@ gpgme/Makefile: gpgme/configure
 				--disable-g13-test \
 				--prefix=$(prefix) \
 				--enable-languages=cl
-	-sed -i 's/$${tests} doc//' gpgme/Makefile
 
 
 gpgme/src/.libs/libgpgme.so: gpgme/Makefile
@@ -449,7 +438,7 @@ $(LOCAL)/lib/libgpgme.so: gpgme/src/.libs/libgpgme.so
 
 gpgme-build: gpgme/src/.libs/libgpgme.so
 
-gpgme-install: $(LOCAL)/bin/gpg $(LOCAL)/lib/libgpgme.so
+gpgme-install: $(LOCAL)/bin/gpg2 $(LOCAL)/lib/libgpgme.so
 
 #------------------------------------------------------------------------------#
 # libetpan
