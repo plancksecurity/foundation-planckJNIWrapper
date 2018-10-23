@@ -61,13 +61,13 @@ TARGET_ARCH_ABI = $(APP_ABI)
 ANDROID_NDK_HOME=$(EXTERNAL_ROOT)/ndk-18-arm
 LD := $(ANDROID_NDK_HOME)/bin/$(HOST)-ld
 AR := $(ANDROID_NDK_HOME)/bin/$(HOST)-ar
-AS :cd= $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
+AS := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
 CC := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
 CXX := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang++
 RANLIB := $(ANDROID_NDK_HOME)/bin/$(HOST)-ranlib
 
-
-CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC -D_FILE_OFFSET_BITS=64 -DLARGEFILE_SOURCE=1
+#-D_FILE_OFFSET_BITS=64 -DLARGEFILE_SOURCE=1
+CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC
 LDFLAGS += -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie
 
 # change 'release' to 'debug' for unoptimized debug builds
