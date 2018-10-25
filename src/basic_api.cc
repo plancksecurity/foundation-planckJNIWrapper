@@ -1,6 +1,7 @@
 #include <pEp/keymanagement.h>
 #include <pEp/blacklist.h>
-#include <pEp/sync.h>
+#include <pEp/sync_api.h>
+#include <pEp/Adapter.hh>
 
 #ifndef ANDROID
 #include <string.h>
@@ -11,6 +12,7 @@
 
 extern "C" {
     using namespace pEp::JNIAdapter;
+    using namespace pEp::Adapter;
 
 JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_trustwords(
         JNIEnv *env,
@@ -18,13 +20,12 @@ JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_trustwords(
         jobject ident
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     pEp_identity *_ident = to_identity(env, ident);
     char *words;
     size_t wsize;
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
-        ::update_identity(session, _ident);
+        ::update_identity(session(), _ident);
     }
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -38,7 +39,7 @@ JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_trustwords(
     else
         lang = "en";
 
-    PEP_STATUS status = ::trustwords(session, _ident->fpr, lang, &words, &wsize, 10);
+    PEP_STATUS status = ::trustwords(session(), _ident->fpr, lang, &words, &wsize, 10);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
         return NULL;
@@ -53,10 +54,9 @@ JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_myself(
         jobject ident
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     pEp_identity *_ident = to_identity(env, ident);
 
-    ::myself(session, _ident);
+    ::myself(session(), _ident);
 
     return from_identity(env, _ident);
 }
@@ -67,10 +67,9 @@ JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_updateIdentity(
         jobject ident
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     pEp_identity *_ident = to_identity(env, ident);
 
-    ::update_identity(session, _ident);
+    ::update_identity(session(), _ident);
 
     return from_identity(env, _ident);
 }
@@ -82,11 +81,10 @@ JNIEXPORT jobject JNICALL Java_org_pEp_jniadapter_Engine_setOwnKey(
         jbyteArray fpr
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     pEp_identity *_ident = to_identity(env, ident);
     char *_fpr = to_string(env, fpr);
 
-    ::set_own_key(session, _ident, _fpr);
+    ::set_own_key(session(), _ident, _fpr);
 
     return from_identity(env, _ident);
 }
@@ -97,11 +95,10 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyMistrusted(
         jobject ident
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     pEp_identity *_ident = to_identity(env, ident);
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
-        ::update_identity(session, _ident);
+        ::update_identity(session(), _ident);
     }
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -109,7 +106,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyMistrusted(
         return;
     }
 
-    ::key_mistrusted(session, _ident);
+    ::key_mistrusted(session(), _ident);
 }
 
 JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyResetTrust(
@@ -118,11 +115,10 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyResetTrust(
         jobject ident
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     pEp_identity *_ident = to_identity(env, ident);
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
-        ::update_identity(session, _ident);
+        ::update_identity(session(), _ident);
     }
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -130,7 +126,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyResetTrust(
         return;
     }
 
-    ::key_reset_trust(session, _ident);
+    ::key_reset_trust(session(), _ident);
 }
 
 JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_trustPersonalKey(
@@ -139,11 +135,10 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_trustPersonalKey(
         jobject ident
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     pEp_identity *_ident = to_identity(env, ident);
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
-        ::update_identity(session, _ident);
+        ::update_identity(session(), _ident);
     }
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -151,7 +146,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_trustPersonalKey(
         return;
     }
 
-    ::trust_personal_key(session, _ident);
+    ::trust_personal_key(session(), _ident);
 }
 
 JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_importKey(
@@ -160,7 +155,6 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_importKey(
         jbyteArray key
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     char *_key = to_string(env, key);
 
     if(_key == NULL){
@@ -169,7 +163,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_importKey(
     }
 
     
-    PEP_STATUS status = ::import_key(session, _key, strlen(_key), NULL);
+    PEP_STATUS status = ::import_key(session(), _key, strlen(_key), NULL);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
         return;
@@ -183,9 +177,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_config_1passive_1mode(
         jboolean enable
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
-
-    ::config_passive_mode(session, (bool)enable);
+    ::config_passive_mode(session(), (bool)enable);
 }
 
 
@@ -195,9 +187,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_config_1unencrypted_1subje
         jboolean enable
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
-
-    ::config_unencrypted_subject(session, (bool)enable);
+    ::config_unencrypted_subject(session(), (bool)enable);
 }
 
 JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1add(
@@ -206,7 +196,6 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1add(
         jbyteArray fpr
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     char *_fpr = to_string(env, fpr);
 
     if(_fpr == NULL){
@@ -214,7 +203,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1add(
         return;
     }
     
-    PEP_STATUS status = ::blacklist_add(session, _fpr);
+    PEP_STATUS status = ::blacklist_add(session(), _fpr);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
         return;
@@ -228,7 +217,6 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1delete(
         jbyteArray fpr
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     char *_fpr = to_string(env, fpr);
 
     if(_fpr == NULL){
@@ -236,7 +224,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1delete(
         return;
     }
     
-    PEP_STATUS status = ::blacklist_delete(session, _fpr);
+    PEP_STATUS status = ::blacklist_delete(session(), _fpr);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
         return;
@@ -250,7 +238,6 @@ JNIEXPORT jboolean JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1is_1listed(
         jbyteArray fpr
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     char *_fpr = to_string(env, fpr);
     bool _listed = 0;
 
@@ -259,7 +246,7 @@ JNIEXPORT jboolean JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1is_1listed(
         return 0;
     }
     
-    PEP_STATUS status = ::blacklist_is_listed(session, _fpr, &_listed);
+    PEP_STATUS status = ::blacklist_is_listed(session(), _fpr, &_listed);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
         return 0;
@@ -275,11 +262,10 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_accept_1sync_1handshake(
     )
 
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     pEp_identity *_ident = to_identity(env, ident);
 
     PEP_STATUS status =
-        ::deliverHandshakeResult(session, _ident, SYNC_HANDSHAKE_ACCEPTED);
+        ::deliverHandshakeResult(session(), _ident, SYNC_HANDSHAKE_ACCEPTED);
 
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
@@ -294,11 +280,10 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_reject_1sync_1handshake(
         jobject ident
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     pEp_identity *_ident = to_identity(env, ident);
     
     PEP_STATUS status = 
-        ::deliverHandshakeResult(session, _ident, SYNC_HANDSHAKE_REJECTED);
+        ::deliverHandshakeResult(session(), _ident, SYNC_HANDSHAKE_REJECTED);
 
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
@@ -312,11 +297,10 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_cancel_1sync_1handshake(
         jobject ident
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     pEp_identity *_ident = to_identity(env, ident);
     
     PEP_STATUS status = 
-        ::deliverHandshakeResult(session, _ident, SYNC_HANDSHAKE_CANCEL);
+        ::deliverHandshakeResult(session(), _ident, SYNC_HANDSHAKE_CANCEL);
 
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
@@ -331,12 +315,10 @@ JNIEXPORT jbyteArray JNICALL Java_org_pEp_jniadapter_Engine_getCrashdumpLog(
         jint maxlines
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
-
     int _maxlines = (int) maxlines;
     char *_logdata;
 
-    PEP_STATUS status = ::get_crashdump_log(session, _maxlines, &_logdata);
+    PEP_STATUS status = ::get_crashdump_log(session(), _maxlines, &_logdata);
     if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) ||
             status < PEP_STATUS_OK ||
             status >= PEP_TRUSTWORD_NOT_FOUND) {

@@ -8,51 +8,52 @@ decl basic @type @name;
 
 namespace pEp {
     exception Status {
-        pEp_status_ok									> 0
+        pEp_status_ok                                   > 0
 
-        pEp_init_cannot_load_gpgme						> 0x0110
-        pEp_init_gpgme_init_failed						> 0x0111
-        pEp_init_no_gpg_home							> 0x0112
-        pEp_init_netpgp_init_failed						> 0x0113
+        pEp_init_cannot_load_gpgme                      > 0x0110
+        pEp_init_gpgme_init_failed                      > 0x0111
+        pEp_init_no_gpg_home                            > 0x0112
+        pEp_init_netpgp_init_failed                     > 0x0113
         pEp_init_cannot_determine_gpg_version           > 0x0114
         pEp_init_unsupported_gpg_version                > 0x0115
         pEp_init_cannot_config_gpg_agent                > 0x0116
 
-        pEp_init_sqlite3_without_mutex					> 0x0120
-        pEp_init_cannot_open_db							> 0x0121
-        pEp_init_cannot_open_system_db					> 0x0122
+        pEp_init_sqlite3_without_mutex                  > 0x0120
+        pEp_init_cannot_open_db                         > 0x0121
+        pEp_init_cannot_open_system_db                  > 0x0122
         
-        pEp_key_not_found						        > 0x0201
-        pEp_key_has_ambig_name					        > 0x0202
-        pEp_get_key_failed						        > 0x0203
+        pEp_key_not_found                               > 0x0201
+        pEp_key_has_ambig_name                          > 0x0202
+        pEp_get_key_failed                              > 0x0203
         pEp_cannot_export_key                           > 0x0204
         pEp_cannot_edit_key                             > 0x0205
         pEp_key_unsuitable                              > 0x0206
         
-        pEp_cannot_find_identity						> 0x0301
-        pEp_cannot_set_person							> 0x0381
-        pEp_cannot_set_pgp_keypair						> 0x0382
-        pEp_cannot_set_identity							> 0x0383
+        pEp_cannot_find_identity                        > 0x0301
+        pEp_cannot_set_person                           > 0x0381
+        pEp_cannot_set_pgp_keypair                      > 0x0382
+        pEp_cannot_set_identity                         > 0x0383
         pEp_cannot_set_trust                            > 0x0384
         pEp_key_blacklisted                             > 0x0385
         pEp_cannot_find_person                          > 0x0386
-
+        
         pEp_cannot_find_alias                           > 0x0391
         pEp_cannot_set_alias                            > 0x0392
-
-        pEp_unencrypted									> 0x0400
-        pEp_verified									> 0x0401
-        pEp_decrypted									> 0x0402
-        pEp_decrypted_and_verified						> 0x0403
-        pEp_decrypt_wrong_format						> 0x0404
-        pEp_decrypt_no_key								> 0x0405
-        pEp_decrypt_signature_does_not_match			> 0x0406
+        
+        pEp_unencrypted                                 > 0x0400
+        pEp_verified                                    > 0x0401
+        pEp_decrypted                                   > 0x0402
+        pEp_decrypted_and_verified                      > 0x0403
+        pEp_decrypt_wrong_format                        > 0x0404
+        pEp_decrypt_no_key                              > 0x0405
+        pEp_decrypt_signature_does_not_match            > 0x0406
         pEp_verify_no_key                               > 0x0407
         pEp_verified_and_trusted                        > 0x0408
-        pEp_cannot_decrypt_unknown						> 0x04ff
+        pEp_cannot_reencrypt                            > 0x0409
+        pEp_cannot_decrypt_unknown                      > 0x04ff
 
-        pEp_trustword_not_found							> 0x0501
-        pEp_trustwords_fpr_wrong_length					> 0x0502
+        pEp_trustword_not_found                         > 0x0501
+        pEp_trustwords_fpr_wrong_length                 > 0x0502
         pEp_trustwords_duplicate_fpr                    > 0x0503
 
         pEp_cannot_create_key                           > 0x0601
@@ -60,40 +61,37 @@ namespace pEp {
 
         pEp_phrase_not_found                            > 0x0701
 
-        pEp_send_function_not_registered                > 0x0801
-	    pEp_contraints_violated                         > 0x0802
-	    pEp_cannot_encode                               > 0x0803
+        pEp_send_function_not_registered                > 0x0801
+        pEp_contraints_violated                         > 0x0802
+        pEp_cannot_encode                               > 0x0803
 
-	    pEp_sync_no_notify_callback                     > 0x0901
-        pEp_sync_illegal_message                        > 0x0902
-        pEp_sync_no_inject_callback                     > 0x0903
+        pEp_sync_no_notify_callback                     > 0x0901
+        pEp_sync_illegal_message                        > 0x0902
+        pEp_sync_no_inject_callback                     > 0x0903
+        pEp_sync_no_channel                             > 0x0904
+        pEp_sync_cannot_encrypt                         > 0x0905
 
-   	    pEp_sequence_violated                           > 0x0970
         pEp_cannot_increase_sequence                    > 0x0971
-        pEp_cannot_set_sequence_value                   > 0x0972
-        pEp_own_sequence                                > 0x097f
 
-        pEp_sync_statemachine_error                     > 0x0980
-        pEp_sync_no_trust                               > 0x0981
+        pEp_statemachine_error                          > 0x0980
+        pEp_no_trust                                    > 0x0981
         pEp_statemachine_invalid_state                  > 0x0982
         pEp_statemachine_invalid_event                  > 0x0983
         pEp_statemachine_invalid_condition              > 0x0984
         pEp_statemachine_invalid_action                 > 0x0985
         pEp_statemachine_inhibited_event                > 0x0986
 
-        pEp_commit_failed								> 0xff01
+        pEp_commit_failed                               > 0xff01
         pEp_message_consume                             > 0xff02
         pEp_message_ignore                              > 0xff03
-
 
         pEp_record_not_found                            > -6
         pEp_cannot_create_temp_file                     > -5
         pEp_illegal_value                               > -4
         pEp_buffer_too_small                            > -3
-        pEp_out_of_memory								> -2
-        pEp_unknown_error								> -1
-
-
+        pEp_out_of_memory                               > -2
+        pEp_unknown_error                               > -1
+        
         pEp_version_mismatch                            > -7
     };
 
