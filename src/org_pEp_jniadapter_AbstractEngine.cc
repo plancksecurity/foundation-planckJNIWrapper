@@ -17,8 +17,8 @@ namespace pEp {
     using namespace pEp::Adapter;
     using namespace utility;
 
-    thread_local JNIEnv* thread_env = nullptr;
-    thread_local jobject thread_obj = nullptr;
+    JNIEnv* thread_env = nullptr;
+    jobject thread_obj = nullptr;
 
     jclass messageClass = nullptr;
     jclass identityClass = nullptr;
