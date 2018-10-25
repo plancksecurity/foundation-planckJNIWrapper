@@ -17,8 +17,9 @@ namespace pEp {
     using namespace pEp::Adapter;
     using namespace utility;
 
-    JNIEnv* thread_env = nullptr;
-    jobject thread_obj = nullptr;
+    thread_local JNIEnv* thread_env = nullptr;
+    jobject obj = nullptr;
+    jclass _clazz = nullptr;
 
     jclass messageClass = nullptr;
     jclass identityClass = nullptr;
@@ -31,46 +32,37 @@ namespace pEp {
     jmethodID needsFastPollMethodID = nullptr; 
 
     class JNISync {
-        jobject _obj;
-        JNIEnv * _env;
         JavaVM * _jvm;
-        JNIEnv * _sync_env;
-        jclass _clazz;
 
     public:
-        JNISync(JNIEnv * env, jobject obj)
-            : _env(env), _obj(obj), _jvm(nullptr), _sync_env(nullptr), _clazz(nullptr) { }
+        JNISync()
+            : _jvm(nullptr) { }
 
-        ~JNISync()
-        {
-            env()->DeleteLocalRef(clazz());
-        }
-
-        jobject obj() { return _obj; }
+        ~JNISync() { }
 
         JavaVM * jvm()
         {
             if (!_jvm)
-                _env->GetJavaVM(&_jvm);
+                env()->GetJavaVM(&_jvm);
             return _jvm;
         }
 
         JNIEnv * env()
         {
-            if (!_sync_env) {
+            if (!thread_env) {
                 #ifdef ANDROID
-                jvm()->AttachCurrentThread(&_sync_env, nullptr);
+                jvm()->AttachCurrentThread(&thread_env, nullptr);
                 #else
-                jvm()->AttachCurrentThread((void **) &_sync_env, nullptr);
+                jvm()->AttachCurrentThread((void **) &thread_env, nullptr);
                 #endif
             }
-            return _sync_env;
+            return thread_env;
         }
 
         jclass clazz()
         {
             if (!_clazz)
-                _clazz = env()->GetObjectClass(obj());
+                _clazz = env()->GetObjectClass(obj);
             return _clazz;
         }
 
@@ -103,14 +95,8 @@ namespace pEp {
         jobject msg_ = nullptr;
         jint result = 0;
 
-        if (on_sync_thread()) {
-            msg_ = o->env()->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
-            result = o->env()->CallIntMethod(thread_obj, messageToSendMethodID, msg_);
-        }
-        else {
-            msg_ = thread_env->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
-            result = thread_env->CallIntMethod(thread_obj, messageToSendMethodID, msg_);
-        }
+        msg_ = o->env()->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
+        result = o->env()->CallIntMethod(obj, messageToSendMethodID, msg_);
 
         return (PEP_STATUS) result;
     }
@@ -119,30 +105,28 @@ namespace pEp {
     {
         jobject me_ = nullptr;
         jobject partner_ = nullptr;
-        JNIEnv *env = on_sync_thread() ? o->env() : thread_env;
-        jobject obj = on_sync_thread() ? o->obj() : thread_obj;
 
-        me_ = from_identity(env, me, identityClass);
-        partner_ = from_identity(env, partner, identityClass);
+        me_ = from_identity(o->env(), me, identityClass);
+        partner_ = from_identity(o->env(), partner, identityClass);
 
         jobject signal_ = nullptr;
         {
             assert(signalClass);
-            jmethodID method_values = env->GetStaticMethodID(signalClass, "values",
+            jmethodID method_values = o->env()->GetStaticMethodID(signalClass, "values",
                     "()[Lorg/pEp/jniadapter/SyncHandshakeSignal;");
             assert(method_values);
-            jfieldID field_value = env->GetFieldID(signalClass, "value", "I");
+            jfieldID field_value = o->env()->GetFieldID(signalClass, "value", "I");
             assert(field_value);
         
-            jobjectArray values = (jobjectArray) env->CallStaticObjectMethod(signalClass,
+            jobjectArray values = (jobjectArray) o->env()->CallStaticObjectMethod(signalClass,
                     method_values);
             assert(values);
         
-            jsize values_size = env->GetArrayLength(values);
+            jsize values_size = o->env()->GetArrayLength(values);
             for (jsize i = 0; i < values_size; i++) {
-                jobject element = env->GetObjectArrayElement(values, i);
+                jobject element = o->env()->GetObjectArrayElement(values, i);
                 assert(element);
-                jint value = env->GetIntField(element, field_value);
+                jint value = o->env()->GetIntField(element, field_value);
                 if (value == (jint) signal) {
                     signal_ = element;
                     break;
@@ -150,7 +134,7 @@ namespace pEp {
             }
         }
 
-        jint result = env->CallIntMethod(obj, notifyHandShakeMethodID, me_, partner_, signal_);
+        jint result = o->env()->CallIntMethod(obj, notifyHandShakeMethodID, me_, partner_, signal_);
 
         return (PEP_STATUS) result;
     }
@@ -165,10 +149,10 @@ extern "C" {
         )
     {
         thread_env = env;
-        thread_obj = me;
+        obj = me;
 
         assert(o == nullptr);
-        o = new JNISync(env, me);
+        o = new JNISync();
 
         if (!messageClass)
             messageClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/Message")));
