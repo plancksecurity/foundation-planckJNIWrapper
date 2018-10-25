@@ -17,6 +17,7 @@ namespace pEp {
     using namespace pEp::Adapter;
     using namespace utility;
 
+    JavaVM *jvm= nullptr;
     thread_local JNIEnv* thread_env = nullptr;
     jobject obj = nullptr;
     jclass _clazz = nullptr;
@@ -32,28 +33,14 @@ namespace pEp {
     jmethodID needsFastPollMethodID = nullptr; 
 
     class JNISync {
-        JavaVM * _jvm;
-
     public:
-        JNISync()
-            : _jvm(nullptr) { }
-
-        ~JNISync() { }
-
-        JavaVM * jvm()
-        {
-            if (!_jvm)
-                env()->GetJavaVM(&_jvm);
-            return _jvm;
-        }
-
         JNIEnv * env()
         {
             if (!thread_env) {
                 #ifdef ANDROID
-                jvm()->AttachCurrentThread(&thread_env, nullptr);
+                jvm->AttachCurrentThread(&thread_env, nullptr);
                 #else
-                jvm()->AttachCurrentThread((void **) &thread_env, nullptr);
+                jvm->AttachCurrentThread((void **) &thread_env, nullptr);
                 #endif
             }
             return thread_env;
@@ -77,7 +64,7 @@ namespace pEp {
         void shutdown_sync()
         {
             env()->DeleteLocalRef(messageClass);
-            jvm()->DetachCurrentThread();
+            jvm->DetachCurrentThread();
         }
     };
 
@@ -141,6 +128,7 @@ extern "C" {
             jobject me
         )
     {
+        env->GetJavaVM(&jvm);
         thread_env = env;
         obj = me;
         _clazz = env->GetObjectClass(obj);
