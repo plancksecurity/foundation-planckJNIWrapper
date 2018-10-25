@@ -213,8 +213,6 @@ extern "C" {
             jobject obj
         )
     {
-        PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
-
         pthread_t *thread = nullptr;
         locked_queue< pEp_identity * > *queue = nullptr;
 
@@ -241,7 +239,7 @@ extern "C" {
         queue = new locked_queue< pEp_identity * >();
         env->SetLongField(obj, queue_handle, (jlong) queue);
 
-        register_examine_function(session, examine_identity, (void *) queue);
+        register_examine_function(session(), examine_identity, (void *) queue);
 
         pthread_create(thread, nullptr, keyserver_thread_routine, (void *) queue);
     }
@@ -251,8 +249,6 @@ extern "C" {
             jobject obj
         )
     {
-        PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
-
         pthread_t *thread = nullptr;
         locked_queue< pEp_identity * > *queue = nullptr;
 
@@ -277,7 +273,7 @@ extern "C" {
         env->SetLongField(obj, queue_handle, (jlong) 0);
         env->SetLongField(obj, thread_handle, (jlong) 0);
 
-        register_examine_function(session, nullptr, nullptr);
+        register_examine_function(session(), nullptr, nullptr);
 
         queue->push_front(nullptr);
         pthread_join(*thread, nullptr);
