@@ -59,23 +59,16 @@ namespace pEp {
             return thread_env;
         }
 
-        jclass clazz()
-        {
-            if (!_clazz)
-                _clazz = env()->GetObjectClass(obj);
-            return _clazz;
-        }
-
         void startup_sync()
         {
             needsFastPollMethodID = env()->GetMethodID(
-                clazz(),
+                _clazz,
                 "needsFastPollCallFromC",
                 "(Z)I");
             assert(needsFastPollMethodID);
 
             notifyHandShakeMethodID = env()->GetMethodID(
-                clazz(),
+                _clazz,
                 "notifyHandshakeCallFromC",
                 "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/SyncHandshakeSignal;)I");
             assert(notifyHandShakeMethodID);
@@ -150,6 +143,7 @@ extern "C" {
     {
         thread_env = env;
         obj = me;
+        _clazz = env->GetObjectClass(obj);
 
         assert(o == nullptr);
         o = new JNISync();
@@ -186,6 +180,7 @@ extern "C" {
         )
     {
         shutdown();
+        env->DeleteLocalRef(_clazz);
         session(pEp::Adapter::release);
         delete o;
     }
