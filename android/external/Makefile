@@ -9,7 +9,7 @@
 # TODO: get params from the outside for multiarch build
 
 NDK_ABI ?= arm
-NDK_TOOLCHAIN_VERSION ?= 4.9
+NDK_TOOLCHAIN_VERSION ?= clang
 APP_ABI ?= armeabi-v7a
 APP_PLATFORM ?= android-18
 PEP_PACKAGE_NAME ?= com.pep.k9
@@ -44,8 +44,9 @@ else
  NDK_PROCESSOR=x86
 endif
 
-NDK_SYSROOT=$(ANDROID_NDK_HOME)/platforms/$(APP_PLATFORM)/arch-$(NDK_ABI)
+NDK_SYSROOT=$(ANDROID_NDK_HOME)/sysroot
 NDK_UNAME := $(shell uname -s | tr '[A-Z]' '[a-z]')
+
 ifeq ($(NDK_ABI),x86)
  HOST = i686-linux-android
  NDK_TOOLCHAIN = $(NDK_ABI)-$(NDK_TOOLCHAIN_VERSION)
@@ -53,27 +54,28 @@ else
  HOST = $(NDK_ABI)-linux-androideabi
  NDK_TOOLCHAIN = $(HOST)-$(NDK_TOOLCHAIN_VERSION)
 endif
-NDK_TOOLCHAIN_BASE=$(ANDROID_NDK_HOME)/toolchains/$(NDK_TOOLCHAIN)/prebuilt/$(NDK_UNAME)-$(NDK_PROCESSOR)
-
 # include Android's build flags
 TARGET_ARCH_ABI = $(APP_ABI)
-include $(ANDROID_NDK_HOME)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
+#include $(ANDROID_NDK)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 #include $(ANDROID_NDK_HOME)/toolchains/$(NDK_TOOLCHAIN)/setup.mk
+ANDROID_NDK_HOME=$(EXTERNAL_ROOT)/ndk-18-arm
+LD := $(ANDROID_NDK_HOME)/bin/$(HOST)-ld
+AR := $(ANDROID_NDK_HOME)/bin/$(HOST)-ar
+AS := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
+CC := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
+CXX := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang++
+RANLIB := $(ANDROID_NDK_HOME)/bin/$(HOST)-ranlib
 
-CC := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-gcc --sysroot=$(NDK_SYSROOT)
-LD := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-ld
-AR := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-ar
-RANLIB := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-ranlib
-
-CFLAGS = -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS)
-LDFLAGS = -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie
+#-D_FILE_OFFSET_BITS=64 -DLARGEFILE_SOURCE=1
+CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC
+LDFLAGS += -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie
 
 # change 'release' to 'debug' for unoptimized debug builds
 ifeq ($(APP_ABI),armeabi-v7a)
-	CFLAGS += $(TARGET_arm_release_CFLAGS)
+	CFLAGS += $(TARGET_arm_debug_CFLAGS)
 endif
 ifeq ($(APP_ABI),armeabi)
-	CFLAGS += $(TARGET_thumb_release_CFLAGS)
+	CFLAGS += $(TARGET_thumb_debug_CFLAGS)
 endif
 
 #------------------------------------------------------------------------------#
@@ -187,6 +189,7 @@ libassuan/Makefile: libassuan/configure
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
 				--enable-maintainer-mode \
+				--disable-largefile \
 				--host=$(HOST) \
 				--with-gpg-error-prefix=$(LOCAL) \
 				--prefix=$(LOCAL)
@@ -205,7 +208,7 @@ libassuan-install: $(LOCAL)/lib/libassuan.so
 #------------------------------------------------------------------------------#
 # libksba
 
-EXTERNAL_GIT_REPOS += libksba|git://git.gnupg.org/libksba.git?libksba-1.3.3
+EXTERNAL_GIT_REPOS += libksba|git://git.gnupg.org/libksba.git?libksba-1.3.4
 
 libksba/configure: libksba.src.stamp libksba/configure.ac 
 	cd libksba && ./autogen.sh
@@ -230,6 +233,35 @@ $(LOCAL)/lib/libksba.so: libksba/src/.libs/libksba.so
 libksba-build: libksba/src/.libs/libksba.so
 
 libksba-install: $(LOCAL)/lib/libksba.so
+
+
+#------------------------------------------------------------------------------#
+# npth
+
+EXTERNAL_GIT_REPOS += npth|git://git.gnupg.org/npth.git?npth-1.2
+
+npth/configure: npth.src.stamp npth/configure.ac
+	cd npth && ./autogen.sh
+
+npth/Makefile: $(LOCAL)/lib/libgpg-error.so npth/configure
+	cd npth && \
+		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+		./configure $(CONFIGURE_ARGS) \
+				--enable-maintainer-mode \
+        		--host=$(HOST) \
+				--with-gpg-error-prefix=$(LOCAL) \
+				--prefix=$(LOCAL)
+
+npth/src/.libs/libnpth.so: npth/Makefile
+	$(MAKE) -C npth
+
+$(LOCAL)/lib/libnpth.so: npth/src/.libs/libnpth.so
+	$(MAKE) -C npth prefix=$(LOCAL) install
+	ls -l $(LOCAL)/lib/libnpth.so
+
+npth-build: npth/src/.libs/libnpth.so
+
+npth-install: $(LOCAL)/lib/libnpth.so
 
 #------------------------------------------------------------------------------#
 # curl
@@ -350,7 +382,7 @@ gnupg/Makefile: gnupg/configure
 				--disable-gpgsm \
 				--prefix=$(prefix)
 
-gnupg/g10/gpg2: $(LOCAL)/lib/libgpg-error.so $(LOCAL)/lib/libgcrypt.so $(LOCAL)/lib/libksba.so $(LOCAL)/lib/libassuan.so $(LOCAL)/lib/libcurl.so $(LOCAL)/lib/libiconv.so gnupg/Makefile
+gnupg/g10/gpg2: $(LOCAL)/lib/libgpg-error.so $(LOCAL)/lib/libgcrypt.so $(LOCAL)/lib/libksba.so $(LOCAL)/lib/libnpth.so $(LOCAL)/lib/libassuan.so $(LOCAL)/lib/libcurl.so $(LOCAL)/lib/libiconv.so gnupg/Makefile
 	$(MAKE) -C gnupg
 
 $(LOCAL)/bin/gpg2: gnupg/g10/gpg2 gnupg/configure
@@ -369,8 +401,14 @@ gnupg-install: $(LOCAL)/bin/gpg2
 
 EXTERNAL_GIT_REPOS += gpgme|git://git.gnupg.org/gpgme.git?gpgme-1.8.0
 
-gpgme/configure: gpgme.src.stamp gpgme/configure.ac 
-	cd gpgme && ./autogen.sh 
+gpgme/configure: gpgme.src.stamp gpgme/configure.ac
+	cd gpgme && ./autogen.sh
+
+ifneq ("x$(findstring '64',$(HOST))x","xx")
+    gpgme_32b_force_no_largefile =
+else
+    gpgme_32b_force_no_largefile = --disable-largefile
+endif
 
 gpgme/Makefile: gpgme/configure
 	-patch -N -p1 --reject-file=- gpgme/m4/libtool.m4 libtool-Add-Android-Linux-support.patch
@@ -378,6 +416,7 @@ gpgme/Makefile: gpgme/configure
 		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
 				--host=$(HOST) \
+				$(gpgme_32b_force_no_largefile) \
 				--enable-maintainer-mode \
 				--with-gpg-error-prefix=$(LOCAL) \
 				--with-libassuan-prefix=$(LOCAL) \
@@ -411,7 +450,7 @@ libetpan/build-android/libetpan-android-1.zip: libiconv-install libetpan.src.sta
 
 libetpan-build: libetpan/build-android/libetpan-android-1.zip
 
-libetpan-cleanzip: 
+libetpan-cleanzip:
 	rm -f libetpan/build-android/libetpan-android-1.zip
 
 #------------------------------------------------------------------------------#
@@ -438,7 +477,7 @@ EXTERNAL_SRCS_CLEAN += uuid-clean
 
 uuid/Makefile: uuid.src.stamp
 	sed -i 's,AC_CHECK_VA_COPY(),,' uuid/uuid.ac
-	cd uuid && autoconf 
+	cd uuid && autoconf
 	-patch -N -p1 --reject-file=- uuid/libtool.m4 libtool-Add-Android-Linux-support-iconv.patch
 	cp config.sub uuid
 	cp config.guess uuid
@@ -490,7 +529,7 @@ assets: clean-assets
 
 #------------------------------------------------------------------------------#
 # Clone update and archive external projects GIT repos
-# Local clone is in external/$project.git while 
+# Local clone is in external/$project.git while
 # selected commit is archived in external/$project
 
 define per_repo_targets
@@ -510,7 +549,7 @@ $(1).src.stamp: $(1).git.stamp
 
 $(1)-src: $(1).src.stamp
 
-$(1)-clean: 
+$(1)-clean:
 	rm -rf $(1)
 	rm -f $(1).src.stamp
 
@@ -546,6 +585,9 @@ clean-install:
 
 clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install libetpan-cleanzip
 
+clean-all: clean
+	rm -rf *.git
+	rm -rf *.stamp
 #------------------------------------------------------------------------------#
 
 .PHONY = clean clean-install clean-assets libetpan-cleanzip\
@@ -553,6 +595,7 @@ clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install libetpan-cleanzip
 	libgcrypt-build libgcrypt-install \
 	libassuan-build libassuan-install \
 	libksba-build libksba-install \
+	libnpth-build libnpth-install \
 	libiconv-build libiconv-install \
 	uuid-build uuid-install \
 	gnupg-build  gnupg-install\

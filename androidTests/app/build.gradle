@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 25
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
-        applicationId "pep.android.k9.materials"
+        applicationId "security.pEp"
         minSdkVersion 19
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
     }
@@ -25,12 +25,12 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile project(':pEpJNIAdapter')
-    testCompile 'junit:junit:4.12'
-    compile 'com.jakewharton:butterknife:8.0.1'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:23.4.0'
+    implementation project(':pEpJNIAdapter')
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.jakewharton:butterknife:8.0.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.0.1'
-    compile 'com.karumi:dexter:2.3.1'
-    compile group: 'net.lingala.zip4j', name: 'zip4j', version: '1.3.1'
+    implementation 'com.karumi:dexter:5.0.0'
+    implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '1.3.1'
 }

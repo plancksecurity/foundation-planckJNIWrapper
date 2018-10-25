@@ -1429,7 +1429,7 @@ public class MainActivity extends AppCompatActivity {
     private Engine.decrypt_message_Return decryptMessageOnEngine(Engine engine, Message encriptedMessage) throws pEpException {
         long lastTime = System.currentTimeMillis();
         logStart("engine.decrypt_message", String.valueOf(lastTime));
-        Engine.decrypt_message_Return decrypt_message_return = engine.decrypt_message(encriptedMessage);
+        Engine.decrypt_message_Return decrypt_message_return = engine.decrypt_message(encriptedMessage, 0);
         logEnd("engine.decrypt_message", String.valueOf(System.currentTimeMillis() - lastTime));
         return decrypt_message_return;
     }

@@ -59,6 +59,7 @@ LOCAL_MODULE     := pEpJNI
 LOCAL_SHARED_LIBRARIES := libgpgme libassuan libcurl libgcrypt libgpg-error
 LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid
 LOCAL_CPP_FEATURES += exceptions
+LOCAL_CFLAGS += -DHAVE_PTHREADS
 LOCAL_SRC_FILES  := \
 		  ../../src/org_pEp_jniadapter_AbstractEngine.cc \
 		  ../../src/org_pEp_jniadapter_Engine.cc \
@@ -68,7 +69,7 @@ LOCAL_SRC_FILES  := \
 		  ../../src/jniutils.cc
 
 LOCAL_C_INCLUDES += $(GPGBUILD)/include
-LOCAL_LDLIBS    := -llog
+LOCAL_LDLIBS    += -llog
 include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)

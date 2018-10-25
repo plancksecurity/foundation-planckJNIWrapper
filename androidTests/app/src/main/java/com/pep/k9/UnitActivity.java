@@ -177,7 +177,7 @@ public class UnitActivity extends AppCompatActivity {
 
     private Engine.decrypt_message_Return decryptMessageOnEngine(Engine engine, Message encriptedMessage) throws pEpException {
         long lastTime = System.currentTimeMillis();
-        Engine.decrypt_message_Return decrypt_message_return = engine.decrypt_message(encriptedMessage);
+        Engine.decrypt_message_Return decrypt_message_return = engine.decrypt_message(encriptedMessage, 0);
         long time = System.currentTimeMillis() - lastTime;
         Log.d("time", " " + time);
         return decrypt_message_return;
