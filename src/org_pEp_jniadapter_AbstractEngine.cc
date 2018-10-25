@@ -145,7 +145,6 @@ namespace pEp {
 
         return (PEP_STATUS) result;
     }
-
 }
 
 extern "C" {
@@ -194,8 +193,8 @@ extern "C" {
         )
     {
         shutdown();
-        delete o;
         session(pEp::Adapter::release);
+        delete o;
     }
 
     int examine_identity(pEp_identity *ident, void *arg)
