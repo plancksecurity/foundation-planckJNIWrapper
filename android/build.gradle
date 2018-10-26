@@ -100,15 +100,15 @@ android {
         commandLine 'make', 'gensource'
     }
 
-    task genpEpEngineSyncSources(type:Exec, dependsOn: 'genpEpEngineAsn1Sources') {
+    task genpEpEngineSyncSources(type:Exec) {
         workingDir '../../pEpEngine'
         commandLine 'make', '-C', 'sync'
     }
 
-    task genpEpEngineAsn1Sources(type:Exec) {
+    /*task genpEpEngineAsn1Sources(type:Exec) {
         workingDir '../../pEpEngine'
         commandLine 'make', '-C', 'asn.1', 'generate'
-    }
+    }*/
 
     task cleanGenSource(type:Exec) {
         workingDir '../src'
