@@ -113,7 +113,7 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_keyMistrusted(
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
         if (_ident->me)
-            ::myself(session, _ident);
+            ::myself(session(), _ident);
         else
             ::update_identity(session(), _ident);
     }

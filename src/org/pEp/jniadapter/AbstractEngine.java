@@ -10,42 +10,25 @@ abstract class AbstractEngine implements AutoCloseable {
         System.loadLibrary("pEpJNI");
     }
 
-
     private Sync.MessageToSendCallback messageToSendCallback;
     private Sync.notifyHandshakeCallback notifyHandshakeCallback;
     private Sync.NeedsFastPollCallback needsFastPollCallback;
-    private native void init() throws pEpException;
-    private native void release();
-
-    private long handle;
-
-    final protected long getHandle() {
-        return handle;
-    }
 
     public AbstractEngine() throws pEpException {
         synchronized (AbstractEngine.class) {
-            init();
         }
     }
 
     final public void close() {
         synchronized (AbstractEngine.class){
-            release();
         }
     }
 
     private long keyserverThread;
     private long keyserverQueue;
 
-    private long syncThread;
-    private long syncQueue;
-
     public native void startKeyserverLookup();
     public native void stopKeyserverLookup();
-
-    public native void startSync();
-    public native void stopSync();
 
     public static byte[] toUTF8(String str) {
         if (str == null)
