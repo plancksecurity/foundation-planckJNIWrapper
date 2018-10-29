@@ -133,8 +133,8 @@ extern "C" {
         obj = me;
         _clazz = env->GetObjectClass(obj);
 
-        assert(o == nullptr);
-        o = new JNISync();
+        if (!o)
+            o = new JNISync();
 
         if (!messageClass)
             messageClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/Message")));
