@@ -28,7 +28,7 @@ C_SOURCES=org_pEp_jniadapter_Engine.cc \
 gensource: $(JAVA_SOURCES) $(C_SOURCES)
 
 $(JAR): $(JAVA_SOURCES)
-	javac org/pEp/jniadapter/*.java
+	javac $(JAVA_SOURCES)
 	jar cf $@ org/pEp/jniadapter/*.class
 
 org_pEp_jniadapter_AbstractEngine.h: org/pEp/jniadapter/AbstractEngine.java
@@ -74,7 +74,7 @@ throw_pEp_exception.o: throw_pEp_exception.cc throw_pEp_exception.hh
 
 basic_api.o: basic_api.cc jniutils.hh throw_pEp_exception.hh
 
-.PHONY: clean
+.PHONY: clean test
 
 clean:
 	rm -f $(JAR) $(LIBRARY) $(SHARED)
@@ -89,4 +89,10 @@ clean:
 	rm -f org/pEp/jniadapter/Color.java
 	rm -f throw_pEp_exception.*
 	rm -f org_pEp_jniadapter_Message.cc org_pEp_jniadapter_Engine.cc
+
+AdapterTest.class: AdapterTest.java
+	javac -cp $(JAR) $<
+
+test: AdapterTest.class
+	java AdapterTest
 
