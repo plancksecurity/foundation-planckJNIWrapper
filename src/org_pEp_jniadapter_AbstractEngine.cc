@@ -1,5 +1,12 @@
 #include "org_pEp_jniadapter_AbstractEngine.h"
 
+#ifndef ANDROID
+#ifndef NDEBUG
+#include <fstream>
+std::ofstream debug_log("debug.log");
+#endif
+#endif
+
 #include <stdexcept>
 #include <unistd.h>
 #include <assert.h>
@@ -18,7 +25,8 @@ namespace pEp {
     using namespace utility;
 
     JavaVM *jvm= nullptr;
-    thread_local JNIEnv* thread_env = nullptr;
+    thread_local JNIEnv *thread_env = nullptr;
+    JNIEnv *first_env = nullptr;
     jobject obj = nullptr;
     jclass _clazz = nullptr;
 
@@ -36,14 +44,23 @@ namespace pEp {
     public:
         JNIEnv * env()
         {
-            if (!thread_env) {
-                #ifdef ANDROID
-                jvm->AttachCurrentThread(&thread_env, nullptr);
-                #else
-                jvm->AttachCurrentThread((void **) &thread_env, nullptr);
-                #endif
+            JNIEnv *_env;
+
+            if (on_sync_thread()) {
+                _env = first_env;
             }
-            return thread_env;
+            else {
+                if (!thread_env) {
+                    #ifdef ANDROID
+                    jvm->AttachCurrentThread(&thread_env, nullptr);
+                    #else
+                    jvm->AttachCurrentThread((void **) &thread_env, nullptr);
+                    #endif
+                }
+                _env = thread_env;
+            }
+
+            return _env;
         }
 
         void startup_sync()
@@ -128,6 +145,9 @@ extern "C" {
             jobject me
         )
     {
+        if (!first_env)
+            first_env = env;
+
         env->GetJavaVM(&jvm);
         thread_env = env;
         obj = me;

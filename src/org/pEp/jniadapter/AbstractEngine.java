@@ -14,13 +14,18 @@ abstract class AbstractEngine implements AutoCloseable {
     private Sync.notifyHandshakeCallback notifyHandshakeCallback;
     private Sync.NeedsFastPollCallback needsFastPollCallback;
 
+    private native void init();
+    private native void release();
+
     public AbstractEngine() throws pEpException {
         synchronized (AbstractEngine.class) {
+            init();
         }
     }
 
     final public void close() {
         synchronized (AbstractEngine.class){
+            release();
         }
     }
 
