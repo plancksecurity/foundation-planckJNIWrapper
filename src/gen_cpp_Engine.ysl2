@@ -13,10 +13,12 @@ tstylesheet {
         #include <pEp/message_api.h>
         #include <pEp/blacklist.h>
         #include <pEp/openpgp_compat.h>
+        #include <pEp/Adapter.hh>
         #include "org_pEp_jniadapter_«@name».h"
         #include "throw_pEp_exception.hh"
         #include "jniutils.hh"
 
+        using namespace pEp::Adapter;
         using namespace pEp::JNIAdapter;
 
         extern "C" {
@@ -46,15 +48,13 @@ tstylesheet {
                 jobject obj`apply "parm[in|inout]", mode=sig`
             )
         {
-            PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
-
         ||
 
         apply "parm[in|inout]", mode=in;
         apply "parm[creates|returns]", mode=out;
         ||
 
-            PEP_STATUS status = ::«@name»(session`apply "parm", mode=call`);
+            PEP_STATUS status = ::«@name»(session()`apply "parm", mode=call`);
             if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) |`> |`
                     status < PEP_STATUS_OK |`> |`
                     status >= PEP_TRUSTWORD_NOT_FOUND) {
