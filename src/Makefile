@@ -90,8 +90,8 @@ clean:
 	rm -f throw_pEp_exception.*
 	rm -f org_pEp_jniadapter_Message.cc org_pEp_jniadapter_Engine.cc
 
-AdapterTest.class: AdapterTest.java
-	javac -cp $(JAR) $<
+AdapterTest.class: AdapterTest.java SyncCallbacks.java
+	javac -cp .:$(JAR) $< SyncCallbacks.java
 
 test: AdapterTest.class
 	java AdapterTest
