@@ -3,6 +3,8 @@ SHARED=libpEpJNI.so
 JAR=jniadapter.jar
 include Makefile.conf
 
+CXXFLAGS+=-std=c++14 -fPIC
+
 all: $(JAR) $(SHARED)
 
 JAVA_SOURCES=org/pEp/jniadapter/pEpException.java \
@@ -39,8 +41,10 @@ org_pEp_jniadapter_Message.h: org/pEp/jniadapter/Message.java
 	javah $(subst /,.,$(subst .java,,$<))
 
 org_pEp_jniadapter_AbstractEngine.o: %.o: %.cc %.h throw_pEp_exception.hh jniutils.hh
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 org_pEp_jniadapter_Engine.o org_pEp_jniadapter_Message.o: %.o: %.cc %.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(LIBRARY): org_pEp_jniadapter_AbstractEngine.o org_pEp_jniadapter_Engine.o org_pEp_jniadapter_Message.o throw_pEp_exception.o jniutils.o basic_api.o
 	ar -r $@ *.o
