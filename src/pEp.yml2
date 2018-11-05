@@ -84,7 +84,7 @@ namespace pEp {
         pEp_statemachine_invalid_condition              > 0x0984
         pEp_statemachine_invalid_action                 > 0x0985
         pEp_statemachine_inhibited_event                > 0x0986
-        pEp_statemachine_cannot_semd                    > 0x0987
+        pEp_statemachine_cannot_send                    > 0x0987
 
         pEp_commit_failed                               > 0xff01
         pEp_message_consume                             > 0xff02
