@@ -156,7 +156,7 @@ abstract class AbstractEngine implements AutoCloseable {
         if (needsFastPollCallback != null) {
             needsFastPollCallback.needsFastPollCallFromC(fast_poll_needed);
         } else {
-            throw new RuntimeException("Callback not set");
+            return -1;
         }
         return 0;
     }
@@ -168,7 +168,7 @@ abstract class AbstractEngine implements AutoCloseable {
         if (notifyHandshakeCallback != null) {
             notifyHandshakeCallback.notifyHandshake(myself, partner, _signal);
         } else {
-            throw new RuntimeException("Callback not set");
+           return -1;
         }
         return 0;
     }
@@ -177,7 +177,7 @@ abstract class AbstractEngine implements AutoCloseable {
         if (messageToSendCallback != null) {
             messageToSendCallback.messageToSend(message);
         } else {
-            throw new RuntimeException("Callback not set");
+           return -1;
         }
         return 0;
     }
