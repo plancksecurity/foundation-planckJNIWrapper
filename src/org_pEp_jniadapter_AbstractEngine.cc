@@ -66,13 +66,13 @@ namespace pEp {
         void startup_sync()
         {
             needsFastPollMethodID = env()->GetMethodID(
-                _clazz,
+                engineClass,
                 "needsFastPollCallFromC",
                 "(Z)I");
             assert(needsFastPollMethodID);
 
             notifyHandShakeMethodID = env()->GetMethodID(
-                _clazz,
+                engineClass,
                 "notifyHandshakeCallFromC",
                 "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/SyncHandshakeSignal;)I");
             assert(notifyHandShakeMethodID);
@@ -80,7 +80,7 @@ namespace pEp {
 
         void shutdown_sync()
         {
-            env()->DeleteLocalRef(messageClass);
+            env()->DeleteGlobalRef(messageClass);
             jvm->DetachCurrentThread();
         }
     };
@@ -91,6 +91,9 @@ namespace pEp {
     {
         jobject msg_ = nullptr;
         jint result = 0;
+
+        if (!o)
+            o = new JNISync();
 
         msg_ = o->env()->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
         result = o->env()->CallIntMethod(obj, messageToSendMethodID, msg_);
@@ -150,7 +153,7 @@ extern "C" {
 
         env->GetJavaVM(&jvm);
         thread_env = env;
-        obj = me;
+        obj = env->NewGlobalRef(me);
         _clazz = env->GetObjectClass(obj);
 
         if (!o)
@@ -188,7 +191,12 @@ extern "C" {
         )
     {
         shutdown();
-        env->DeleteLocalRef(_clazz);
+
+        env->DeleteGlobalRef(identityClass);
+        env->DeleteGlobalRef(signalClass);
+        env->DeleteGlobalRef(engineClass);
+        env->DeleteGlobalRef(obj);
+
         session(pEp::Adapter::release);
         delete o;
     }
