@@ -42,35 +42,39 @@ class Testing {
 
         msg.setShortmsg("hello, world");
         msg.setLongmsg("this is a test");
+        msg.setDir(Message.Direction.Outgoing);
 
         Message enc = null;
         try {
-            enc = e.encrypt_message(msg, null);
+            enc = e.encrypt_message(msg, null, Message.EncFormat.PEP);
             System.out.println("encrypted");
         }
         catch (pEpException ex) {
             System.out.println("cannot encrypt");
+            ex.printStackTrace();
         }
 
+        
         System.out.println(enc.getLongmsg());
         Vector<Blob> attachments = enc.getAttachments();
         System.out.println(e.toUTF16(attachments.get(1).data));
 
         msg.setDir(Message.Direction.Outgoing);
         try {
-            System.out.println(e.outgoing_message_color(msg));
+            System.out.println(e.outgoing_message_rating(msg));
         }
         catch (pEpException ex) {
-            System.out.println("cannot measure outgoing message color");
+            System.out.println("cannot measure outgoing message rating");
         }
 
         Engine.decrypt_message_Return result = null;
         try {
-            result = e.decrypt_message(enc);
+            result = e.decrypt_message(enc, new Vector<>(), 0);
             System.out.println("decrypted");
         }
         catch (pEpException ex) {
             System.out.println("cannot decrypt");
+            ex.printStackTrace();
         }
         
         System.out.println(result.dst.getShortmsg());
