@@ -15,6 +15,18 @@ class Testing {
         }
         System.out.println("Test loaded");
 
+        // Keygen
+        System.out.println("Generating keys: ");
+        Identity user = new Identity();
+        user.user_id = "pEp_own_userId";
+        user.me = true;
+        user.username = "Test User";
+        user.address = "jniTestUser@peptest.ch";
+        user = e.myself(user);
+        System.out.print("Keys generated: ");
+        System.out.println(user.fpr);
+
+        
         // trustwords
         Identity vb = new Identity();
         vb.fpr = "DB4713183660A12ABAFA7714EBE90D44146F62F4";
@@ -25,19 +37,14 @@ class Testing {
         // message
         Message msg = new Message();
 
-        Identity from = new Identity();
-        from.username = "Volker Birk";
-        from.address = "vb@dingens.org";
-        from.user_id = "23";
-        from.me = true;
-        msg.setFrom(from);
+        msg.setFrom(user);
 
         Vector<Identity> to = new Vector<Identity>();
         Identity to1 = new Identity();
-        to1.username = "Volker Birk";
-        to1.address = "vb@pep-project.org";
-        to1.user_id = "42";
-        to.add(to1);
+        //to1.username = "Volker Birk";
+        //to1.address = "vb@pep-project.org";
+        //to1.user_id = "42";
+        to.add(user);
         msg.setTo(to);
 
         msg.setShortmsg("hello, world");
