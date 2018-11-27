@@ -3,7 +3,7 @@ SHARED=libpEpJNI.so
 JAR=jniadapter.jar
 include Makefile.conf
 
-CXXFLAGS+=-std=c++14
+CXXFLAGS+=-std=c++14 -fPIC
 
 all: $(JAR) $(SHARED)
 

@@ -16,8 +16,10 @@ tstylesheet {
             import java.util.Vector;
             import java.util.Date;
             import java.util.HashMap;
+            import java.io.Serializable;
 
-            public class «$cname» implements AutoCloseable {
+            public class «$cname» implements AutoCloseable, Serializable {
+                private static final long serialVersionUID = 2119420428331150924L;
                 private long handle;
 
                 native long init();
