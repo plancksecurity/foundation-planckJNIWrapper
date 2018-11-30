@@ -8,6 +8,9 @@ class Testing {
         // load
         try {
             e = new Engine();
+            SyncCallbacks callbacks = new SyncCallbacks();
+            e.setNotifyHandshakeCallback(callbacks);
+            e.setMessageToSendCallback(callbacks);        
         }
         catch (pEpException ex) {
             System.out.println("Cannot load");
@@ -26,7 +29,7 @@ class Testing {
         System.out.print("Keys generated: ");
         System.out.println(user.fpr);
 
-        
+       
         // trustwords
         Identity vb = new Identity();
         vb.fpr = "DB4713183660A12ABAFA7714EBE90D44146F62F4";
@@ -86,6 +89,11 @@ class Testing {
         
         System.out.println(result.dst.getShortmsg());
         System.out.println(result.dst.getLongmsg());
+	    System.out.println("TEST DONE - FINISHED");
+    	System.exit(0);
     }
+
+    
+        
 }
 
