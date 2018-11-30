@@ -163,7 +163,27 @@ tstylesheet {
                 
                 ||
             }
- 
+            
+            when "$itype != $type"
+            ||
+            private native «$itype» _get«$name»();
+            private native void _set«$name»(«$itype» value);
+            public «$type» get«$name»() {
+                «$itype» res = _get«$name»();
+                if(res != null)
+                    return AbstractEngine.toUTF16(res);
+                else
+                    return null;
+            }
+            public void set«$name»(«$type» value) {
+                if(value != null)
+                    _set«$name»(AbstractEngine.toUTF8(value));
+                else
+                    _set«$name»(new byte[0]);
+            }
+
+            ||
+
             when "$itype != $type"
             ||
             private native «$itype» _get«$name»();
