@@ -19,6 +19,13 @@ std::ofstream debug_log("debug.log");
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
 
+#ifdef ANDROID
+#define ATTACH_CURRENT_THREAD(env, args) jvm->AttachCurrentThread(&env, args);
+#else
+#define ATTACH_CURRENT_THREAD(env, args) jvm->AttachCurrentThread((void **) &env, args);
+#endif
+
+
 namespace pEp {
     using namespace pEp::JNIAdapter;
     using namespace pEp::Adapter;
@@ -47,15 +54,15 @@ namespace pEp {
             JNIEnv *_env;
 
             if (on_sync_thread()) {
-                _env = first_env;
+            // FIXME: REview if this is the way to go or not
+                int getEnvStat = jvm->GetEnv((void **) &_env, JNI_VERSION_1_6);
+                if (getEnvStat == JNI_EDETACHED) {
+                    ATTACH_CURRENT_THREAD(_env, nullptr);
+                }
             }
             else {
                 if (!thread_env) {
-                    #ifdef ANDROID
-                    jvm->AttachCurrentThread(&thread_env, nullptr);
-                    #else
-                    jvm->AttachCurrentThread((void **) &thread_env, nullptr);
-                    #endif
+                    ATTACH_CURRENT_THREAD(thread_env, nullptr);
                 }
                 _env = thread_env;
             }
@@ -65,17 +72,7 @@ namespace pEp {
 
         void startup_sync()
         {
-            needsFastPollMethodID = env()->GetMethodID(
-                engineClass,
-                "needsFastPollCallFromC",
-                "(Z)I");
-            assert(needsFastPollMethodID);
 
-            notifyHandShakeMethodID = env()->GetMethodID(
-                engineClass,
-                "notifyHandshakeCallFromC",
-                "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/SyncHandshakeSignal;)I");
-            assert(notifyHandShakeMethodID);
         }
 
         void shutdown_sync()
@@ -94,7 +91,6 @@ namespace pEp {
 
         if (!o)
             o = new JNISync();
-
         msg_ = o->env()->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
         result = o->env()->CallIntMethod(obj, messageToSendMethodID, msg_);
 
@@ -173,7 +169,7 @@ extern "C" {
 
         if (!messageConstructorMethodID)
             messageConstructorMethodID = env->GetMethodID(messageClass, "<init>", "(J)V");
-
+        
         if (!messageToSendMethodID) {
             messageToSendMethodID = env->GetMethodID(
                 engineClass,
@@ -181,6 +177,22 @@ extern "C" {
                 "(Lorg/pEp/jniadapter/Message;)I");
             assert(messageToSendMethodID);
         }
+
+        if (!needsFastPollMethodID) {
+            needsFastPollMethodID = env->GetMethodID(
+        	    engineClass,
+                "needsFastPollCallFromC",
+                "(Z)I");
+            assert(needsFastPollMethodID);
+        }
+
+        if (!notifyHandShakeMethodID) {
+            notifyHandShakeMethodID = env->GetMethodID(
+                engineClass,
+                "notifyHandshakeCallFromC",
+                "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/SyncHandshakeSignal;)I");
+            assert(notifyHandShakeMethodID);
+          }
 
         startup<JNISync>(messageToSend, notifyHandshake, o, &JNISync::startup_sync, &JNISync::shutdown_sync);
     }

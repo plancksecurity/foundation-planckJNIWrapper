@@ -2,6 +2,9 @@ package org.pEp.jniadapter;
 
 import java.util.ArrayList;
 import java.util.Vector;
+
+import org.pEp.jniadapter.Sync.DefaultCallback;
+
 import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;
 
@@ -11,9 +14,10 @@ abstract class AbstractEngine implements AutoCloseable {
     }
 
     private Sync.MessageToSendCallback messageToSendCallback;
-    private Sync.notifyHandshakeCallback notifyHandshakeCallback;
+    private Sync.NotifyHandshakeCallback notifyHandshakeCallback;
     private Sync.NeedsFastPollCallback needsFastPollCallback;
 
+    private final static DefaultCallback defaultCallback = new DefaultCallback();
     private native void init();
     private native void release();
 
@@ -144,7 +148,7 @@ abstract class AbstractEngine implements AutoCloseable {
         this.messageToSendCallback = messageToSendCallback;
     }
 
-    public void setnotifyHandshakeCallback(Sync.notifyHandshakeCallback notifyHandshakeCallback) {
+    public void setNotifyHandshakeCallback(Sync.NotifyHandshakeCallback notifyHandshakeCallback) {
         this.notifyHandshakeCallback = notifyHandshakeCallback;
     }
 
@@ -156,7 +160,7 @@ abstract class AbstractEngine implements AutoCloseable {
         if (needsFastPollCallback != null) {
             needsFastPollCallback.needsFastPollCallFromC(fast_poll_needed);
         } else {
-            return -1;
+            defaultCallback.needsFastPollCallFromC(fast_poll_needed);
         }
         return 0;
     }
@@ -168,7 +172,7 @@ abstract class AbstractEngine implements AutoCloseable {
         if (notifyHandshakeCallback != null) {
             notifyHandshakeCallback.notifyHandshake(myself, partner, _signal);
         } else {
-           return -1;
+            defaultCallback.notifyHandshake(myself, partner, _signal);
         }
         return 0;
     }
@@ -177,7 +181,7 @@ abstract class AbstractEngine implements AutoCloseable {
         if (messageToSendCallback != null) {
             messageToSendCallback.messageToSend(message);
         } else {
-           return -1;
+            defaultCallback.messageToSend(message);
         }
         return 0;
     }
