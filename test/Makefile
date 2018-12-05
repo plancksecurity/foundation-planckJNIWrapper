@@ -1,4 +1,5 @@
 CLASSPATH=.:../src
+#VM=java -Xcheck:jni -Djava.library.path=../src
 VM=java -Djava.library.path=../src
 
 test: Testing.class SyncCallbacks.class

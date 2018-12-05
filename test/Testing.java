@@ -1,7 +1,18 @@
 import org.pEp.jniadapter.*;
 import java.util.Vector;
-
+import java.net.URL;
+import java.net.URLClassLoader;
 class Testing {
+
+    public void printClassPath() {
+        ClassLoader cl = ClassLoader.getSystemClassLoader();
+
+        URL[] urls = ((URLClassLoader)cl).getURLs();
+
+        for(URL url: urls){
+        	System.out.println(url.getFile());
+        }
+    }
     public static void main(String[] args) {
         Engine e;
 
@@ -46,7 +57,9 @@ class Testing {
         Identity to1 = new Identity();
         //to1.username = "Volker Birk";
         //to1.address = "vb@pep-project.org";
+        //to1.address = "android01@peptest.ch";
         //to1.user_id = "42";
+        //to.add(to1);
         to.add(user);
         msg.setTo(to);
 
@@ -89,8 +102,17 @@ class Testing {
         
         System.out.println(result.dst.getShortmsg());
         System.out.println(result.dst.getLongmsg());
-	    System.out.println("TEST DONE - FINISHED");
-    	System.exit(0);
+	System.out.println("TEST DONE - FINISHED");
+
+	try {
+        e.startSync();
+		e.key_reset(null, null);
+	} 
+	catch (pEpException ex) {
+		System.out.println("cannot reset all own keys");
+        	ex.printStackTrace();
+	}
+	System.exit(0);
     }
 
     

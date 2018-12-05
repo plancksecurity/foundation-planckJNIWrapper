@@ -262,7 +262,12 @@ namespace pEp {
                 returns string languagelist
             );
 
-        basic string trustwords(identity ident);
+	method key_reset(
+		in string fpr, 
+		in identity ident
+	);
+
+	basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);
         basic identity setOwnKey(identity ident, string fpr);

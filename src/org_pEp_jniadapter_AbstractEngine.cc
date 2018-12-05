@@ -194,7 +194,16 @@ extern "C" {
             assert(notifyHandShakeMethodID);
           }
 
-        startup<JNISync>(messageToSend, notifyHandshake, o, &JNISync::startup_sync, &JNISync::shutdown_sync);
+        thread_local static PEP_SESSION _session = nullptr;
+        PEP_STATUS status = PEP_STATUS_OK;
+
+        #ifdef DISABLE_SYNC
+                _messageToSend = messageToSend;
+                session();
+                
+        #else 
+                startup<JNISync>(messageToSend, notifyHandshake, o, &JNISync::startup_sync, &JNISync::shutdown_sync);
+        #endif
     }
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_release(

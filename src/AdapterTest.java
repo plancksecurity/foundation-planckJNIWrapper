@@ -20,7 +20,7 @@ class AdapterTest {
             pEp = new Engine();
             System.out.println("Setting callbacks");
             SyncCallbacks callbacks = new SyncCallbacks();
-            pEp.setnotifyHandshakeCallback(callbacks);
+            pEp.setNotifyHandshakeCallback(callbacks);
             pEp.setMessageToSendCallback(callbacks);
 
             System.out.println("Calling myself");
