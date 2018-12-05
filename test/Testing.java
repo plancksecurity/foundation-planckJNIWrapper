@@ -105,7 +105,6 @@ class Testing {
 	System.out.println("TEST DONE - FINISHED");
 
 	try {
-        e.startSync();
 		e.key_reset(null, null);
 	} 
 	catch (pEpException ex) {
