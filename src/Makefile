@@ -34,7 +34,7 @@ endif
 
 LDFLAGS=-shared $(ENGINE_LIB) $(AD_LIB)
 
-LDLIBS=-lpEpEngine
+LDLIBS=-lstdc++ -lpEpEngine
 
 JAVA_SOURCES=org/pEp/jniadapter/pEpException.java \
     org/pEp/jniadapter/AbstractEngine.java \
