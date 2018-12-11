@@ -32,6 +32,10 @@ else
     $(error I don't know how to build for $(BUILD_FOR).)
 endif
 
+LDFLAGS=-shared $(ENGINE_LIB) $(AD_LIB)
+
+LDLIBS=-lpEpEngine
+
 JAVA_SOURCES=org/pEp/jniadapter/pEpException.java \
     org/pEp/jniadapter/AbstractEngine.java \
     org/pEp/jniadapter/Message.java \
@@ -87,7 +91,7 @@ $(LIBRARY): org_pEp_jniadapter_AbstractEngine.o org_pEp_jniadapter_Engine.o org_
 	ar -r $@ *.o
 
 $(SHARED): $(LIBRARY)
-	$(CXX) $(CXXFLAGS) -shared -o $(SHARED) $(LDFLAGS) -lpEpEngine *.o
+	$(CXX) *.o $(LDFLAGS) $(LDLIBS) -o $@
 
 org/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2
 	$(YML2_PROC) -y gen_java_exceptions.ysl2 $< -o $@
