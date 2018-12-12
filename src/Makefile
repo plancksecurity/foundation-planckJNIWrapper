@@ -21,6 +21,14 @@ ifndef JAVA_HOME
     $(error JAVA_HOME is not set!)
 endif
 
+JP=$(JAVA_HOME)/bin
+
+# Old versions of a Java distribution have a `javah` binary, new versions do not. This checks whether or not `javah` can be found in the Java distribution found in the directory `$JAVA_HOME`.
+NOT_USED:=$(shell type $(JAVA_HOME)/bin/javah)
+ifeq ($(.SHELLSTATUS),0)
+    OLD_JAVA=placeholder
+endif
+
 LIBRARY=libpEpJNI.a
 JAR=jniadapter.jar
 
@@ -31,10 +39,6 @@ else ifeq ($(BUILD_FOR),Darwin)
 else
     $(error I don't know how to build for $(BUILD_FOR).)
 endif
-
-LDFLAGS=-shared $(ENGINE_LIB) $(AD_LIB)
-
-LDLIBS=-lstdc++ -lpEpEngine
 
 JAVA_SOURCES=org/pEp/jniadapter/pEpException.java \
     org/pEp/jniadapter/AbstractEngine.java \
@@ -53,14 +57,6 @@ C_SOURCES=org_pEp_jniadapter_Engine.cc \
     throw_pEp_exception.cc \
     throw_pEp_exception.hh \
     org_pEp_jniadapter_AbstractEngine.h
-
-# Old versions of a Java distribution have a `javah` binary, new versions do not. This checks whether or not `javah` can be found in the Java distribution found in the directory `$JAVA_HOME`.
-NOT_USED:=$(shell type $(JAVA_HOME)/bin/javah)
-ifeq ($(.SHELLSTATUS),0)
-    OLD_JAVA=placeholder
-endif
-
-JP=$(JAVA_HOME)/bin
 
 
 .PHONY: all
