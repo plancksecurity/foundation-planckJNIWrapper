@@ -125,5 +125,11 @@ clean:
 	rm -f org/pEp/jniadapter/Engine.java
 	rm -f org/pEp/jniadapter/Message.java
 	rm -f org/pEp/jniadapter/Color.java
+	rm -f org/pEp/jniadapter/DecryptFlags.java
+	rm -f org/pEp/jniadapter/IdentityFlags.java
+	rm -f org/pEp/jniadapter/Rating.java
+	rm -f org/pEp/jniadapter/Status.java
+	rm -f org/pEp/jniadapter/SyncHandshakeResult.java
+	rm -f org/pEp/jniadapter/SyncHandshakeSignal.java
 	rm -f throw_pEp_exception.*
 	rm -f org_pEp_jniadapter_Message.cc org_pEp_jniadapter_Engine.cc
