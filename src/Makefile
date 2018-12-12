@@ -55,9 +55,9 @@ C_SOURCES=org_pEp_jniadapter_Engine.cc \
     org_pEp_jniadapter_AbstractEngine.h
 
 # Old versions of a Java distribution have a `javah` binary, new versions do not. This checks whether or not `javah` can be found in the Java distribution found in the directory `$JAVA_HOME`.
-NOT_USED := $(shell type $(JAVA_HOME)/bin/javah)
+NOT_USED:=$(shell type $(JAVA_HOME)/bin/javah)
 ifeq ($(.SHELLSTATUS),0)
-    NEW_JAVA=placeholder
+    OLD_JAVA=placeholder
 endif
 
 JP=$(JAVA_HOME)/bin
@@ -75,10 +75,10 @@ $(JAR): $(JAVA_SOURCES)
 
 BLUBB = org_pEp_jniadapter_AbstractEngine.h org_pEp_jniadapter_Engine.h org_pEp_jniadapter_Message.h
 $(BLUBB): org_pEp_jniadapter_%.h: org/pEp/jniadapter/%.java
-ifdef NEW_JAVA
-	$(JP)/javac -h . $<
-else
+ifdef OLD_JAVA
 	$(JP)/javah $(subst /,.,$(subst .java,,$<))
+else
+	$(JP)/javac -h . $<
 endif
 
 org_pEp_jniadapter_AbstractEngine.o: %.o: %.cc %.h throw_pEp_exception.hh jniutils.hh
