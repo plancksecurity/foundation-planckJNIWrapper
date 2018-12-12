@@ -44,6 +44,8 @@ JAVA_SOURCES=org/pEp/jniadapter/AbstractEngine.java \
     org/pEp/jniadapter/Blob.java \
     org/pEp/jniadapter/CommType.java \
     org/pEp/jniadapter/Identity.java \
+    org/pEp/jniadapter/Pair.java \
+    org/pEp/jniadapter/Sync.java \
     org/pEp/jniadapter/_Blob.java \
     org/pEp/jniadapter/_Identity.java \
     org/pEp/jniadapter/pEpException.java \
@@ -69,7 +71,7 @@ $(JAR): $(JAVA_SOURCES)
 	$(JP)/javac org/pEp/jniadapter/*.java
 	$(JP)/jar cf $@ org/pEp/jniadapter/*.class
 
-BLUBB = org_pEp_jniadapter_AbstractEngine.h org_pEp_jniadapter_Engine.h org_pEp_jniadapter_Message.h
+BLUBB=org_pEp_jniadapter_AbstractEngine.h org_pEp_jniadapter_Engine.h org_pEp_jniadapter_Message.h
 $(BLUBB): org_pEp_jniadapter_%.h: org/pEp/jniadapter/%.java
 ifdef OLD_JAVA
 	$(JP)/javah $(subst /,.,$(subst .java,,$<))
