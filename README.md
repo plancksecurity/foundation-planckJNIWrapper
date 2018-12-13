@@ -45,7 +45,18 @@ Depending on what is already set in your environment, or can be found in your de
 
 Now, build the Adapter with
 
+On Linux:
+
 ~~~
 cd src
 make
 ~~~
+
+On macOS:
+
+~~~
+cd src
+gmake
+~~~
+
+(The GNU Make distributed with macOS is too old, install GNU Make "gmake" from macPorts).
