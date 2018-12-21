@@ -84,7 +84,8 @@ class Testing {
 
         msg.setDir(Message.Direction.Outgoing);
         try {
-            System.out.println(e.outgoing_message_rating(msg));
+            System.out.println("Rating preview: " + e.outgoing_message_rating_preview(msg));
+            System.out.println("Rating" + e.outgoing_message_rating(msg));
         }
         catch (pEpException ex) {
             System.out.println("cannot measure outgoing message rating");

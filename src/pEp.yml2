@@ -202,6 +202,11 @@ namespace pEp {
                 returns Rating rating
             );
 
+        method outgoing_message_rating_preview(
+                in message msg,
+                returns Rating rating
+            );
+
         method get_identity(
                 in string address,
                 in string userid,
@@ -266,7 +271,7 @@ namespace pEp {
 		in string fpr, 
 		in identity ident
 	);
-
+	
 	basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);
