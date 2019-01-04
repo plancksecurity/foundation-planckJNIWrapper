@@ -59,7 +59,7 @@ android {
     }
 
     dependencies {
-        compile 'commons-io:commons-io:2.4'
+        implementation 'commons-io:commons-io:2.4'
     }
 
     lintOptions {
