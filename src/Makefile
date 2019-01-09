@@ -1,6 +1,6 @@
 LIBRARY=libpEpJNI.a
 SHARED=libpEpJNI.so
-JAR=jniadapter.jar
+JAR=pEp.jar
 include Makefile.conf
 
 CXXFLAGS+=-std=c++14
