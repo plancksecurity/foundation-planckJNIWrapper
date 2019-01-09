@@ -3,7 +3,7 @@ SHARED=libpEpJNI.so
 JAR=pEp.jar
 include Makefile.conf
 
-CXXFLAGS+=-std=c++14
+CXXFLAGS+=-std=c++14 -fPIC
 
 all: $(JAR) $(SHARED)
 
@@ -50,8 +50,8 @@ $(LIBRARY): org_pEp_jniadapter_AbstractEngine.o org_pEp_jniadapter_Engine.o org_
 	ar -r $@ *.o
 
 $(SHARED): $(LIBRARY)
-	$(CXX) $(CXXFLAGS) -shared -o $(SHARED) $(LDFLAGS) -lpEpEngine -lpEpAdapter *.o
-
+	$(CXX) $(CXXFLAGS) -shared -o $(SHARED) $(LDFLAGS) -lpEpEngine $(PEP_ADAPTER_OBJECT_LIB)/*.o *.o
+#FIXME ^ use libpEpAdapter.a instad of the bunch of *.o
 org/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2
 	yml2proc -y gen_java_exceptions.ysl2 $< -o $@
 

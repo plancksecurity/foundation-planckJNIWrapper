@@ -16,8 +16,10 @@ tstylesheet {
             import java.util.Vector;
             import java.util.Date;
             import java.util.HashMap;
+            import java.io.Serializable;
 
-            public class «$cname» implements AutoCloseable {
+            public class «$cname» implements AutoCloseable, Serializable {
+                private static final long serialVersionUID = 2119420428331150924L;
                 private long handle;
 
                 native long init();
@@ -161,7 +163,27 @@ tstylesheet {
                 
                 ||
             }
- 
+            
+            when "$itype != $type"
+            ||
+            private native «$itype» _get«$name»();
+            private native void _set«$name»(«$itype» value);
+            public «$type» get«$name»() {
+                «$itype» res = _get«$name»();
+                if(res != null)
+                    return AbstractEngine.toUTF16(res);
+                else
+                    return null;
+            }
+            public void set«$name»(«$type» value) {
+                if(value != null)
+                    _set«$name»(AbstractEngine.toUTF8(value));
+                else
+                    _set«$name»(new byte[0]);
+            }
+
+            ||
+
             when "$itype != $type"
             ||
             private native «$itype» _get«$name»();

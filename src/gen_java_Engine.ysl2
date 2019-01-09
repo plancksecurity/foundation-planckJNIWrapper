@@ -278,7 +278,12 @@ tstylesheet {
             when "$type = 'string' or $type = 'stringlist'"
                 | ¡$type _«$name» = AbstractEngine.toUTF8(«$name»);
             when "$type = 'identity'"
-                | _Identity _«$name» = new _Identity(«$name»);
+                ||
+		     _Identity _«$name» = null; 
+		     if («$name» != null) {
+		     	_«$name» = new _Identity(«$name»);
+		     }
+		||
         }
     }
 

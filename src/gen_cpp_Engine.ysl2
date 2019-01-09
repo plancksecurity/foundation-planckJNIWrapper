@@ -13,6 +13,7 @@ tstylesheet {
         #include <pEp/message_api.h>
         #include <pEp/blacklist.h>
         #include <pEp/openpgp_compat.h>
+        #include <pEp/key_reset.h>
         #include <pEp/Adapter.hh>
         #include "org_pEp_jniadapter_«@name».h"
         #include "throw_pEp_exception.hh"

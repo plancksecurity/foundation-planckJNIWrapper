@@ -1,7 +1,8 @@
 CLASSPATH=.:../src
+#VM=java -Xcheck:jni -Djava.library.path=../src
 VM=java -Djava.library.path=../src
 
-test: Testing.class
+test: Testing.class SyncCallbacks.class
 	CLASSPATH=$(CLASSPATH) $(VM) Testing
 
 %.class: %.java
