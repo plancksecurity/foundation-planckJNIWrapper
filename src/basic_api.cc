@@ -1,6 +1,6 @@
 #include <pEp/keymanagement.h>
 #include <pEp/blacklist.h>
-#include <pEp/sync.h>
+#include <pEp/Sync.h>
 
 #ifndef ANDROID
 #include <string.h>
