@@ -24,7 +24,7 @@ endif
 JP=$(JAVA_HOME)/bin
 
 # Old versions of a Java distribution have a `javah` binary, new versions do not. This checks whether or not `javah` can be found in the Java distribution found in the directory `$JAVA_HOME`.
-NOT_USED:=$(shell type $(JAVA_HOME)/bin/javah)
+NOT_USED:=$(shell which $(JAVA_HOME)/bin/javah)
 ifeq ($(.SHELLSTATUS),0)
     OLD_JAVA=placeholder
 endif
