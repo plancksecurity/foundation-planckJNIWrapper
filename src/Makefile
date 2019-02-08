@@ -30,7 +30,7 @@ ifeq ($(.SHELLSTATUS),0)
 endif
 
 LIBRARY=libpEpJNI.a
-JAR=jniadapter.jar
+JAR=pEp.jar
 
 ifeq ($(BUILD_FOR),Linux)
     SHARED=libpEpJNI.so
