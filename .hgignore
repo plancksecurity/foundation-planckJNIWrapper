@@ -69,3 +69,4 @@ src/org.tar.gz
 syntax: regexp
 android/external/[^.]*
 
+src/local.conf
