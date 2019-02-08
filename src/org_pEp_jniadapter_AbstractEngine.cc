@@ -6,7 +6,7 @@
 #include <pthread.h>
 #include <pEp/keymanagement.h>
 #include <pEp/message_api.h>
-#include <pEp/Sync.h>
+#include <pEp/sync.h>
 
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
