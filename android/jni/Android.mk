@@ -59,7 +59,7 @@ LOCAL_MODULE     := pEpJNI
 LOCAL_SHARED_LIBRARIES := libgpgme libassuan libcurl libgcrypt libgpg-error
 LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid
 LOCAL_CPP_FEATURES += exceptions
-LOCAL_CFLAGS += -DHAVE_PTHREADS
+LOCAL_CFLAGS += -DHAVE_PTHREADS -DANDROID_STL=c++_shared
 LOCAL_SRC_FILES  := \
 		  ../../src/org_pEp_jniadapter_AbstractEngine.cc \
 		  ../../src/org_pEp_jniadapter_Engine.cc \
@@ -75,6 +75,7 @@ include $(BUILD_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNIAndroidHelper
 LOCAL_SHARED_LIBRARIES := libgpgme
+LOCAL_CFLAGS += -DANDROID_STL=c++_shared
 LOCAL_SRC_FILES  := org_pEp_jniadapter_AndroidHelper.cc
 
 include $(BUILD_SHARED_LIBRARY)
