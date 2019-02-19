@@ -65,6 +65,7 @@ androidTests/gradle/wrapper/gradle-wrapper.properties
 androidTests/gradlew
 androidTests/gradlew.bat
 src/org.tar.gz
+src/local.conf
 
 syntax: regexp
 android/external/[^.]*

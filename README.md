@@ -1,4 +1,5 @@
 # p≡p JNI Adapter
+More complete developer instructions can be found here: [https://dev.pep.foundation/JNI%20Adapter/Tutorial]().
 
 ## Prerequisites
 
