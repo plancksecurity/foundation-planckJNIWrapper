@@ -29,8 +29,10 @@ namespace pEp {
         pEp_cannot_export_key                           > 0x0204
         pEp_cannot_edit_key                             > 0x0205
         pEp_key_unsuitable                              > 0x0206
-        pEp_malformed_key_reset_msg                     > 0x0210
-        pEp_key_not_reset                               > 0x0211
+
+        pEp_key_imported                                > 0x0220
+        pEp_no_key_imported                             > 0x0221
+        pEp_key_import_status_unknown                   > 0x0222
 
         pEp_cannot_find_identity                        > 0x0301
         pEp_cannot_set_person                           > 0x0381
@@ -42,7 +44,7 @@ namespace pEp {
         
         pEp_cannot_find_alias                           > 0x0391
         pEp_cannot_set_alias                            > 0x0392
-        
+
         pEp_unencrypted                                 > 0x0400
         pEp_verified                                    > 0x0401
         pEp_decrypted                                   > 0x0402
@@ -75,6 +77,7 @@ namespace pEp {
         pEp_sync_cannot_encrypt                         > 0x0905
         pEp_sync_no_message_send_callback               > 0x0906
 
+        pEp_sequence_violated                           > 0x0970
         pEp_cannot_increase_sequence                    > 0x0971
 
         pEp_statemachine_error                          > 0x0980
@@ -284,6 +287,7 @@ namespace pEp {
         basic void keyMistrusted(identity ident);
         basic void keyResetTrust(identity ident);
         basic void trustPersonalKey(identity ident);
+        basic void trustOwnKey(identity ident);
         basic void importKey(string key);
         basic void blacklist_add(string fpr);
         basic void blacklist_delete(string fpr);
