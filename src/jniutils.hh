@@ -8,6 +8,7 @@
 #include <pEp/identity_list.h>
 #include <pEp/bloblist.h>
 #include <pEp/message.h>
+#include <pEp/sync_api.h>
 
 #if 0 // Enable if log needed
 #include <android/log.h>
@@ -90,6 +91,8 @@ namespace pEp {
         bloblist_t *to_bloblist(JNIEnv *env, jobject obj);
 
         PEP_enc_format to_EncFormat(JNIEnv *env, jobject obj);
+
+        sync_handshake_result to_SyncHandshakeResult(JNIEnv *env, jobject obj);
     };
 };
 

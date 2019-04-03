@@ -267,12 +267,17 @@ namespace pEp {
                 returns string languagelist
             );
 
-	method key_reset(
-		in string fpr, 
-		in identity ident
-	);
+        method key_reset(
+                in string fpr, 
+                in identity ident
+            );
+
+        method deliverHandshakeResult(
+                in SyncHandshakeResult shr,
+                in identitylist identities
+            );
 	
-	basic string trustwords(identity ident);
+        basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);
         basic identity setOwnKey(identity ident, string fpr);
@@ -285,9 +290,6 @@ namespace pEp {
         basic bool blacklist_is_listed(string fpr);
         basic void config_passive_mode(bool enable);
         basic void config_unencrypted_subject(bool enable);
-        basic void accept_sync_handshake(identity ident);
-        basic void reject_sync_handshake(identity ident);
-        basic void cancel_sync_handshake(identity ident);
         basic string getCrashdumpLog(int maxlines);
 
     };

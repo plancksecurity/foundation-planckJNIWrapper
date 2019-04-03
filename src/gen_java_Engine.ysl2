@@ -70,6 +70,8 @@ tstylesheet {
                     > String 
                 when "name(.) = 'identity'"
                     > Identity 
+                when "name(.) = 'identitylist'"
+                    > IdentityList 
                 when "name(.) = 'bool'"
                     > Boolean 
                 otherwise
@@ -279,11 +281,17 @@ tstylesheet {
                 | ¡$type _«$name» = AbstractEngine.toUTF8(«$name»);
             when "$type = 'identity'"
                 ||
-		     _Identity _«$name» = null; 
-		     if («$name» != null) {
-		     	_«$name» = new _Identity(«$name»);
-		     }
-		||
+                _Identity _«$name» = null; 
+                if («$name» != null) {
+                    _«$name» = new _Identity(«$name»);
+                }
+                ||
+            when "$type = 'identitylist'"
+                ||
+                Vector<_Identity> _«$name» = new Vector<_Identity>();
+                for (Identity i : «$name»)
+                    _«$name».add(new _Identity(i));
+                ||
         }
     }
 
@@ -306,7 +314,7 @@ tstylesheet {
         const "type", "name(*[2])";
         const "name" call "lcase" with "text", "name(*[3])";
 
-        if "$type = 'string' or $type = 'stringlist' or $type = 'identity'"
+        if "$type = 'string' or $type = 'stringlist' or $type = 'identity' or $type = 'identitylist'"
             > _
         > «$name»`if "position()!=last()" > , `
     }

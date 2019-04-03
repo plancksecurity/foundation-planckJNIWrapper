@@ -278,59 +278,6 @@ JNIEXPORT jboolean JNICALL Java_org_pEp_jniadapter_Engine_blacklist_1is_1listed(
     return (jboolean)_listed;
 }
 
-JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_accept_1sync_1handshake(
-        JNIEnv *env,
-        jobject obj,
-        jobject ident
-    )
-
-{
-    pEp_identity *_ident = to_identity(env, ident);
-
-    PEP_STATUS status =
-        ::deliverHandshakeResult(session(), _ident, SYNC_HANDSHAKE_ACCEPTED);
-
-    if (status != PEP_STATUS_OK) {
-        throw_pEp_Exception(env, status);
-        return;
-    }
-}
-
-
-JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_reject_1sync_1handshake(
-        JNIEnv *env,
-        jobject obj,
-        jobject ident
-    )
-{
-    pEp_identity *_ident = to_identity(env, ident);
-    
-    PEP_STATUS status = 
-        ::deliverHandshakeResult(session(), _ident, SYNC_HANDSHAKE_REJECTED);
-
-    if (status != PEP_STATUS_OK) {
-        throw_pEp_Exception(env, status);
-        return;
-    }
-}
-
-JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_cancel_1sync_1handshake(
-        JNIEnv *env,
-        jobject obj,
-        jobject ident
-    )
-{
-    pEp_identity *_ident = to_identity(env, ident);
-    
-    PEP_STATUS status = 
-        ::deliverHandshakeResult(session(), _ident, SYNC_HANDSHAKE_CANCEL);
-
-    if (status != PEP_STATUS_OK) {
-        throw_pEp_Exception(env, status);
-        return;
-    }
-}
-
 JNIEXPORT jbyteArray JNICALL Java_org_pEp_jniadapter_Engine_getCrashdumpLog(
         JNIEnv *env,
         jobject obj,

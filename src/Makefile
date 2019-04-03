@@ -67,7 +67,7 @@ all: $(JAR) $(SHARED)
 .PHONY: gensource
 gensource: $(JAVA_SOURCES) $(C_SOURCES)
 
-$(JAR): $(JAVA_SOURCES)
+$(JAR): gensource
 	$(JP)/javac org/pEp/jniadapter/*.java
 	$(JP)/jar cf $@ org/pEp/jniadapter/*.class
 
@@ -91,7 +91,7 @@ $(LIBRARY): org_pEp_jniadapter_AbstractEngine.o org_pEp_jniadapter_Engine.o org_
 $(SHARED): $(LIBRARY)
 	$(CXX) *.o $(LDFLAGS) $(LDLIBS) -o $@
 
-org/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2
+org/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2 pEp.yml2
 	$(YML2_PROC) -y gen_java_exceptions.ysl2 $< -o $@
 
 org/pEp/jniadapter/Message.java: pEp.yml2 gen_java_Message.ysl2 types_java.ysl2
