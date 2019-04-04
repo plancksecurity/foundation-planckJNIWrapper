@@ -6,7 +6,7 @@ tstylesheet {
     template "/" {
         | package org.pEp.jniadapter;
         | 
-        | public class pEpException extends Exception {
+        | public class pEpException extends RuntimeException {
         |   public pEpException(String message) {
         |     super(message);
         |   }
