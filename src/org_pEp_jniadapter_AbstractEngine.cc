@@ -213,11 +213,6 @@ extern "C" {
     {
         shutdown();
 
-        env->DeleteGlobalRef(identityClass);
-        env->DeleteGlobalRef(signalClass);
-        env->DeleteGlobalRef(engineClass);
-        env->DeleteGlobalRef(obj);
-
         session(pEp::Adapter::release);
         delete o;
     }
