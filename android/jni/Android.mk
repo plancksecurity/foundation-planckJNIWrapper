@@ -1,4 +1,5 @@
 LOCAL_PATH:= $(call my-dir)
+SRC_PATH := $(LOCAL_PATH)/../../../
 ENGINE_PATH := $(LOCAL_PATH)/../../../pEpEngine
 GPGBUILD:= $(LOCAL_PATH)/../external/data/data/security.pEp/app_opt
 
@@ -57,9 +58,9 @@ $(shell sh $(ENGINE_PATH)/build-android/takeOutHeaderFiles.sh $(ENGINE_PATH))
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
 LOCAL_SHARED_LIBRARIES := libgpgme libassuan libcurl libgcrypt libgpg-error
-LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid
+LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid pEpAdapter
 LOCAL_CPP_FEATURES += exceptions
-LOCAL_CFLAGS += -DHAVE_PTHREADS -DANDROID_STL=c++_shared
+LOCAL_CPPFLAGS += -std=c++14 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC
 LOCAL_SRC_FILES  := \
 		  ../../src/org_pEp_jniadapter_AbstractEngine.cc \
 		  ../../src/org_pEp_jniadapter_Engine.cc \
@@ -69,6 +70,7 @@ LOCAL_SRC_FILES  := \
 		  ../../src/jniutils.cc
 
 LOCAL_C_INCLUDES += $(GPGBUILD)/include
+LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SRC_PATH)/libpEpAdapter
 LOCAL_LDLIBS    += -llog
 include $(BUILD_SHARED_LIBRARY)
 
@@ -79,5 +81,8 @@ LOCAL_CFLAGS += -DANDROID_STL=c++_shared
 LOCAL_SRC_FILES  := org_pEp_jniadapter_AndroidHelper.cc
 
 include $(BUILD_SHARED_LIBRARY)
-$(call import-add-path,$(ENGINE_PATH))
-$(call import-module, build-android/jni/)
+$(call import-add-path,$(SRC_PATH))
+$(call import-module, pEpEngine/build-android/jni/)
+$(info $(LOCAL_PATH))
+$(call import-module, libpEpAdapter/build-android/jni/)
+$(info $(LOCAL_PATH))
