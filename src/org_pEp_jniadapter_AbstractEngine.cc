@@ -198,11 +198,11 @@ extern "C" {
         PEP_STATUS status = PEP_STATUS_OK;
 
         #ifdef DISABLE_SYNC
-           _messageToSend = messageToSend;
-           session();
+                _messageToSend = messageToSend;
+                session();
                 
         #else 
-            startup<JNISync>(messageToSend, notifyHandshake, o, &JNISync::startup_sync, &JNISync::shutdown_sync);
+                startup<JNISync>(messageToSend, notifyHandshake, o, &JNISync::startup_sync, &JNISync::shutdown_sync);
         #endif
     }
 
@@ -217,11 +217,6 @@ extern "C" {
         env->DeleteGlobalRef(signalClass);
         env->DeleteGlobalRef(engineClass);
         env->DeleteGlobalRef(obj);
-
-        identityClass = NULL;
-        signalClass = NULL;
-        engineClass = NULL;
-        obj = NULL;
 
         session(pEp::Adapter::release);
         delete o;
