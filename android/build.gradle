@@ -53,7 +53,9 @@ android {
 
             // where to find generated Java source
             java.srcDirs = ['../src', 'src']
-            jniLibs.srcDirs = ['external/data/data/security.pEp/app_opt/lib']
+            //jniLibs.srcDirs = ['../libpEpAdapter/src',
+            //                   '../pEpEngine/build-android/include/pEp',
+            //s                   'external/data/data/security.pEp/app_opt/lib']
             assets.srcDirs = ['assets', 'external/assets']
         }
     }
@@ -108,7 +110,7 @@ android {
 
     task genpEpEngineAsn1Sources(type:Exec, dependsOn: 'genpEpEngineSyncSources') {
         workingDir '../../pEpEngine'
-        commandLine 'make', '-C', 'asn.1', 'generate'
+        commandLine 'make', '-C', 'asn.1'
     }
 
     task cleanGenSource(type:Exec) {
