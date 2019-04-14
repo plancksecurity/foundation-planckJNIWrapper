@@ -153,11 +153,13 @@ namespace pEp {
         sync_notify_init_add_our_device > 1
         sync_notify_init_add_other_device > 2
         sync_notify_init_form_group > 3
-        sync_notify_init_move_our_device > 4
+        // sync_notify_init_move_our_device > 4
         sync_notify_timeout > 5
         sync_notify_accepted_device_added > 6
         sync_notify_accepted_group_created > 7
-        sync_notify_accepted_device_moved > 8
+        // sync_notify_accepted_device_moved > 8
+        sync_notify_sole > 254
+        sync_notify_in_group > 255
     };
 
     interface Engine {
