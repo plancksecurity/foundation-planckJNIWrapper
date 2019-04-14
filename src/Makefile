@@ -64,10 +64,7 @@ C_SOURCES=org_pEp_jniadapter_Engine.cc \
 .PHONY: all
 all: $(JAR) $(SHARED)
 
-.PHONY: gensource
-gensource: $(JAVA_SOURCES) $(C_SOURCES)
-
-$(JAR): gensource
+$(JAR): $(JAVA_SOURCES) $(C_SOURCES)
 	$(JP)/javac org/pEp/jniadapter/*.java
 	$(JP)/jar cf $@ org/pEp/jniadapter/*.class
 
