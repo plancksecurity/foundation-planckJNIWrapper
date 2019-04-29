@@ -12,11 +12,11 @@ NDK_ABI ?= arm
 NDK_TOOLCHAIN_VERSION ?= clang
 APP_ABI ?= armeabi-v7a
 APP_PLATFORM ?= android-18
-PEP_PACKAGE_NAME ?= com.pep.k9
+PEP_PACKAGE_NAME ?= security.pEp
 
 all: build assets
 
-build: showsetup libetpan-build gnupg-install gpgme-install uuid-install
+build: showsetup libetpan-build gnupg-install gpgme-install uuid-install uuid-prebuild
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
@@ -65,9 +65,10 @@ AS := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
 CC := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
 CXX := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang++
 RANLIB := $(ANDROID_NDK_HOME)/bin/$(HOST)-ranlib
+STRIP := $(ANDROID_NDK_HOME)/bin/$(HOST)-strip
 
 #-D_FILE_OFFSET_BITS=64 -DLARGEFILE_SOURCE=1
-CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC
+CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC -std=c99
 LDFLAGS += -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie
 
 # change 'release' to 'debug' for unoptimized debug builds
@@ -311,12 +312,12 @@ curl-install: $(LOCAL)/lib/libcurl.so
 #EXTERNAL_GIT_REPOS += libiconv|git://git.savannah.gnu.org/libiconv.git?5365cc8
 
 # using released package instead
-libiconv-1.14.tar.gz:
-	wget https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+libiconv-1.15.tar.gz:
+	wget https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.15.tar.gz
 
-libiconv.src.stamp: libiconv-1.14.tar.gz
-	tar xvfz libiconv-1.14.tar.gz
-	mv libiconv-1.14 libiconv
+libiconv.src.stamp: libiconv-1.15.tar.gz
+	tar xvfz libiconv-1.15.tar.gz
+	mv libiconv-1.15 libiconv
 	touch $@
 
 libiconv-src: libiconv.src.stamp
@@ -500,8 +501,15 @@ $(LOCAL)/lib/libuuid.so: uuid/.libs/libuuid.so
 
 uuid-build: uuid/.libs/libuuid.so
 
+uuid-prebuild: uuid/jni/Android.mk uuid/Makefile
+
 uuid-install: $(LOCAL)/lib/libuuid.so
 
+uuid/jni/Android.mk: uuid.src.stamp
+	mkdir -p uuid/jni
+	cp libuuid.Android.mk uuid/jni/Android.mk
+
+#
 #------------------------------------------------------------------------------#
 # assets for Android app
 
@@ -597,11 +605,11 @@ clean-all: clean
 	libksba-build libksba-install \
 	libnpth-build libnpth-install \
 	libiconv-build libiconv-install \
-	uuid-build uuid-install \
+	uuid-build uuid-prebuild uuid-install \
 	gnupg-build  gnupg-install\
 	gpgme-build  gpgme-install\
 	curl-build curl-install \
-	assets clean-assets clean-install \
-    $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN) \
+	assets \
+    $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS) \
 	showsetup
 
