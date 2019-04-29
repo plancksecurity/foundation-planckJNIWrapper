@@ -16,7 +16,7 @@ PEP_PACKAGE_NAME ?= security.pEp
 
 all: build assets
 
-build: showsetup libetpan-build gnupg-install gpgme-install uuid-install uuid-prebuild
+build: showsetup libetpan-build gnupg-install gpgme-install uuid-install uuid-prebuild sequoia-build
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
@@ -509,7 +509,95 @@ uuid/jni/Android.mk: uuid.src.stamp
 	mkdir -p uuid/jni
 	cp libuuid.Android.mk uuid/jni/Android.mk
 
-#
+
+#------------------------------------------------------------------------------#
+# Sequoia
+OPENSSL_VERSION=1.1.1a
+GMP_VERSION=6.1.2
+NETTLE_VERSION=3.4.1
+
+sequoia-build: gmp-install nettle-install
+#------------------------------------------------------------------------------#
+# GMP
+
+gmp-$(GMP_VERSION).tar.bz2:
+	wget -nc https://gmplib.org/download/gmp/gmp-$(GMP_VERSION).tar.bz2
+	md5sum -c gmp-$(GMP_VERSION).tar.bz2.md5
+
+gmp.src.stamp: gmp-$(GMP_VERSION).tar.bz2
+	tar xvf gmp-$(GMP_VERSION).tar.bz2
+	mv gmp-$(GMP_VERSION) gmp
+	touch $@
+
+gmp-src: gmp.src.stamp
+
+gmp-clean:
+	rm -rf gmp
+	rm -rf gmp.src.stamp
+
+EXTERNAL_SRCS += gmp-src
+EXTERNAL_SRCS_CLEAN += gmp-clean
+
+gmp/Makefile: gmp.src.stamp
+	cd gmp && \
+		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+			./configure \
+				--host=$(HOST) \
+				--prefix=$(LOCAL)
+
+gmp/.libs/libgmp.so: gmp/Makefile
+	$(MAKE) -C gmp
+
+$(LOCAL)/lib/libgmp.so: gmp/.libs/libgmp.so
+	$(MAKE) -C gmp DESTDIR=$(DESTDIR) prefix=$(prefix) install
+	ls -l $(LOCAL)/lib/libgmp.so
+
+gmp-build: gmp/.libs/libgmp.so
+
+gmp-install: $(LOCAL)/lib/libgmp.so
+
+
+#------------------------------------------------------------------------------#
+# NETTLE
+
+nettle-$(NETTLE_VERSION).tar.bz2: $(LOCAL)/lib/libgmp.so
+	wget -nc https://ftp.gnu.org/gnu/nettle/nettle-$(NETTLE_VERSION).tar.gz
+	md5sum -c nettle-$(NETTLE_VERSION).tar.gz.md5
+
+nettle.src.stamp: nettle-$(NETTLE_VERSION).tar.gz
+	tar xvf nettle-$(NETTLE_VERSION).tar.gz
+	mv nettle-$(NETTLE_VERSION) nettle
+	touch $@
+
+nettle-src: nettle.src.stamp
+
+nettle-clean:
+	rm -rf nettle
+	rm -rf nettle.src.stamp
+
+EXTERNAL_SRCS += nettle-src
+EXTERNAL_SRCS_CLEAN += nettle-clean
+
+nettle/Makefile: nettle.src.stamp
+	cd nettle && \
+		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+			./configure \
+				--with-lib-path=$(LOCAL)/lib \
+                --with-include-path=$(LOCAL)/include \
+				--host=$(HOST) \
+				--prefix=$(LOCAL)
+
+nettle/libnettle.so: nettle/Makefile
+	$(MAKE) -C nettle
+
+$(LOCAL)/lib/libnettle.so: nettle/libnettle.so
+	$(MAKE) -C nettle DESTDIR=$(DESTDIR) prefix=$(prefix) install
+	ls -l $(LOCAL)/lib/libnettle.so
+
+nettle-build: nettle/libnettle.so
+
+nettle-install: $(LOCAL)/lib/libnettle.so
+
 #------------------------------------------------------------------------------#
 # assets for Android app
 
@@ -607,6 +695,9 @@ clean-all: clean
 	libiconv-build libiconv-install \
 	uuid-build uuid-prebuild uuid-install \
 	gnupg-build  gnupg-install\
+	gmp-build  gmp-install \
+	sequoia-build \
+	nettle-build  nettle-install \
 	gpgme-build  gpgme-install\
 	curl-build curl-install \
 	assets \
