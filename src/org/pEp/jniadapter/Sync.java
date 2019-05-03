@@ -22,24 +22,19 @@ public interface Sync {
 
     public class DefaultCallback 
             implements Sync.MessageToSendCallback, Sync.NotifyHandshakeCallback,  Sync.NeedsFastPollCallback {
-        //FIXME: Find where this Exceptions ara catched as they are called but on 
-        //Testing.java there is no crash not crashing
         @Override
         public void needsFastPollCallFromC(Boolean fast_poll_needed) {
-            System.out.println("Throwing illegal");
-            throw new RuntimeException("Fast poll Callback not set");
+            System.out.println("Need fast Poll");
         }
 
         @Override
         public void messageToSend(Message message) {
-            System.out.println("Throwing illegal");
-            throw new RuntimeException("Message to send not set");
+            System.out.println("messageToSend Defualt Callback");
         }
         
         @Override
         public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
-            System.out.println("Throwing illegal");
-            throw new RuntimeException("Notify Handshake not set");
+            System.out.println("notifyHandshake Default Callback");
         }
     }
 
