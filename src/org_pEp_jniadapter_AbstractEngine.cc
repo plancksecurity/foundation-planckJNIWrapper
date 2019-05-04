@@ -40,12 +40,20 @@ namespace pEp {
     JavaVM *jvm= nullptr;
 
     std::mutex mutex_obj;
-    jobject obj = nullptr;
 
+    jfieldID field_value = nullptr;
     jmethodID messageConstructorMethodID = nullptr;
     jmethodID messageToSendMethodID = nullptr;
     jmethodID notifyHandShakeMethodID = nullptr;
     jmethodID needsFastPollMethodID = nullptr; 
+    jmethodID method_values = nullptr;
+
+    jobject obj = nullptr;
+
+    jclass messageClass = nullptr;
+    jclass identityClass = nullptr;;
+    jclass signalClass = nullptr;
+    jclass engineClass = nullptr;
 
     class JNISync {
     public:
@@ -59,16 +67,46 @@ namespace pEp {
             return thread_env;
         }
 
-        virtual void startup_sync()
+        void startup_sync()
         {
 
         }
 
-        virtual void shutdown_sync()
+        void shutdown_sync()
         {
             jvm->DetachCurrentThread();
         }
     } o;
+
+    void jni_init() {
+        JNIEnv *_env = o.env();
+
+        messageClass = reinterpret_cast<jclass>(
+                _env->NewGlobalRef(findClass(_env, "org/pEp/jniadapter/Message")));
+        identityClass = reinterpret_cast<jclass>(
+            _env->NewGlobalRef(findClass(_env, "org/pEp/jniadapter/_Identity")));
+        signalClass = reinterpret_cast<jclass>(
+                _env->NewGlobalRef(findClass(_env, "org/pEp/jniadapter/SyncHandshakeSignal")));
+        engineClass = reinterpret_cast<jclass>(_env->NewGlobalRef(findClass(_env, "org/pEp/jniadapter/Engine")));
+
+        messageConstructorMethodID = _env->GetMethodID(messageClass, "<init>", "(J)V");
+        messageToSendMethodID = _env->GetMethodID(
+            engineClass,
+            "messageToSendCallFromC", 
+            "(Lorg/pEp/jniadapter/Message;)I");
+        needsFastPollMethodID = _env->GetMethodID(
+            engineClass,
+            "needsFastPollCallFromC",
+            "(Z)I");
+        notifyHandShakeMethodID = _env->GetMethodID(
+            engineClass,
+            "notifyHandshakeCallFromC",
+            "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/SyncHandshakeSignal;)I");
+
+        method_values = o.env()->GetStaticMethodID(signalClass, "values",
+                    "()[Lorg/pEp/jniadapter/SyncHandshakeSignal;");
+        field_value = o.env()->GetFieldID(signalClass, "value", "I");
+    }
 
     PEP_STATUS messageToSend(message *msg)
     {
@@ -76,14 +114,18 @@ namespace pEp {
 
         debug_log << "\n############### messageToSend() called\n";
         jobject msg_ = nullptr;
-        jint result = 0;
 
-        jclass messageClass = reinterpret_cast<jclass>(
-                o.env()->NewGlobalRef(findClass(o.env(), "org/pEp/jniadapter/Message")));
+        assert(messageClass && messageConstructorMethodID && obj && messageToSendMethodID);
+
         msg_ = o.env()->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
-        result = o.env()->CallIntMethod(obj, messageToSendMethodID, msg_);
 
-        return (PEP_STATUS) result;
+        PEP_STATUS status = (PEP_STATUS) o.env()->CallIntMethod(obj, messageToSendMethodID, msg_);
+        if (o.env()->ExceptionCheck()) {
+            status = PEP_UNKNOWN_ERROR;
+            o.env()->ExceptionClear();
+        }
+
+        return status;
     }
 
     PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handshake_signal signal)
@@ -94,27 +136,21 @@ namespace pEp {
         jobject me_ = nullptr;
         jobject partner_ = nullptr;
 
-        jclass identityClass = reinterpret_cast<jclass>(
-                o.env()->NewGlobalRef(findClass(o.env(), "org/pEp/jniadapter/_Identity")));
-
         me_ = from_identity(o.env(), me, identityClass);
         partner_ = from_identity(o.env(), partner, identityClass);
 
         jobject signal_ = nullptr;
         {
-            jclass signalClass = reinterpret_cast<jclass>(
-                    o.env()->NewGlobalRef(findClass(o.env(), "org/pEp/jniadapter/SyncHandshakeSignal")));
-
             assert(signalClass);
-            jmethodID method_values = o.env()->GetStaticMethodID(signalClass, "values",
-                    "()[Lorg/pEp/jniadapter/SyncHandshakeSignal;");
             assert(method_values);
-            jfieldID field_value = o.env()->GetFieldID(signalClass, "value", "I");
             assert(field_value);
         
             jobjectArray values = (jobjectArray) o.env()->CallStaticObjectMethod(signalClass,
                     method_values);
-            assert(values);
+            if (o.env()->ExceptionCheck()) {
+                o.env()->ExceptionClear();
+                return PEP_UNKNOWN_ERROR;
+            }
         
             jsize values_size = o.env()->GetArrayLength(values);
             for (jsize i = 0; i < values_size; i++) {
@@ -128,9 +164,15 @@ namespace pEp {
             }
         }
 
-        jint result = o.env()->CallIntMethod(obj, notifyHandShakeMethodID, me_, partner_, signal_);
+        assert(obj && notifyHandShakeMethodID);
 
-        return (PEP_STATUS) result;
+        PEP_STATUS status = (PEP_STATUS) o.env()->CallIntMethod(obj, notifyHandShakeMethodID, me_, partner_, signal_);
+        if (o.env()->ExceptionCheck()) {
+            o.env()->ExceptionClear();
+            return PEP_UNKNOWN_ERROR;
+        }
+
+        return status;
     }
 }
 
@@ -142,55 +184,22 @@ extern "C" {
             jobject me
         )
     {
-        if (first)
+        if (first) {
             env->GetJavaVM(&jvm);
-        obj = env->NewGlobalRef(me);
-        jclass _clazz = env->GetObjectClass(obj);
-
-        jclass engineClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/Engine")));
-
-        if (!messageConstructorMethodID) {
-            jclass messageClass = reinterpret_cast<jclass>(
-                    env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/Message")));
-            messageConstructorMethodID = env->GetMethodID(messageClass, "<init>", "(J)V");
-        }
-        
-        if (!messageToSendMethodID) {
-            messageToSendMethodID = env->GetMethodID(
-                engineClass,
-                "messageToSendCallFromC", 
-                "(Lorg/pEp/jniadapter/Message;)I");
-            assert(messageToSendMethodID);
+            jni_init();
+            obj = env->NewGlobalRef(me);
         }
 
-        if (!needsFastPollMethodID) {
-            needsFastPollMethodID = env->GetMethodID(
-        	    engineClass,
-                "needsFastPollCallFromC",
-                "(Z)I");
-            assert(needsFastPollMethodID);
-        }
-
-        if (!notifyHandShakeMethodID) {
-            notifyHandShakeMethodID = env->GetMethodID(
-                engineClass,
-                "notifyHandshakeCallFromC",
-                "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/SyncHandshakeSignal;)I");
-            assert(notifyHandShakeMethodID);
-          }
-
-        thread_local static PEP_SESSION _session = nullptr;
-        PEP_STATUS status = PEP_STATUS_OK;
 #ifdef DISABLE_SYNC
         _messageToSend = messageToSend;
         session();
 #else 
         if (first) {
-            first = false;
             debug_log << "######## starting sync\n";
             startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::startup_sync, &JNISync::shutdown_sync);
         }
 #endif
+        first = false;
     }
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_release(
@@ -198,9 +207,7 @@ extern "C" {
             jobject me
         )
     {
-        shutdown();
         session(pEp::Adapter::release);
-        env->DeleteGlobalRef(obj);
     }
 
     int examine_identity(pEp_identity *ident, void *arg)

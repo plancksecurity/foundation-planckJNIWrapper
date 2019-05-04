@@ -103,7 +103,9 @@ namespace pEp {
 
             env->DeleteLocalRef(clazz);
 
-            return env->CallIntMethod(obj, method);
+            jint result = env->CallIntMethod(obj, method);
+            env->ExceptionCheck(); // handle exception in Java
+            return result;
         }
 
         jlong callLongMethod(
@@ -125,7 +127,9 @@ namespace pEp {
 
             env->DeleteLocalRef(clazz);
 
-            return env->CallLongMethod(obj, method);
+            jlong result = env->CallLongMethod(obj, method);
+            env->ExceptionCheck(); // handle exception in Java
+            return result;
         }
 
         jobject callObjectMethod(
@@ -149,7 +153,9 @@ namespace pEp {
 
             env->DeleteLocalRef(clazz);
 
-            return env->CallObjectMethod(obj, method, index);
+            jobject result = env->CallObjectMethod(obj, method, index);
+            env->ExceptionCheck(); // handle exception in Java
+            return result;
         }
 
         jboolean callBooleanMethod(
@@ -173,7 +179,9 @@ namespace pEp {
 
             env->DeleteLocalRef(clazz);
 
-            return env->CallBooleanMethod(obj, method, o);
+            jboolean result = env->CallBooleanMethod(obj, method, o);
+            env->ExceptionCheck(); // handle exception in Java
+            return result;
         }
 
         jint outOfMemory(JNIEnv *env)
@@ -190,12 +198,12 @@ namespace pEp {
         {
             assert(env);
             jclass clazz = findClass(env, "java/lang/Integer");
+
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "(I)V");
             assert(constructor);
+
             jobject obj = env->NewObject(clazz, constructor, val);
             assert(obj);
-
-            env->DeleteLocalRef(clazz);
             return obj;
         }
 

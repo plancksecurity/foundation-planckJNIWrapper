@@ -183,6 +183,9 @@ tstylesheet {
                     jobjectArray values = (jobjectArray) env->CallStaticObjectMethod(clazz_«$ljtype»,
                             method_values);
                     assert(values);
+                    if (env->ExceptionCheck()) {
+                        return nullptr; // handle exception in Java
+                    }
 
                     jsize values_size = env->GetArrayLength(values);
                     for (jsize i = 0; i < values_size; i++) {

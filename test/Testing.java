@@ -2,8 +2,10 @@ import org.pEp.jniadapter.*;
 import java.util.Vector;
 import java.net.URL;
 import java.net.URLClassLoader;
-class Testing {
+import java.lang.Thread;
+import java.lang.InterruptedException;
 
+class Testing {
     public void printClassPath() {
         ClassLoader cl = ClassLoader.getSystemClassLoader();
 
@@ -13,6 +15,7 @@ class Testing {
         	System.out.println(url.getFile());
         }
     }
+
     public static void main(String[] args) {
         Engine e;
 
@@ -40,7 +43,6 @@ class Testing {
         System.out.print("Keys generated: ");
         System.out.println(user.fpr);
 
-       
         // trustwords
         Identity vb = new Identity();
         vb.fpr = "DB4713183660A12ABAFA7714EBE90D44146F62F4";
@@ -77,7 +79,6 @@ class Testing {
             ex.printStackTrace();
         }
 
-        
         System.out.println(enc.getLongmsg());
         Vector<Blob> attachments = enc.getAttachments();
         System.out.println(e.toUTF16(attachments.get(1).data));
@@ -103,16 +104,24 @@ class Testing {
         
         System.out.println(result.dst.getShortmsg());
         System.out.println(result.dst.getLongmsg());
-	System.out.println("TEST DONE - FINISHED");
+        System.out.println("TEST DONE - FINISHED");
 
-	try {
-		e.key_reset(null, null);
-	} 
-	catch (pEpException ex) {
-		System.out.println("cannot reset all own keys");
-        	ex.printStackTrace();
-	}
-	System.exit(0);
+        try {
+            e.key_reset(null, null);
+        } 
+        catch (pEpException ex) {
+            System.out.println("cannot reset all own keys");
+                ex.printStackTrace();
+        }
+
+//         try {
+//             Thread.sleep(1000);
+//         }
+//         catch (InterruptedException ex) {
+// 
+//         }
+
+        System.exit(0);
     }
 
     
