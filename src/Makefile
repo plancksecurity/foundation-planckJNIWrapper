@@ -7,13 +7,13 @@ include Makefile.conf
 
 ifneq ($(wildcard local.conf),)
     $(info ================================================)
-    $(info Overrides in \`local.conf\` are used.)
+    $(info Overrides in `local.conf` are used.)
     $(info ================================================)
 endif
 
 ifdef BUILD_CONFIG
     $(info ================================================)
-    $(info Overrides in \`$(BUILD_CONFIG)\` are used.)
+    $(info Overrides in `$(BUILD_CONFIG)` are used.)
     $(info ================================================)
 endif
 

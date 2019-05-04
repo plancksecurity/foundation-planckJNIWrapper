@@ -3,7 +3,7 @@ CLASSPATH=.:../src
 VM=java -Djava.library.path=../src
 
 test: Testing.class SyncCallbacks.class
-	CLASSPATH=$(CLASSPATH) $(VM) Testing
+	HOME=$(PWD) CLASSPATH=$(CLASSPATH) $(VM) Testing
 
 %.class: %.java
 	CLASSPATH=$(CLASSPATH) javac $<
@@ -13,3 +13,4 @@ test: Testing.class SyncCallbacks.class
 clean:
 	rm -f *.class
 	rm -f *.log
+	rm -f *.pEp_*

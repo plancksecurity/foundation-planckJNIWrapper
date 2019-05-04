@@ -1,10 +1,15 @@
 #include "org_pEp_jniadapter_AbstractEngine.h"
 
-#ifndef ANDROID
 #ifndef NDEBUG
-#include <fstream>
-std::ofstream debug_log("debug.log");
-#endif
+#include <iostream>
+auto& debug_log = std::cerr;
+#else
+// the compiler should optimize this away
+static struct _debug_log {
+    _debug_log& operator<<(const char*) { return *this; }
+    _debug_log& operator<<(int) { return *this; }
+    _debug_log& operator<<(double) { return *this; }
+} debug_log;
 #endif
 
 #include <stdexcept>
@@ -25,22 +30,17 @@ std::ofstream debug_log("debug.log");
 #define ATTACH_CURRENT_THREAD(env, args) jvm->AttachCurrentThread((void **) &env, args);
 #endif
 
-
 namespace pEp {
     using namespace pEp::JNIAdapter;
     using namespace pEp::Adapter;
     using namespace utility;
 
-    JavaVM *jvm= nullptr;
-    thread_local JNIEnv *thread_env = nullptr;
-    JNIEnv *first_env = nullptr;
-    jobject obj = nullptr;
-    jclass _clazz = nullptr;
+    bool first = true;
 
-    jclass messageClass = nullptr;
-    jclass identityClass = nullptr;
-    jclass signalClass = nullptr;
-    jclass engineClass = nullptr;
+    JavaVM *jvm= nullptr;
+
+    std::mutex mutex_obj;
+    jobject obj = nullptr;
 
     jmethodID messageConstructorMethodID = nullptr;
     jmethodID messageToSendMethodID = nullptr;
@@ -51,78 +51,76 @@ namespace pEp {
     public:
         JNIEnv * env()
         {
-            JNIEnv *_env;
-
-            if (on_sync_thread()) {
-            // FIXME: REview if this is the way to go or not
-                int getEnvStat = jvm->GetEnv((void **) &_env, JNI_VERSION_1_6);
-                if (getEnvStat == JNI_EDETACHED) {
-                    ATTACH_CURRENT_THREAD(_env, nullptr);
-                }
-            }
-            else {
-                if (!thread_env) {
-                    ATTACH_CURRENT_THREAD(thread_env, nullptr);
-                }
-                _env = thread_env;
-            }
-
-            return _env;
+            JNIEnv *thread_env = nullptr;
+            int status = jvm->GetEnv((void**)&thread_env, JNI_VERSION_1_6);
+            if (status < 0)
+                status = ATTACH_CURRENT_THREAD(thread_env, nullptr);
+            assert(status >= 0);
+            return thread_env;
         }
 
-        void startup_sync()
+        virtual void startup_sync()
         {
 
         }
 
-        void shutdown_sync()
+        virtual void shutdown_sync()
         {
-            env()->DeleteGlobalRef(messageClass);
             jvm->DetachCurrentThread();
         }
-    };
-
-    JNISync *o = nullptr;
+    } o;
 
     PEP_STATUS messageToSend(message *msg)
     {
+        std::lock_guard<std::mutex> l(mutex_obj);
+
+        debug_log << "\n############### messageToSend() called\n";
         jobject msg_ = nullptr;
         jint result = 0;
 
-        if (!o)
-            o = new JNISync();
-        msg_ = o->env()->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
-        result = o->env()->CallIntMethod(obj, messageToSendMethodID, msg_);
+        jclass messageClass = reinterpret_cast<jclass>(
+                o.env()->NewGlobalRef(findClass(o.env(), "org/pEp/jniadapter/Message")));
+        msg_ = o.env()->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
+        result = o.env()->CallIntMethod(obj, messageToSendMethodID, msg_);
 
         return (PEP_STATUS) result;
     }
 
     PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handshake_signal signal)
     {
+        std::lock_guard<std::mutex> l(mutex_obj);
+
+        debug_log << "\n############### notifyHandshake() called\n";
         jobject me_ = nullptr;
         jobject partner_ = nullptr;
 
-        me_ = from_identity(o->env(), me, identityClass);
-        partner_ = from_identity(o->env(), partner, identityClass);
+        jclass identityClass = reinterpret_cast<jclass>(
+                o.env()->NewGlobalRef(findClass(o.env(), "org/pEp/jniadapter/_Identity")));
+
+        me_ = from_identity(o.env(), me, identityClass);
+        partner_ = from_identity(o.env(), partner, identityClass);
 
         jobject signal_ = nullptr;
         {
+            jclass signalClass = reinterpret_cast<jclass>(
+                    o.env()->NewGlobalRef(findClass(o.env(), "org/pEp/jniadapter/SyncHandshakeSignal")));
+
             assert(signalClass);
-            jmethodID method_values = o->env()->GetStaticMethodID(signalClass, "values",
+            jmethodID method_values = o.env()->GetStaticMethodID(signalClass, "values",
                     "()[Lorg/pEp/jniadapter/SyncHandshakeSignal;");
             assert(method_values);
-            jfieldID field_value = o->env()->GetFieldID(signalClass, "value", "I");
+            jfieldID field_value = o.env()->GetFieldID(signalClass, "value", "I");
             assert(field_value);
         
-            jobjectArray values = (jobjectArray) o->env()->CallStaticObjectMethod(signalClass,
+            jobjectArray values = (jobjectArray) o.env()->CallStaticObjectMethod(signalClass,
                     method_values);
             assert(values);
         
-            jsize values_size = o->env()->GetArrayLength(values);
+            jsize values_size = o.env()->GetArrayLength(values);
             for (jsize i = 0; i < values_size; i++) {
-                jobject element = o->env()->GetObjectArrayElement(values, i);
+                jobject element = o.env()->GetObjectArrayElement(values, i);
                 assert(element);
-                jint value = o->env()->GetIntField(element, field_value);
+                jint value = o.env()->GetIntField(element, field_value);
                 if (value == (jint) signal) {
                     signal_ = element;
                     break;
@@ -130,7 +128,7 @@ namespace pEp {
             }
         }
 
-        jint result = o->env()->CallIntMethod(obj, notifyHandShakeMethodID, me_, partner_, signal_);
+        jint result = o.env()->CallIntMethod(obj, notifyHandShakeMethodID, me_, partner_, signal_);
 
         return (PEP_STATUS) result;
     }
@@ -144,31 +142,18 @@ extern "C" {
             jobject me
         )
     {
-        if (!first_env)
-            first_env = env;
-
-        env->GetJavaVM(&jvm);
-        thread_env = env;
+        if (first)
+            env->GetJavaVM(&jvm);
         obj = env->NewGlobalRef(me);
-        _clazz = env->GetObjectClass(obj);
+        jclass _clazz = env->GetObjectClass(obj);
 
-        if (!o)
-            o = new JNISync();
+        jclass engineClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/Engine")));
 
-        if (!messageClass)
-            messageClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/Message")));
-
-        if (!identityClass)
-            identityClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/_Identity")));
-
-        if (!signalClass)
-            signalClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/SyncHandshakeSignal")));
-
-        if (!engineClass)
-            engineClass = reinterpret_cast<jclass>(env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/Engine")));
-
-        if (!messageConstructorMethodID)
+        if (!messageConstructorMethodID) {
+            jclass messageClass = reinterpret_cast<jclass>(
+                    env->NewGlobalRef(findClass(env, "org/pEp/jniadapter/Message")));
             messageConstructorMethodID = env->GetMethodID(messageClass, "<init>", "(J)V");
+        }
         
         if (!messageToSendMethodID) {
             messageToSendMethodID = env->GetMethodID(
@@ -196,14 +181,16 @@ extern "C" {
 
         thread_local static PEP_SESSION _session = nullptr;
         PEP_STATUS status = PEP_STATUS_OK;
-
-        #ifdef DISABLE_SYNC
-                _messageToSend = messageToSend;
-                session();
-                
-        #else 
-                startup<JNISync>(messageToSend, notifyHandshake, o, &JNISync::startup_sync, &JNISync::shutdown_sync);
-        #endif
+#ifdef DISABLE_SYNC
+        _messageToSend = messageToSend;
+        session();
+#else 
+        if (first) {
+            first = false;
+            debug_log << "######## starting sync\n";
+            startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::startup_sync, &JNISync::shutdown_sync);
+        }
+#endif
     }
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_release(
@@ -212,9 +199,8 @@ extern "C" {
         )
     {
         shutdown();
-
         session(pEp::Adapter::release);
-        delete o;
+        env->DeleteGlobalRef(obj);
     }
 
     int examine_identity(pEp_identity *ident, void *arg)
@@ -248,7 +234,6 @@ extern "C" {
         }
 
         delete queue;
-
         return (void *) status;
     }
 
