@@ -114,17 +114,29 @@ class Testing {
                 ex.printStackTrace();
         }
 
-//         try {
-//             Thread.sleep(1000);
-//         }
-//         catch (InterruptedException ex) {
-// 
-//         }
+        e.startSync();
+
+        // Keygen
+        System.out.println("Generating keys: ");
+        Identity user2 = new Identity();
+        user2.user_id = "pEp_own_userId";
+        user2.me = true;
+        user2.username = "Test User 2";
+        user2.address = "jniTestUser2@peptest.ch";
+        user2 = e.myself(user2);
+        System.out.print("Keys generated: ");
+        System.out.println(user2.fpr);
+
+        // it's not necessary - you can just shutdown Sync and that's it
+        // but for this test give sync a chance to process all messages
+        try {
+            Thread.sleep(200);
+        }
+        catch (InterruptedException ex) { }
+
+        e.stopSync();
 
         System.exit(0);
     }
-
-    
-        
 }
 

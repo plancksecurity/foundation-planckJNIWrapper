@@ -24,12 +24,6 @@ static struct _debug_log {
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
 
-#ifdef ANDROID
-#define ATTACH_CURRENT_THREAD(env, args) jvm->AttachCurrentThread(&env, args);
-#else
-#define ATTACH_CURRENT_THREAD(env, args) jvm->AttachCurrentThread((void **) &env, args);
-#endif
-
 namespace pEp {
     using namespace pEp::JNIAdapter;
     using namespace pEp::Adapter;
@@ -61,8 +55,13 @@ namespace pEp {
         {
             JNIEnv *thread_env = nullptr;
             int status = jvm->GetEnv((void**)&thread_env, JNI_VERSION_1_6);
-            if (status < 0)
-                status = ATTACH_CURRENT_THREAD(thread_env, nullptr);
+            if (status < 0) {
+#ifdef ANDROID
+                status = jvm->AttachCurrentThread(&thread_env, nullptr);
+#else
+                status = jvm->AttachCurrentThread((void **) &thread_env, nullptr);
+#endif
+            }
             assert(status >= 0);
             return thread_env;
         }
@@ -188,18 +187,10 @@ extern "C" {
             env->GetJavaVM(&jvm);
             jni_init();
             obj = env->NewGlobalRef(me);
+            _messageToSend = messageToSend;
         }
-
-#ifdef DISABLE_SYNC
-        _messageToSend = messageToSend;
-        session();
-#else 
-        if (first) {
-            debug_log << "######## starting sync\n";
-            startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::startup_sync, &JNISync::shutdown_sync);
-        }
-#endif
         first = false;
+        session();
     }
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_release(
@@ -314,6 +305,23 @@ extern "C" {
         queue->push_front(nullptr);
         pthread_join(*thread, nullptr);
         free(thread);
+    }
+
+    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_startSync(
+            JNIEnv *env,
+            jobject obj
+        )
+    {
+        debug_log << "######## starting sync\n";
+        startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::startup_sync, &JNISync::shutdown_sync);
+    }
+
+    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_stopSync(
+            JNIEnv *env,
+            jobject obj
+        )
+    {
+        shutdown();
     }
 
 } // extern "C"

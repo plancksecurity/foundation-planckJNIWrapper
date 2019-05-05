@@ -13,4 +13,6 @@ test: Testing.class SyncCallbacks.class
 clean:
 	rm -f *.class
 	rm -f *.log
-	rm -f *.pEp_*
+	rm -f .pEp_*
+	rm -Rf .gnupg
+	rm -Rf .lldb

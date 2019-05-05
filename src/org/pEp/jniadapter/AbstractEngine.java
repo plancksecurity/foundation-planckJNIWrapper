@@ -39,6 +39,9 @@ abstract class AbstractEngine implements AutoCloseable {
     public native void startKeyserverLookup();
     public native void stopKeyserverLookup();
 
+    public native void startSync();
+    public native void stopSync();
+
     public static byte[] toUTF8(String str) {
         if (str == null)
             return null;
