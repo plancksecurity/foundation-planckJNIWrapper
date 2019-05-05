@@ -3,7 +3,7 @@ VM=java -Xcheck:jni -Djava.library.path=../src
 #VM=lldb java -- -Xcheck:jni -Djava.library.path=../src
 
 test: Testing.class SyncCallbacks.class
-	HOME=$(PWD) CLASSPATH=$(CLASSPATH) $(VM) Testing
+	HOME=$(PWD) CLASSPATH=$(CLASSPATH) time $(VM) Testing
 
 %.class: %.java
 	CLASSPATH=$(CLASSPATH) javac $<
