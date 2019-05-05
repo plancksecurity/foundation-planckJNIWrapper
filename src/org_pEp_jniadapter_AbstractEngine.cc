@@ -66,12 +66,12 @@ namespace pEp {
             return thread_env;
         }
 
-        void startup_sync()
+        void onSyncStartup()
         {
-
+            env();
         }
 
-        void shutdown_sync()
+        void onSyncShutdown()
         {
             jvm->DetachCurrentThread();
         }
@@ -184,12 +184,12 @@ extern "C" {
         )
     {
         if (first) {
+            first = false;
             env->GetJavaVM(&jvm);
             jni_init();
             obj = env->NewGlobalRef(me);
             _messageToSend = messageToSend;
         }
-        first = false;
         session();
     }
 
@@ -313,7 +313,7 @@ extern "C" {
         )
     {
         debug_log << "######## starting sync\n";
-        startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::startup_sync, &JNISync::shutdown_sync);
+        startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::onSyncStartup, &JNISync::onSyncShutdown);
     }
 
     JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_stopSync(
