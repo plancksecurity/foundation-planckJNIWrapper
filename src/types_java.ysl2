@@ -15,6 +15,7 @@ function "toJava" {
         when "$type='identitylist'" > Vector<Identity>
         when "$type='stringlist'" > Vector<String>
         when "$type='stringpairlist'" > ArrayList<Pair<String, String>>
+        when "$type='bytearray'" > byte[]
 
         when "$type='Color'" > Color
         when "$type='DecryptFlags'" > DecryptFlags
@@ -31,6 +32,7 @@ function "toSig" {
     choose {
         when "$type='string'" error | # cannot declare "string"
         when "$type='bool'" > Z
+        when "$type='bytearray'" > [b
         otherwise {
             > L
             choose {
@@ -65,6 +67,7 @@ function "toIntermediate" {
         when "$type='bool'" > boolean
         when "$type='int'" > int
         when "$type='string' or $type='sstring'" > byte[]
+        when "$type='bytearray' or $type='sstring'" > byte[]
 
         when "$type='bloblist'" > Vector<_Blob>
         when "$type='identity'" > _Identity

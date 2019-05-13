@@ -195,20 +195,21 @@ JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_importKey(
         jbyteArray key
     )
 {
-    char *_key = to_string(env, key);
+    size_t _size = (size_t) env->GetArrayLength(key);
+    char *_key = (char *) env->GetByteArrayElements(key, NULL);
 
     if(_key == NULL){
         throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
         return;
     }
-
     
-    PEP_STATUS status = ::import_key(session(), _key, strlen(_key), NULL);
+    PEP_STATUS status = ::import_key(session(), _key, _size, NULL);
     if (status != PEP_STATUS_OK && status != PEP_KEY_IMPORTED) {
         throw_pEp_Exception(env, status);
         return;
     }
 
+    env->ReleaseByteArrayElements(key, (jbyte *) _key, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_org_pEp_jniadapter_Engine_config_1passive_1mode(
