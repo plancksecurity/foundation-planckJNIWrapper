@@ -315,7 +315,7 @@ namespace pEp {
 
         enum EncFormat {
             none        > 0
-            pieces      > 1
+            inline      > 1
             SMIME       > 2
             PGPMIME     > 3
             PEP         > 4
