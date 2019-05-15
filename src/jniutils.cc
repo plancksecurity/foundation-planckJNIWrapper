@@ -700,7 +700,7 @@ namespace pEp {
 
         sync_handshake_result to_SyncHandshakeResult(JNIEnv *env, jobject obj)
         {
-            static const char *classname = "org/pEp/jniadapter/Message$SyncHandshakeResult";
+            static const char *classname = "org/pEp/jniadapter/SyncHandshakeResult";
             jclass clazz_enc_format = findClass(env, classname);
             jfieldID field_value = env->GetFieldID(clazz_enc_format, "value", "I");
             assert(field_value);
