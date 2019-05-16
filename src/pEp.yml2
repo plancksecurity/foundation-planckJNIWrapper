@@ -93,6 +93,7 @@ namespace pEp {
         pEp_commit_failed                               > 0xff01
         pEp_message_consume                             > 0xff02
         pEp_message_ignore                              > 0xff03
+        pEp_cannot_config                               > 0xff04
 
         pEp_record_not_found                            > -6
         pEp_cannot_create_temp_file                     > -5
@@ -103,12 +104,24 @@ namespace pEp {
         
         pEp_version_mismatch                            > -7
     };
-
+ 
     enum Color {
         PEP_color_no_color > 0
         PEP_color_yellow > 1
         PEP_color_green > 2
         PEP_color_red > -1
+    };
+
+    enum CypherSuite {
+        pEp_cipher_suite_default > 0
+        pEp_cipher_suite_cv25519 > 1
+        pEp_cipher_suite_p256 > 2
+        pEp_cipher_suite_p384 > 3
+        pEp_cipher_suite_p521 > 4
+        pEp_cipher_suite_rsa2k > 5
+        pEp_cipher_suite_rsa3k > 6
+        pEp_cipher_suite_rsa4k > 7
+        pEp_cipher_suite_rsa8k > 8
     };
 
     enum Rating {
@@ -130,16 +143,16 @@ namespace pEp {
 
     enum DecryptFlags {
         pEp_decrypt_flag_own_private_key > 1
-        PEP_decrypt_flag_consumed > 2
-        PEP_decrypt_flag_ignored > 4
-        PEP_decrypt_flag_src_modified > 8
-        PEP_decrypt_flag_untrusted_server > 0x100
+        pEp_decrypt_flag_consumed > 2
+        pEp_decrypt_flag_ignored > 4
+        pEp_decrypt_flag_src_modified > 8
+        pEp_decrypt_flag_untrusted_server > 0x100
     };
 
     enum IdentityFlags {
-        PEP_idf_not_for_sync > 1
-        PEP_idf_list > 2
-        PEP_idf_devicegroup > 256
+        pEp_idf_not_for_sync > 1
+        pEp_idf_list > 2
+        pEp_idf_devicegroup > 256
     };
 
     enum SyncHandshakeResult {
