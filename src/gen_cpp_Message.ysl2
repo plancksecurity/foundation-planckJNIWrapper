@@ -78,7 +78,7 @@ tstylesheet {
                 return (jlong) (int64_t) (intptr_t) _msg;
             }
 
-            JNIEXPORT jbyteArray JNICALL Java_org_pEp_jniadapter_«$jname»__1decodeMIME(JNIEnv *env, jobject msg)
+            JNIEXPORT jbyteArray JNICALL Java_org_pEp_jniadapter_«$jname»__1encodeMIME(JNIEnv *env, jobject msg)
             {
                 «@name» *_obj = «@name»_ptr(env, msg);
                 char *mime_text = nullptr;

@@ -38,10 +38,10 @@ tstylesheet {
                     handle = _«$cname»(_mime_text);
                 }
 
-                public native byte[] _decodeMIME() throws pEpException;
+                public native byte[] _encodeMIME() throws pEpException;
 
-                public String decodeMIME() {
-                    return AbstractEngine.toUTF16(_decodeMIME());
+                public String encodeMIME() {
+                    return AbstractEngine.toUTF16(_encodeMIME());
                 }
 
                 private «$cname»(long h) {
