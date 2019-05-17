@@ -166,7 +166,6 @@ tstylesheet {
 
                 ||
             }
-
             when "ancestor::namespace/child::enum[@name=$type]" {
                 const "ljtype" call "lcase" with "text","$jtype";
                 ||
@@ -225,7 +224,7 @@ tstylesheet {
         choose {
             when "$type = 'message'"
                 | message *_«$name» = (message *) callLongMethod(env, «$name», "getHandle");
-            when "$type='EncFormat' or $type='SyncHandshakeResult'"
+            when "$type='EncFormat' or $type='SyncHandshakeResult' or $type='CipherSuite'"
                 | √$type _«$name» = to_«$type»(env, «$name»);
             when "$type='bool'"
                 | bool _«$name» = (bool) «$name»;

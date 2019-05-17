@@ -91,6 +91,7 @@ namespace pEp {
         bloblist_t *to_bloblist(JNIEnv *env, jobject obj);
 
         PEP_enc_format to_EncFormat(JNIEnv *env, jobject obj);
+        PEP_CIPHER_SUITE to_CipherSuite(JNIEnv *env, jobject obj);
 
         sync_handshake_result to_SyncHandshakeResult(JNIEnv *env, jobject obj);
     };

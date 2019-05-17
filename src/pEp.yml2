@@ -112,18 +112,6 @@ namespace pEp {
         PEP_color_red > -1
     };
 
-    enum CypherSuite {
-        pEp_cipher_suite_default > 0
-        pEp_cipher_suite_cv25519 > 1
-        pEp_cipher_suite_p256 > 2
-        pEp_cipher_suite_p384 > 3
-        pEp_cipher_suite_p521 > 4
-        pEp_cipher_suite_rsa2k > 5
-        pEp_cipher_suite_rsa3k > 6
-        pEp_cipher_suite_rsa4k > 7
-        pEp_cipher_suite_rsa8k > 8
-    };
-
     enum Rating {
         pEp_rating_undefined > 0
         pEp_rating_cannot_decrypt > 1
@@ -173,6 +161,18 @@ namespace pEp {
         // sync_notify_accepted_device_moved > 8
         sync_notify_sole > 254
         sync_notify_in_group > 255
+    };
+
+    enum CipherSuite {
+        pEp_cipher_suite_default > 0
+        pEp_cipher_suite_cv25519 > 1
+        pEp_cipher_suite_p256 > 2
+        pEp_cipher_suite_p384 > 3
+        pEp_cipher_suite_p521 > 4
+        pEp_cipher_suite_rsa2k > 5
+        pEp_cipher_suite_rsa3k > 6
+        pEp_cipher_suite_rsa4k > 7
+        pEp_cipher_suite_rsa8k > 8
     };
 
     interface Engine {
@@ -296,6 +296,10 @@ namespace pEp {
                 in identitylist identities
             );
 	
+        method config_cipher_suite(
+                in CipherSuite suite
+            );
+
         basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);

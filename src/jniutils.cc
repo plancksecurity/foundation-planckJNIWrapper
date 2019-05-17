@@ -698,6 +698,17 @@ namespace pEp {
             return (PEP_enc_format) env->GetIntField(obj, field_value);
         }
 
+        PEP_CIPHER_SUITE to_CipherSuite(JNIEnv *env, jobject obj)
+        {
+            static const char *classname = "org/pEp/jniadapter/Message$CipherSuite";
+            jclass clazz_enc_format = findClass(env, classname);
+            jfieldID field_value = env->GetFieldID(clazz_enc_format, "value", "I");
+            assert(field_value);
+
+            env->DeleteLocalRef(clazz_enc_format);
+            return (PEP_CIPHER_SUITE) env->GetIntField(obj, field_value);
+        }
+
         sync_handshake_result to_SyncHandshakeResult(JNIEnv *env, jobject obj)
         {
             static const char *classname = "org/pEp/jniadapter/SyncHandshakeResult";

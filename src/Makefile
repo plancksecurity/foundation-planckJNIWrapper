@@ -128,5 +128,6 @@ clean:
 	rm -f org/pEp/jniadapter/Status.java
 	rm -f org/pEp/jniadapter/SyncHandshakeResult.java
 	rm -f org/pEp/jniadapter/SyncHandshakeSignal.java
+	rm -f org/pEp/jniadapter/CipherSuite.java
 	rm -f throw_pEp_exception.*
 	rm -f org_pEp_jniadapter_Message.cc org_pEp_jniadapter_Engine.cc

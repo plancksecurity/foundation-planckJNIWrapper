@@ -16,6 +16,7 @@ function "toC" {
         when "$type='Color'" > PEP_color
         when "$type='Rating'" > PEP_rating
         when "$type='SyncHandshakeResult'" > sync_handshake_result
+        when "$type='CipherSuite'" > PEP_CIPHER_SUITE
 
         otherwise value "$type";
     }
