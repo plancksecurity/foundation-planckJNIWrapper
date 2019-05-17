@@ -17,8 +17,10 @@ tstylesheet {
             #include <stdlib.h>
             #include <assert.h>
             #include <pEp/«@name».h>
+            #include <pEp/mime.h>
 
             #include "jniutils.hh"
+            #include "throw_pEp_exception.hh"
             #include "org_pEp_jniadapter_«$jname».h"
 
             using namespace std;
@@ -61,6 +63,31 @@ tstylesheet {
                     ::«@name» *_obj = (::«@name» *) (intptr_t) (int64_t) value;
                     ::free_«@name»(_obj);
                 }
+            }
+
+            JNIEXPORT jlong JNICALL Java_org_pEp_jniadapter_«$jname»__1«$jname»(
+                    JNIEnv *env, jobject msg, jbyteArray mime_text) {
+
+                char *_mime_text = to_string(env, mime_text);
+                size_t _size = (size_t) env->GetArrayLength(mime_text);
+
+                ::«@name» *_msg = nullptr;
+                PEP_STATUS status = mime_decode_message(_mime_text, _size, &_msg);
+                if (status)
+                    throw_pEp_Exception(env, status);
+                return (jlong) (int64_t) (intptr_t) _msg;
+            }
+
+            JNIEXPORT jbyteArray JNICALL Java_org_pEp_jniadapter_Message__1decodeMIME(JNIEnv *env, jobject msg)
+            {
+                message *_obj = message_ptr(env, msg);
+                char *mime_text = nullptr;
+                PEP_STATUS status = ::mime_encode_message(_obj, false, &mime_text);
+                if (status)
+                    throw_pEp_Exception(env, status);
+                jbyteArray result = from_string(env, mime_text);
+                free(mime_text);
+                return result;
             }
 
             ||

@@ -29,6 +29,21 @@ tstylesheet {
                     handle = init();
                 }
 
+                private native long _«$cname»(
+                        byte[] mime_text
+                    ) throws pEpException;
+                
+                public «$cname»(String mime_text) {
+                    byte[] _mime_text = AbstractEngine.toUTF8(mime_text);
+                    handle = _«$cname»(_mime_text);
+                }
+
+                public native byte[] _decodeMIME() throws pEpException;
+
+                public String decodeMIME() {
+                    return AbstractEngine.toUTF16(_decodeMIME());
+                }
+
                 private «$cname»(long h) {
                     handle = h;
                 }
