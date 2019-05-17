@@ -315,7 +315,6 @@ namespace pEp {
         basic void config_passive_mode(bool enable);
         basic void config_unencrypted_subject(bool enable);
         basic string getCrashdumpLog(int maxlines);
-        basic string getProtocolVersion(int reserved);
     };
 
     struct message {
