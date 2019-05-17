@@ -72,17 +72,17 @@ tstylesheet {
                 size_t _size = (size_t) env->GetArrayLength(mime_text);
 
                 ::«@name» *_msg = nullptr;
-                PEP_STATUS status = mime_decode_message(_mime_text, _size, &_msg);
+                PEP_STATUS status = mime_decode_«@name»(_mime_text, _size, &_msg);
                 if (status)
                     throw_pEp_Exception(env, status);
                 return (jlong) (int64_t) (intptr_t) _msg;
             }
 
-            JNIEXPORT jbyteArray JNICALL Java_org_pEp_jniadapter_Message__1decodeMIME(JNIEnv *env, jobject msg)
+            JNIEXPORT jbyteArray JNICALL Java_org_pEp_jniadapter_«$jname»__1decodeMIME(JNIEnv *env, jobject msg)
             {
-                message *_obj = message_ptr(env, msg);
+                «@name» *_obj = «@name»_ptr(env, msg);
                 char *mime_text = nullptr;
-                PEP_STATUS status = ::mime_encode_message(_obj, false, &mime_text);
+                PEP_STATUS status = ::mime_encode_«@name»(_obj, false, &mime_text);
                 if (status)
                     throw_pEp_Exception(env, status);
                 jbyteArray result = from_string(env, mime_text);
