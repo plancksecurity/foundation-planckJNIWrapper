@@ -18,6 +18,7 @@ abstract class AbstractEngine implements AutoCloseable {
     private Sync.NeedsFastPollCallback needsFastPollCallback;
 
     private final static DefaultCallback defaultCallback = new DefaultCallback();
+
     private native void init();
     private native void release();
 
@@ -32,6 +33,9 @@ abstract class AbstractEngine implements AutoCloseable {
             release();
         }
     }
+
+    private native String getVersion();
+    private native String getProtocolVersion();
 
     private long keyserverThread;
     private long keyserverQueue;

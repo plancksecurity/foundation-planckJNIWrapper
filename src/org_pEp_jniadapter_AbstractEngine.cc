@@ -201,6 +201,16 @@ extern "C" {
         session(pEp::Adapter::release);
     }
 
+    JNIEXPORT jstring JNICALL Java_org_pEp_jniadapter_AbstractEngine_getVersion(JNIEnv *env, jobject)
+    {
+        return env->NewStringUTF(::get_engine_version());
+    }
+
+    JNIEXPORT jstring JNICALL Java_org_pEp_jniadapter_AbstractEngine_getProtocolVersion(JNIEnv *env, jobject)
+    {
+        return env->NewStringUTF(::get_protocol_version());
+    }
+
     int examine_identity(pEp_identity *ident, void *arg)
     {
         locked_queue< pEp_identity * > *queue = (locked_queue< pEp_identity * > *) arg;
