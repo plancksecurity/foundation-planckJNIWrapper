@@ -34,8 +34,8 @@ abstract class AbstractEngine implements AutoCloseable {
         }
     }
 
-    private native String getVersion();
-    private native String getProtocolVersion();
+    public native String getVersion();
+    public native String getProtocolVersion();
 
     private long keyserverThread;
     private long keyserverQueue;
