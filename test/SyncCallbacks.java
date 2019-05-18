@@ -1,4 +1,4 @@
-import org.pEp.jniadapter.*;
+import pEp.jniadapter.*;
 
 class SyncCallbacks implements Sync.MessageToSendCallback, Sync.NotifyHandshakeCallback {
     public void messageToSend(Message message)
