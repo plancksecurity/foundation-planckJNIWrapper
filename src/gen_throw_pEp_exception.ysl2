@@ -57,7 +57,7 @@ tstylesheet {
 
     template "*", mode=case {
         | case `call "UCASE" with "text", "name(.)"`:
-        |     ex_name = "org/pEp/jniadapter/`call "CamelCase" with "text", "name(.)"`";
+        |     ex_name = "pEp/jniadapter/`call "CamelCase" with "text", "name(.)"`";
         |     break;
     }
 }

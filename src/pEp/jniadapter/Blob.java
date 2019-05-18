@@ -1,4 +1,4 @@
-package org.pEp.jniadapter;
+package pEp.jniadapter;
 
 public class Blob {
     public byte[] data;

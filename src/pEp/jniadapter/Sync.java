@@ -1,8 +1,8 @@
-package org.pEp.jniadapter;
+package pEp.jniadapter;
 
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Message;
-import org.pEp.jniadapter.pEpException;
+import pEp.jniadapter.Identity;
+import pEp.jniadapter.Message;
+import pEp.jniadapter.pEpException;
 
 public interface Sync {
 
