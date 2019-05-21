@@ -8,9 +8,9 @@ tstylesheet {
 
     template "interface" {
         const "cname" call "toJava" with "type", "@name";
-        document("pEp/jniadapter/{$cname}.java", "text")
+        document("org/pEp/jniadapter/{$cname}.java", "text")
             ||
-            package pEp.jniadapter;
+            package org.pEp.jniadapter;
 
             import java.util.ArrayList;
             import java.util.Vector;

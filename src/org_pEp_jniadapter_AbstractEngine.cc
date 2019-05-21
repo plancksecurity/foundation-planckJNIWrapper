@@ -1,4 +1,4 @@
-#include "pEp_jniadapter_AbstractEngine.h"
+#include "org_pEp_jniadapter_AbstractEngine.h"
 
 #ifndef NDEBUG
 #include <iostream>
@@ -81,18 +81,18 @@ namespace pEp {
         JNIEnv *_env = o.env();
 
         messageClass = reinterpret_cast<jclass>(
-                _env->NewGlobalRef(findClass(_env, "pEp/jniadapter/Message")));
+                _env->NewGlobalRef(findClass(_env, "org/pEp/jniadapter/Message")));
         identityClass = reinterpret_cast<jclass>(
-            _env->NewGlobalRef(findClass(_env, "pEp/jniadapter/_Identity")));
+            _env->NewGlobalRef(findClass(_env, "org/pEp/jniadapter/_Identity")));
         signalClass = reinterpret_cast<jclass>(
-                _env->NewGlobalRef(findClass(_env, "pEp/jniadapter/SyncHandshakeSignal")));
-        engineClass = reinterpret_cast<jclass>(_env->NewGlobalRef(findClass(_env, "pEp/jniadapter/Engine")));
+                _env->NewGlobalRef(findClass(_env, "org/pEp/jniadapter/SyncHandshakeSignal")));
+        engineClass = reinterpret_cast<jclass>(_env->NewGlobalRef(findClass(_env, "org/pEp/jniadapter/Engine")));
 
         messageConstructorMethodID = _env->GetMethodID(messageClass, "<init>", "(J)V");
         messageToSendMethodID = _env->GetMethodID(
             engineClass,
             "messageToSendCallFromC", 
-            "(LpEp/jniadapter/Message;)I");
+            "(Lorg/pEp/jniadapter/Message;)I");
         needsFastPollMethodID = _env->GetMethodID(
             engineClass,
             "needsFastPollCallFromC",
@@ -100,10 +100,10 @@ namespace pEp {
         notifyHandShakeMethodID = _env->GetMethodID(
             engineClass,
             "notifyHandshakeCallFromC",
-            "(LpEp/jniadapter/_Identity;LpEp/jniadapter/_Identity;LpEp/jniadapter/SyncHandshakeSignal;)I");
+            "(Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/_Identity;Lorg/pEp/jniadapter/SyncHandshakeSignal;)I");
 
         method_values = o.env()->GetStaticMethodID(signalClass, "values",
-                    "()[LpEp/jniadapter/SyncHandshakeSignal;");
+                    "()[Lorg/pEp/jniadapter/SyncHandshakeSignal;");
         field_value = o.env()->GetFieldID(signalClass, "value", "I");
     }
 
@@ -178,7 +178,7 @@ namespace pEp {
 extern "C" {
     using namespace pEp;
 
-    JNIEXPORT void JNICALL Java_pEp_jniadapter_AbstractEngine_init(
+    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_init(
             JNIEnv *env,
             jobject me
         )
@@ -193,7 +193,7 @@ extern "C" {
         session();
     }
 
-    JNIEXPORT void JNICALL Java_pEp_jniadapter_AbstractEngine_release(
+    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_release(
             JNIEnv *env,
             jobject me
         )
@@ -201,12 +201,12 @@ extern "C" {
         session(pEp::Adapter::release);
     }
 
-    JNIEXPORT jstring JNICALL Java_pEp_jniadapter_AbstractEngine_getVersion(JNIEnv *env, jobject)
+    JNIEXPORT jstring JNICALL Java_org_pEp_jniadapter_AbstractEngine_getVersion(JNIEnv *env, jobject)
     {
         return env->NewStringUTF(::get_engine_version());
     }
 
-    JNIEXPORT jstring JNICALL Java_pEp_jniadapter_AbstractEngine_getProtocolVersion(JNIEnv *env, jobject)
+    JNIEXPORT jstring JNICALL Java_org_pEp_jniadapter_AbstractEngine_getProtocolVersion(JNIEnv *env, jobject)
     {
         return env->NewStringUTF(::get_protocol_version());
     }
@@ -245,7 +245,7 @@ extern "C" {
         return (void *) status;
     }
 
-    JNIEXPORT void JNICALL Java_pEp_jniadapter_AbstractEngine_startKeyserverLookup(
+    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_startKeyserverLookup(
             JNIEnv *env,
             jobject obj
         )
@@ -257,8 +257,8 @@ extern "C" {
         jfieldID queue_handle;
 
         try {
-            thread_handle = getFieldID(env, "pEp/jniadapter/Engine", "keyserverThread", "J");
-            queue_handle = getFieldID(env, "pEp/jniadapter/Engine", "keyserverQueue", "J");
+            thread_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "keyserverThread", "J");
+            queue_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "keyserverQueue", "J");
         }
         catch (std::exception& ex) {
             assert(0);
@@ -281,7 +281,7 @@ extern "C" {
         pthread_create(thread, nullptr, keyserver_thread_routine, (void *) queue);
     }
 
-    JNIEXPORT void JNICALL Java_pEp_jniadapter_AbstractEngine_stopKeyserverLookup(
+    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_stopKeyserverLookup(
             JNIEnv *env,
             jobject obj
         )
@@ -293,8 +293,8 @@ extern "C" {
         jfieldID queue_handle;
 
         try {
-            thread_handle = getFieldID(env, "pEp/jniadapter/Engine", "keyserverThread", "J");
-            queue_handle = getFieldID(env, "pEp/jniadapter/Engine", "keyserverQueue", "J");
+            thread_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "keyserverThread", "J");
+            queue_handle = getFieldID(env, "org/pEp/jniadapter/Engine", "keyserverQueue", "J");
         }
         catch (std::exception& ex) {
             assert(0);
@@ -317,7 +317,7 @@ extern "C" {
         free(thread);
     }
 
-    JNIEXPORT void JNICALL Java_pEp_jniadapter_AbstractEngine_startSync(
+    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_startSync(
             JNIEnv *env,
             jobject obj
         )
@@ -326,7 +326,7 @@ extern "C" {
         startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::onSyncStartup, &JNISync::onSyncShutdown);
     }
 
-    JNIEXPORT void JNICALL Java_pEp_jniadapter_AbstractEngine_stopSync(
+    JNIEXPORT void JNICALL Java_org_pEp_jniadapter_AbstractEngine_stopSync(
             JNIEnv *env,
             jobject obj
         )

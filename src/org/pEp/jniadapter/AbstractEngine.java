@@ -1,9 +1,9 @@
-package pEp.jniadapter;
+package org.pEp.jniadapter;
 
 import java.util.ArrayList;
 import java.util.Vector;
 
-import pEp.jniadapter.Sync.DefaultCallback;
+import org.pEp.jniadapter.Sync.DefaultCallback;
 
 import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;

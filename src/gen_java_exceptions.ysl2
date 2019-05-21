@@ -4,7 +4,7 @@ tstylesheet {
     include ./textutils.ysl2
 
     template "/" {
-        | package pEp.jniadapter;
+        | package org.pEp.jniadapter;
         | 
         | public class pEpException extends RuntimeException {
         |   public pEpException(String message) {
@@ -18,8 +18,8 @@ tstylesheet {
     function "exception" {
         param "name";
 
-        document "pEp/jniadapter/{$name}.java", "text" {
-            | package pEp.jniadapter;
+        document "org/pEp/jniadapter/{$name}.java", "text" {
+            | package org.pEp.jniadapter;
             |
             | public class «$name» extends pEpException {
             |   public «$name»(String message) {

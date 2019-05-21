@@ -1,4 +1,4 @@
-package pEp.jniadapter;
+package org.pEp.jniadapter;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package pEp.jniadapter;
+package org.pEp.jniadapter;
 
 public class _Blob {
     public byte[] data;
