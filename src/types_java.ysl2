@@ -39,18 +39,18 @@ function "toSig" {
                 when "$type='timestamp'" > java/util/Date
                 when "$type='int'" > java/lang/Integer
 
-                when "$type='identity'" > org/pEp/jniadapter/_Identity
-                when "$type='message'" > org/pEp/jniadapter/Message
+                when "$type='identity'" > foundation/pEp/jniadapter/_Identity
+                when "$type='message'" > foundation/pEp/jniadapter/Message
 
                 when "$type='bloblist'" > java/util/Vector
                 when "$type='identitylist'" > java/util/Vector
                 when "$type='stringlist'" > java/util/Vector
                 when "$type='stringpairlist'" > java/util/ArrayList
 
-                when "$type='Color'" > org/pEp/jniadapter/Color
-                when "$type='DecryptFlags'" > org/pEp/jniadapter/DecryptFlags
-                when "$type='EncFormat'" > org/pEp/jniadapter/Message/EncFormat
-                when "$type='Rating'" > org/pEp/jniadapter/Rating
+                when "$type='Color'" > foundation/pEp/jniadapter/Color
+                when "$type='DecryptFlags'" > foundation/pEp/jniadapter/DecryptFlags
+                when "$type='EncFormat'" > foundation/pEp/jniadapter/Message/EncFormat
+                when "$type='Rating'" > foundation/pEp/jniadapter/Rating
 
                 otherwise error | # cannot declare "«$type»"
             }

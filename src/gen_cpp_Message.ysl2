@@ -9,7 +9,7 @@ tstylesheet {
     template "struct" {
         const "jname" call "CamelCase" with "text", "@name";
 
-        document("org_pEp_jniadapter_{$jname}.cc", "text") {
+        document("foundation_pEp_jniadapter_{$jname}.cc", "text") {
             ||
             #include <exception>
             #include <new>
@@ -21,7 +21,7 @@ tstylesheet {
 
             #include "jniutils.hh"
             #include "throw_pEp_exception.hh"
-            #include "org_pEp_jniadapter_«$jname».h"
+            #include "foundation_pEp_jniadapter_«$jname».h"
 
             using namespace std;
 
@@ -31,7 +31,7 @@ tstylesheet {
                         jfieldID handle;
 
                         try {
-                            handle = getFieldID(env, "org/pEp/jniadapter/«$jname»", "handle", "J");
+                            handle = getFieldID(env, "foundation/pEp/jniadapter/«$jname»", "handle", "J");
                         }
                         catch (std::exception& ex) {
                             assert(0);
@@ -48,7 +48,7 @@ tstylesheet {
             using namespace pEp::JNIAdapter;
 
             JNIEXPORT jlong JNICALL
-                    Java_org_pEp_jniadapter_«$jname»_init(JNIEnv *env, jobject obj) {
+                    Java_foundation_pEp_jniadapter_«$jname»_init(JNIEnv *env, jobject obj) {
                 ::«@name» * _obj = ::new_«@name»(PEP_dir_incoming);
                 if (!_obj) {
                     outOfMemory(env);
@@ -58,14 +58,14 @@ tstylesheet {
             }
 
             JNIEXPORT void JNICALL
-                    Java_org_pEp_jniadapter_«$jname»_release(JNIEnv *env, jobject obj, jlong value) {
+                    Java_foundation_pEp_jniadapter_«$jname»_release(JNIEnv *env, jobject obj, jlong value) {
                 if (value) {
                     ::«@name» *_obj = (::«@name» *) (intptr_t) (int64_t) value;
                     ::free_«@name»(_obj);
                 }
             }
 
-            JNIEXPORT jlong JNICALL Java_org_pEp_jniadapter_«$jname»__1«$jname»(
+            JNIEXPORT jlong JNICALL Java_foundation_pEp_jniadapter_«$jname»__1«$jname»(
                     JNIEnv *env, jobject msg, jbyteArray mime_text) {
 
                 char *_mime_text = to_string(env, mime_text);
@@ -78,7 +78,7 @@ tstylesheet {
                 return (jlong) (int64_t) (intptr_t) _msg;
             }
 
-            JNIEXPORT jbyteArray JNICALL Java_org_pEp_jniadapter_«$jname»__1encodeMIME(JNIEnv *env, jobject msg)
+            JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_«$jname»__1encodeMIME(JNIEnv *env, jobject msg)
             {
                 «@name» *_obj = «@name»_ptr(env, msg);
                 char *mime_text = nullptr;
@@ -110,9 +110,9 @@ tstylesheet {
 
         choose {
             when "$convert"
-                > «concat('Java_org_pEp_jniadapter_', $classname, '__1', str:replace($name, '_', '_1'))»
+                > «concat('Java_foundation_pEp_jniadapter_', $classname, '__1', str:replace($name, '_', '_1'))»
             otherwise
-                > «concat('Java_org_pEp_jniadapter_', $classname, '_', str:replace($name, '_', '_1'))»
+                > «concat('Java_foundation_pEp_jniadapter_', $classname, '_', str:replace($name, '_', '_1'))»
         }
     }
 

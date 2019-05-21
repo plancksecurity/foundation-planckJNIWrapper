@@ -40,67 +40,67 @@ else
     $(error I don't know how to build for $(BUILD_FOR).)
 endif
 
-JAVA_SOURCES=org/pEp/jniadapter/AbstractEngine.java \
-    org/pEp/jniadapter/Blob.java \
-    org/pEp/jniadapter/CommType.java \
-    org/pEp/jniadapter/Identity.java \
-    org/pEp/jniadapter/Pair.java \
-    org/pEp/jniadapter/Sync.java \
-    org/pEp/jniadapter/_Blob.java \
-    org/pEp/jniadapter/_Identity.java \
-    org/pEp/jniadapter/pEpException.java \
-    org/pEp/jniadapter/Message.java \
-    org/pEp/jniadapter/Engine.java \
+JAVA_SOURCES=foundation/pEp/jniadapter/AbstractEngine.java \
+    foundation/pEp/jniadapter/Blob.java \
+    foundation/pEp/jniadapter/CommType.java \
+    foundation/pEp/jniadapter/Identity.java \
+    foundation/pEp/jniadapter/Pair.java \
+    foundation/pEp/jniadapter/Sync.java \
+    foundation/pEp/jniadapter/_Blob.java \
+    foundation/pEp/jniadapter/_Identity.java \
+    foundation/pEp/jniadapter/pEpException.java \
+    foundation/pEp/jniadapter/Message.java \
+    foundation/pEp/jniadapter/Engine.java \
 
-C_SOURCES=org_pEp_jniadapter_Engine.cc \
-    org_pEp_jniadapter_Engine.h \
-    org_pEp_jniadapter_Message.cc \
-    org_pEp_jniadapter_Message.h \
+C_SOURCES=foundation_pEp_jniadapter_Engine.cc \
+    foundation_pEp_jniadapter_Engine.h \
+    foundation_pEp_jniadapter_Message.cc \
+    foundation_pEp_jniadapter_Message.h \
     throw_pEp_exception.cc \
     throw_pEp_exception.hh \
-    org_pEp_jniadapter_AbstractEngine.h
+    foundation_pEp_jniadapter_AbstractEngine.h
 
 
 .PHONY: all
 all: $(JAR) $(SHARED)
 
 $(JAR): $(JAVA_SOURCES) $(C_SOURCES)
-	$(JP)/javac org/pEp/jniadapter/*.java
-	$(JP)/jar cf $@ org/pEp/jniadapter/*.class
+	$(JP)/javac foundation/pEp/jniadapter/*.java
+	$(JP)/jar cf $@ foundation/pEp/jniadapter/*.class
 
-BLUBB=org_pEp_jniadapter_AbstractEngine.h org_pEp_jniadapter_Engine.h org_pEp_jniadapter_Message.h
-$(BLUBB): org_pEp_jniadapter_%.h: org/pEp/jniadapter/%.java
+BLUBB=foundation_pEp_jniadapter_AbstractEngine.h foundation_pEp_jniadapter_Engine.h foundation_pEp_jniadapter_Message.h
+$(BLUBB): foundation_pEp_jniadapter_%.h: foundation/pEp/jniadapter/%.java
 ifdef OLD_JAVA
 	$(JP)/javah $(subst /,.,$(subst .java,,$<))
 else
 	$(JP)/javac -h . $<
 endif
 
-org_pEp_jniadapter_AbstractEngine.o: %.o: %.cc %.h throw_pEp_exception.hh jniutils.hh
+foundation_pEp_jniadapter_AbstractEngine.o: %.o: %.cc %.h throw_pEp_exception.hh jniutils.hh
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-org_pEp_jniadapter_Engine.o org_pEp_jniadapter_Message.o: %.o: %.cc %.h
+foundation_pEp_jniadapter_Engine.o foundation_pEp_jniadapter_Message.o: %.o: %.cc %.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(LIBRARY): org_pEp_jniadapter_AbstractEngine.o org_pEp_jniadapter_Engine.o org_pEp_jniadapter_Message.o throw_pEp_exception.o jniutils.o basic_api.o
+$(LIBRARY): foundation_pEp_jniadapter_AbstractEngine.o foundation_pEp_jniadapter_Engine.o foundation_pEp_jniadapter_Message.o throw_pEp_exception.o jniutils.o basic_api.o
 	ar -r $@ *.o
 
 $(SHARED): $(LIBRARY)
 	$(CXX) *.o $(LDFLAGS) $(LDLIBS) -o $@
 
-org/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2 pEp.yml2
+foundation/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2 pEp.yml2
 	$(YML2_PROC) -y gen_java_exceptions.ysl2 $< -o $@
 
-org/pEp/jniadapter/Message.java: pEp.yml2 gen_java_Message.ysl2 types_java.ysl2
+foundation/pEp/jniadapter/Message.java: pEp.yml2 gen_java_Message.ysl2 types_java.ysl2
 	$(YML2_PROC) -y gen_java_Message.ysl2 $<
 
-org/pEp/jniadapter/Engine.java: pEp.yml2 gen_java_Engine.ysl2 types_java.ysl2
+foundation/pEp/jniadapter/Engine.java: pEp.yml2 gen_java_Engine.ysl2 types_java.ysl2
 	$(YML2_PROC) -y gen_java_Engine.ysl2 $<
 
-org_pEp_jniadapter_Message.cc: pEp.yml2 gen_cpp_Message.ysl2 types_c.ysl2
+foundation_pEp_jniadapter_Message.cc: pEp.yml2 gen_cpp_Message.ysl2 types_c.ysl2
 	$(YML2_PROC) -y gen_cpp_Message.ysl2 $<
 
-org_pEp_jniadapter_Engine.cc: pEp.yml2 gen_cpp_Engine.ysl2 types_c.ysl2
+foundation_pEp_jniadapter_Engine.cc: pEp.yml2 gen_cpp_Engine.ysl2 types_c.ysl2
 	$(YML2_PROC) -y gen_cpp_Engine.ysl2 $<
 
 throw_pEp_exception.cc throw_pEp_exception.hh: pEp.yml2 gen_throw_pEp_exception.ysl2 textutils.ysl2
@@ -116,18 +116,18 @@ clean:
 	rm -f *.o
 	rm -f *.class
 	rm -f *.xml *.xsl
-	rm -f org_pEp_jniadapter_*.h
-	rm -f org/pEp/jniadapter/*.class
-	rm -f org/pEp/jniadapter/pEp*.java
-	rm -f org/pEp/jniadapter/Engine.java
-	rm -f org/pEp/jniadapter/Message.java
-	rm -f org/pEp/jniadapter/Color.java
-	rm -f org/pEp/jniadapter/DecryptFlags.java
-	rm -f org/pEp/jniadapter/IdentityFlags.java
-	rm -f org/pEp/jniadapter/Rating.java
-	rm -f org/pEp/jniadapter/Status.java
-	rm -f org/pEp/jniadapter/SyncHandshakeResult.java
-	rm -f org/pEp/jniadapter/SyncHandshakeSignal.java
-	rm -f org/pEp/jniadapter/CipherSuite.java
+	rm -f foundation_pEp_jniadapter_*.h
+	rm -f foundation/pEp/jniadapter/*.class
+	rm -f foundation/pEp/jniadapter/pEp*.java
+	rm -f foundation/pEp/jniadapter/Engine.java
+	rm -f foundation/pEp/jniadapter/Message.java
+	rm -f foundation/pEp/jniadapter/Color.java
+	rm -f foundation/pEp/jniadapter/DecryptFlags.java
+	rm -f foundation/pEp/jniadapter/IdentityFlags.java
+	rm -f foundation/pEp/jniadapter/Rating.java
+	rm -f foundation/pEp/jniadapter/Status.java
+	rm -f foundation/pEp/jniadapter/SyncHandshakeResult.java
+	rm -f foundation/pEp/jniadapter/SyncHandshakeSignal.java
+	rm -f foundation/pEp/jniadapter/CipherSuite.java
 	rm -f throw_pEp_exception.*
-	rm -f org_pEp_jniadapter_Message.cc org_pEp_jniadapter_Engine.cc
+	rm -f foundation_pEp_jniadapter_Message.cc foundation_pEp_jniadapter_Engine.cc

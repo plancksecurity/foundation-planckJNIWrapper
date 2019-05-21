@@ -1,4 +1,4 @@
-package org.pEp.jniadapter;
+package foundation.pEp.jniadapter;
 
 public class _Identity {
     public byte[] address;

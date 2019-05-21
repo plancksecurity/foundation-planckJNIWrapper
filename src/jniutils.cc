@@ -294,7 +294,7 @@ namespace pEp {
                 return (jobject) NULL;
 
             jclass clazz = findClass(env, "java/util/ArrayList");
-            jclass clazz_pair = findClass(env, "org/pEp/jniadapter/Pair");
+            jclass clazz_pair = findClass(env, "foundation/pEp/jniadapter/Pair");
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
             assert(constructor);
             jmethodID constructor_pair = env->GetMethodID(clazz_pair, "<init>",
@@ -337,9 +337,9 @@ namespace pEp {
             if (size == 0)
                 return NULL;
 
-            jfieldID first_id = getFieldID(env, "org/pEp/jniadapter/Pair",
+            jfieldID first_id = getFieldID(env, "foundation/pEp/jniadapter/Pair",
                     "first", "Ljava/lang/Object;");
-            jfieldID second_id = getFieldID(env, "org/pEp/jniadapter/Pair",
+            jfieldID second_id = getFieldID(env, "foundation/pEp/jniadapter/Pair",
                     "second", "Ljava/lang/Object;");
 
             stringpair_list_t *sl = new_stringpair_list(NULL);
@@ -449,7 +449,7 @@ namespace pEp {
             if (!ident)
                 return (jobject) NULL;
 
-            static const char *classname = "org/pEp/jniadapter/_Identity";
+            static const char *classname = "foundation/pEp/jniadapter/_Identity";
             jclass clazz = findClass(env, classname);
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
             assert(constructor);
@@ -484,7 +484,7 @@ namespace pEp {
             if (!ident)
                 return (jobject) NULL;
 
-            static const char *classname = "org/pEp/jniadapter/_Identity";
+            static const char *classname = "foundation/pEp/jniadapter/_Identity";
             jmethodID constructor = env->GetMethodID(identityClass, "<init>", "()V");
             assert(constructor);
             jobject obj = env->NewObject(identityClass, constructor);
@@ -527,7 +527,7 @@ namespace pEp {
             if (!obj)
                 return NULL;
 
-            static const char *classname = "org/pEp/jniadapter/_Identity";
+            static const char *classname = "foundation/pEp/jniadapter/_Identity";
             pEp_identity *ident = new_identity(NULL, NULL, NULL, NULL);
 
             ident->address = _getStringField(env, classname, obj, "address");
@@ -603,7 +603,7 @@ namespace pEp {
             if (!b)
                 return (jobject) NULL;
 
-            static const char *classname = "org/pEp/jniadapter/_Blob";
+            static const char *classname = "foundation/pEp/jniadapter/_Blob";
             jclass clazz = findClass(env, classname);
             jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
             assert(constructor);
@@ -653,7 +653,7 @@ namespace pEp {
             if (size == 0)
                 return NULL;
 
-            static const char *classname = "org/pEp/jniadapter/_Blob";
+            static const char *classname = "foundation/pEp/jniadapter/_Blob";
             jclass clazz = findClass(env, classname);
             jfieldID data_id = getFieldID(env, classname, "data", "[B");
 
@@ -689,7 +689,7 @@ namespace pEp {
 
         PEP_enc_format to_EncFormat(JNIEnv *env, jobject obj)
         {
-            static const char *classname = "org/pEp/jniadapter/Message$EncFormat";
+            static const char *classname = "foundation/pEp/jniadapter/Message$EncFormat";
             jclass clazz_enc_format = findClass(env, classname);
             jfieldID field_value = env->GetFieldID(clazz_enc_format, "value", "I");
             assert(field_value);
@@ -700,7 +700,7 @@ namespace pEp {
 
         PEP_CIPHER_SUITE to_CipherSuite(JNIEnv *env, jobject obj)
         {
-            static const char *classname = "org/pEp/jniadapter/Message$CipherSuite";
+            static const char *classname = "foundation/pEp/jniadapter/Message$CipherSuite";
             jclass clazz_enc_format = findClass(env, classname);
             jfieldID field_value = env->GetFieldID(clazz_enc_format, "value", "I");
             assert(field_value);
@@ -711,7 +711,7 @@ namespace pEp {
 
         sync_handshake_result to_SyncHandshakeResult(JNIEnv *env, jobject obj)
         {
-            static const char *classname = "org/pEp/jniadapter/SyncHandshakeResult";
+            static const char *classname = "foundation/pEp/jniadapter/SyncHandshakeResult";
             jclass clazz_enc_format = findClass(env, classname);
             jfieldID field_value = env->GetFieldID(clazz_enc_format, "value", "I");
             assert(field_value);
