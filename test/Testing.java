@@ -1,4 +1,4 @@
-import pEp.jniadapter.*;
+import org.pEp.jniadapter.*;
 import java.util.Vector;
 import java.net.URL;
 import java.net.URLClassLoader;
