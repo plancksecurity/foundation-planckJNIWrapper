@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------#
-# Makefile to build GPGME, GnuPG and deps for use with pEpEngine 
+# Makefile to build deps for use with pEpEngine
 #  based on gnupg-for-android/external/Makefile
 #------------------------------------------------------------------------------#
 
@@ -16,7 +16,7 @@ PEP_PACKAGE_NAME ?= security.pEp
 
 all: build assets
 
-build: showsetup libetpan-build gnupg-install gpgme-install uuid-install uuid-prebuild sequoia-build
+build: showsetup uuid-install uuid-prebuild sequoia-deps-build sequoia-ffi-install libetpan-build
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
@@ -25,7 +25,7 @@ EXTERNAL_ROOT := $(shell pwd)
 
 # install root for built files
 DESTDIR = $(EXTERNAL_ROOT)
-prefix = /data/data/$(PEP_PACKAGE_NAME)/app_opt
+prefix = /data/data/$(PEP_PACKAGE_NAME)/$(APP_ABI)/app_opt
 LOCAL := $(DESTDIR)$(prefix)
 
 PATH := ${PATH}:$(NDK_TOOLCHAIN)/bin:$(LOCAL)/bin
@@ -102,209 +102,6 @@ showsetup:
 	@echo "CFLAGS: $(CFLAGS)"
 	@echo "LDFLAGS: $(LDFLAGS)"
 
-
-#------------------------------------------------------------------------------#
-# libgpg-error
-
-EXTERNAL_GIT_REPOS += libgpg-error|git://git.gnupg.org/libgpg-error.git?libgpg-error-1.20
-
-libgpg-error/configure: libgpg-error.src.stamp libgpg-error/configure.ac 
-	cd libgpg-error && ./autogen.sh
-
-libgpg-error/Makefile: libgpg-error/configure 
-	cd libgpg-error && \
-		./configure \
-			CC="$(CC)" \
-			AR=$(AR) \
-			RANLIB=$(RANLIB) \
-			CFLAGS="$(CFLAGS)" \
-			LDFLAGS="$(LDFLAGS)" \
-			--disable-doc \
-			--disable-languages \
-			--host=$(HOST) \
-			--prefix=$(LOCAL)
-	ls -l libgpg-error/libtool
-	# brute force and ignorance to make libtool comply with android style
-	sed -i 's,^fast_install=.*,fast_install=needless,' libgpg-error/libtool
-	sed -i 's,^version_type=.*,version_type=none,' libgpg-error/libtool
-	sed -i 's,^shlibpath_overrides_runpath=.*,shlibpath_overrides_runpath=yes,' libgpg-error/libtool
-	sed -i 's,^library_names_spec=.*,library_names_spec="\\$$libname\\$$release\\$$shared_ext",' libgpg-error/libtool
-	sed -i 's,^soname_spec=.*,soname_spec="\\$$libname\\$$release\\$$shared_ext",' libgpg-error/libtool
-	sed -i 's,^finish_cmds=.*,finish_cmds="",' libgpg-error/libtool
-	sed -i 's,^sys_lib_dlsearch_path_spec=.*,sys_lib_dlsearch_path_spec="/lib /usr/lib",' libgpg-error/libtool
-
-libgpg-error/src/.libs/libgpg-error.so: libgpg-error/Makefile 
-	$(MAKE) -C libgpg-error
-
-libgpg-error-build: libgpg-error/src/.libs/libgpg-error.so
-
-$(LOCAL)/lib/libgpg-error.so: libgpg-error/src/.libs/libgpg-error.so
-	$(MAKE) -C libgpg-error prefix=$(LOCAL) install
-	ls -l $(LOCAL)/lib/libgpg-error.so*
-
-libgpg-error-install: $(LOCAL)/lib/libgpg-error.so
-
-#------------------------------------------------------------------------------#
-# libgcrypt
-
-EXTERNAL_GIT_REPOS += libgcrypt|git://git.gnupg.org/libgcrypt.git?libgcrypt-1.6.4
-
-libgcrypt/configure: libgcrypt.src.stamp libgcrypt/configure.ac 
-	cd libgcrypt && ./autogen.sh
-
-libgcrypt/Makefile: libgcrypt/configure 
-	-patch -N -p1 --reject-file=- libgcrypt/Makefile.am libgcrypt-disable-docs.patch
-	cd libgcrypt && \
-		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-			./configure \
-				--enable-maintainer-mode \
-				--host=$(HOST) \
-				--with-gpg-error-prefix=$(LOCAL) \
-				--prefix=$(LOCAL)
-	-patch -N -p1 --reject-file=- libgcrypt/tests/random.c libgcrypt-disable-hanging-random-test.patch
-	# force use of /dev/urandom
-	-sed -i 's/NAME_OF_DEV_RANDOM/NAME_OF_DEV_URANDOM/' libgcrypt/random/rndlinux.c
-
-libgcrypt/src/.libs/libgcrypt.so: $(LOCAL)/lib/libgpg-error.so libgcrypt/Makefile
-	$(MAKE) -C libgcrypt
-
-$(LOCAL)/lib/libgcrypt.so: libgcrypt/src/.libs/libgcrypt.so
-	$(MAKE) -C libgcrypt prefix=$(LOCAL) install
-	ls -l $(LOCAL)/lib/libgcrypt.so
-
-libgcrypt-build: libgcrypt/src/.libs/libgcrypt.so
-
-libgcrypt-install: $(LOCAL)/lib/libgcrypt.so
-
-#------------------------------------------------------------------------------#
-# libassuan
-
-EXTERNAL_GIT_REPOS += libassuan|git://git.gnupg.org/libassuan.git?libassuan-2.3.0
-
-libassuan/configure: libassuan.src.stamp libassuan/configure.ac 
-	cd libassuan && ./autogen.sh && autoreconf --install --force --verbose
-
-libassuan/Makefile: libassuan/configure
-	-patch -N -p1 --reject-file=- libassuan/m4/libtool.m4 libtool-Add-Android-Linux-support.patch
-	cd libassuan && \
-		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-			./configure \
-				--enable-maintainer-mode \
-				--disable-largefile \
-				--host=$(HOST) \
-				--with-gpg-error-prefix=$(LOCAL) \
-				--prefix=$(LOCAL)
-
-libassuan/src/.libs/libassuan.so: $(LOCAL)/lib/libgpg-error.so libassuan/Makefile
-	$(MAKE) -C libassuan
-
-$(LOCAL)/lib/libassuan.so: libassuan/src/.libs/libassuan.so
-	$(MAKE) -C libassuan prefix=$(LOCAL) install
-	ls -l $(LOCAL)/lib/libassuan.so
-
-libassuan-build: libassuan/src/.libs/libassuan.so
-
-libassuan-install: $(LOCAL)/lib/libassuan.so
-
-#------------------------------------------------------------------------------#
-# libksba
-
-EXTERNAL_GIT_REPOS += libksba|git://git.gnupg.org/libksba.git?libksba-1.3.4
-
-libksba/configure: libksba.src.stamp libksba/configure.ac 
-	cd libksba && ./autogen.sh
-
-libksba/Makefile: $(LOCAL)/lib/libgpg-error.so libksba/configure
-	-patch -N -p1 --reject-file=- libksba/m4/libtool.m4 libtool-Add-Android-Linux-support.patch
-	cd libksba && \
-		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-			./configure \
-				--enable-maintainer-mode \
-				--host=$(HOST) \
-				--with-gpg-error-prefix=$(LOCAL) \
-				--prefix=$(LOCAL)
-
-libksba/src/.libs/libksba.so: libksba/Makefile
-	$(MAKE) -C libksba
-
-$(LOCAL)/lib/libksba.so: libksba/src/.libs/libksba.so
-	$(MAKE) -C libksba prefix=$(LOCAL) install
-	ls -l $(LOCAL)/lib/libksba.so
-
-libksba-build: libksba/src/.libs/libksba.so
-
-libksba-install: $(LOCAL)/lib/libksba.so
-
-
-#------------------------------------------------------------------------------#
-# npth
-
-EXTERNAL_GIT_REPOS += npth|git://git.gnupg.org/npth.git?npth-1.2
-
-npth/configure: npth.src.stamp npth/configure.ac
-	cd npth && ./autogen.sh
-
-npth/Makefile: $(LOCAL)/lib/libgpg-error.so npth/configure
-	cd npth && \
-		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-		./configure $(CONFIGURE_ARGS) \
-				--enable-maintainer-mode \
-        		--host=$(HOST) \
-				--with-gpg-error-prefix=$(LOCAL) \
-				--prefix=$(LOCAL)
-
-npth/src/.libs/libnpth.so: npth/Makefile
-	$(MAKE) -C npth
-
-$(LOCAL)/lib/libnpth.so: npth/src/.libs/libnpth.so
-	$(MAKE) -C npth prefix=$(LOCAL) install
-	ls -l $(LOCAL)/lib/libnpth.so
-
-npth-build: npth/src/.libs/libnpth.so
-
-npth-install: $(LOCAL)/lib/libnpth.so
-
-#------------------------------------------------------------------------------#
-# curl
-
-EXTERNAL_GIT_REPOS += curl|https://github.com/bagder/curl?curl-7_45_0
-
-curl/configure: curl.src.stamp curl/configure.ac 
-	cd curl && ./buildconf
-
-curl/Makefile: curl/configure
-	-patch -N -p1 --reject-file=- curl/m4/libtool.m4 libtool-Add-Android-Linux-support.patch
-	cd curl && \
-		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-			./configure \
-				--host=$(HOST) \
-				--prefix=$(prefix) \
-				--with-gnu-ld \
-				--disable-imap \
-				--disable-ldap \
-				--disable-pop3 \
-				--disable-rtsp \
-				--disable-smtp
-	# brute force and ignorance to make libtool comply with android style
-	sed -i 's,^fast_install=.*,fast_install=needless,' curl/libtool
-	sed -i 's,^version_type=.*,version_type=none,' curl/libtool
-	sed -i 's,^shlibpath_overrides_runpath=.*,shlibpath_overrides_runpath=yes,' curl/libtool
-	sed -i 's,^library_names_spec=.*,library_names_spec="\\$$libname\\$$release\\$$shared_ext",' curl/libtool
-	sed -i 's,^soname_spec=.*,soname_spec="\\$$libname\\$$release\\$$shared_ext",' curl/libtool
-	sed -i 's,^finish_cmds=.*,finish_cmds="",' curl/libtool
-	sed -i 's,^sys_lib_dlsearch_path_spec=.*,sys_lib_dlsearch_path_spec="/lib /usr/lib",' curl/libtool
-
-curl/lib/.libs/libcurl.so: curl/Makefile
-	$(MAKE) -C curl
-
-$(LOCAL)/lib/libcurl.so: curl/lib/.libs/libcurl.so
-	$(MAKE) -C curl DESTDIR=$(DESTDIR) prefix=$(prefix) install
-	ls -l $(LOCAL)/lib/libcurl.so
-
-curl-build: curl/lib/.libs/libcurl.so
-
-curl-install: $(LOCAL)/lib/libcurl.so
-
 #------------------------------------------------------------------------------#
 # libiconv
 
@@ -336,12 +133,11 @@ libiconv/Makefile: libiconv.src.stamp
 	cp config.sub libiconv/libcharset/build-aux
 	cp config.guess libiconv/libcharset/build-aux
 	cd libiconv && \
-		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
-				--enable-static \
-				--enable-maintainer-mode \
+				--with-lib-path=$(LOCAL)/lib \
+                --with-include-path=$(LOCAL)/include \
 				--host=$(HOST) \
-				--with-gnu-ld \
 				--prefix=$(LOCAL)
 
 libiconv/lib/.libs/libiconv.so: libiconv/Makefile
@@ -356,100 +152,17 @@ libiconv-build: libiconv/lib/.libs/libiconv.so
 libiconv-install: $(LOCAL)/lib/libiconv.so
 
 #------------------------------------------------------------------------------#
-# gnupg
-
-EXTERNAL_GIT_REPOS += gnupg|git://git.gnupg.org/gnupg.git?gnupg-2.0.30
-
-gnupg/configure: gnupg.src.stamp gnupg/configure.ac 
-	cd gnupg && ./autogen.sh
-
-gnupg/Makefile: gnupg/configure
-	-patch -N -p1 --reject-file=- gnupg/gl/stdint_.h gnupg_fix_gmulib_stdint_with_bionic.patch
-	-patch -N -p1 --reject-file=- gnupg/jnlib/dotlock.c gnupg_use_rename_for_dotlock.patch
-	cd gnupg && \
-		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-			./configure \
-				--enable-maintainer-mode \
-				--host=$(HOST) \
-				--with-gpg-error-prefix=$(LOCAL) \
-				--with-libgcrypt-prefix=$(LOCAL) \
-				--with-libassuan-prefix=$(LOCAL) \
-				--with-ksba-prefix=$(LOCAL) \
-				--with-libcurl=$(LOCAL) \
-				--disable-agent \
-				--disable-scdaemon \
-				--disable-ldap \
-				--disable-doc \
-				--disable-gpgsm \
-				--prefix=$(prefix)
-
-gnupg/g10/gpg2: $(LOCAL)/lib/libgpg-error.so $(LOCAL)/lib/libgcrypt.so $(LOCAL)/lib/libksba.so $(LOCAL)/lib/libnpth.so $(LOCAL)/lib/libassuan.so $(LOCAL)/lib/libcurl.so $(LOCAL)/lib/libiconv.so gnupg/Makefile
-	$(MAKE) -C gnupg
-
-$(LOCAL)/bin/gpg2: gnupg/g10/gpg2 gnupg/configure
-	$(MAKE) -C gnupg prefix=$(LOCAL) install
-	ls -l $(LOCAL)/bin/gpg2
-
-gnupg-build: gnupg/g10/gpg2
-
-gnupg-install: $(LOCAL)/bin/gpg2
-	install -d $(LOCAL)/etc/gnupg
-	install -d $(LOCAL)/var/run/gnupg
-	install -d $(LOCAL)/var/cache/gnupg
-
-#------------------------------------------------------------------------------#
-# gpgme
-
-EXTERNAL_GIT_REPOS += gpgme|git://git.gnupg.org/gpgme.git?gpgme-1.8.0
-
-gpgme/configure: gpgme.src.stamp gpgme/configure.ac
-	cd gpgme && ./autogen.sh
-
-ifneq ("x$(findstring '64',$(HOST))x","xx")
-    gpgme_32b_force_no_largefile =
-else
-    gpgme_32b_force_no_largefile = --disable-largefile
-endif
-
-gpgme/Makefile: gpgme/configure
-	-patch -N -p1 --reject-file=- gpgme/m4/libtool.m4 libtool-Add-Android-Linux-support.patch
-	cd gpgme && \
-		CC="$(CC)" AR="$(AR)" RANLIB=$(RANLIB) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-			./configure \
-				--host=$(HOST) \
-				$(gpgme_32b_force_no_largefile) \
-				--enable-maintainer-mode \
-				--with-gpg-error-prefix=$(LOCAL) \
-				--with-libassuan-prefix=$(LOCAL) \
-				--enable-fixed-path=$(prefix)/bin \
-				--disable-glibtest \
-				--disable-gpg-test \
-				--disable-gpgsm-test \
-				--disable-gpgconf-test \
-				--disable-g13-test \
-				--prefix=$(prefix) \
-				--enable-languages=cl
-
-
-gpgme/src/.libs/libgpgme.so: gpgme/Makefile
-	$(MAKE) -C gpgme
-
-$(LOCAL)/lib/libgpgme.so: gpgme/src/.libs/libgpgme.so
-	$(MAKE) -C gpgme DESTDIR=$(DESTDIR) prefix=$(prefix) install
-
-gpgme-build: gpgme/src/.libs/libgpgme.so
-
-gpgme-install: $(LOCAL)/bin/gpg2 $(LOCAL)/lib/libgpgme.so
-
-#------------------------------------------------------------------------------#
 # libetpan
 
 EXTERNAL_GIT_REPOS += libetpan|https://github.com/fdik/libetpan.git?HEAD
 
-libetpan/build-android/libetpan-android-1.zip: libiconv-install libetpan.src.stamp
+libetpan/Makefile: libetpan.src.stamp libiconv-install
 	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh
+	touch libetpan.src.stamp
+	touch libicon-install
+	touch libetpan/Makefile
 
-libetpan-build: libetpan/build-android/libetpan-android-1.zip
+libetpan-build: libetpan/Makefile
 
 libetpan-cleanzip:
 	rm -f libetpan/build-android/libetpan-android-1.zip
@@ -512,11 +225,50 @@ uuid/jni/Android.mk: uuid.src.stamp
 
 #------------------------------------------------------------------------------#
 # Sequoia
-OPENSSL_VERSION=1.1.1a
+OPENSSL_VERSION=1.1.1b
 GMP_VERSION=6.1.2
 NETTLE_VERSION=3.4.1
 
-sequoia-build: gmp-install nettle-install
+sequoia-deps-build: gmp-install nettle-install openssl-install
+
+#------------------------------------------------------------------------------#
+# OpenSSL
+
+openssl-$(OPENSSL_VERSION).tar.gz:
+	wget -nc https://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
+	md5sum -c openssl-$(OPENSSL_VERSION).tar.gz.md5
+
+openssl.src.stamp: openssl-$(OPENSSL_VERSION).tar.gz
+	tar xvf openssl-$(OPENSSL_VERSION).tar.gz
+	mv openssl-$(OPENSSL_VERSION) openssl
+	touch $@
+
+openssl-src: openssl.src.stamp
+
+openssl-clean:
+	rm -rf openssl
+	rm -rf openssl.src.stamp
+
+EXTERNAL_SRCS += openssl-src
+EXTERNAL_SRCS_CLEAN += openssl-clean
+
+openssl/Makefile: openssl.src.stamp
+	cd openssl && \
+	        PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" ./Configure android-arm --prefix=$(prefix)
+
+openssl/libssl.so: openssl/Makefile
+	PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" $(MAKE) -C openssl
+
+$(LOCAL)/lib/libssl.so: openssl/libssl.so
+	PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" $(MAKE) -C openssl DESTDIR=$(DESTDIR) prefix=$(prefix) install
+	pwd
+	ls -l $(LOCAL)/lib/libssl.so
+
+openssl-build: openssl/libssl.so
+
+openssl-install: $(LOCAL)/lib/libssl.so
+
+
 #------------------------------------------------------------------------------#
 # GMP
 
@@ -550,6 +302,7 @@ gmp/.libs/libgmp.so: gmp/Makefile
 
 $(LOCAL)/lib/libgmp.so: gmp/.libs/libgmp.so
 	$(MAKE) -C gmp DESTDIR=$(DESTDIR) prefix=$(prefix) install
+	#gmp/libtool --finish $(LOCAL)/lib/
 	ls -l $(LOCAL)/lib/libgmp.so
 
 gmp-build: gmp/.libs/libgmp.so
@@ -560,7 +313,7 @@ gmp-install: $(LOCAL)/lib/libgmp.so
 #------------------------------------------------------------------------------#
 # NETTLE
 
-nettle-$(NETTLE_VERSION).tar.bz2: $(LOCAL)/lib/libgmp.so
+nettle-$(NETTLE_VERSION).tar.gz: $(LOCAL)/lib/libgmp.so
 	wget -nc https://ftp.gnu.org/gnu/nettle/nettle-$(NETTLE_VERSION).tar.gz
 	md5sum -c nettle-$(NETTLE_VERSION).tar.gz.md5
 
@@ -597,6 +350,41 @@ $(LOCAL)/lib/libnettle.so: nettle/libnettle.so
 nettle-build: nettle/libnettle.so
 
 nettle-install: $(LOCAL)/lib/libnettle.so
+
+
+#------------------------------------------------------------------------------#
+# Sequoia-ffi
+EXTERNAL_GIT_REPOS += sequoia|https://gitlab.com/husspEp/sequoia.git?master
+
+CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/sequoia/build/$(APP_ABI)
+
+
+
+sequoia-ffi-clean:
+	rm -rf sequoia
+	rm -rf sequoia.src.stamp
+
+EXTERNAL_SRCS_CLEAN += sequoia-ffi-clean
+
+$(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so: sequoia.src.stamp nettle-install
+	cd sequoia && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
+	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
+	PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig \
+	PKG_CONFIG_ALLOW_CROSS=1 \
+	ARMV7_LINUX_ANDROIDEABI_OPENSSL_LIB_DIR="$(LOCAL)/lib" \
+	ARMV7_LINUX_ANDROIDEABI_OPENSSL_INCLUDE_DIR="$(LOCAL)/include" \
+	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR="$(LOCAL)/bin" \
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target armv7-linux-androideabi -p sequoia-openpgp-ffi --release
+
+
+$(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so
+	cp $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.* $(LOCAL)/lib/
+	ls -l $(LOCAL)/lib/libsequoia_openpgp_ffi.so
+
+
+sequoia-ffi-build: $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so
+
+sequoia-ffi-install: sequoia-deps-build $(LOCAL)/lib/libsequoia_openpgp_ffi.so
 
 #------------------------------------------------------------------------------#
 # assets for Android app
@@ -687,20 +475,13 @@ clean-all: clean
 #------------------------------------------------------------------------------#
 
 .PHONY = clean clean-install clean-assets libetpan-cleanzip\
-	libgpg-error-build libgpg-error-install \
-	libgcrypt-build libgcrypt-install \
-	libassuan-build libassuan-install \
-	libksba-build libksba-install \
-	libnpth-build libnpth-install \
 	libiconv-build libiconv-install \
 	uuid-build uuid-prebuild uuid-install \
-	gnupg-build  gnupg-install\
 	gmp-build  gmp-install \
-	sequoia-build \
+	sequoia-deps-build \
+	openssl-build  openssl-install \
 	nettle-build  nettle-install \
-	gpgme-build  gpgme-install\
-	curl-build curl-install \
+	sequoia-ffi-build sequoia-ffi-install\
 	assets \
-    $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS) \
+    $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN)\
 	showsetup
-

@@ -1,4 +1,4 @@
-package org.pEp.jniadapter;
+package foundation.pEp.jniadapter;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -18,7 +18,6 @@ public class AndroidHelper {
     public static final String TAG = "AndroidHelper";
 
     private static native int setenv(String key, String value, boolean overwrite);
-    private static native int nativeSetup(String debugflag);
 
     private static File homeDir;
     public static File gnupgHomeDir;
@@ -133,18 +132,42 @@ public class AndroidHelper {
     public static void nativeSetup(Context c) {
         // pre-load libs for pepengine, as
         // android cannot solve lib dependencies on its own
-        System.loadLibrary("gpg-error");
-        System.loadLibrary("assuan");
-        System.loadLibrary("gpgme");
+        System.loadLibrary("gmp");
+        System.loadLibrary("nettle");
+        System.loadLibrary("hogweed");
 
-        if (BuildConfig.DEBUG) {
-            // With lots of log
-            nativeSetup("9:" + new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());
-        } else {
-            // With almost no log
-            nativeSetup("0:" + new File(c.getFilesDir(), "gpgme.log").getAbsolutePath());
+        migrateFromGPGToSequoiaIfNeeded(c.getFilesDir());
+
+    }
+
+    private static void migrateFromGPGToSequoiaIfNeeded(File filesDir) {
+        if (gnupgHomeDir.exists()) {
+            try {
+                RandomAccessFile pubring = new RandomAccessFile(gnupgHomeDir.getAbsolutePath() + "/pubring.gpg", "r");
+                RandomAccessFile secring = new RandomAccessFile((gnupgHomeDir.getAbsolutePath() + "/secring.gpg"), "r");
+
+                byte[] pubringBytes = new byte[(int) pubring.length()];
+                pubring.readFully(pubringBytes);
+                Engine pEpEngine = new Engine();
+                pEpEngine.importKey(pubringBytes);
+
+                byte[] secringBytes = new byte[(int) secring.length()];
+                secring.readFully(secringBytes);
+                pEpEngine.importKey(secringBytes);
+
+
+                //TODO: MARK KEYRING AS IMPORTED
+                boolean renamed = gnupgHomeDir.renameTo(new File(homeDir, ".legacyKeyring"));
+                Log.d("pEp", String.format(".gnupg moved to .legacyKeyring %b", renamed));
+                new File(filesDir, "gpgme.log").delete();
+            } catch (FileNotFoundException ignore) {
+                //No keyring - nothing to do.
+            } catch (IOException exception) {
+                Log.e(TAG, "migrateFromGPGToSequoiaIfNeeded: ", exception);
+            } catch (pEpException exception) {
+                Log.w(TAG, "migrateFromGPGToSequoiaIfNeeded: NOTHING IMPORTED", exception);
+            }
         }
-
     }
 
     public static void setup(Context c) {

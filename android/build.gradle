@@ -10,38 +10,38 @@ def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 
 buildscript {
     repositories {
-        jcenter()
-        //maven {url 'https://maven.google.com'}
         google()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
-        //classpath 'com.android.tools.build:gradle:2.2.0'
     }
 }
 
 allprojects {
     repositories {
-        jcenter()
         google()
+        jcenter()
     }
 }
 
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 27
     buildToolsVersion '28.0.3'
 
     defaultConfig {
-        minSdkVersion 18
-        targetSdkVersion 21
+        minSdkVersion 19
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 
         externalNativeBuild {
             ndkBuild {
                 abiFilters "armeabi-v7a"
+                //abiFilters ["armeabi-v7a"]
+                //abiFilters ["arm64-v8a, armeabi-v7a"]
             }
         }
     }
@@ -53,10 +53,11 @@ android {
 
             // where to find generated Java source
             java.srcDirs = ['../src', 'src']
-            //jniLibs.srcDirs = ['../libpEpAdapter/src',
-            //                   '../pEpEngine/build-android/include/pEp',
-            //s                   'external/data/data/security.pEp/app_opt/lib']
+            jniLibs.srcDirs = ['libs',
+            //                   'external/data/data/security.pEp/app_opt/lib'
+                               ]
             assets.srcDirs = ['assets', 'external/assets']
+            resources.srcDirs = ['res']
         }
     }
 
@@ -79,7 +80,7 @@ android {
             jniDebuggable true
             externalNativeBuild {
                 ndkBuild {
-                    arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1'
+                   // arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1'
                 }
             }
         }

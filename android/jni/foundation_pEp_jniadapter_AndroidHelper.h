@@ -12,7 +12,7 @@ extern "C" {
  * Method:    setenv
  * Signature: (Ljava/lang/String;Ljava/lang/String;Z)I
  */
-JNIEXPORT jint JNICALL Java_org_pEp_jniadapter_AndroidHelper_setenv
+JNIEXPORT jint JNICALL Java_foundation_pEp_jniadapter_AndroidHelper_setenv
   (JNIEnv *, jclass, jstring, jstring, jboolean);
 
 #ifdef __cplusplus

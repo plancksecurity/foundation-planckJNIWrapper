@@ -175,7 +175,7 @@ abstract class AbstractEngine implements AutoCloseable {
     public int notifyHandshakeCallFromC(_Identity _myself, _Identity _partner, SyncHandshakeSignal _signal) {
         Identity myself = new Identity(_myself);
         Identity partner = new Identity(_partner);
-
+        System.out.println("pEpSync" +"notifyHandshakeCallFromC: " + notifyHandshakeCallback);
         if (notifyHandshakeCallback != null) {
             notifyHandshakeCallback.notifyHandshake(myself, partner, _signal);
         } else {
@@ -185,6 +185,7 @@ abstract class AbstractEngine implements AutoCloseable {
     }
 
     public int messageToSendCallFromC (Message message) {
+        System.out.println("pEpSync" + "messageToSendCallFromC: " + messageToSendCallback );
         if (messageToSendCallback != null) {
             messageToSendCallback.messageToSend(message);
         } else {
