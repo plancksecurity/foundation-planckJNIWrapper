@@ -1,0 +1,26 @@
+diff --git a/android/jni/Android.mk b/android/jni/Android.mk
+--- a/android/jni/Android.mk
++++ b/android/jni/Android.mk
+@@ -58,6 +58,12 @@
+ LOCAL_LDFLAGS = -Wl,--allow-multiple-definition
+ LOCAL_LDLIBS    += -llog
+ 
++LOCAL_CFLAGS    += -fsanitize=address -fno-omit-frame-pointer
++LOCAL_LDFLAGS   += -fsanitize=address
++LOCAL_ARM_MODE := arm
++
++LOCAL_ADDRESS_SANITIZER:=true
++
+ include $(BUILD_SHARED_LIBRARY)
+ 
+ include $(CLEAR_VARS)
+diff --git a/android/res/arm64-v8a/wrap.sh b/android/res/arm64-v8a/wrap.sh
+new file mode 100755
+--- /dev/null
++++ b/android/res/arm64-v8a/wrap.sh
+@@ -0,0 +1,5 @@
++#!/system/bin/sh
++HERE="$(cd "$(dirname "$0")" && pwd)"
++export ASAN_OPTIONS=log_to_syslog=false,allow_user_segv_handler=1
++export LD_PRELOAD=$HERE/libclang_rt.asan-aarch64-android.so
++exec "$@"
