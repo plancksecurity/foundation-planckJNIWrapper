@@ -379,7 +379,7 @@ $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so: s
 
 $(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so
 	cp $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.* $(LOCAL)/lib/
-	ls -l $(LOCAL)/lib/libsequoia_openpgp_ffi.so
+	cp -r sequoia/openpgp-ffi/include/* $(LOCAL)/include
 
 
 sequoia-ffi-build: $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so
