@@ -17,11 +17,14 @@ syntax: glob
 
 org_pEp_*.h
 org_pEp_*.cc
+pEp_*.h
+pEp_*.cc
 org/pEp/jniadapter/pEp*.java
 foundation_pEp_*.h
 foundation_pEp_*.cc
 foundation/pEp/jniadapter/pEp*.java
 
+pEp/jniadapter/pEp*.java
 throw_pEp_exception.*
 Color.java
 Engine.java
@@ -35,6 +38,7 @@ SyncHandshakeSignal.java
 CipherSuite.java
 
 
+ndk*/
 # ignore vim workspace
 
 ws
