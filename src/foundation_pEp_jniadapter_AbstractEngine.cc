@@ -323,7 +323,13 @@ extern "C" {
         )
     {
         debug_log << "######## starting sync\n";
-        startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::onSyncStartup, &JNISync::onSyncShutdown);
+        try {
+            startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::onSyncStartup, &JNISync::onSyncShutdown);
+        }
+        catch (RuntimeError& ex) {
+            throw_pEp_Exception(env, ex.status);
+            return;
+        }
     }
 
     JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_stopSync(
