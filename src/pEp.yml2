@@ -31,6 +31,7 @@ namespace pEp {
         pEp_key_unsuitable                              > 0x0206
         pEp_malformed_key_reset_msg                     > 0x0210
         pEp_key_not_reset                               > 0x0211
+        pEp_cannot_delete_key                           > 0x0212
 
         pEp_key_imported                                > 0x0220
         pEp_no_key_imported                             > 0x0221
@@ -78,6 +79,7 @@ namespace pEp {
         pEp_sync_no_channel                             > 0x0904
         pEp_sync_cannot_encrypt                         > 0x0905
         pEp_sync_no_message_send_callback               > 0x0906
+        pEp_sync_cannot_start                           > 0x0907
 
         pEp_cannot_increase_sequence                    > 0x0971
 
@@ -101,7 +103,7 @@ namespace pEp {
         pEp_buffer_too_small                            > -3
         pEp_out_of_memory                               > -2
         pEp_unknown_error                               > -1
-        
+
         pEp_version_mismatch                            > -7
     };
  
