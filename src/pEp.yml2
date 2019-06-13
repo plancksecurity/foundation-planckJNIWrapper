@@ -275,6 +275,14 @@ namespace pEp {
                 in bool full
             );
 
+        method get_trustwords_for_fprs(
+                in string fpr1,
+                in string fpr2,
+                in string lang,
+                returns sstring words,
+		in bool full
+            );
+
         method get_message_trustwords(
                 in message msg,
                 in stringlist keylist,
