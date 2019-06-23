@@ -13,6 +13,7 @@ NDK_TOOLCHAIN_VERSION ?= clang
 APP_ABI ?= armeabi-v7a
 APP_PLATFORM ?= android-18
 PEP_PACKAGE_NAME ?= security.pEp
+APP_OPTIM ?= debug
 
 all: build assets
 
@@ -356,7 +357,7 @@ nettle-install: $(LOCAL)/lib/libnettle.so
 # Sequoia-ffi
 EXTERNAL_GIT_REPOS += sequoia|https://gitlab.com/husspEp/sequoia.git?master
 
-CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/sequoia/build/$(APP_ABI)
+CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/build/$(APP_ABI)
 
 
 

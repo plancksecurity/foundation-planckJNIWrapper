@@ -68,7 +68,6 @@ LOCAL_SRC_FILES  := foundation_pEp_jniadapter_AndroidHelper.cc
 include $(BUILD_SHARED_LIBRARY)
 $(call import-add-path,$(SRC_PATH))
 $(call import-module, pEpEngine/build-android/jni/)
-$(info $(LOCAL_PATH))
 $(call import-module, libpEpAdapter/build-android/jni/)
 $(info $(LOCAL_PATH))
 $(call import-module, pEpJNIAdapter/android/external/uuid/jni)
