@@ -36,6 +36,7 @@ namespace pEp {
         pEp_key_imported                                > 0x0220
         pEp_no_key_imported                             > 0x0221
         pEp_key_import_status_unknown                   > 0x0222
+        pEp_some_keys_imported                          > 0x0223
 
         pEp_cannot_find_identity                        > 0x0301
         pEp_cannot_set_person                           > 0x0381
