@@ -5,8 +5,8 @@ GPGBUILD:= $(LOCAL_PATH)/../external/data/data/security.pEp
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libiconv
-LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/app_opt/lib/libiconv.so
-include $(PREBUILT_SHARED_LIBRARY)
+LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/app_opt/lib/libiconv.a
+include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libsequoia_openpgp_ffi
