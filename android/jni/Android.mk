@@ -54,7 +54,7 @@ LOCAL_SRC_FILES  := \
 		  ../../src/jniutils.cc
 
 LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/app_opt/include
-LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SRC_PATH)/libpEpAdapter $(SRC_PATH)/test/sequoia/openpgp-ffi/include
+LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SRC_PATH)/libpEpAdapter
 LOCAL_LDFLAGS = -Wl,--allow-multiple-definition
 LOCAL_LDLIBS    += -llog
 
