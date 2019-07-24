@@ -139,29 +139,29 @@ libiconv/Makefile: libiconv.src.stamp
 				--with-lib-path=$(LOCAL)/lib \
                 --with-include-path=$(LOCAL)/include \
 				--host=$(HOST) \
+				--enable-static \
+				--disable-shared \
 				--prefix=$(LOCAL)
 
-libiconv/lib/.libs/libiconv.so: libiconv/Makefile
+libiconv/lib/.libs/libiconv.a: libiconv/Makefile
 	$(MAKE) -C libiconv
 
-$(LOCAL)/lib/libiconv.so: libiconv/lib/.libs/libiconv.so
+$(LOCAL)/lib/libiconv.a: libiconv/lib/.libs/libiconv.a
 	$(MAKE) -C libiconv DESTDIR=$(DESTDIR) prefix=$(prefix) install
-	ls -l $(LOCAL)/lib/libiconv.so
+	ls -l $(LOCAL)/lib/libiconv.a
 
-libiconv-build: libiconv/lib/.libs/libiconv.so
+libiconv-build: libiconv/lib/.libs/libiconv.a
 
-libiconv-install: $(LOCAL)/lib/libiconv.so
+libiconv-install: $(LOCAL)/lib/libiconv.a
 
 #------------------------------------------------------------------------------#
 # libetpan
 
 EXTERNAL_GIT_REPOS += libetpan|https://github.com/fdik/libetpan.git?HEAD
 
-libetpan/Makefile: libetpan.src.stamp libiconv-install
+libetpan/Makefile: libetpan.src.stamp
 	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh
 	touch libetpan.src.stamp
-	touch libicon-install
-	touch libetpan/Makefile
 
 libetpan-build: libetpan/Makefile
 
@@ -333,6 +333,8 @@ EXTERNAL_SRCS += nettle-src
 EXTERNAL_SRCS_CLEAN += nettle-clean
 
 nettle/Makefile: nettle.src.stamp
+	-patch -N -p1 --reject-file=- nettle/configure.ac  nettle-3.4.1-remove-so-versioning.patch
+	-patch -N -p1 --reject-file=- nettle/Makefile.in  nettle-3.4.1-remove-so-versioning-link.patch
 	cd nettle && \
 		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
@@ -344,13 +346,12 @@ nettle/Makefile: nettle.src.stamp
 nettle/libnettle.so: nettle/Makefile
 	$(MAKE) -C nettle
 
-$(LOCAL)/lib/libnettle.so: nettle/libnettle.so
+$(LOCAL)/lib/libnettle.so: nettle/libnettle.so nettle/libhogweed.so
 	$(MAKE) -C nettle DESTDIR=$(DESTDIR) prefix=$(prefix) install
-	ls -l $(LOCAL)/lib/libnettle.so
 
-nettle-build: nettle/libnettle.so
+nettle-build: nettle/libnettle.so nettle/libhogweed.so
 
-nettle-install: $(LOCAL)/lib/libnettle.so
+nettle-install: $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libhogweed.so
 
 
 #------------------------------------------------------------------------------#
@@ -477,6 +478,7 @@ clean-all: clean
 
 .PHONY = clean clean-install clean-assets libetpan-cleanzip\
 	libiconv-build libiconv-install \
+	libetpan-build libetpan-install \
 	uuid-build uuid-prebuild uuid-install \
 	gmp-build  gmp-install \
 	sequoia-deps-build \

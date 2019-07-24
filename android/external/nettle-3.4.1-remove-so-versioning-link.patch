@@ -1,0 +1,50 @@
+--- nettle/Makefile.in	2018-12-04 21:56:06.000000000 +0100
++++ Makefile.in	2019-07-23 08:10:33.271656999 +0200
+@@ -266,10 +266,7 @@
+ 	-mkdir .lib 2>/dev/null
+ 	(cd .lib \
+           && rm -f $(LIBNETTLE_FORLINK) \
+-	  && $(LN_S) ../$(LIBNETTLE_FORLINK) $(LIBNETTLE_FORLINK) \
+-	  && [ -z "$(LIBNETTLE_SONAME)" ] \
+-	  || { rm -f $(LIBNETTLE_SONAME) \
+-	       && $(LN_S) $(LIBNETTLE_FORLINK) $(LIBNETTLE_SONAME) ; } )
++	  && $(LN_S) ../$(LIBNETTLE_FORLINK) $(LIBNETTLE_FORLINK) )
+ 	echo nettle > libnettle.stamp
+ 
+ $(LIBHOGWEED_FORLINK): $(hogweed_OBJS) $(LIBNETTLE_FORLINK)
+@@ -277,10 +274,7 @@
+ 	-mkdir .lib 2>/dev/null
+ 	(cd .lib \
+           && rm -f $(LIBHOGWEED_FORLINK) \
+-	  && $(LN_S) ../$(LIBHOGWEED_FORLINK) $(LIBHOGWEED_FORLINK) \
+-	  && [ -z "$(LIBHOGWEED_SONAME)" ] \
+-	  || { rm -f $(LIBHOGWEED_SONAME) \
+-	       && $(LN_S) $(LIBHOGWEED_FORLINK) $(LIBHOGWEED_SONAME) ; } )
++	  && $(LN_S) ../$(LIBHOGWEED_FORLINK) $(LIBHOGWEED_FORLINK) )
+ 	echo hogweed > libhogweed.stamp
+ 
+ # For Solaris and BSD make, we have to use an explicit rule for each
+@@ -462,11 +456,6 @@
+ install-shared-nettle: $(LIBNETTLE_FORLINK) @IF_DLL@ install-dll-nettle
+ 	$(MKDIR_P) $(DESTDIR)$(libdir)
+ 	$(INSTALL_DATA) $(LIBNETTLE_FILE_SRC) $(DESTDIR)$(libdir)/$(LIBNETTLE_FILE)
+-	[ -z "$(LIBNETTLE_SONAME)" ] \
+-                || (cd $(DESTDIR)$(libdir) \
+-		&& rm -f $(LIBNETTLE_SONAME) $(LIBNETTLE_FORLINK) \
+-		&& $(LN_S) $(LIBNETTLE_FILE) $(LIBNETTLE_SONAME) \
+-		&& $(LN_S) $(LIBNETTLE_FILE) $(LIBNETTLE_FORLINK))
+ 
+ install-dll-hogweed:
+ 	$(MKDIR_P) $(DESTDIR)$(bindir)
+@@ -475,11 +464,6 @@
+ install-shared-hogweed: $(LIBHOGWEED_FORLINK) @IF_DLL@ install-dll-hogweed
+ 	$(MKDIR_P) $(DESTDIR)$(libdir)
+ 	$(INSTALL_DATA) $(LIBHOGWEED_FILE_SRC) $(DESTDIR)$(libdir)/$(LIBHOGWEED_FILE)
+-	[ -z "$(LIBHOGWEED_SONAME)" ] \
+-                || (cd $(DESTDIR)$(libdir) \
+-		&& rm -f $(LIBHOGWEED_SONAME) $(LIBHOGWEED_FORLINK) \
+-		&& $(LN_S) $(LIBHOGWEED_FILE) $(LIBHOGWEED_SONAME) \
+-		&& $(LN_S) $(LIBHOGWEED_FILE) $(LIBHOGWEED_FORLINK))
+ 
+ # I'd like to use makes VPATH search to locate the files to be
+ # installed. But it seems most make programs don't set $<, $^, $? and
