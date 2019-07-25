@@ -478,7 +478,7 @@ clean-all: clean
 
 .PHONY = clean clean-install clean-assets libetpan-cleanzip\
 	libiconv-build libiconv-install \
-	libetpan-build libetpan-install \
+	libetpan-build \
 	uuid-build uuid-prebuild uuid-install \
 	gmp-build  gmp-install \
 	sequoia-deps-build \
