@@ -31,20 +31,6 @@ LOCAL := $(DESTDIR)$(prefix)
 
 PATH := ${PATH}:$(NDK_TOOLCHAIN)/bin:$(LOCAL)/bin
 
-#------------------------------------------------------------------------------#
-# NDK toolchain integration
-# TODO: cleanup.
-
-# Android now has 64-bit and 32-bit versions of the NDK for GNU/Linux.  We
-# assume that the build platform uses the appropriate version, otherwise the
-# user building this will have to manually set NDK_PROCESSOR or NDK_TOOLCHAIN.
-CPU := $(shell uname -m)
-ifeq ($(CPU),x86_64)
- NDK_PROCESSOR=x86_64
-else
- NDK_PROCESSOR=x86
-endif
-
 NDK_SYSROOT=$(ANDROID_NDK_HOME)/sysroot
 NDK_UNAME := $(shell uname -s | tr '[A-Z]' '[a-z]')
 
