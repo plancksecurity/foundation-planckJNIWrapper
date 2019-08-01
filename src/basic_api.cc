@@ -178,7 +178,6 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_trustOwnKey(
         jobject ident
     )
 {
-    PEP_SESSION session = (PEP_SESSION) callLongMethod(env, obj, "getHandle");
     pEp_identity *_ident = to_identity(env, ident);
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -186,7 +185,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_trustOwnKey(
         return;
     }
 
-    ::trust_own_key(session, _ident);
+    ::trust_own_key(session(), _ident);
 }
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_importKey(
