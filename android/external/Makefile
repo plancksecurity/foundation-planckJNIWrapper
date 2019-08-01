@@ -43,7 +43,7 @@ else
 endif
 # include Android's build flags
 TARGET_ARCH_ABI = $(APP_ABI)
-#include $(ANDROID_NDK)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
+include $(ANDROID_NDK)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 #include $(ANDROID_NDK_HOME)/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 ANDROID_NDK_HOME=$(EXTERNAL_ROOT)/ndk-18-arm
 LD := $(ANDROID_NDK_HOME)/bin/$(HOST)-ld

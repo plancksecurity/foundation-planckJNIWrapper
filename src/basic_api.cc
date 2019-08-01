@@ -14,7 +14,7 @@ extern "C" {
     using namespace pEp::JNIAdapter;
     using namespace pEp::Adapter;
 
-JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine_trustwords(
+JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine_trustwords(
         JNIEnv *env,
         jobject obj,
         jobject ident
