@@ -17,7 +17,7 @@ APP_OPTIM ?= debug
 
 all: build assets
 
-build: showsetup uuid-install uuid-prebuild sequoia-deps-build sequoia-ffi-install libetpan-build
+build: showsetup uuid-install sequoia-ffi-install libetpan-build
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
@@ -98,6 +98,7 @@ showsetup:
 # using released package instead
 libiconv-1.15.tar.gz:
 	wget https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.15.tar.gz
+	touch $@
 
 libiconv.src.stamp: libiconv-1.15.tar.gz
 	tar xvfz libiconv-1.15.tar.gz
@@ -145,9 +146,9 @@ libiconv-install: $(LOCAL)/lib/libiconv.a
 
 EXTERNAL_GIT_REPOS += libetpan|https://github.com/fdik/libetpan.git?HEAD
 
-libetpan/Makefile: libetpan.src.stamp libiconv-install
+libetpan/Makefile: libetpan.src.stamp | libiconv-install
 	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh
-	touch libetpan.src.stamp
+	touch $@
 
 libetpan-build: libetpan/Makefile
 
@@ -161,6 +162,7 @@ libetpan-cleanzip:
 ossp-uuid_1.6.2.orig.tar.gz:
 	wget http://http.debian.net/debian/pool/main/o/ossp-uuid/ossp-uuid_1.6.2.orig.tar.gz
 	md5sum -c ossp-uuid_1.6.2.orig.tar.gz.md5
+	touch $@
 
 uuid.src.stamp: ossp-uuid_1.6.2.orig.tar.gz
 	tar xvfz ossp-uuid_1.6.2.orig.tar.gz
@@ -203,7 +205,7 @@ uuid-build: uuid/.libs/libuuid.so
 
 uuid-prebuild: uuid/jni/Android.mk uuid/Makefile
 
-uuid-install: $(LOCAL)/lib/libuuid.so
+uuid-install: $(LOCAL)/lib/libuuid.so | uuid-prebuild
 
 uuid/jni/Android.mk: uuid.src.stamp
 	mkdir -p uuid/jni
@@ -224,6 +226,7 @@ sequoia-deps-build: gmp-install nettle-install openssl-install
 openssl-$(OPENSSL_VERSION).tar.gz:
 	wget -nc https://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
 	md5sum -c openssl-$(OPENSSL_VERSION).tar.gz.md5
+	touch $@
 
 openssl.src.stamp: openssl-$(OPENSSL_VERSION).tar.gz
 	tar xvf openssl-$(OPENSSL_VERSION).tar.gz
@@ -243,11 +246,11 @@ openssl/Makefile: openssl.src.stamp
 	cd openssl && \
 	        PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" ./Configure android-arm --prefix=$(prefix)
 
-openssl/libssl.so: openssl/Makefile
+openssl/libssl.so: | openssl/Makefile
 	PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" $(MAKE) -C openssl
 
 $(LOCAL)/lib/libssl.so: openssl/libssl.so
-	PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" $(MAKE) -C openssl DESTDIR=$(DESTDIR) prefix=$(prefix) install
+	PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" $(MAKE) -C openssl DESTDIR=$(DESTDIR) prefix=$(prefix) install_sw
 	pwd
 	ls -l $(LOCAL)/lib/libssl.so
 
@@ -262,6 +265,7 @@ openssl-install: $(LOCAL)/lib/libssl.so
 gmp-$(GMP_VERSION).tar.bz2:
 	wget -nc https://gmplib.org/download/gmp/gmp-$(GMP_VERSION).tar.bz2
 	md5sum -c gmp-$(GMP_VERSION).tar.bz2.md5
+	touch $@
 
 gmp.src.stamp: gmp-$(GMP_VERSION).tar.bz2
 	tar xvf gmp-$(GMP_VERSION).tar.bz2
@@ -291,6 +295,7 @@ $(LOCAL)/lib/libgmp.so: gmp/.libs/libgmp.so
 	$(MAKE) -C gmp DESTDIR=$(DESTDIR) prefix=$(prefix) install
 	#gmp/libtool --finish $(LOCAL)/lib/
 	ls -l $(LOCAL)/lib/libgmp.so
+	touch $@
 
 gmp-build: gmp/.libs/libgmp.so
 
@@ -303,6 +308,7 @@ gmp-install: $(LOCAL)/lib/libgmp.so
 nettle-$(NETTLE_VERSION).tar.gz: $(LOCAL)/lib/libgmp.so
 	wget -nc https://ftp.gnu.org/gnu/nettle/nettle-$(NETTLE_VERSION).tar.gz
 	md5sum -c nettle-$(NETTLE_VERSION).tar.gz.md5
+	touch $@
 
 nettle.src.stamp: nettle-$(NETTLE_VERSION).tar.gz
 	tar xvf nettle-$(NETTLE_VERSION).tar.gz
@@ -346,15 +352,13 @@ EXTERNAL_GIT_REPOS += sequoia|https://gitlab.com/husspEp/sequoia.git?master
 
 CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/build/$(APP_ABI)
 
-
-
 sequoia-ffi-clean:
 	rm -rf sequoia
 	rm -rf sequoia.src.stamp
 
 EXTERNAL_SRCS_CLEAN += sequoia-ffi-clean
 
-$(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so: sequoia.src.stamp nettle-install
+$(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp nettle-install
 	cd sequoia && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
 	PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig \
