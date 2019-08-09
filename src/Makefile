@@ -64,7 +64,7 @@ C_SOURCES=foundation_pEp_jniadapter_Engine.cc \
 .PHONY: all
 all: $(JAR) $(SHARED)
 
-$(JAR): $(JAVA_SOURCES) $(C_SOURCES)
+$(JAR): status_list.yml2 $(JAVA_SOURCES) $(C_SOURCES)
 	$(JP)/javac foundation/pEp/jniadapter/*.java
 	$(JP)/jar cf $@ foundation/pEp/jniadapter/*.class
 
@@ -87,6 +87,9 @@ $(LIBRARY): foundation_pEp_jniadapter_AbstractEngine.o foundation_pEp_jniadapter
 
 $(SHARED): $(LIBRARY)
 	$(CXX) *.o $(LDFLAGS) $(LDLIBS) -o $@
+
+status_list.yml2: pEp.yml2 $(ENGINE_SRC_DIR)/pEpEngine.h
+	bash ../utils/extract_pEp_status_codes_from_engine.sh $(word 2,$^) $@
 
 foundation/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2 pEp.yml2
 	$(YML2_PROC) -y gen_java_exceptions.ysl2 $< -o $@
@@ -131,3 +134,4 @@ clean:
 	rm -f foundation/pEp/jniadapter/CipherSuite.java
 	rm -f throw_pEp_exception.*
 	rm -f foundation_pEp_jniadapter_Message.cc foundation_pEp_jniadapter_Engine.cc
+	rm -f status_list.yml2

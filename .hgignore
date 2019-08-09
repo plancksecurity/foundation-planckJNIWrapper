@@ -37,6 +37,7 @@ IdentityFlags.java
 SyncHandshakeSignal.java
 CipherSuite.java
 
+status_list.yml2
 
 ndk*/
 # ignore vim workspace
