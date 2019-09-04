@@ -88,7 +88,7 @@ $(LIBRARY): foundation_pEp_jniadapter_AbstractEngine.o foundation_pEp_jniadapter
 $(SHARED): $(LIBRARY)
 	$(CXX) *.o $(LDFLAGS) $(LDLIBS) -o $@
 
-status_list.yml2: pEp.yml2 $(ENGINE_SRC_DIR)/pEpEngine.h
+status_list.yml2: pEp.yml2
 	bash ../utils/extract_pEp_status_codes_from_engine.sh $(word 2,$^) $@
 
 foundation/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2 pEp.yml2
