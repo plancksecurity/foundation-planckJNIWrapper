@@ -60,6 +60,8 @@ C_SOURCES=foundation_pEp_jniadapter_Engine.cc \
     throw_pEp_exception.hh \
     foundation_pEp_jniadapter_AbstractEngine.h
 
+PEP_HEADER:=$(shell $(CXX) -E -M get_header.cc | grep -oe '[^[:space:]]*pEpEngine\.h' | head -1)
+
 
 .PHONY: all
 all: $(JAR) $(SHARED)
@@ -89,7 +91,7 @@ $(SHARED): $(LIBRARY)
 	$(CXX) *.o $(LDFLAGS) $(LDLIBS) -o $@
 
 status_list.yml2: pEp.yml2
-	bash ../utils/extract_pEp_status_codes_from_engine.sh $(word 2,$^) $@
+	bash ../utils/extract_pEp_status_codes_from_engine.sh "$(PEP_HEADER)" $@
 
 foundation/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2 pEp.yml2
 	$(YML2_PROC) -y gen_java_exceptions.ysl2 $< -o $@
