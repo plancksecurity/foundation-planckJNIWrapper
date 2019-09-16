@@ -297,11 +297,34 @@ namespace pEp {
                 returns string languagelist
             );
 
+        // this function is not related to key reset
+
+        method key_reset_trust(
+                in identity ident
+            );
+
+        // old key_reset function needs to be replaced
+/*
         method key_reset(
                 in string fpr, 
                 in identity ident
             );
+*/
 
+        // new key reset API
+
+        method key_reset_identity(
+                in identity ident,
+                in string fpr
+            );
+
+        method key_reset_user(
+                in string userid,
+                in string fpr
+            );
+
+        method key_reset_all_own_keys();
+                
         method deliverHandshakeResult(
                 in SyncHandshakeResult shr,
                 in identitylist identities
