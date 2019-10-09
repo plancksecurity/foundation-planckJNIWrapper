@@ -358,7 +358,7 @@ sequoia-ffi-clean:
 
 EXTERNAL_SRCS_CLEAN += sequoia-ffi-clean
 
-$(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp nettle-install
+$(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp sequoia-deps-build
 	cd sequoia && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
 	PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig \
