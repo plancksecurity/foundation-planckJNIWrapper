@@ -51,6 +51,7 @@ LOCAL_SRC_FILES  := \
 		  ../../src/foundation_pEp_jniadapter_Message.cc \
 		  ../../src/throw_pEp_exception.cc \
 		  ../../src/basic_api.cc \
+		  ../../src/identity_api.cc \
 		  ../../src/jniutils.cc
 
 LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/app_opt/include

@@ -38,5 +38,13 @@ public class Identity implements Serializable{
         return address + "::" + username + "\n" +
                 user_id + "::" + fpr;
     }
+
+    // Native
+    private native int _getRating(int commType);
+
+    public Rating getRating() {
+        return Rating.getByInt(_getRating(comm_type.value));
+    }
+
 }
 
