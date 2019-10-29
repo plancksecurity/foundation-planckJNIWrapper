@@ -60,7 +60,7 @@ C_SOURCES=foundation_pEp_jniadapter_Engine.cc \
     throw_pEp_exception.hh \
     foundation_pEp_jniadapter_AbstractEngine.h
 
-PEP_HEADER:=$(shell $(CXX) -E -M get_header.cc | grep -oe '[^[:space:]]*pEpEngine\.h' | head -1)
+PEP_HEADER:=$(shell $(CXX) $(CXXFLAGS) -E -M get_header.cc | grep -oe '[^[:space:]]*pEpEngine\.h' | head -1)
 
 
 .PHONY: all
