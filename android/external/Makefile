@@ -11,7 +11,7 @@
 NDK_ABI ?= arm
 NDK_TOOLCHAIN_VERSION ?= clang
 APP_ABI ?= armeabi-v7a
-APP_PLATFORM ?= android-18
+ANDROID_API ?= 18
 PEP_PACKAGE_NAME ?= security.pEp
 APP_OPTIM ?= debug
 
@@ -242,10 +242,12 @@ openssl-clean:
 EXTERNAL_SRCS += openssl-src
 EXTERNAL_SRCS_CLEAN += openssl-clean
 
+
+OPENSSL_ARCHITECTURE:=android-arm
+
 openssl/Makefile: openssl.src.stamp
 	cd openssl && \
-	        PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" ./Configure android-arm --prefix=$(prefix)
-
+	    ../../../utils/configure_openssl.sh ${OPENSSL_ARCHITECTURE} $(ANDROID_API) $(LOCAL)
 openssl/libssl.so: | openssl/Makefile
 	PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" $(MAKE) -C openssl
 
