@@ -1,6 +1,7 @@
 LOCAL_PATH:= $(call my-dir)
 SRC_PATH := $(LOCAL_PATH)/../../../
 ENGINE_PATH := $(LOCAL_PATH)/../../../pEpEngine
+LIB_PEP_ADAPTER_PATH:=$(SRC_PATH)/libpEpAdapter
 GPGBUILD:= $(LOCAL_PATH)/../external/data/data/security.pEp
 
 include $(CLEAR_VARS)
