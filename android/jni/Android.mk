@@ -2,31 +2,31 @@ LOCAL_PATH:= $(call my-dir)
 SRC_PATH := $(LOCAL_PATH)/../../../
 ENGINE_PATH := $(LOCAL_PATH)/../../../pEpEngine
 LIB_PEP_ADAPTER_PATH:=$(SRC_PATH)/libpEpAdapter
-GPGBUILD:= $(LOCAL_PATH)/../external/data/data/security.pEp
+GPGBUILD:= $(LOCAL_PATH)/../external/output/$(TARGET_ARCH_ABI)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libiconv
-LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/app_opt/lib/libiconv.a
+LOCAL_SRC_FILES := $(GPGBUILD)/lib/libiconv.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libsequoia_openpgp_ffi
-LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/app_opt/lib/libsequoia_openpgp_ffi.a
+LOCAL_SRC_FILES := $(GPGBUILD)/lib/libsequoia_openpgp_ffi.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libhogweed
-LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/app_opt/lib/libhogweed.so
+LOCAL_SRC_FILES := $(GPGBUILD)/lib/libhogweed.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libgmp
-LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/app_opt/lib/libgmp.so
+LOCAL_SRC_FILES := $(GPGBUILD)/lib/libgmp.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libnettle
-LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/app_opt/lib/libnettle.so
+LOCAL_SRC_FILES := $(GPGBUILD)/lib/libnettle.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 
@@ -55,8 +55,9 @@ LOCAL_SRC_FILES  := \
 		  ../../src/identity_api.cc \
 		  ../../src/jniutils.cc
 
-LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/app_opt/include
+LOCAL_C_INCLUDES += $(GPGBUILD)/include
 LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SRC_PATH)/libpEpAdapter
+
 LOCAL_LDFLAGS = -Wl,--allow-multiple-definition
 LOCAL_LDLIBS    += -llog
 
@@ -72,4 +73,4 @@ $(call import-add-path,$(SRC_PATH))
 $(call import-module, pEpEngine/build-android/jni/)
 $(call import-module, libpEpAdapter/build-android/jni/)
 $(info $(LOCAL_PATH))
-$(call import-module, pEpJNIAdapter/android/external/uuid/jni)
+$(call import-module, pEpJNIAdapter/android/external/$(TARGET_ARCH_ABI)/uuid/jni)

@@ -135,11 +135,11 @@ android {
         commandLine 'make', 'clean', 'PEP_PACKAGE_NAME='+pEpAppPackageName
     }
 
-    task cleanExternalAssets(type:Exec) {
+/*    task cleanExternalAssets(type:Exec) {
         workingDir 'external'
         commandLine 'make', 'clean-assets', 'PEP_PACKAGE_NAME='+pEpAppPackageName
     }
-
+*/
     // unzip some of the dependencies
     task unzipDeps(type: Copy, dependsOn: 'buildExternal') {
         from zipTree(libEtPanZip)
