@@ -21,12 +21,15 @@ endif
 
 .PHONY: all build clean
 
+all: build
+
 build:
 	$(MAKE) -C armeabi-v7a
-
-all: build
+	$(MAKE) -C arm64-v8a
 
 clean:
 	$(MAKE) -C armeabi-v7a clean
+	$(MAKE) -C arm64-v8a clean
+
 
 assets:

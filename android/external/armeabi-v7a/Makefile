@@ -148,6 +148,7 @@ EXTERNAL_GIT_REPOS += libetpan|https://github.com/fdik/libetpan.git?HEAD
 
 libetpan/Makefile: libetpan.src.stamp | libiconv-install
 	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh
+	mv libetpan/build-android/libetpan-android-1.zip ../
 	touch $@
 
 libetpan-build: libetpan/Makefile

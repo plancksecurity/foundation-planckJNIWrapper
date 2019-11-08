@@ -1,5 +1,5 @@
 # Copyright 2019, pEp Foundation
-# This file is part of pEpJNIAdapter for Android  - ARMv7 build
+# This file is part of pEpJNIAdapter for Android  - ARM64 v8a build
 # This file may be used under the terms of the GNU General Public License version 3
 # see LICENSE.txt
 
@@ -18,7 +18,7 @@ include ../Makefile.conf
 APP_ABI ?= arm64-v8a
 ANDROID_API ?= 21
 
-all: build assets
+all: build
 
 build: generate-ndk-toolchain showsetup uuid-install sequoia-ffi-install libetpan-build
 
@@ -55,6 +55,7 @@ ANDROID_NDK_HOME=$(EXTERNAL_ROOT)/ndk-standalone-toolchain
 LD := $(ANDROID_NDK_HOME)/bin/$(HOST)-ld
 AR := $(ANDROID_NDK_HOME)/bin/$(HOST)-ar
 AS := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
+CC := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
 CC := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
 CXX := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang++
 RANLIB := $(ANDROID_NDK_HOME)/bin/$(HOST)-ranlib
@@ -147,6 +148,7 @@ EXTERNAL_GIT_REPOS += libetpan|https://github.com/fdik/libetpan.git?HEAD
 
 libetpan/Makefile: libetpan.src.stamp | libiconv-install
 	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh
+	mv libetpan/build-android/libetpan-android-1.zip ../
 	touch $@
 
 libetpan-build: libetpan/Makefile
@@ -213,9 +215,6 @@ uuid/jni/Android.mk: uuid.src.stamp
 
 #------------------------------------------------------------------------------#
 # Sequoia
-OPENSSL_VERSION=1.1.1b
-GMP_VERSION=6.1.2
-NETTLE_VERSION=3.4.1
 
 sequoia-deps-build: gmp-install nettle-install openssl-install
 
@@ -242,7 +241,7 @@ EXTERNAL_SRCS += openssl-src
 EXTERNAL_SRCS_CLEAN += openssl-clean
 
 
-OPENSSL_ARCHITECTURE:=android-arm
+OPENSSL_ARCHITECTURE:=android-arm64
 
 openssl/Makefile: openssl.src.stamp
 	cd openssl && \
@@ -292,7 +291,6 @@ gmp/Makefile: gmp.src.stamp
 				--host=$(HOST) \
 				--prefix=$(LOCAL) \
 			    --disable-static \
-			    --enable-cxx \
 			    MPN_PATH="arm64 generic"
 
 
@@ -366,7 +364,7 @@ sequoia-ffi-clean:
 
 EXTERNAL_SRCS_CLEAN += sequoia-ffi-clean
 
-$(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp sequoia-deps-build
+$(CARGO_TARGET_DIR)/aarch64-linux-android/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp sequoia-deps-build
 	cd sequoia && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
 	PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig \
@@ -374,15 +372,15 @@ $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so:  
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_LIB_DIR="$(LOCAL)/lib" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_INCLUDE_DIR="$(LOCAL)/include" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR="$(LOCAL)/bin" \
-	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target aarch64-linux-android' -p sequoia-openpgp-ffi --release
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target aarch64-linux-android -p sequoia-openpgp-ffi --release
 
 
-$(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so
-	cp $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.* $(LOCAL)/lib/
+$(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/aarch64-linux-android/release/libsequoia_openpgp_ffi.so
+	cp $(CARGO_TARGET_DIR)/aarch64-linux-android/release/libsequoia_openpgp_ffi.* $(LOCAL)/lib/
 	cp -r sequoia/openpgp-ffi/include/* $(LOCAL)/include
 
 
-sequoia-ffi-build: $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so
+sequoia-ffi-build: $(CARGO_TARGET_DIR)/aarch64-linux-android/release/libsequoia_openpgp_ffi.so
 
 sequoia-ffi-install: sequoia-deps-build $(LOCAL)/lib/libsequoia_openpgp_ffi.so
 

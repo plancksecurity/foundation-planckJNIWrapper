@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <string>
 
-#ifdef ANDROID
+#ifndef __aarch64__
 #include <time64.h>
 #define time_t time64_t
 #define timegm timegm64

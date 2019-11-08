@@ -4,7 +4,7 @@ def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 def pEpAppPackageName = hasProperty('pEpAppPackageName') ? pEpAppPackageName : "pep.android.k9"
 
-def libetpanAndroid = file('external/libetpan/build-android')
+def libetpanAndroid = file('external')
 
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 
@@ -39,7 +39,7 @@ android {
 
         externalNativeBuild {
             ndkBuild {
-                abiFilters "armeabi-v7a"
+                //abiFilters "armeabi-v7a"
                 //abiFilters ["armeabi-v7a"]
                 //abiFilters ["arm64-v8a, armeabi-v7a"]
             }
