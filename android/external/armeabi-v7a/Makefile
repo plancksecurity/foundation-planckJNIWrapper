@@ -13,8 +13,6 @@ include ../Makefile.conf
 #------------------------------------------------------------------------------#
 # Build parameters
 
-# TODO: get params from the outside for multiarch build
-
 APP_ABI ?= armeabi-v7a
 ANDROID_API ?= 18
 
@@ -92,10 +90,6 @@ showsetup:
 #------------------------------------------------------------------------------#
 # libiconv
 
-# libiconv from git can't autogen with today's debian packages.
-#EXTERNAL_GIT_REPOS += libiconv|git://git.savannah.gnu.org/libiconv.git?5365cc8
-
-# using released package instead
 libiconv-1.15.tar.gz:
 	wget https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.15.tar.gz
 	touch $@
@@ -150,13 +144,9 @@ libetpan-cleanzip:
 # uuid
 
 # using released package from debian. official ftp wasn't available today
-ossp-uuid_1.6.2.orig.tar.gz:
-	wget http://http.debian.net/debian/pool/main/o/ossp-uuid/ossp-uuid_1.6.2.orig.tar.gz
-	md5sum -c ../ossp-uuid_1.6.2.orig.tar.gz.md5
-	touch $@
 
 uuid.src.stamp: ossp-uuid_1.6.2.orig.tar.gz
-	tar xvfz ossp-uuid_1.6.2.orig.tar.gz
+	tar xvfz ../ossp-uuid_1.6.2.orig.tar.gz
 	mv uuid-1.6.2 uuid
 	touch $@
 
