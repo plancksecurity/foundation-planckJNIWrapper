@@ -90,8 +90,8 @@ showsetup:
 #------------------------------------------------------------------------------#
 # libiconv
 
-libiconv.src.stamp: ../libiconv-1.15.tar.gz
-	tar xvfz ../libiconv-1.15.tar.gz
+libiconv.src.stamp: ../downloads/libiconv-1.15.tar.gz
+	tar xvfz $<
 	mv libiconv-1.15 libiconv
 	touch $@
 
@@ -125,6 +125,10 @@ libiconv-install: $(LOCAL)/lib/libiconv.a
 
 #------------------------------------------------------------------------------#
 # libetpan
+libetpan.src.stamp: ../downloads/libetpan.tar.gz
+	mkdir -p libetpan
+	cd libetpan && tar xvfz ../$<
+	touch $@
 
 libetpan/Makefile: libetpan.src.stamp | libiconv-install
 	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh
@@ -139,8 +143,8 @@ libetpan-cleanzip:
 #------------------------------------------------------------------------------#
 # uuid
 
-uuid.src.stamp: ../ossp-uuid_1.6.2.orig.tar.gz
-	tar xvfz ../ossp-uuid_1.6.2.orig.tar.gz
+uuid.src.stamp: ../downloads/ossp-uuid_1.6.2.orig.tar.gz
+	tar xvf $<
 	mv uuid-1.6.2 uuid
 	touch $@
 
@@ -187,13 +191,13 @@ uuid/jni/Android.mk: uuid.src.stamp
 #------------------------------------------------------------------------------#
 # Sequoia
 
-sequoia-deps-build: gmp-install nettle-install openssl-install
+sequoia-deps-build: openssl-install nettle-install
 
 #------------------------------------------------------------------------------#
 # OpenSSL
 
-openssl.src.stamp: ../openssl-$(OPENSSL_VERSION).tar.gz
-	tar xvf ../openssl-$(OPENSSL_VERSION).tar.gz
+openssl.src.stamp: ../downloads/openssl-$(OPENSSL_VERSION).tar.gz
+	tar xvf $<
 	mv openssl-$(OPENSSL_VERSION) openssl
 	touch $@
 
@@ -227,8 +231,8 @@ openssl-install: $(LOCAL)/lib/libssl.so
 #------------------------------------------------------------------------------#
 # GMP
 
-gmp.src.stamp: ../gmp-$(GMP_VERSION).tar.bz2
-	tar xvf ../gmp-$(GMP_VERSION).tar.bz2
+gmp.src.stamp: ../downloads/gmp-$(GMP_VERSION).tar.bz2
+	tar xvf $<
 	mv gmp-$(GMP_VERSION) gmp
 	touch $@
 
@@ -265,12 +269,12 @@ gmp-install: $(LOCAL)/lib/libgmp.so
 #------------------------------------------------------------------------------#
 # NETTLE
 
-nettle.src.stamp: ../nettle-$(NETTLE_VERSION).tar.gz $(LOCAL)/lib/libgmp.so
-	tar xvf ../nettle-$(NETTLE_VERSION).tar.gz
+nettle.src.stamp: ../downloads/nettle-$(NETTLE_VERSION).tar.gz $(LOCAL)/lib/libgmp.so
+	tar xvf $<
 	mv nettle-$(NETTLE_VERSION) nettle
 	touch $@
 
-nettle-src: nettle.src.stamp
+nettle-src: nettle.src.stamp gmp-install
 
 nettle-clean:
 	rm -rf nettle
@@ -284,24 +288,31 @@ nettle/Makefile: nettle.src.stamp
 			./configure \
 				--with-lib-path=$(LOCAL)/lib \
                 --with-include-path=$(LOCAL)/include \
+                --disable-static \
+                --disable-documentation \
 				--host=$(HOST) \
 				--prefix=$(LOCAL)
 
 nettle/libnettle.so: nettle/Makefile
 	$(MAKE) -C nettle
 
-$(LOCAL)/lib/libnettle.so: nettle/libnettle.so nettle/libhogweed.so
+$(LOCAL)/lib/libnettle.so: nettle/libnettle.so
 	$(MAKE) -C nettle DESTDIR=$(DESTDIR) prefix=$(prefix) install
 
-nettle-build: nettle/libnettle.so nettle/libhogweed.so
+nettle-build: nettle/libnettle.so
 
-nettle-install: $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libhogweed.so
+nettle-install: $(LOCAL)/lib/libnettle.so
 
 
 #------------------------------------------------------------------------------#
 # Sequoia-ffi
 
 CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/build/$(APP_ABI)
+
+sequoia.src.stamp: ../downloads/sequoia.tar.gz
+	mkdir -p sequoia
+	cd sequoia && tar xvf ../$<
+	touch $@
 
 sequoia-ffi-clean:
 	rm -rf sequoia
@@ -352,53 +363,6 @@ sequoia-ffi-install: sequoia-deps-build $(LOCAL)/lib/libsequoia_openpgp_ffi.so
 #	rm -rf $(ASSETS)/share/man $(ASSETS)/share/info $(ASSETS)/share/doc
 #	rm -rf $(ASSETS)/tests
 #
-
-#------------------------------------------------------------------------------#
-# Clone update and archive external projects GIT repos
-# Local clone is in external/$project.git while
-# selected commit is archived in external/$project
-
-define per_repo_targets
-$(1).git.stamp:
-	git clone $(2) $(1).git
-	touch $(1).git.stamp
-
-$(1).git_update: $(1).git.stamp
-	cd $(1).git; git pull
-	touch $(1).git.stamp
-
-$(1).src.stamp: $(1).git.stamp
-	rm -rf $(1)
-	mkdir $(1)
-	(cd $(1).git; git archive --format=tar $(3)) | tar -C $(1) -x
-	touch $(1).src.stamp
-
-$(1)-src: $(1).src.stamp
-
-$(1)-clean:
-	rm -rf $(1)
-	rm -f $(1).src.stamp
-
-EXTERNAL_LOCAL_GITS += $(1).git.stamp
-EXTERNAL_LOCAL_GITS_UPDATE += $(1).git_update
-EXTERNAL_SRCS += $(1)-src
-EXTERNAL_SRCS_CLEAN += $(1)-clean
-endef
-
-define per_repo
-$(call per_repo_targets,\
-    $(1),\
-    $(word 1,$(subst ?, ,$(2))),\
-    $(word 2,$(subst ?, ,$(2))))
-endef
-
-$(foreach repo, $(EXTERNAL_GIT_REPOS), $(eval $(call per_repo,\
-    $(word 1,$(subst |, ,$(repo))),\
-    $(word 2,$(subst |, ,$(repo))))))
-
-git_clones: $(EXTERNAL_LOCAL_GITS)
-
-git_update: $(EXTERNAL_LOCAL_GITS_UPDATE)
 
 #------------------------------------------------------------------------------#
 # clean

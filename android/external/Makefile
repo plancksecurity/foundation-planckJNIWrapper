@@ -23,7 +23,7 @@ endif
 
 all: build
 
-build: libiconv-1.15.tar.gz
+build: downloads/downloads.stamp
 	$(MAKE) -C armeabi-v7a
 	$(MAKE) -C arm64-v8a
 
@@ -32,11 +32,11 @@ clean:
 	$(MAKE) -C arm64-v8a clean
 
 clean-all:
-	$(MAKE) -C common clean
+	$(MAKE) -C downloads clean
 	$(MAKE) -C armeabi-v7a clean-all
 	$(MAKE) -C arm64-v8a clean-all
 
-libiconv-1.15.tar.gz:
-	$(MAKE) -C common
+downloads/downloads.stamp:
+	$(MAKE) -C downloads
 
 assets:
