@@ -139,7 +139,7 @@ libetpan-cleanzip:
 #------------------------------------------------------------------------------#
 # uuid
 
-uuid.src.stamp: ossp-uuid_1.6.2.orig.tar.gz
+uuid.src.stamp: ../ossp-uuid_1.6.2.orig.tar.gz
 	tar xvfz ../ossp-uuid_1.6.2.orig.tar.gz
 	mv uuid-1.6.2 uuid
 	touch $@
@@ -192,13 +192,8 @@ sequoia-deps-build: gmp-install nettle-install openssl-install
 #------------------------------------------------------------------------------#
 # OpenSSL
 
-openssl-$(OPENSSL_VERSION).tar.gz:
-	wget -nc https://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
-	md5sum -c ../openssl-$(OPENSSL_VERSION).tar.gz.md5
-	touch $@
-
-openssl.src.stamp: openssl-$(OPENSSL_VERSION).tar.gz
-	tar xvf openssl-$(OPENSSL_VERSION).tar.gz
+openssl.src.stamp: ../openssl-$(OPENSSL_VERSION).tar.gz
+	tar xvf ../openssl-$(OPENSSL_VERSION).tar.gz
 	mv openssl-$(OPENSSL_VERSION) openssl
 	touch $@
 
@@ -232,13 +227,8 @@ openssl-install: $(LOCAL)/lib/libssl.so
 #------------------------------------------------------------------------------#
 # GMP
 
-gmp-$(GMP_VERSION).tar.bz2:
-	wget -nc https://gmplib.org/download/gmp/gmp-$(GMP_VERSION).tar.bz2
-	md5sum -c ../gmp-$(GMP_VERSION).tar.bz2.md5
-	touch $@
-
-gmp.src.stamp: gmp-$(GMP_VERSION).tar.bz2
-	tar xvf gmp-$(GMP_VERSION).tar.bz2
+gmp.src.stamp: ../gmp-$(GMP_VERSION).tar.bz2
+	tar xvf ../gmp-$(GMP_VERSION).tar.bz2
 	mv gmp-$(GMP_VERSION) gmp
 	touch $@
 
@@ -275,13 +265,8 @@ gmp-install: $(LOCAL)/lib/libgmp.so
 #------------------------------------------------------------------------------#
 # NETTLE
 
-nettle-$(NETTLE_VERSION).tar.gz: $(LOCAL)/lib/libgmp.so
-	wget -nc https://ftp.gnu.org/gnu/nettle/nettle-$(NETTLE_VERSION).tar.gz
-	md5sum -c ../nettle-$(NETTLE_VERSION).tar.gz.md5
-	touch $@
-
-nettle.src.stamp: nettle-$(NETTLE_VERSION).tar.gz
-	tar xvf nettle-$(NETTLE_VERSION).tar.gz
+nettle.src.stamp: ../nettle-$(NETTLE_VERSION).tar.gz $(LOCAL)/lib/libgmp.so
+	tar xvf ../nettle-$(NETTLE_VERSION).tar.gz
 	mv nettle-$(NETTLE_VERSION) nettle
 	touch $@
 
@@ -422,7 +407,7 @@ clean-assets:
 	rm -rf $(ASSETS)
 
 clean-install:
-	rm -rf $(DESTDIR)/data
+	rm -rf $(LOCAL)
 
 clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install libetpan-cleanzip
 
