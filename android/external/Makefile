@@ -23,7 +23,7 @@ endif
 
 all: build
 
-build:
+build: libiconv-1.15.tar.gz
 	$(MAKE) -C armeabi-v7a
 	$(MAKE) -C arm64-v8a
 
@@ -31,5 +31,7 @@ clean:
 	$(MAKE) -C armeabi-v7a clean
 	$(MAKE) -C arm64-v8a clean
 
+libiconv-1.15.tar.gz:
+	$(MAKE) -C common
 
 assets:

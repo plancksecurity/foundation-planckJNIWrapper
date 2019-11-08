@@ -96,12 +96,9 @@ showsetup:
 #EXTERNAL_GIT_REPOS += libiconv|git://git.savannah.gnu.org/libiconv.git?5365cc8
 
 # using released package instead
-libiconv-1.15.tar.gz:
-	wget https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.15.tar.gz
-	touch $@
 
-libiconv.src.stamp: libiconv-1.15.tar.gz
-	tar xvfz libiconv-1.15.tar.gz
+libiconv.src.stamp: ../libiconv-1.15.tar.gz
+	tar xvfz ../libiconv-1.15.tar.gz
 	mv libiconv-1.15 libiconv
 	touch $@
 
@@ -111,15 +108,7 @@ libiconv-clean:
 	rm -rf libiconv
 	rm -rf libiconv.src.stamp
 
-EXTERNAL_SRCS += libiconv-src
-EXTERNAL_SRCS_CLEAN += libiconv-clean
-
 libiconv/Makefile: libiconv.src.stamp
-	-patch -N -p1 --reject-file=- libiconv/m4/libtool.m4 ../libtool-Add-Android-Linux-support-iconv.patch
-	cp ../config.sub libiconv/build-aux
-	cp ../config.guess libiconv/build-aux
-	cp ../config.sub libiconv/libcharset/build-aux
-	cp ../config.guess libiconv/libcharset/build-aux
 	cd libiconv && \
 		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
@@ -143,8 +132,6 @@ libiconv-install: $(LOCAL)/lib/libiconv.a
 
 #------------------------------------------------------------------------------#
 # libetpan
-
-EXTERNAL_GIT_REPOS += libetpan|https://github.com/fdik/libetpan.git?HEAD
 
 libetpan/Makefile: libetpan.src.stamp | libiconv-install
 	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh
@@ -175,9 +162,6 @@ uuid-src: uuid.src.stamp
 uuid-clean:
 	rm -rf uuid
 	rm -rf uuid.src.stamp
-
-EXTERNAL_SRCS += uuid-src
-EXTERNAL_SRCS_CLEAN += uuid-clean
 
 uuid/Makefile: uuid.src.stamp
 	$(SED) -i 's,AC_CHECK_VA_COPY(),,' uuid/uuid.ac
@@ -237,10 +221,6 @@ openssl-clean:
 	rm -rf openssl
 	rm -rf openssl.src.stamp
 
-EXTERNAL_SRCS += openssl-src
-EXTERNAL_SRCS_CLEAN += openssl-clean
-
-
 OPENSSL_ARCHITECTURE:=android-arm64
 
 openssl/Makefile: openssl.src.stamp
@@ -280,9 +260,6 @@ gmp-src: gmp.src.stamp
 gmp-clean:
 	rm -rf gmp
 	rm -rf gmp.src.stamp
-
-EXTERNAL_SRCS += gmp-src
-EXTERNAL_SRCS_CLEAN += gmp-clean
 
 gmp/Makefile: gmp.src.stamp
 	cd gmp && \
@@ -327,9 +304,6 @@ nettle-clean:
 	rm -rf nettle
 	rm -rf nettle.src.stamp
 
-EXTERNAL_SRCS += nettle-src
-EXTERNAL_SRCS_CLEAN += nettle-clean
-
 nettle/Makefile: nettle.src.stamp
 	-patch -N -p1 --reject-file=- nettle/configure.ac  ../nettle-3.4.1-remove-so-versioning.patch
 	-patch -N -p1 --reject-file=- nettle/Makefile.in  ../nettle-3.4.1-remove-so-versioning-link.patch
@@ -354,15 +328,12 @@ nettle-install: $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libhogweed.so
 
 #------------------------------------------------------------------------------#
 # Sequoia-ffi
-EXTERNAL_GIT_REPOS += sequoia|https://gitlab.com/husspEp/sequoia.git?master
 
 CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/build/$(APP_ABI)
 
 sequoia-ffi-clean:
 	rm -rf sequoia
 	rm -rf sequoia.src.stamp
-
-EXTERNAL_SRCS_CLEAN += sequoia-ffi-clean
 
 $(CARGO_TARGET_DIR)/aarch64-linux-android/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp sequoia-deps-build
 	cd sequoia && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
