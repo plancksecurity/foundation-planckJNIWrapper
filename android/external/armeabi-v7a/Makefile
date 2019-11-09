@@ -126,8 +126,8 @@ libiconv-install: $(LOCAL)/lib/libiconv.a
 #------------------------------------------------------------------------------#
 # libetpan
 libetpan.src.stamp: ../downloads/libetpan.tar.gz
-	mkdir -p sequoia
-	cd sequoia && tar xvf ../$<
+	mkdir -p libetpan
+	cd libetpan && tar xvf ../$<
 	touch $@
 
 libetpan/Makefile: libetpan.src.stamp | libiconv-install
