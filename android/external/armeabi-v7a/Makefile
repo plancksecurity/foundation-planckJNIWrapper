@@ -23,9 +23,9 @@ build: generate-ndk-toolchain showsetup uuid-install sequoia-ffi-install libetpa
 
 #------------------------------------------------------------------------------#
 # Generate standalone toolchain
-generate-ndk-toolchain: ndk-standalone-toolchain/AndroidVersion.txt
+generate-ndk-toolchain: ndk-standalone-toolchain/bin/clang
 
-ndk-standalone-toolchain/AndroidVersion.txt:
+ndk-standalone-toolchain/bin/clang:
 	bash generate-standalone-ndk-toolchain.sh
 
 #------------------------------------------------------------------------------#
@@ -309,7 +309,7 @@ nettle-install: $(LOCAL)/lib/libnettle.so
 
 #------------------------------------------------------------------------------#
 # Sequoia-ffi
-CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/../build/$(APP_ABI)
+CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/../build
 
 sequoia.src.stamp: ../downloads/sequoia.tar.gz
 	mkdir -p sequoia

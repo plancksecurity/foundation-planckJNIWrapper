@@ -21,10 +21,12 @@ endif
 
 .PHONY: all build clean clean-all
 
-all: build
+all: build-arm build-arm64
 
-build: downloads/downloads.stamp
+build-arm: downloads/downloads.stamp
 	$(MAKE) -C armeabi-v7a
+
+build-arm64: downloads/downloads.stamp
 	$(MAKE) -C arm64-v8a
 
 clean:

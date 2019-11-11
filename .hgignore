@@ -78,6 +78,8 @@ androidTests/gradlew.bat
 src/org.tar.gz
 src/local.conf
 
+*.iml
+
 syntax: regexp
 android/external/[^.]*
 

@@ -13,16 +13,24 @@ include ../Makefile.conf
 #------------------------------------------------------------------------------#
 # Build parameters
 
-all:  download-iconv download-uuid download-sequoia-deps download-etpan download-sequoia downloads.stamp
+all: downloads.stamp
 
-downloads.stamp:
+downloads.stamp: download-iconv download-uuid download-sequoia-deps download-etpan download-sequoia \
+	generate-ndk-arm generate-ndk-arm64
 	touch $@
+
+generate-ndk-arm64:
+	cd ../arm64-v8a && bash generate-standalone-ndk-toolchain.sh
+
+generate-ndk-arm:
+	cd ../armeabi-v7a && bash generate-standalone-ndk-toolchain.sh
 
 download-iconv: libiconv-1.15.tar.gz
 
 download-uuid: ossp-uuid_1.6.2.orig.tar.gz
 
-download-sequoia-deps: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSION).tar.bz2 nettle-$(NETTLE_VERSION).tar.gz
+download-sequoia-deps: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSION).tar.bz2 \
+						nettle-$(NETTLE_VERSION).tar.gz
 
 download-etpan: libetpan.git.stamp
 
@@ -91,11 +99,14 @@ git_clones: $(EXTERNAL_LOCAL_GITS)
 
 git_update: $(EXTERNAL_LOCAL_GITS_UPDATE)
 
+#------------------------------------------------------------------------------#
 clean:
 	rm -rf *.git
 	rm -rf *.stamp
 	rm -rf *.tar.gz
 	rm -rf *.tar.bz2
+	rm -rf ../arm64-v8a/ndk-standalone-toolchain
+	rm -rf ../armeabi-v7a/ndk-standalone-toolchain
 
 .PHONY: all clean download-iconv \
 		download-uuid download-etpan \
