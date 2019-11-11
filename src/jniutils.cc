@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <string>
 
-#ifndef __aarch64__
+#ifndef __LP64__
 #include <time64.h>
 #define time_t time64_t
 #define timegm timegm64
