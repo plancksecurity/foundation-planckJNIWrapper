@@ -65,6 +65,8 @@ namespace pEp {
         sync_notify_accepted_device_added > 6
         sync_notify_accepted_group_created > 7
         // sync_notify_accepted_device_moved > 8
+        sync_notify_overtaken > 9
+        sync_notify_forming_group > 10
         sync_notify_sole > 254
         sync_notify_in_group > 255
     };
