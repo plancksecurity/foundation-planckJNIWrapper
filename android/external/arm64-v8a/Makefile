@@ -138,8 +138,8 @@ libetpan/Makefile: libetpan.src.stamp | libiconv-install
 
 libetpan-build: libetpan/Makefile
 
-libetpan-cleanzip:
-	rm -f libetpan/build-android/libetpan-android-1.zip
+libetpan-clean:
+	rm -rf libetpan
 
 #------------------------------------------------------------------------------#
 # uuid
@@ -374,14 +374,14 @@ clean-assets:
 clean-install:
 	rm -rf $(LOCAL)
 
-clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install libetpan-cleanzip
+clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install libetpan-clean
 
 clean-all: clean
 	rm -rf *.git
 	rm -rf *.stamp
 #------------------------------------------------------------------------------#
 
-.PHONY = clean clean-install clean-assets libetpan-cleanzip\
+.PHONY = clean clean-install clean-assets libetpan-clean\
 	libiconv-build libiconv-install \
 	libetpan-build \
 	uuid-build uuid-prebuild uuid-install \

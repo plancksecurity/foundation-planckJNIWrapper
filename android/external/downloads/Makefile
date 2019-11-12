@@ -113,6 +113,8 @@ clean:
 	rm -rf *.tar.bz2
 	rm -rf ../arm64-v8a/ndk-standalone-toolchain
 	rm -rf ../armeabi-v7a/ndk-standalone-toolchain
+	rm -rf ../x86/ndk-standalone-toolchain
+	rm -rf ../x86_64/ndk-standalone-toolchain
 
 .PHONY: all clean download-iconv \
 		download-uuid download-etpan \
