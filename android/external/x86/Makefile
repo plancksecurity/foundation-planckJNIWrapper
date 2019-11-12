@@ -132,7 +132,8 @@ libetpan.src.stamp: ../downloads/libetpan.tar.gz
 
 libetpan/Makefile: libetpan.src.stamp | libiconv-install
 	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh
-	mv libetpan/build-android/libetpan-android-1.zip ../
+	cp -r libetpan/build-android/libetpan-android-1/$(APP_ABI)/lib/* $(LOCAL)/lib/
+	cp -r libetpan/build-android/libetpan-android-1/include/* $(LOCAL)/include/
 	touch $@
 
 libetpan-build: libetpan/Makefile

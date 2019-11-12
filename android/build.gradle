@@ -4,8 +4,6 @@ def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 def threadsToUse = hasProperty('threadsToUse') ? buildAutomatic : 2
 
-def libetpanAndroid = file('external')
-
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 
 buildscript {
@@ -80,7 +78,7 @@ android {
             jniDebuggable true
             externalNativeBuild {
                 ndkBuild {
-                    arguments "-j${threadsToUse}"
+                    arguments "-j${threadsToUse}", 'NDK_LOG=1'
                    // arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1'
                 }
             }
@@ -91,11 +89,6 @@ android {
         ndkBuild {
             path 'jni/Android.mk'
         }
-    }
-
-    ext {
-        //FIXME> improve that build to be able to build without the need of unzip deps // Get rid of unziping
-        libEtPanZip = new File(libetpanAndroid, 'libetpan-android-1.zip')
     }
 
     // call source generation makefile target
@@ -141,12 +134,6 @@ android {
         commandLine 'make', 'clean-assets'
     }
 
-    // unzip some of the dependencies
-    task unzipDeps(type: Copy, dependsOn: 'buildExternal') {
-        from zipTree(libEtPanZip)
-        into file("${buildDir}")
-    }
-
     // builds pEpEnginge's system.db
     task buildpEpEngineSystemDB(type:Exec) {
         workingDir pEpEngineDB
@@ -160,7 +147,7 @@ android {
     }
 
     if(buildAutomatic == "true") {
-        buildpEpEngineSystemDB.dependsOn(unzipDeps)
+        buildpEpEngineSystemDB.dependsOn(buildExternal)
     }
 
     // This ensures that assets are populated before collecting resources.
