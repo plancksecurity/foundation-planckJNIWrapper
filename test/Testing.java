@@ -5,6 +5,11 @@ import java.net.URLClassLoader;
 import java.lang.Thread;
 import java.lang.InterruptedException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 class Testing {
     public void printClassPath() {
         ClassLoader cl = ClassLoader.getSystemClassLoader();
@@ -23,7 +28,7 @@ class Testing {
         try {
             e = new Engine();
             SyncCallbacks callbacks = new SyncCallbacks();
-            e.setNotifyHandshakeCallback(callbacks);
+            //e.setNotifyHandshakeCallback(callbacks);
             e.setMessageToSendCallback(callbacks);        
         }
         catch (pEpException ex) {
@@ -42,11 +47,21 @@ class Testing {
         user = e.myself(user);
         System.out.print("Keys generated: ");
         System.out.println(user.fpr);
+        
+        // Import key
+        try {
+            Path path = Paths.get("test_keys/pub/pep-test-alice-0x6FF00E97_pub.asc");
+            byte[] key = Files.readAllBytes(path);
+            e.importKey(key);
+        } catch (IOException exception) {
+            System.out.println("Could not import key");
+            exception.printStackTrace();
 
+        }
         // trustwords
-        Identity vb = new Identity();
-        vb.fpr = "DB4713183660A12ABAFA7714EBE90D44146F62F4";
-        String t = e.trustwords(vb);
+        Identity alice = new Identity();
+        alice.fpr = "4ABE3AAF59AC32CFE4F86500A9411D176FF00E97";
+        String t = e.trustwords(alice);
         System.out.print("Trustwords: ");
         System.out.println(t);
 
@@ -57,12 +72,11 @@ class Testing {
 
         Vector<Identity> to = new Vector<Identity>();
         Identity to1 = new Identity();
-        //to1.username = "Volker Birk";
-        //to1.address = "vb@pep-project.org";
-        //to1.address = "android01@peptest.ch";
-        //to1.user_id = "42";
-        //to.add(to1);
-        to.add(user);
+        to1.username = "pEp Test Alice (test key don't use)";
+        to1.address = "pep.test.alice@pep-project.org";
+        to1.user_id = "42";
+        to.add(to1);
+        //to.add(user);
         msg.setTo(to);
 
         msg.setShortmsg("hello, world");
@@ -81,6 +95,7 @@ class Testing {
 
         System.out.println(enc.getLongmsg());
         Vector<Blob> attachments = enc.getAttachments();
+        // Print msg.txt (encrypted body) contents.
         System.out.println(e.toUTF16(attachments.get(1).data));
 
         msg.setDir(Message.Direction.Outgoing);
@@ -107,14 +122,14 @@ class Testing {
         System.out.println("TEST DONE - FINISHED");
 
         try {
-            e.key_reset(null, null);
+            e.key_reset_all_own_keys();
         } 
         catch (pEpException ex) {
             System.out.println("cannot reset all own keys");
                 ex.printStackTrace();
         }
 
-        e.startSync();
+        //e.startSync();
 
         // Keygen
         System.out.println("Generating keys: ");
