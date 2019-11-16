@@ -234,6 +234,8 @@ namespace pEp {
                 in SyncHandshakeResult shr,
                 in identitylist identities
             );
+
+        method leave_device_group();
 	
         method config_cipher_suite(
                 in CipherSuite suite
