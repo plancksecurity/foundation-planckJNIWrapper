@@ -218,7 +218,7 @@ OPENSSL_ARCHITECTURE:=android-arm
 
 openssl/Makefile: openssl.src.stamp
 	cd openssl && \
-	    ../../configure_openssl.sh ${OPENSSL_ARCHITECTURE} $(ANDROID_API) $(LOCAL)
+	    PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" ../../configure_openssl.sh ${OPENSSL_ARCHITECTURE} $(ANDROID_API) $(LOCAL)
 openssl/libssl.so: | openssl/Makefile
 	PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" $(MAKE) -C openssl
 
