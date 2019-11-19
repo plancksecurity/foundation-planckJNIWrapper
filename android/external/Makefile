@@ -19,7 +19,9 @@ ifdef BUILD_CONFIG
     $(info ================================================)
 endif
 
-.PHONY: all build clean clean-all
+.PHONY: all build clean clean-all build-arm build-arm64 build-x86 build-x86_64
+
+build: all
 
 all: build-arm build-arm64 build-x86 build-x86_64
 
