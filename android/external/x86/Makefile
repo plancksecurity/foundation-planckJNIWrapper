@@ -91,7 +91,7 @@ showsetup:
 # libiconv
 
 libiconv.src.stamp: ../downloads/libiconv-1.15.tar.gz
-	tar xvfz $<
+	tar xvf $<
 	mv libiconv-1.15 libiconv
 	touch $@
 
@@ -127,7 +127,7 @@ libiconv-install: $(LOCAL)/lib/libiconv.a
 # libetpan
 libetpan.src.stamp: ../downloads/libetpan.tar.gz
 	mkdir -p libetpan
-	cd libetpan && tar xvfz ../$<
+	cd libetpan && tar xvf ../$<
 	touch $@
 
 libetpan/Makefile: libetpan.src.stamp | libiconv-install

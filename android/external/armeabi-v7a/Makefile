@@ -148,7 +148,7 @@ libetpan-clean:
 # using released package from debian. official ftp wasn't available today
 
 uuid.src.stamp: ../downloads/ossp-uuid_1.6.2.orig.tar.gz
-	tar xvfz $<
+	tar xvf $<
 	mv uuid-1.6.2 uuid
 	touch $@
 
