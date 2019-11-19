@@ -140,6 +140,7 @@ libetpan-build: libetpan/Makefile
 
 libetpan-clean:
 	rm -rf libetpan
+	rm -rf libetpan.src.stamp
 
 #------------------------------------------------------------------------------#
 # uuid
