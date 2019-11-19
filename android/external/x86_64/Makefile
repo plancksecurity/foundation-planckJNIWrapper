@@ -209,7 +209,7 @@ openssl-clean:
 	rm -rf openssl
 	rm -rf openssl.src.stamp
 
-OPENSSL_ARCHITECTURE:=android-x86
+OPENSSL_ARCHITECTURE:=android-x86_64
 
 openssl/Makefile: openssl.src.stamp
 	cd openssl && \
