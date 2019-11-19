@@ -2,7 +2,7 @@
 
 def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
-def threadsToUse = hasProperty('threadsToUse') ? buildAutomatic : 2
+def threadsToUse = hasProperty('threadsToUse') ? threadsToUse : 2
 
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 
