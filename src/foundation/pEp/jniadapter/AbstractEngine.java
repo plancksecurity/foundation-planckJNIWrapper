@@ -45,6 +45,7 @@ abstract class AbstractEngine implements AutoCloseable {
 
     public native void startSync();
     public native void stopSync();
+    public native boolean isSyncRunning();
 
     public static byte[] toUTF8(String str) {
         if (str == null)

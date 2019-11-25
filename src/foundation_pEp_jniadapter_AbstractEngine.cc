@@ -343,7 +343,7 @@ extern "C" {
     JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_isSyncRunning
         (JNIEnv *, jobject)
     {
-        return (jboolean) is_sync_thread(session());
+        return (jboolean) is_sync_running();
     }
 
 } // extern "C"
