@@ -39,7 +39,7 @@ namespace pEp {
     jmethodID messageConstructorMethodID = nullptr;
     jmethodID messageToSendMethodID = nullptr;
     jmethodID notifyHandShakeMethodID = nullptr;
-    jmethodID needsFastPollMethodID = nullptr; 
+    jmethodID needsFastPollMethodID = nullptr;
     jmethodID method_values = nullptr;
 
     jobject obj = nullptr;
@@ -91,7 +91,7 @@ namespace pEp {
         messageConstructorMethodID = _env->GetMethodID(messageClass, "<init>", "(J)V");
         messageToSendMethodID = _env->GetMethodID(
             engineClass,
-            "messageToSendCallFromC", 
+            "messageToSendCallFromC",
             "(Lfoundation/pEp/jniadapter/Message;)I");
         needsFastPollMethodID = _env->GetMethodID(
             engineClass,
@@ -143,14 +143,14 @@ namespace pEp {
             assert(signalClass);
             assert(method_values);
             assert(field_value);
-        
+
             jobjectArray values = (jobjectArray) o.env()->CallStaticObjectMethod(signalClass,
                     method_values);
             if (o.env()->ExceptionCheck()) {
                 o.env()->ExceptionClear();
                 return PEP_UNKNOWN_ERROR;
             }
-        
+
             jsize values_size = o.env()->GetArrayLength(values);
             for (jsize i = 0; i < values_size; i++) {
                 jobject element = o.env()->GetObjectArrayElement(values, i);
@@ -268,7 +268,7 @@ extern "C" {
         thread = (pthread_t *) env->GetLongField(obj, thread_handle);
         if (thread)
             return;
- 
+
         thread = (pthread_t *) calloc(1, sizeof(pthread_t));
         assert(thread);
         env->SetLongField(obj, thread_handle, (jlong) thread);
@@ -304,7 +304,7 @@ extern "C" {
         thread = (pthread_t *) env->GetLongField(obj, thread_handle);
         if (!thread)
             return;
- 
+
         queue = (locked_queue< pEp_identity * > *) env->GetLongField(obj, queue_handle);
 
         env->SetLongField(obj, queue_handle, (jlong) 0);
@@ -338,6 +338,12 @@ extern "C" {
         )
     {
         shutdown();
+    }
+
+    JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_isSyncRunning
+        (JNIEnv *, jobject)
+    {
+        return (jboolean) is_sync_thread(session());
     }
 
 } // extern "C"
