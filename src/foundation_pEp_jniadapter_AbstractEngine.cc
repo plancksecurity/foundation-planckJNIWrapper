@@ -160,6 +160,7 @@ namespace pEp {
                     signal_ = element;
                     break;
                 }
+                o.env() -> DeleteLocalRef(element);
             }
         }
 
