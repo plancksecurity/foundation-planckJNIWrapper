@@ -236,7 +236,15 @@ namespace pEp {
             );
 
         method leave_device_group();
-	
+
+        method enable_identity_for_sync(
+                in identity ident
+            );
+
+	    method disable_identity_for_sync(
+                in identity ident
+            );
+
         method config_cipher_suite(
                 in CipherSuite suite
             );
