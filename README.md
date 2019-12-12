@@ -26,9 +26,13 @@ sudo port install openjdk11
 ~~~
 
 ## Building
-Customization of the build can be done in `src/Makefile.conf`, or in a file `src/local.conf` which is not part of the source code distribution.
 
-An example `src/local.conf` looks like this:
+Build configuration will be the result of including these files in the following order:
+* `Makefile.conf` - Defaults
+* `local.conf` - optional cfg (overwrites existing values)
+* `src/local.conf`- optional cfg for src dir (overwrites existing values)
+
+An example `local.conf` looks like this:
 
 ~~~
 JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk8/Contents/Home
@@ -49,15 +53,13 @@ Now, build the Adapter with
 On Linux:
 
 ~~~
-cd src
-make
+make src
 ~~~
 
 On macOS:
 
 ~~~
-cd src
-gmake
+make src
 ~~~
 
-(The GNU Make distributed with macOS is too old, install GNU Make "gmake" from macPorts).
+(The GNU Make distributed with macOS might be too old, in this case install GNU Make "gmake" from macPorts).

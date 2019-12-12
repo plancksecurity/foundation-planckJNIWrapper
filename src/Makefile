@@ -3,19 +3,7 @@
 # This file may be used under the terms of the GNU General Public License version 3
 # see LICENSE.txt
 
-include Makefile.conf
-
-ifneq ($(wildcard local.conf),)
-    $(info ================================================)
-    $(info Overrides in `local.conf` are used.)
-    $(info ================================================)
-endif
-
-ifdef BUILD_CONFIG
-    $(info ================================================)
-    $(info Overrides in `$(BUILD_CONFIG)` are used.)
-    $(info ================================================)
-endif
+include ../Makefile.conf
 
 ifndef JAVA_HOME
     $(error JAVA_HOME is not set!)
@@ -37,7 +25,7 @@ ifeq ($(BUILD_FOR),Linux)
 else ifeq ($(BUILD_FOR),Darwin)
     SHARED=libpEpJNI.dylib
 else
-    $(error I don't know how to build for $(BUILD_FOR).)
+    $(error I dont know how to build for $(BUILD_FOR).)
 endif
 
 JAVA_SOURCES=foundation/pEp/jniadapter/AbstractEngine.java \
