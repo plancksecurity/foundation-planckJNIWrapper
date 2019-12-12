@@ -120,9 +120,11 @@ namespace pEp {
 
         PEP_STATUS status = (PEP_STATUS) o.env()->CallIntMethod(obj, messageToSendMethodID, msg_);
         if (o.env()->ExceptionCheck()) {
+            o.env()->ExceptionDescribe();
             status = PEP_UNKNOWN_ERROR;
             o.env()->ExceptionClear();
         }
+
 
         return status;
     }
@@ -329,6 +331,7 @@ extern "C" {
         }
         catch (RuntimeError& ex) {
             throw_pEp_Exception(env, ex.status);
+            jvm->DetachCurrentThread();
             return;
         }
     }
