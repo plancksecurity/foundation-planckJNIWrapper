@@ -39,12 +39,14 @@ JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk8/Contents/Home
 
 YML2_PATH=$(HOME)/code/yml2
 
-ENGINE_INC=-I$(HOME)/code/engine/build/include
-ENGINE_LIB=-L$(HOME)/code/engine/build/lib
+ENGINE_INC_PATH=$(HOME)/code/engine/build/include
+ENGINE_LIB_PATH=$(HOME)/code/engine/build/lib
 
-AD_INC=-L$(HOME)/code/libad/build/include
-AD_LIB=-L$(HOME)/code/libad/build/lib
+AD_INC_PATH=$(HOME)/code/libad/build/include
+AD_LIB_PATH=$(HOME)/code/libad/build/lib
 ~~~
+
+The the foo_PATH variables will be turned into compiler directives (-I / -L), which can be directly set by just omitting "\_PATH" (e.g. ENGINE_INC). They  will take priority.
 
 Depending on what is already set in your environment, or can be found in your default include/library paths, setting any of these variables may be optional on your platform.
 
