@@ -1,4 +1,4 @@
-include ../Makefile.conf
+include ../../Makefile.conf
 
 $(info If on Mac, make sure to disable SIP, or copy the libpEpEngine.dylib into here)
 
@@ -14,8 +14,8 @@ ifdef ENGINE_LIB_PATH
 	endif
 endif
 
-CLASSPATH=.:../src
-VM=java -Xcheck:jni -Djava.library.path=../src
+CLASSPATH=.:../../src
+VM=java -Xcheck:jni -Djava.library.path=../../src
 #VM=lldb java -- -Xcheck:jni -Djava.library.path=../src
 
 .PHONY: test clean
@@ -23,7 +23,7 @@ VM=java -Xcheck:jni -Djava.library.path=../src
 test: Testing.class SyncCallbacks.class
 	HOME=$(PWD) CLASSPATH=$(CLASSPATH) time $(VM) Testing
 
-test-JNI-85: 
+test-JNI-85:
 	$(MAKE) -C JNI_85
 
 %.class: %.java
