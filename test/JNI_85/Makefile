@@ -1,12 +1,8 @@
 include ../../Makefile.conf
+include ../Makefile.conf
 
 #TODO: Remove when successufuly reproduce the error, and then use it to avoid regression
 $(info This is to be run using pEpJNIAdapter 626)
-
-
-CLASSPATH=.:../../src
-VM=java -Xcheck:jni -Djava.library.path=../../src
-#VM=lldb java -- -Xcheck:jni -Djava.library.path=../src
 
 .PHONY: test clean
 
