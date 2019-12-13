@@ -29,7 +29,7 @@ class Testing {
             e = new Engine();
             SyncCallbacks callbacks = new SyncCallbacks();
             //e.setNotifyHandshakeCallback(callbacks);
-            e.setMessageToSendCallback(callbacks);        
+            e.setMessageToSendCallback(callbacks);
         }
         catch (pEpException ex) {
             System.out.println("Cannot load");
@@ -47,7 +47,7 @@ class Testing {
         user = e.myself(user);
         System.out.print("Keys generated: ");
         System.out.println(user.fpr);
-        
+
         // Import key
         try {
             Path path = Paths.get("test_keys/pub/pep-test-alice-0x6FF00E97_pub.asc");
@@ -116,20 +116,20 @@ class Testing {
             System.out.println("cannot decrypt");
             ex.printStackTrace();
         }
-        
+
         System.out.println(result.dst.getShortmsg());
         System.out.println(result.dst.getLongmsg());
         System.out.println("TEST DONE - FINISHED");
 
         try {
             e.key_reset_all_own_keys();
-        } 
+        }
         catch (pEpException ex) {
             System.out.println("cannot reset all own keys");
                 ex.printStackTrace();
         }
 
-        //e.startSync();
+        e.startSync();
 
         // Keygen
         System.out.println("Generating keys: ");
@@ -154,4 +154,3 @@ class Testing {
         System.exit(0);
     }
 }
-

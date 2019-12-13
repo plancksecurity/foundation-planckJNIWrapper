@@ -1,14 +1,17 @@
 include ../Makefile.conf
 
 $(info If on Mac, make sure to disable SIP, or copy the libpEpEngine.dylib into here)
-ifeq ($(BUILD_FOR),Linux)
-  ifndef LD_LIBRARY_PATH
-    export LD_LIBRARY_PATH=$(ENGINE_LIB_PATH)
-  endif
-else ifeq ($(BUILD_FOR),Darwin)
-  ifndef DYLD_LIBRARY_PATH
-    export DYLD_LIBRARY_PATH=$(ENGINE_LIB_PATH)
-  endif
+
+ifdef ENGINE_LIB_PATH
+	ifeq ($(BUILD_FOR),Linux)
+	  ifndef LD_LIBRARY_PATH
+	    export LD_LIBRARY_PATH=$(ENGINE_LIB_PATH)
+	  endif
+	else ifeq ($(BUILD_FOR),Darwin)
+	  ifndef DYLD_LIBRARY_PATH
+	    export DYLD_LIBRARY_PATH=$(ENGINE_LIB_PATH)
+	  endif
+	endif
 endif
 
 CLASSPATH=.:../src
