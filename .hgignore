@@ -83,4 +83,5 @@ src/local.conf
 syntax: regexp
 android/external/[^.]*
 
+local.conf
 src/local.conf
