@@ -331,6 +331,7 @@ extern "C" {
         }
         catch (RuntimeError& ex) {
             throw_pEp_Exception(env, ex.status);
+            jvm->DetachCurrentThread();
             return;
         }
     }
