@@ -23,12 +23,17 @@ VM=java -Xcheck:jni -Djava.library.path=../src
 test: Testing.class SyncCallbacks.class
 	HOME=$(PWD) CLASSPATH=$(CLASSPATH) time $(VM) Testing
 
+test-JNI-85: 
+	$(MAKE) -C JNI_85
+
 %.class: %.java
 	CLASSPATH=$(CLASSPATH) javac $<
 
 clean:
+	$(MAKE) -C JNI_85 clean
 	rm -f *.class
 	rm -f *.log
 	rm -f .pEp_*
+	rm -Rf .pEp
 	rm -Rf .gnupg
 	rm -Rf .lldb
