@@ -4,11 +4,21 @@ include ../Makefile.conf
 #TODO: Remove when successufuly reproduce the error, and then use it to avoid regression
 $(info This is to be run using pEpJNIAdapter 626)
 
-.PHONY: test clean
+JAVA_CLASSES = \
+	SyncCallbacks.class \
+	Step1.class \
+	Step2.class
 
-test: SyncCallbacks.class Step1.class Step2.class
+.PHONY: compile run test clean
+
+all: compile
+	$(MAKE) run
+
+run: compile
 	-HOME=$(PWD) CLASSPATH=$(CLASSPATH) time $(VM) Step1
 	HOME=$(PWD) CLASSPATH=$(CLASSPATH) time $(VM) Step2
+
+compile: $(JAVA_CLASSES)
 
 %.class: %.java
 	CLASSPATH=$(CLASSPATH) javac $<

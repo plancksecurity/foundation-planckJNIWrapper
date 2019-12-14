@@ -1,10 +1,19 @@
 include ../../Makefile.conf
 include ../Makefile.conf
 
-.PHONY: test clean
+JAVA_CLASSES = \
+  Testing.class \
+	SyncCallbacks.class
 
-test: Testing.class SyncCallbacks.class
+.PHONY: compile run test clean
+
+all: compile
+	$(MAKE) run
+
+run: compile
 	HOME=$(PWD) CLASSPATH=$(CLASSPATH) time $(VM) Testing
+
+compile: $(JAVA_CLASSES)
 
 %.class: %.java
 	CLASSPATH=$(CLASSPATH) javac $<
@@ -12,7 +21,7 @@ test: Testing.class SyncCallbacks.class
 clean:
 	rm -f *.class
 	rm -f *.log
-	rm -f .pEp_*
+	rm -rf .pEp_*
 	rm -Rf .pEp
 	rm -Rf .gnupg
 	rm -Rf .lldb

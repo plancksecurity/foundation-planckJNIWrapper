@@ -21,13 +21,13 @@ endif
 
 .PHONY: all src test clean
 
-all: src test
+all: test
+
+test: src
+	$(MAKE) -C test compile
 
 src:
 	$(MAKE) -C src
-
-test: src
-	$(MAKE) -C test
 
 clean:
 	$(MAKE) -C src clean
