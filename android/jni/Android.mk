@@ -45,7 +45,7 @@ LOCAL_MODULE     := pEpJNI
 LOCAL_SHARED_LIBRARIES :=  libnettle libhogweed libgmp
 LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid pEpAdapter libsequoia_openpgp_ffi
 LOCAL_CPP_FEATURES += exceptions
-LOCAL_CPPFLAGS += -std=c++14 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld
+LOCAL_CPPFLAGS += -std=c++11 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld
 LOCAL_SRC_FILES  := \
 		  ../../src/foundation_pEp_jniadapter_AbstractEngine.cc \
 		  ../../src/foundation_pEp_jniadapter_Engine.cc \
