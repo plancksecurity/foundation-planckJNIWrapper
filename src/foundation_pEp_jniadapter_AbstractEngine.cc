@@ -26,7 +26,6 @@ static struct _debug_log {
 
 namespace pEp {
     using namespace pEp::JNIAdapter;
-    using namespace pEp::Adapter;
     using namespace utility;
 
     bool first = true;
@@ -191,9 +190,9 @@ extern "C" {
             env->GetJavaVM(&jvm);
             jni_init();
             obj = env->NewGlobalRef(me);
-            _messageToSend = messageToSend;
+            Adapter::_messageToSend = messageToSend;
         }
-        session();
+        Adapter::session();
     }
 
     JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_release(
@@ -201,7 +200,7 @@ extern "C" {
             jobject me
         )
     {
-        session(pEp::Adapter::release);
+        Adapter::session(pEp::Adapter::release);
     }
 
     JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_getVersion(JNIEnv *env, jobject)
@@ -279,7 +278,7 @@ extern "C" {
         queue = new locked_queue< pEp_identity * >();
         env->SetLongField(obj, queue_handle, (jlong) queue);
 
-        register_examine_function(session(), examine_identity, (void *) queue);
+        register_examine_function(Adapter::session(), examine_identity, (void *) queue);
 
         pthread_create(thread, nullptr, keyserver_thread_routine, (void *) queue);
     }
@@ -313,7 +312,7 @@ extern "C" {
         env->SetLongField(obj, queue_handle, (jlong) 0);
         env->SetLongField(obj, thread_handle, (jlong) 0);
 
-        register_examine_function(session(), nullptr, nullptr);
+        register_examine_function(Adapter::session(), nullptr, nullptr);
 
         queue->push_front(nullptr);
         pthread_join(*thread, nullptr);
@@ -327,7 +326,7 @@ extern "C" {
     {
         debug_log << "######## starting sync\n";
         try {
-            startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::onSyncStartup, &JNISync::onSyncShutdown);
+            Adapter::startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::onSyncStartup, &JNISync::onSyncShutdown);
         }
         catch (RuntimeError& ex) {
             throw_pEp_Exception(env, ex.status);
@@ -340,13 +339,13 @@ extern "C" {
             jobject obj
         )
     {
-        shutdown();
+        Adapter::shutdown();
     }
 
     JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_isSyncRunning
         (JNIEnv *, jobject)
     {
-        return (jboolean) is_sync_running();
+        return (jboolean) Adapter::is_sync_running();
     }
 
 } // extern "C"

@@ -12,7 +12,7 @@
 
 extern "C" {
     using namespace pEp::JNIAdapter;
-    using namespace pEp::Adapter;
+    using pEp::Adapter::session;
 
 JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine_trustwords(
         JNIEnv *env,
@@ -201,7 +201,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_importKey(
         throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
         return;
     }
-    
+
     PEP_STATUS status = ::import_key(session(), _key, _size, NULL);
     if (status != PEP_STATUS_OK && status != PEP_KEY_IMPORTED) {
         throw_pEp_Exception(env, status);
@@ -242,7 +242,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_blacklist_1add(
         throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
         return;
     }
-    
+
     PEP_STATUS status = ::blacklist_add(session(), _fpr);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
@@ -263,7 +263,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_blacklist_1delete(
         throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
         return;
     }
-    
+
     PEP_STATUS status = ::blacklist_delete(session(), _fpr);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
@@ -285,7 +285,7 @@ JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_Engine_blacklist_1is_1
         throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
         return 0;
     }
-    
+
     PEP_STATUS status = ::blacklist_is_listed(session(), _fpr, &_listed);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);

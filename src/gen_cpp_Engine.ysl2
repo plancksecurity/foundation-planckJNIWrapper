@@ -19,7 +19,7 @@ tstylesheet {
         #include "throw_pEp_exception.hh"
         #include "jniutils.hh"
 
-        using namespace pEp::Adapter;
+        using pEp::Adapter::session;
         using namespace pEp::JNIAdapter;
 
         extern "C" {
@@ -34,12 +34,12 @@ tstylesheet {
         const "returning", "count(parm/creates|parm/returns)";
         const "CretType" choose {
             when "$returning = 0" > void
-            when "$returning = 1" 
+            when "$returning = 1"
                 call "jni_type" with "type", "name(parm[returns|creates]/*[2])";
             when "$returning > 0" > jobject
         }
         const "CretDefault" choose {
-            when "$returning = 0" > 
+            when "$returning = 0" >
             when "$returning > 0" > NULL
         }
 
@@ -200,7 +200,7 @@ tstylesheet {
 
                 ||
             }
-            otherwise { 
+            otherwise {
                 ||
                 jobject «$name»_ = NULL;
                 if (_«$name») {
@@ -255,8 +255,8 @@ tstylesheet {
         const "dir", "name(*[1])";
         const "type", "name(*[2])";
         const "name", "name(*[3])";
-     
-        > , 
+
+        > ,
 
         choose {
             when "$dir = 'Cconst'"
@@ -269,7 +269,7 @@ tstylesheet {
                 > (unsigned int *) &_«$name»
             when "$dir = 'inout' and $type='stringlist'"
                 > &_«$name»
-            otherwise 
+            otherwise
                 > _«$name»
         }
     }
