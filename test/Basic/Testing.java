@@ -128,6 +128,7 @@ class Testing {
             System.out.println("cannot reset all own keys");
                 ex.printStackTrace();
         }
+        System.out.println("Testing.java: e.StartSync()");
 
         e.startSync();
 
@@ -138,17 +139,18 @@ class Testing {
         user2.me = true;
         user2.username = "Test User 2";
         user2.address = "jniTestUser2@peptest.ch";
-        user2 = e.myself(user2);
+//        user2 = e.myself(user2);
         System.out.print("Keys generated: ");
         System.out.println(user2.fpr);
 
         // it's not necessary - you can just shutdown Sync and that's it
         // but for this test give sync a chance to process all messages
-        try {
-            Thread.sleep(200);
-        }
-        catch (InterruptedException ex) { }
+        // try {
+        //     Thread.sleep(200);
+        // }
+        // catch (InterruptedException ex) { }
 
+        System.out.println("STOP SYNC");
         e.stopSync();
 
         System.exit(0);
