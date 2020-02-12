@@ -7,7 +7,7 @@ tstylesheet {
     template "/namespace[@name='pEp']" apply "struct", 0;
 
     template "struct" {
-        const "jname" call "CamelCase" with "text", "@name";
+        const "jname" call "CamelCase" with "text", "concat('Abstract-',@name)";
 
         document("foundation_pEp_jniadapter_{$jname}.cc", "text") {
             ||
@@ -93,7 +93,7 @@ tstylesheet {
             ||
             apply "*[name(.)!='enum']", 0, mode=entry {
                 with "name", "@name";
-                with "class" call "CamelCase" with "text", "@name";
+                with "class" call "CamelCase" with "text", "$jname";
             }
             ||
             } // extern "C"
@@ -105,7 +105,7 @@ tstylesheet {
     function "mangle" {
         param "type";
         param "name";
-        param "classname" call "CamelCase" with "text", "../@name";
+        param "classname";
         const "convert", "$type != 'timestamp'";
 
         choose {
@@ -125,10 +125,12 @@ tstylesheet {
         const "type", "name(.)";
         const "getname" call "mangle" {
             with "type", "$type";
+            with "classname", "$class";
             with "name", "concat('get', $jname)";
         }
         const "setname" call "mangle" {
             with "type", "$type";
+            with "classname", "$class";
             with "name", "concat('set', $jname)";
         }
         ||

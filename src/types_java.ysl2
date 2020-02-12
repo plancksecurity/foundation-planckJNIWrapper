@@ -20,6 +20,7 @@ function "toJava" {
         when "$type='Color'" > Color
         when "$type='DecryptFlags'" > DecryptFlags
         when "$type='EncFormat'" > Message.EncFormat
+        when "$type='direction'" > Message.Direction
         when "$type='Rating'" > Rating
 
         otherwise call "CamelCase" with "text", "$type";

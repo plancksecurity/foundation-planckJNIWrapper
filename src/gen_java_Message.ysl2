@@ -7,7 +7,7 @@ tstylesheet {
     template "/namespace[@name='pEp']" apply "struct|enum|exception", 0;
 
     template "struct" {
-        const "cname" call "toJava" with "type", "@name";
+        const "cname" call "toJava" with "type", "concat('Abstract-',@name)";
         document("foundation/pEp/jniadapter/{$cname}.java", "text")
             ||
             package foundation.pEp.jniadapter;
@@ -18,7 +18,7 @@ tstylesheet {
             import java.util.HashMap;
             import java.io.Serializable;
 
-            public class «$cname» implements AutoCloseable, Serializable {
+            public abstract class «$cname» implements AutoCloseable, Serializable {
                 private static final long serialVersionUID = 2119420428331150924L;
                 private long handle;
 
@@ -44,7 +44,7 @@ tstylesheet {
                     return AbstractEngine.toUTF16(_encodeMIME());
                 }
 
-                private «$cname»(long h) {
+                public «$cname»(long h) {
                     handle = h;
                 }
 
