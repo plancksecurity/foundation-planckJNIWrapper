@@ -219,7 +219,7 @@ tstylesheet {
 
             ||
 
-            when "../enum[@name=$ctype]"
+            when "$ctype = 'direction' or $ctype = 'EncFormat'"
             ||
             private native int _get«$name»();
             public «$itype» get«$name»() {

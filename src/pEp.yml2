@@ -267,25 +267,6 @@ namespace pEp {
     };
 
     struct message {
-        enum TextFormat {
-            plain       > 0
-            html        > 1
-            other       > 255
-        }
-
-        enum direction {
-            incoming    > 0
-            outgoing    > 1
-        }
-
-        enum EncFormat {
-            none        > 0
-            inline      > 1
-            SMIME       > 2
-            PGPMIME     > 3
-            PEP         > 4
-        }
-
          direction dir;
          string id;
          string shortmsg;

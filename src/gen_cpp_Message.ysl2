@@ -123,6 +123,10 @@ tstylesheet {
         const "jname" call "CamelCase" with "text", "name(*[1])";
         const "cname" call "lcase" with "text", "name(*[1])";
         const "type", "name(.)";
+        const "jnitype" choose {
+            when "$type = 'direction' or $type = 'EncFormat'" > jint
+            otherwise > `call "jni_type" with "type", "name(.)"`
+        }
         const "getname" call "mangle" {
             with "type", "$type";
             with "classname", "$class";
@@ -134,12 +138,12 @@ tstylesheet {
             with "name", "concat('set', $jname)";
         }
         ||
-        JNIEXPORT `call "jni_type" with "type", "name(.)"` JNICALL
+        JNIEXPORT «$jnitype» JNICALL
                 «$getname»(JNIEnv *env, jobject obj) {
             «$name» *_obj = «$name»_ptr(env, obj);
         ||
         choose {
-            when "../enum[@name=$type]"
+            when "$jnitype = 'jint' "
                 |> return (jint) _obj->«$cname»;
             otherwise
                 |> return from_«$type»(env, _obj->«$cname»);
@@ -148,11 +152,11 @@ tstylesheet {
         }
 
         JNIEXPORT void JNICALL
-                «$setname»(JNIEnv *env, jobject obj, `call "jni_type" with "type", "name(.)"` value) {
+                «$setname»(JNIEnv *env, jobject obj, «$jnitype» value) {
             «$name» *_obj = «$name»_ptr(env, obj);   
         ||
         choose {
-            when "../enum[@name=$type]"
+            when "$jnitype = 'jint'"
                 |> _obj->«$cname» = («$ctype») (int) value;
             otherwise {
                 choose {
