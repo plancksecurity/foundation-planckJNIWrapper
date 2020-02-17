@@ -122,6 +122,9 @@ clean:
 	rm -f foundation/pEp/jniadapter/SyncHandshakeResult.java
 	rm -f foundation/pEp/jniadapter/SyncHandshakeSignal.java
 	rm -f foundation/pEp/jniadapter/CipherSuite.java
+	rm -f foundation/pEp/jniadapter/Direction.java
+	rm -f foundation/pEp/jniadapter/EncFormat.java
+	rm -f foundation/pEp/jniadapter/TextFormat.java
 	rm -f throw_pEp_exception.*
 	rm -f foundation_pEp_jniadapter_AbstractMessage.cc foundation_pEp_jniadapter_Engine.cc
 	rm -f status_list.yml2

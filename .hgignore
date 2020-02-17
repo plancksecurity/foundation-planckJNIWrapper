@@ -36,6 +36,11 @@ SyncHandshakeResult.java
 IdentityFlags.java
 SyncHandshakeSignal.java
 CipherSuite.java
+AbstractMessage.java
+Direction.java
+EncFormat.java
+TextFormat.java
+
 
 status_list.yml2
 
