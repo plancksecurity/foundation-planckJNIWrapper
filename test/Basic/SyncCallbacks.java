@@ -8,6 +8,7 @@ class SyncCallbacks implements Sync.MessageToSendCallback, Sync.NotifyHandshakeC
         System.out.println("From: " + message.getFrom());
         System.out.println("To: " + message.getTo());
         System.out.println("Subject: " + message.getShortmsg());
+        System.out.println("Attachement[0]: " + message.getAttachments().get(0).toString());
 	System.out.println("================================");
     }
 

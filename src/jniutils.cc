@@ -644,6 +644,33 @@ namespace pEp {
             return obj;
         }
 
+        bloblist_t *to_blob(JNIEnv *env, jobject obj)
+        {
+            if (!obj)
+                return NULL;
+
+            static const char *classname = "foundation/pEp/jniadapter/_Blob";
+            jclass clazz = findClass(env, classname);
+
+            char *mime_type = _getStringField(env, classname, obj, "mime_type");
+            char *filename = _getStringField(env, classname, obj, "filename");
+
+            jfieldID data_id = getFieldID(env, classname, "data", "[B");
+            jbyteArray _data = reinterpret_cast<jbyteArray>(env->GetObjectField(obj, data_id));
+            size_t size = (size_t) env->GetArrayLength(_data);
+            char *b = (char *) malloc(size);
+            assert(b);
+
+            env->GetByteArrayRegion(_data, 0, size, (jbyte*)b);
+            bloblist_t *bl = new_bloblist( b, size, mime_type, filename);
+
+            free(mime_type);
+            free(filename);
+            return bl;
+        }
+
+
+        // TODO: Use to_blob() inside the loop
         bloblist_t *to_bloblist(JNIEnv *env, jobject obj)
         {
             if (!obj)

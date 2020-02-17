@@ -88,6 +88,7 @@ namespace pEp {
         identity_list *to_identitylist(JNIEnv *env, jobject obj);
 
         jobject from_bloblist(JNIEnv *env, bloblist_t *bl);
+        bloblist_t *to_blob(JNIEnv *env, jobject obj);
         bloblist_t *to_bloblist(JNIEnv *env, jobject obj);
 
         PEP_enc_format to_EncFormat(JNIEnv *env, jobject obj);
