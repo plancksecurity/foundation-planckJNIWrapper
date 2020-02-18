@@ -29,7 +29,7 @@ extern "C" {
 
 using namespace std;
 using namespace pEp::JNIAdapter;
-JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter__1Blob__1toString
+JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter__1Blob__1dataToXER
   (JNIEnv *env, jobject obj)
 {
     bloblist_t *b = to_blob(env, obj);

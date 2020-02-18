@@ -7,9 +7,9 @@ public class _Blob {
 
     _Blob() { }
 
-    private native byte[] _toString() throws pEpException;;
-    public String toString() {
-        return AbstractEngine.toUTF16(_toString());
+    private native byte[] _dataToXER() throws pEpException;;
+    public String dataToXER() {
+        return AbstractEngine.toUTF16(_dataToXER());
     }
 
     _Blob(Blob b) {
