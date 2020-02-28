@@ -50,6 +50,7 @@ LOCAL_SRC_FILES  := \
 		  ../../src/foundation_pEp_jniadapter_AbstractEngine.cc \
 		  ../../src/foundation_pEp_jniadapter_Engine.cc \
 		  ../../src/foundation_pEp_jniadapter_Message.cc \
+		  ../../src/foundation_pEp_jniadapter__Blob.cc \
 		  ../../src/throw_pEp_exception.cc \
 		  ../../src/basic_api.cc \
 		  ../../src/identity_api.cc \
