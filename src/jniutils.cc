@@ -1,5 +1,4 @@
 #include "jniutils.hh"
-
 #include <stdexcept>
 #include <typeinfo>
 #include <time.h>
@@ -670,7 +669,6 @@ namespace pEp {
         }
 
 
-        // TODO: Use to_blob() inside the loop
         bloblist_t *to_bloblist(JNIEnv *env, jobject obj)
         {
             if (!obj)
@@ -680,35 +678,15 @@ namespace pEp {
             if (size == 0)
                 return NULL;
 
-            static const char *classname = "foundation/pEp/jniadapter/_Blob";
-            jclass clazz = findClass(env, classname);
-            jfieldID data_id = getFieldID(env, classname, "data", "[B");
-
             bloblist_t *bl = new_bloblist(NULL, 0, NULL, NULL);
             bloblist_t *_bl;
+            _bl = bl;
             jint i;
-            for (_bl = bl, i = 0; i < (int) size; i++) {
+            for (i = 0; i < (int) size; i++) {
                 jobject o = callObjectMethod(env, obj, "get", i);
-                char *mime_type = _getStringField(env, classname, o,
-                        "mime_type");
-                char *filename = _getStringField(env, classname, o,
-                        "filename");
-
-                jbyteArray _data =
-                    reinterpret_cast<jbyteArray>(env->GetObjectField(o,
-                                data_id));
-                
-                size_t size = (size_t) env->GetArrayLength(_data);
-                char *b = (char *) malloc(size);
-                assert(b);
-
-                env->GetByteArrayRegion(_data, 0, size, (jbyte*)b);
-
-                _bl = bloblist_add(_bl, b, size, mime_type, filename);
-
+                bloblist_t *b = to_blob(env, o);
+                _bl = bloblist_add(_bl, b->value, b->size, b->mime_type, b->filename);
                 env->DeleteLocalRef(o);
-                free(mime_type);
-                free(filename);
             }
 
             return bl;

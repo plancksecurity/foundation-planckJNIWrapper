@@ -20,7 +20,7 @@ public class Blob {
         String ret = "";
         ret += "mime_type: \"" + mime_type + "\"\n";
         ret += "filename: \"" + filename + "\"\n";
-        ret += "data plain: \"" + data + "\"\n";
+        ret += "data plain: \"" + AbstractEngine.toUTF16(data) + "\"\n";
         ret += "data decoded: \"" + _b.dataToXER() + "\"\n";
         return ret;
     }

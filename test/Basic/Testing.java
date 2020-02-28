@@ -17,7 +17,7 @@ class Testing {
         URL[] urls = ((URLClassLoader)cl).getURLs();
 
         for(URL url: urls){
-        	System.out.println(url.getFile());
+            System.out.println(url.getFile());
         }
     }
 
@@ -83,6 +83,24 @@ class Testing {
         msg.setLongmsg("this is a test");
         msg.setDir(Message.Direction.Outgoing);
 
+        // Test setAttachements() with nrAttachemnts
+        int nrAttachemnts = 3;
+        {
+            System.out.print("Adding " + String.valueOf(nrAttachemnts) + " attachements [");
+            Vector<Blob> attachments = new Vector<>();
+
+            for (int i = 0; i < nrAttachemnts; i++) {
+                Blob blb = new Blob();
+                String dataString = "Attachement nr: " + String.valueOf(i) + " [TEST DATA]";
+                blb.data = dataString.getBytes();
+                blb.filename = "testfilename.txt";
+                attachments.add(blb);
+                System.out.print(".");
+            }
+            msg.setAttachments(attachments);
+            System.out.println("]");
+        }
+
         Message enc = null;
         try {
             enc = e.encrypt_message(msg, null, Message.EncFormat.PEP);
@@ -94,11 +112,7 @@ class Testing {
         }
 
         System.out.println(enc.getLongmsg());
-        Vector<Blob> attachments = enc.getAttachments();
-        // Print msg.txt (encrypted body) contents.
-        System.out.println(e.toUTF16(attachments.get(1).data));
 
-        msg.setDir(Message.Direction.Outgoing);
         try {
             System.out.println("Rating preview: " + e.outgoing_message_rating_preview(msg));
             System.out.println("Rating" + e.outgoing_message_rating(msg));
@@ -117,8 +131,24 @@ class Testing {
             ex.printStackTrace();
         }
 
+
         System.out.println(result.dst.getShortmsg());
         System.out.println(result.dst.getLongmsg());
+
+        // Test getAttachments()
+        {
+            Vector<Blob> attachments = result.dst.getAttachments();
+
+            System.out.println("get attachement data");
+            System.out.println("Attachement count: " + String.valueOf(attachments.size()));
+            for( Blob a: attachments) {
+                System.out.println("Attachement nr: " + String.valueOf(attachments.indexOf(a)));
+                System.out.println("[");
+                System.out.println(a.toString());
+                System.out.println("]");
+            }
+        }
+
         System.out.println("TEST DONE - FINISHED");
 
         try {
@@ -126,7 +156,7 @@ class Testing {
         }
         catch (pEpException ex) {
             System.out.println("cannot reset all own keys");
-                ex.printStackTrace();
+            ex.printStackTrace();
         }
         System.out.println("Testing.java: e.StartSync()");
 
