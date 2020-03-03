@@ -97,7 +97,7 @@ class JNI_88 {
     public static void main(String[] args) {
         // Test parameters
         boolean useSharedEngine = true;
-        int numThreads = 2;
+        int numThreads = 2000;
         int numIters = 1000000000;
 
         Engine sharedEngine = null;

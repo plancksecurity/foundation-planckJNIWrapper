@@ -25,9 +25,19 @@ tstylesheet {
             ||
     }
 
+    function "syncmode" {
+        param "sync";
+
+        choose {
+            when "$sync='sync'" > synchronized
+            otherwise value "''";
+        }
+    }
+
     template "basic" {
         const "itype" call "toIntermediate" with "type", "@type";
         const "jtype" call "toJava" with "type", "@type";
+        const "sync" call "syncmode" with "sync", "@sync";
 
         choose {
             when "name(parm/*[1])='bytearray'"
@@ -39,7 +49,7 @@ tstylesheet {
             ||
             private native «$itype» «@name»(`apply "parm/*", mode=basic_iparm`);
 
-            public «$jtype» «@name»(`apply "parm/*", mode=basic_parm`) {
+            public «$sync» «$jtype» «@name»(`apply "parm/*", mode=basic_parm`) {
             ||
             apply "parm/*", mode=basic_parm_set;
             choose {
