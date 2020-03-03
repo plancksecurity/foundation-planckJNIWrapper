@@ -42,20 +42,22 @@ Tuning tracing on in pgp_sequoia.c reveals this:
 */
 
 class TestThread extends Thread {
-    private String threadName;
-    private int numIter = 1000000000;
-    private Engine e;
-    private Identity i1;
+    private String threadName = "Default thread name";
+    private int numIter = Integer.MAX_VALUE;
+    private Engine e = null;
+    private Identity i1 = null;
 
-    TestThread( String name) {
+    TestThread(String name, int iters, Engine engine) {
         threadName = name;
+        numIter = iters;
+        e = engine;
+    }
+
+    TestThread(String name, int iters) {
+        threadName = name;
+        numIter = iters;
         try {
             e = new Engine();
-            i1 = new Identity();
-            i1.user_id = "pEp_own_userId";
-            i1.me = true;
-            i1.username = "tTest User";
-            i1.address = "hulu@hu.hu";
         }
         catch (pEpException ex) {
             System.out.println(threadName + ": cannot load");
@@ -65,54 +67,61 @@ class TestThread extends Thread {
         System.out.println(threadName + ": Engine loaded");
     }
 
-    private void testMyself() {
-        System.out.print("testMyself: -> ");
-        i1 = e.myself(i1);
-        System.out.println(i1.fpr);
-    }
-
-    private void testMyselfWithName(String name) {
-        System.out.print("testMyselfWithName: " + name + " -> ");
+    private void newIdentAndMyself(String name) {
+        System.out.print(threadName + ": testMyselfWithName: \"" + name + "\" -> ");
         Identity i2 = new Identity();
         i2.me = true;
         i2.user_id = name;
         i2.username = name;
         i2.address = name + "@test.org";
         i2 = e.myself(i2);
-        System.out.println("FPR: " + i2.fpr);
+        System.out.println("FPR: \"" + i2.fpr + "\"");
     }
 
     public void run() {
+        System.out.println(threadName + ": Starting thread with numIters: " + numIter);
         try {
             for(int i = 0; i < numIter; i++) {
-//                testMyself();
-                testMyselfWithName(threadName + Integer.toString(i));
-//                Thread.sleep(0);
+                newIdentAndMyself(threadName + "_iter-" + Integer.toString(i));
             }
         } catch (Exception e) {
             System.out.println("Exception in Thread " + threadName);
             System.out.println(e.toString());
             System.exit(0);
         }
+        System.out.println(threadName + ": DONE");
     }
 }
 
 class JNI_88 {
     public static void main(String[] args) {
+        // Test parameters
+        boolean useSharedEngine = true;
         int numThreads = 2;
+        int numIters = 1000000000;
+
+        Engine sharedEngine = null;
         Vector<Thread> vecT = new Vector<Thread>();
         System.out.println("Creating num threads: " + numThreads);
 
+        if(useSharedEngine) {
+            sharedEngine = new Engine();
+        }
+
         for(int i=0; i < numThreads; i++) {
             String tName = "Thread-" + String.valueOf(i);
-            System.out.println("Creating Thread: " + tName);
-            vecT.add(new TestThread(tName));
+            System.out.println("Creating Thread: \"" + tName + "\"");
+            if(useSharedEngine) {
+                vecT.add(new TestThread(tName, numIters, sharedEngine));
+            } else {
+                vecT.add(new TestThread(tName, numIters));
+            }
         }
 
         System.out.println("num threads created: " + vecT.size());
 
         for(Thread t : vecT) {
-            System.out.println("Starting Thread: " + t.getName());
+            System.out.println("Starting Thread: \"" + t.getName() + "\"");
             t.start();
         }
     }
