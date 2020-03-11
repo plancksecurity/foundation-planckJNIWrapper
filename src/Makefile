@@ -46,7 +46,9 @@ C_SOURCES=foundation_pEp_jniadapter_Engine.cc \
     foundation_pEp_jniadapter_Message.h \
     throw_pEp_exception.cc \
     throw_pEp_exception.hh \
-    foundation_pEp_jniadapter_AbstractEngine.h
+    foundation_pEp_jniadapter_AbstractEngine.h \
+    foundation_pEp_jniadapter__Blob.cc \
+    foundation_pEp_jniadapter__Blob.h
 
 PEP_HEADER:=$(shell $(CXX) $(CXXFLAGS) -E -M get_header.cc | grep -oe '[^[:space:]]*pEpEngine\.h' | head -1)
 
@@ -58,7 +60,7 @@ $(JAR): status_list.yml2 $(JAVA_SOURCES) $(C_SOURCES)
 	$(JP)/javac foundation/pEp/jniadapter/*.java
 	$(JP)/jar cf $@ foundation/pEp/jniadapter/*.class
 
-BLUBB=foundation_pEp_jniadapter_AbstractEngine.h foundation_pEp_jniadapter_Engine.h foundation_pEp_jniadapter_Message.h
+BLUBB=foundation_pEp_jniadapter_AbstractEngine.h foundation_pEp_jniadapter_Engine.h foundation_pEp_jniadapter_Message.h foundation_pEp_jniadapter__Blob.h
 $(BLUBB): foundation_pEp_jniadapter_%.h: foundation/pEp/jniadapter/%.java
 ifdef OLD_JAVA
 	$(JP)/javah $(subst /,.,$(subst .java,,$<))
@@ -69,10 +71,10 @@ endif
 foundation_pEp_jniadapter_AbstractEngine.o: %.o: %.cc %.h throw_pEp_exception.hh jniutils.hh
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-foundation_pEp_jniadapter_Engine.o foundation_pEp_jniadapter_Message.o: %.o: %.cc %.h
+foundation_pEp_jniadapter_Engine.o foundation_pEp_jniadapter_Message.o foundation_pEp_jniadapter__Blob.o : %.o: %.cc %.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(LIBRARY): foundation_pEp_jniadapter_AbstractEngine.o foundation_pEp_jniadapter_Engine.o foundation_pEp_jniadapter_Message.o throw_pEp_exception.o jniutils.o basic_api.o
+$(LIBRARY): foundation_pEp_jniadapter_AbstractEngine.o foundation_pEp_jniadapter_Engine.o foundation_pEp_jniadapter_Message.o throw_pEp_exception.o jniutils.o basic_api.o foundation_pEp_jniadapter__Blob.o
 	ar -r $@ *.o
 
 $(SHARED): $(LIBRARY)
