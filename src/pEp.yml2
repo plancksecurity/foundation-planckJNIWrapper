@@ -41,6 +41,7 @@ namespace pEp {
         pEp_decrypt_flag_ignored > 4
         pEp_decrypt_flag_src_modified > 8
         pEp_decrypt_flag_untrusted_server > 0x100
+        pEp_decrypt_flag_dont_trigger_sync > 0x200
     };
 
     enum IdentityFlags {
