@@ -21,7 +21,7 @@ endif
 
 .PHONY: all src test clean
 
-all: test
+all: src
 
 test: src
 	$(MAKE) -C test compile
