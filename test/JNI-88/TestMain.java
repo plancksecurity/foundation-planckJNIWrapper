@@ -93,7 +93,7 @@ class TestThread extends Thread {
     }
 }
 
-class JNI-88 {
+class TestMain {
     public static void main(String[] args) {
         // Test parameters
         boolean useSharedEngine = true;
