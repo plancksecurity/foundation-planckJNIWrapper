@@ -2,7 +2,7 @@ include ../../Makefile.conf
 include ../Makefile.conf
 
 JAVA_CLASSES = \
-  JNI_88.class
+  JNI-88.class
 
 .PHONY: compile run test clean
 
@@ -10,7 +10,7 @@ all: compile
 	$(MAKE) run
 
 run: compile
-	HOME=$(PWD) CLASSPATH=$(CLASSPATH) time $(VM) JNI_88
+	HOME=$(PWD) CLASSPATH=$(CLASSPATH) time $(VM) JNI-88
 
 compile: $(JAVA_CLASSES)
 
