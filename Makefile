@@ -32,3 +32,16 @@ src:
 clean:
 	$(MAKE) -C src clean
 	$(MAKE) -C test clean
+
+# Generate API Documentation
+doxy-all: doxy-cxx doxy-java
+
+doxy-cxx: src
+	cd doc/doxygen; doxygen doxyfile-cxx
+
+doxy-java: src
+	cd doc/doxygen; doxygen doxyfile-java
+
+doxy-clean:
+	rm -rf doc/doxygen/cxx
+	rm -rf doc/doxygen/java
