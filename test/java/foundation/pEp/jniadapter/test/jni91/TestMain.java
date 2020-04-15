@@ -1,3 +1,4 @@
+package foundation.pEp.jniadapter.test.jni91;
 import foundation.pEp.jniadapter.*;
 
 import java.lang.Thread;

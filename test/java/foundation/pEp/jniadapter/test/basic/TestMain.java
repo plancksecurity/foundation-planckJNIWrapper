@@ -1,4 +1,6 @@
+package foundation.pEp.jniadapter.test.basic;
 import foundation.pEp.jniadapter.*;
+import foundation.pEp.jniadapter.test.utils.TestUtils;
 import java.util.Vector;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -10,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-class Testing {
+class TestMain {
     public void printClassPath() {
         ClassLoader cl = ClassLoader.getSystemClassLoader();
 
@@ -22,14 +24,15 @@ class Testing {
     }
 
     public static void main(String[] args) {
-        Engine e;
-
+        Engine engine;
+        TestUtils.log("fds");
         // load
         try {
-            e = new Engine();
+            engine = new Engine();
+            SyncCallbacks c = new SyncCallbacks();
             SyncCallbacks callbacks = new SyncCallbacks();
-            //e.setNotifyHandshakeCallback(callbacks);
-            e.setMessageToSendCallback(callbacks);
+//            e.setNotifyHandshakeCallback(callbacks);
+            engine.setMessageToSendCallback(callbacks);
         }
         catch (pEpException ex) {
             System.out.println("Cannot load");
@@ -44,15 +47,15 @@ class Testing {
         user.me = true;
         user.username = "Test User";
         user.address = "jniTestUser@peptest.ch";
-        user = e.myself(user);
+        user = engine.myself(user);
         System.out.print("Keys generated: ");
         System.out.println(user.fpr);
 
         // Import key
         try {
-            Path path = Paths.get("test_keys/pub/pep-test-alice-0x6FF00E97_pub.asc");
+            Path path = Paths.get("../resources/test_keys/pub/pep-test-alice-0x6FF00E97_pub.asc");
             byte[] key = Files.readAllBytes(path);
-            e.importKey(key);
+            engine.importKey(key);
         } catch (IOException exception) {
             System.out.println("Could not import key");
             exception.printStackTrace();
@@ -61,7 +64,7 @@ class Testing {
         // trustwords
         Identity alice = new Identity();
         alice.fpr = "4ABE3AAF59AC32CFE4F86500A9411D176FF00E97";
-        String t = e.trustwords(alice);
+        String t = engine.trustwords(alice);
         System.out.print("Trustwords: ");
         System.out.println(t);
 
@@ -86,12 +89,12 @@ class Testing {
         // Test setAttachements() with nrAttachemnts
         int nrAttachemnts = 3;
         {
-            System.out.print("Adding " + String.valueOf(nrAttachemnts) + " attachements [");
+            System.out.print("Adding " + nrAttachemnts + " attachements [");
             Vector<Blob> attachments = new Vector<>();
 
             for (int i = 0; i < nrAttachemnts; i++) {
                 Blob blb = new Blob();
-                String dataString = "Attachement nr: " + String.valueOf(i) + " [TEST DATA]";
+                String dataString = "Attachement nr: " + i + " [TEST DATA]";
                 blb.data = dataString.getBytes();
                 blb.filename = "testfilename.txt";
                 attachments.add(blb);
@@ -103,7 +106,7 @@ class Testing {
 
         Message enc = null;
         try {
-            enc = e.encrypt_message(msg, null, Message.EncFormat.PEP);
+            enc = engine.encrypt_message(msg, null, Message.EncFormat.PEP);
             System.out.println("encrypted");
         }
         catch (pEpException ex) {
@@ -114,8 +117,8 @@ class Testing {
         System.out.println(enc.getLongmsg());
 
         try {
-            System.out.println("Rating preview: " + e.outgoing_message_rating_preview(msg));
-            System.out.println("Rating" + e.outgoing_message_rating(msg));
+            System.out.println("Rating preview: " + engine.outgoing_message_rating_preview(msg));
+            System.out.println("Rating" + engine.outgoing_message_rating(msg));
         }
         catch (pEpException ex) {
             System.out.println("cannot measure outgoing message rating");
@@ -123,7 +126,7 @@ class Testing {
 
         Engine.decrypt_message_Return result = null;
         try {
-            result = e.decrypt_message(enc, new Vector<>(), 0);
+            result = engine.decrypt_message(enc, new Vector<>(), 0);
             System.out.println("decrypted");
         }
         catch (pEpException ex) {
@@ -140,9 +143,9 @@ class Testing {
             Vector<Blob> attachments = result.dst.getAttachments();
 
             System.out.println("get attachement data");
-            System.out.println("Attachement count: " + String.valueOf(attachments.size()));
+            System.out.println("Attachement count: " + attachments.size());
             for( Blob a: attachments) {
-                System.out.println("Attachement nr: " + String.valueOf(attachments.indexOf(a)));
+                System.out.println("Attachement nr: " + attachments.indexOf(a));
                 System.out.println("[");
                 System.out.println(a.toString());
                 System.out.println("]");
@@ -152,15 +155,15 @@ class Testing {
         System.out.println("TEST DONE - FINISHED");
 
         try {
-            e.key_reset_all_own_keys();
+            engine.key_reset_all_own_keys();
         }
         catch (pEpException ex) {
             System.out.println("cannot reset all own keys");
             ex.printStackTrace();
         }
-        System.out.println("Testing.java: e.StartSync()");
 
-        e.startSync();
+        System.out.println("Testing.java: e.StartSync()");
+        engine.startSync();
 
         // Keygen
         System.out.println("Generating keys: ");
@@ -175,14 +178,15 @@ class Testing {
 
         // it's not necessary - you can just shutdown Sync and that's it
         // but for this test give sync a chance to process all messages
-        // try {
-        //     Thread.sleep(200);
-        // }
-        // catch (InterruptedException ex) { }
+         try {
+             Thread.sleep(2000);
+         }
+         catch (InterruptedException ex) { }
 
         System.out.println("STOP SYNC");
-        e.stopSync();
+        engine.stopSync();
 
         System.exit(0);
     }
 }
+

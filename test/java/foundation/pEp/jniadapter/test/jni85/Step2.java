@@ -1,14 +1,7 @@
+package foundation.pEp.jniadapter.test.jni85;
 import foundation.pEp.jniadapter.*;
-import java.util.Vector;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.lang.Thread;
 import java.lang.InterruptedException;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 class Step2 {
 

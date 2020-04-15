@@ -86,5 +86,4 @@ android/external/[^.]*
 local.conf
 src/local.conf
 # Default ignored files
-.idea/workspace.xml
-.idea/vcs.xml
+.idea/

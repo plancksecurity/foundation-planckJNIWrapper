@@ -24,14 +24,14 @@ endif
 all: src
 
 test: src
-	$(MAKE) -C test compile
+	$(MAKE) -C test/java/foundation/pEp/jniadapter/test/ compile
 
 src:
 	$(MAKE) -C src
 
 clean:
 	$(MAKE) -C src clean
-	$(MAKE) -C test clean
+	$(MAKE) -C test/java/foundation/pEp/jniadapter/test/ clean clean-pep-home
 
 # Generate API Documentation
 doxy-all: doxy-cxx doxy-java

@@ -1,3 +1,4 @@
+package foundation.pEp.jniadapter.test.basic;
 import foundation.pEp.jniadapter.*;
 
 class SyncCallbacks implements Sync.MessageToSendCallback, Sync.NotifyHandshakeCallback {

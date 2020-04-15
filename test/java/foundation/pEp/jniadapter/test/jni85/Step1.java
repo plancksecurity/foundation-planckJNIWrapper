@@ -1,3 +1,4 @@
+package foundation.pEp.jniadapter.test.jni85;
 import foundation.pEp.jniadapter.*;
 import java.util.Vector;
 import java.net.URL;
