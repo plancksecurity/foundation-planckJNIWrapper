@@ -10,7 +10,7 @@ class SyncCallbacks implements Sync.MessageToSendCallback, Sync.NotifyHandshakeC
         TestUtils.log("To: " + message.getTo());
         TestUtils.log("Subject: " + message.getShortmsg());
         TestUtils.log("Attachement[0]: " + message.getAttachments().get(0).toString());
-        TestUtils.logSectEnd();
+        TestUtils.logSectEnd("");
     }
 
     public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal)
@@ -19,6 +19,6 @@ class SyncCallbacks implements Sync.MessageToSendCallback, Sync.NotifyHandshakeC
         TestUtils.log("Myself: " + myself);
         TestUtils.log("Partner: " + partner);
         TestUtils.log("Signal: " + signal);
-        TestUtils.logSectEnd();
+        TestUtils.logSectEnd("");
     }
 }
