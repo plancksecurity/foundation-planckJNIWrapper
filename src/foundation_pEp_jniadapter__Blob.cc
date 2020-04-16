@@ -1,6 +1,7 @@
 #include <pEp/bloblist.h>
 #include <pEp/sync_codec.h>
 #include <pEp/distribution_codec.h>
+#include <pEp/utils.hh>
 #include <iostream>
 #include <cstring>
 #include <cassert>
@@ -32,9 +33,9 @@ extern "C" {
 
 using namespace std;
 using namespace pEp::JNIAdapter;
-JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter__1Blob__1dataToXER
-  (JNIEnv *env, jobject obj)
+JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter__1Blob__1dataToXER(JNIEnv *env, jobject obj)
 {
+    pEpLog("called");
     bloblist_t *b = to_blob(env, obj);
     char *out = nullptr;
 

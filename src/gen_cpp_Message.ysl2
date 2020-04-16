@@ -1,4 +1,5 @@
 include yslt.yml2
+include yslt.yml2
 
 tstylesheet {
     include ./textutils.ysl2
@@ -18,6 +19,7 @@ tstylesheet {
             #include <assert.h>
             #include <pEp/«@name».h>
             #include <pEp/mime.h>
+            #include <pEp/utils.hh>
 
             #include "jniutils.hh"
             #include "throw_pEp_exception.hh"
@@ -47,8 +49,9 @@ tstylesheet {
 
             using namespace pEp::JNIAdapter;
 
-            JNIEXPORT jlong JNICALL
-                    Java_foundation_pEp_jniadapter_«$jname»_init(JNIEnv *env, jobject obj) {
+            JNIEXPORT jlong JNICALL Java_foundation_pEp_jniadapter_«$jname»_init(JNIEnv *env, jobject obj)
+            {
+                pEpLog("called");
                 ::«@name» * _obj = ::new_«@name»(PEP_dir_incoming);
                 if (!_obj) {
                     outOfMemory(env);
@@ -57,17 +60,18 @@ tstylesheet {
                 return (jlong) (int64_t) (intptr_t) _obj;
             }
 
-            JNIEXPORT void JNICALL
-                    Java_foundation_pEp_jniadapter_«$jname»_release(JNIEnv *env, jobject obj, jlong value) {
+            JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_«$jname»_release(JNIEnv *env, jobject obj, jlong value)
+            {
+                pEpLog("called");
                 if (value) {
                     ::«@name» *_obj = (::«@name» *) (intptr_t) (int64_t) value;
                     ::free_«@name»(_obj);
                 }
             }
 
-            JNIEXPORT jlong JNICALL Java_foundation_pEp_jniadapter_«$jname»__1«$jname»(
-                    JNIEnv *env, jobject msg, jbyteArray mime_text) {
-
+            JNIEXPORT jlong JNICALL Java_foundation_pEp_jniadapter_«$jname»__1«$jname»(JNIEnv *env, jobject msg, jbyteArray mime_text)
+            {
+                pEpLog("called");
                 char *_mime_text = to_string(env, mime_text);
                 size_t _size = (size_t) env->GetArrayLength(mime_text);
 
@@ -80,6 +84,7 @@ tstylesheet {
 
             JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_«$jname»__1encodeMIME(JNIEnv *env, jobject msg)
             {
+                pEpLog("called");
                 «@name» *_obj = «@name»_ptr(env, msg);
                 char *mime_text = nullptr;
                 PEP_STATUS status = ::mime_encode_«@name»(_obj, false, &mime_text);
@@ -132,8 +137,9 @@ tstylesheet {
             with "name", "concat('set', $jname)";
         }
         ||
-        JNIEXPORT `call "jni_type" with "type", "name(.)"` JNICALL
-                «$getname»(JNIEnv *env, jobject obj) {
+        JNIEXPORT `call "jni_type" with "type", "name(.)"` JNICALL «$getname»(JNIEnv *env, jobject obj)
+        {
+            pEpLog("called");
             «$name» *_obj = «$name»_ptr(env, obj);
         ||
         choose {
@@ -145,9 +151,10 @@ tstylesheet {
         ||
         }
 
-        JNIEXPORT void JNICALL
-                «$setname»(JNIEnv *env, jobject obj, `call "jni_type" with "type", "name(.)"` value) {
-            «$name» *_obj = «$name»_ptr(env, obj);   
+        JNIEXPORT void JNICALL «$setname»(JNIEnv *env, jobject obj, `call "jni_type" with "type", "name(.)"` value)
+        {
+            pEpLog("called");
+            «$name» *_obj = «$name»_ptr(env, obj);
         ||
         choose {
             when "../enum[@name=$type]"

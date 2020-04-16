@@ -15,6 +15,7 @@ tstylesheet {
         #include <pEp/openpgp_compat.h>
         #include <pEp/key_reset.h>
         #include <pEp/Adapter.hh>
+        #include <pEp/utils.hh>
         #include "foundation_pEp_jniadapter_«@name».h"
         #include "throw_pEp_exception.hh"
         #include "jniutils.hh"
@@ -49,6 +50,7 @@ tstylesheet {
                 jobject obj`apply "parm[in|inout]", mode=sig`
             )
         {
+            pEpLog("called");
         ||
 
         apply "parm[in|inout]", mode=in;

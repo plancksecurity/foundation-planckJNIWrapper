@@ -20,6 +20,7 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine_trustwords(
         jobject ident
     )
 {
+    pEpLog("called");
     pEp_identity *_ident = to_identity(env, ident);
     char *words;
     size_t wsize;
@@ -57,6 +58,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine_myself(
         jobject ident
     )
 {
+    pEpLog("called");
     pEp_identity *_ident = to_identity(env, ident);
 
     PEP_STATUS status = ::myself(session(), _ident);
@@ -75,6 +77,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine_updateIdentity(
         jobject ident
     )
 {
+    pEpLog("called");
     pEp_identity *_ident = to_identity(env, ident);
 
     ::update_identity(session(), _ident);
@@ -89,6 +92,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine_setOwnKey(
         jbyteArray fpr
     )
 {
+    pEpLog("called");
     pEp_identity *_ident = to_identity(env, ident);
     char *_fpr = to_string(env, fpr);
 
@@ -109,6 +113,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_keyMistrusted(
         jobject ident
     )
 {
+    pEpLog("called");
     pEp_identity *_ident = to_identity(env, ident);
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -132,6 +137,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_keyResetTrust(
         jobject ident
     )
 {
+    pEpLog("called");
     pEp_identity *_ident = to_identity(env, ident);
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -155,6 +161,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_trustPersonalKey(
         jobject ident
     )
 {
+    pEpLog("called");
     pEp_identity *_ident = to_identity(env, ident);
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -178,6 +185,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_trustOwnKey(
         jobject ident
     )
 {
+    pEpLog("called");
     pEp_identity *_ident = to_identity(env, ident);
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -194,6 +202,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_importKey(
         jbyteArray key
     )
 {
+    pEpLog("called");
     size_t _size = (size_t) env->GetArrayLength(key);
     char *_key = (char *) env->GetByteArrayElements(key, NULL);
 
@@ -217,6 +226,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_config_1passive_1mo
         jboolean enable
     )
 {
+    pEpLog("called");
     ::config_passive_mode(session(), (bool)enable);
 }
 
@@ -227,6 +237,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_config_1unencrypted
         jboolean enable
     )
 {
+    pEpLog("called");
     ::config_unencrypted_subject(session(), (bool)enable);
 }
 
@@ -236,6 +247,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_blacklist_1add(
         jbyteArray fpr
     )
 {
+    pEpLog("called");
     char *_fpr = to_string(env, fpr);
 
     if(_fpr == NULL){
@@ -257,6 +269,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_blacklist_1delete(
         jbyteArray fpr
     )
 {
+    pEpLog("called");
     char *_fpr = to_string(env, fpr);
 
     if(_fpr == NULL){
@@ -278,6 +291,7 @@ JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_Engine_blacklist_1is_1
         jbyteArray fpr
     )
 {
+    pEpLog("called");
     char *_fpr = to_string(env, fpr);
     bool _listed = 0;
 
@@ -302,6 +316,7 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine_getCrashdumpL
         jint maxlines
     )
 {
+    pEpLog("called");
     int _maxlines = (int) maxlines;
     char *_logdata;
 
