@@ -23,17 +23,19 @@ public class TestUtils {
     }
 
     public static void log(String msg) {
-        System.out.println(msg);
+        String threadNameFmt = String.format("%-10s", Thread.currentThread().getName());
+        String msgOut = threadNameFmt + ": " + msg;
+        System.out.println(msgOut);
     }
 
     public static void logH1(String msg) {
         String decorationStr = getDecoratorString(msg, "=");
-        System.out.println(decorationStr + " " + msg.toUpperCase() + " " + decorationStr);
+        log(decorationStr + " " + msg.toUpperCase() + " " + decorationStr);
     }
 
     public static void logH2(String msg) {
         String decorationStr = getDecoratorString(msg, "-");
-        System.out.println(decorationStr + " " + msg + " " + decorationStr);
+        log(decorationStr + " " + msg + " " + decorationStr);
     }
 
     private static String getDecoratorString(String msg, String s) {
@@ -46,7 +48,7 @@ public class TestUtils {
         return decorationStr;
     }
 
-    public static void logSectEnd() {
-        System.out.println("");
+    public static void logSectEnd(String msg) {
+        log(msg + "\n");
     }
 }

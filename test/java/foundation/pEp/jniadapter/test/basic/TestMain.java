@@ -25,7 +25,6 @@ class TestMain {
 
     public static void main(String[] args) {
         Engine engine;
-        TestUtils.log("fds");
         // load
         try {
             engine = new Engine();
