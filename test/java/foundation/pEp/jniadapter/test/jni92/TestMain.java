@@ -29,7 +29,6 @@ class TestThread extends Thread {
 
 
 class TestMain {
-
     public static Engine createNewEngine() throws pEpException {
         Engine e;
         TestUtils.logH2("Creating new Engine");
@@ -53,50 +52,43 @@ class TestMain {
         });
     }
 
-
     public static void TestMainRun(int nrEngines) {
         Vector<Engine> engineVector = TestMain.createEngines(nrEngines);
-//        TestUtils.sleep(200);
         Consumer<Engine> c = (e) -> {
-//           Vector<Identity> v = e.own_identities_retrieve();
-//
-//            TestUtils.log("own idents: " + v.size());
-//            v.forEach( i -> {
-//                TestUtils.log(TestUtils.identityToString(i));
-//            });
+           Vector<Identity> v = e.own_identities_retrieve();
+
+            TestUtils.log("own idents: " + v.size());
+            v.forEach( i -> {
+                TestUtils.log(TestUtils.identityToString(i));
+            });
             e.getVersion();
-//            e.OpenPGP_list_keyinfo("");
+            e.OpenPGP_list_keyinfo("");
         };
-//        TestMain.engineConsumer(engineVector, c);
+        TestMain.engineConsumer(engineVector, c);
     }
 
     public static void main(String[] args) {
         TestUtils.logH1("JNI-92 Starting");
 
-        int nrTestruns = 1000;
+        int nrTestruns = 100;
         boolean multiThreaded = true;
-        int nrThreads = 20;
-        int nrEnginesPerThread = 1000;
+        int nrThreads = 200;
+        int nrEnginesPerThread = 100;
 
         for (int run = 0; run < nrTestruns; run++ ) {
             TestUtils.logH1("Testrun Nr: " + run);
             if (!multiThreaded) {
                 // Single Threaded
-//                for (int i = 0; i < nrEnginesPerThread; i++) {
-//                    Engine eni = new Engine();
-//                }
                 TestMainRun(nrEnginesPerThread);
             } else {
                 // Mutli Threaded
                 Vector<TestThread> tts = new Vector<TestThread>();
                 for (int i = 0; i < nrThreads; i++) {
                     tts.add(new TestThread("TestThread-" + i, nrEnginesPerThread));
-//                TestUtils.sleep(200);
                 }
 
                 tts.forEach(t -> {
                     t.start();
-//                TestUtils.sleep(2000);
                 });
 
                 tts.forEach(t -> {
