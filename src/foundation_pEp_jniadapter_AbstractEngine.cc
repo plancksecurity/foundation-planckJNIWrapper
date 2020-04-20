@@ -172,54 +172,64 @@ using namespace pEp;
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_init(
         JNIEnv *env,
-        jobject me
+        jobject obj
     )
 {
-    pEpLog("called");
     std::lock_guard<std::mutex> l(global_mutex); // global mutex for write access to <unordered_map>
+    pEpLog("called");
 
     if (first) {
         pEpLog("first Engine instance");
         first = false;
         env->GetJavaVM(&jvm);
         jni_init();
-        objj = env->NewGlobalRef(me);
+        objj = env->NewGlobalRef(obj);
         Adapter::_messageToSend = messageToSend;
     }
 
-    create_engine_java_object_mutex(env, me);  // Create a mutex per java object
+    create_engine_java_object_mutex(env, obj);  // Create a mutex per java object
     Adapter::session();
 }
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_release(
         JNIEnv *env,
-        jobject me
+        jobject obj
     )
 {
-    pEpLog("called");
     std::lock_guard<std::mutex> l(global_mutex);  // global mutex for write access to <unordered_map>
-    release_engine_java_object_mutex(env, me);
+    pEpLog("called");
+    release_engine_java_object_mutex(env, obj);
     Adapter::session(pEp::Adapter::release);
 }
 
 JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_getVersion(
         JNIEnv *env,
-        jobject me
+        jobject obj
     )
 {
-    pEpLog("called with lock_guard");
-    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
 
     return env->NewStringUTF(::get_engine_version());
 }
 
 JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_getProtocolVersion(
         JNIEnv *env,
-        jobject me
+        jobject obj
     )
 {
-    pEpLog("called with lock_guard");
-    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
 
     return env->NewStringUTF(::get_protocol_version());
 }
@@ -263,11 +273,16 @@ static void *keyserver_thread_routine(void *arg)
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_startKeyserverLookup(
         JNIEnv *env,
-        jobject me
+        jobject obj
     )
 {
-    pEpLog("called with lock_guard");
-    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
 
     pthread_t *thread = nullptr;
     locked_queue< pEp_identity * > *queue = nullptr;
@@ -284,16 +299,16 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_startKeyser
         return;
     }
 
-    thread = (pthread_t *) env->GetLongField(me, thread_handle);
+    thread = (pthread_t *) env->GetLongField(obj, thread_handle);
     if (thread)
         return;
 
     thread = (pthread_t *) calloc(1, sizeof(pthread_t));
     assert(thread);
-    env->SetLongField(me, thread_handle, (jlong) thread);
+    env->SetLongField(obj, thread_handle, (jlong) thread);
 
     queue = new locked_queue< pEp_identity * >();
-    env->SetLongField(me, queue_handle, (jlong) queue);
+    env->SetLongField(obj, queue_handle, (jlong) queue);
 
     register_examine_function(Adapter::session(), examine_identity, (void *) queue);
 
@@ -302,11 +317,16 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_startKeyser
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_stopKeyserverLookup(
         JNIEnv *env,
-        jobject me
+        jobject obj
     )
 {
-    pEpLog("called with lock_guard");
-    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
 
     pthread_t *thread = nullptr;
     locked_queue< pEp_identity * > *queue = nullptr;
@@ -323,14 +343,14 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_stopKeyserv
         return;
     }
 
-    thread = (pthread_t *) env->GetLongField(me, thread_handle);
+    thread = (pthread_t *) env->GetLongField(obj, thread_handle);
     if (!thread)
         return;
 
-    queue = (locked_queue< pEp_identity * > *) env->GetLongField(me, queue_handle);
+    queue = (locked_queue< pEp_identity * > *) env->GetLongField(obj, queue_handle);
 
-    env->SetLongField(me, queue_handle, (jlong) 0);
-    env->SetLongField(me, thread_handle, (jlong) 0);
+    env->SetLongField(obj, queue_handle, (jlong) 0);
+    env->SetLongField(obj, thread_handle, (jlong) 0);
 
     register_examine_function(Adapter::session(), nullptr, nullptr);
 
@@ -341,11 +361,16 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_stopKeyserv
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_startSync(
         JNIEnv *env,
-        jobject me
+        jobject obj
     )
 {
-    pEpLog("called with lock_guard");
-    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
 
     pEpLog("######## starting sync");
     try {
@@ -359,22 +384,32 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_startSync(
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_stopSync(
         JNIEnv *env,
-        jobject me
+        jobject obj
     )
 {
-    pEpLog("called with lock_guard");
-    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
 
     Adapter::shutdown();
 }
 
 JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_isSyncRunning(
         JNIEnv *env,
-        jobject me
+        jobject obj
     )
 {
-    pEpLog("called with lock_guard");
-    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
 
     return (jboolean) Adapter::is_sync_running();
 }

@@ -47,8 +47,13 @@ tstylesheet {
                 jobject obj`apply "parm[in|inout]", mode=sig`
             )
         {
-            pEpLog("called with lock_guard");
-            std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, obj));
+            std::mutex *mutex_local = nullptr;
+            {
+                std::lock_guard<std::mutex> l(global_mutex);
+                pEpLog("called with lock_guard");
+                mutex_local = get_engine_java_object_mutex(env, obj);
+            }
+            std::lock_guard<std::mutex> l(*mutex_local);
 
         ||
 

@@ -21,8 +21,9 @@ namespace pEp {
         {
             long engine_obj_id = (long)callLongMethod(env, obj, "getId");
             assert(engine_obj_id);
+            pEpLog("for java object id: " << engine_obj_id);
             std::mutex *engine_obj_mutex = engine_objid_mutex.at(engine_obj_id);
-            pEpLog(engine_obj_mutex << " with native_handle: " << engine_obj_mutex->native_handle() << " for java object id: " << engine_obj_id);
+            pEpLog("found mutex: " << engine_obj_mutex << " with native_handle: " << engine_obj_mutex->native_handle());
             assert(engine_obj_mutex);
             return engine_obj_mutex;
         }

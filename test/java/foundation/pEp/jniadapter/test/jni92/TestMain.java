@@ -16,19 +16,23 @@ https://pep.foundation/jira/browse/JNI-81
 
 class TestThread extends Thread {
     int nrEngines = 1;
-    TestThread(String threadName, int nrEngines) {
+    boolean useSharedEngines = false;
+    TestThread(String threadName, int nrEngines, boolean useSharedEngines) {
         Thread.currentThread().setName(threadName);
         this.nrEngines = nrEngines;
+        this.useSharedEngines = useSharedEngines;
     }
 
     public void run() {
         TestUtils.logH1( "Thread Starting");
-        TestMain.TestMainRun(nrEngines);
+        TestMain.TestMainRun(nrEngines, useSharedEngines);
     }
 }
 
 
 class TestMain {
+    static Vector<Engine> sharedEngines;
+
     public static Engine createNewEngine() throws pEpException {
         Engine e;
         TestUtils.logH2("Creating new Engine");
@@ -52,8 +56,7 @@ class TestMain {
         });
     }
 
-    public static void TestMainRun(int nrEngines) {
-        Vector<Engine> engineVector = TestMain.createEngines(nrEngines);
+    public static void TestMainRun(int nrEngines, boolean useSharedEngines) {
         Consumer<Engine> c = (e) -> {
            Vector<Identity> v = e.own_identities_retrieve();
 
@@ -64,27 +67,38 @@ class TestMain {
             e.getVersion();
             e.OpenPGP_list_keyinfo("");
         };
-        TestMain.engineConsumer(engineVector, c);
+
+        if(useSharedEngines) {
+            TestMain.engineConsumer(sharedEngines, c);
+        } else {
+            Vector<Engine> threadLocalEngines = TestMain.createEngines(nrEngines);
+            TestMain.engineConsumer(threadLocalEngines, c);
+        }
     }
 
     public static void main(String[] args) {
         TestUtils.logH1("JNI-92 Starting");
-
-        int nrTestruns = 100;
+        TestUtils.setLoggingEnabled(false);
+        int nrTestruns = 1000;
         boolean multiThreaded = true;
-        int nrThreads = 200;
-        int nrEnginesPerThread = 100;
+        boolean useSharedEngines = true;
+        int nrThreads = 100;
+        int nrEnginesPerThread = 1;
+
+        if(useSharedEngines) {
+            sharedEngines = TestMain.createEngines(nrEnginesPerThread);
+        }
 
         for (int run = 0; run < nrTestruns; run++ ) {
             TestUtils.logH1("Testrun Nr: " + run);
             if (!multiThreaded) {
                 // Single Threaded
-                TestMainRun(nrEnginesPerThread);
+                TestMainRun(nrEnginesPerThread, useSharedEngines);
             } else {
                 // Mutli Threaded
                 Vector<TestThread> tts = new Vector<TestThread>();
                 for (int i = 0; i < nrThreads; i++) {
-                    tts.add(new TestThread("TestThread-" + i, nrEnginesPerThread));
+                    tts.add(new TestThread("TestThread-" + i, nrEnginesPerThread, useSharedEngines));
                 }
 
                 tts.forEach(t -> {
