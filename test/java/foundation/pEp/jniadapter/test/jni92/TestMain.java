@@ -34,7 +34,7 @@ class TestMain {
         Engine e;
         TestUtils.logH2("Creating new Engine");
         e = new Engine();
-        TestUtils.log("Engine created with java object hash: " + e.hashCode());
+        TestUtils.log("Engine created with java object ID: " + e.getId());
         return e;
     }
 
@@ -48,7 +48,7 @@ class TestMain {
 
     public static void engineConsumer(Vector<Engine> ev, Consumer<Engine> ec) {
         ev.forEach(e -> {
-            TestUtils.logH2("engineConsumer: on engine object hash: " + e.hashCode());
+            TestUtils.logH2("engineConsumer: on engine java object ID: " + e.getId());
             ec.accept(e);
         });
     }
@@ -75,13 +75,16 @@ class TestMain {
 
         int nrTestruns = 1000;
         boolean multiThreaded = true;
-        int nrThreads = 200;
+        int nrThreads = 20;
         int nrEnginesPerThread = 1000;
 
         for (int run = 0; run < nrTestruns; run++ ) {
-             TestUtils.logH1("Testrun Nr: " + run);
+            TestUtils.logH1("Testrun Nr: " + run);
             if (!multiThreaded) {
                 // Single Threaded
+//                for (int i = 0; i < nrEnginesPerThread; i++) {
+//                    Engine eni = new Engine();
+//                }
                 TestMainRun(nrEnginesPerThread);
             } else {
                 // Mutli Threaded
@@ -104,6 +107,9 @@ class TestMain {
                     }
                 });
             }
+            TestUtils.logH1("Testrun DONE" );
+            System.gc();
+//            TestUtils.sleep(2000);
         }
     }
 }

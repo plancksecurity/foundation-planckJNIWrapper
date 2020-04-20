@@ -8,7 +8,7 @@ import foundation.pEp.jniadapter.Sync.DefaultCallback;
 import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;
 
-abstract class AbstractEngine implements AutoCloseable {
+abstract class AbstractEngine extends UniquelyIdentifiable implements AutoCloseable {
     static {
         System.loadLibrary("pEpJNI");
     }

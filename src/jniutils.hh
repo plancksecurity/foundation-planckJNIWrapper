@@ -24,7 +24,7 @@ namespace pEp {
         extern std::mutex global_mutex;
 
         // Stores mutex per java object
-        extern std::unordered_map<int, std::mutex*> engine_objhash_mutex;
+        extern std::unordered_map<long, std::mutex*> engine_objid_mutex;
 
         // needs to be called after create_engine_java_object_mutex()
         // and before release_engine_java_object_mutex()
