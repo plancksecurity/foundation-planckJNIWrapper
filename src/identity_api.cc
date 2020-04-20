@@ -1,7 +1,4 @@
-#include <pEp/message_api.h>
 #include <pEp/utils.hh>
-#include "jniutils.hh"
-
 
 extern "C" {
 

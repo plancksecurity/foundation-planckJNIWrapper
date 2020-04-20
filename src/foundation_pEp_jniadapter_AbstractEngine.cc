@@ -1,8 +1,5 @@
 #include "foundation_pEp_jniadapter_AbstractEngine.h"
-#include <stdexcept>
 #include <unistd.h>
-#include <assert.h>
-#include <pthread.h>
 #include <pEp/keymanagement.h>
 #include <pEp/message_api.h>
 #include <pEp/sync_api.h>
@@ -28,7 +25,7 @@ jmethodID notifyHandShakeMethodID = nullptr;
 jmethodID needsFastPollMethodID = nullptr;
 jmethodID method_values = nullptr;
 
-jobject obj = nullptr;
+jobject objj = nullptr;
 
 jclass messageClass = nullptr;
 jclass identityClass = nullptr;;
@@ -105,11 +102,11 @@ PEP_STATUS messageToSend(message *msg)
     pEpLog("############### messageToSend() called");
     jobject msg_ = nullptr;
 
-    assert(messageClass && messageConstructorMethodID && obj && messageToSendMethodID);
+    assert(messageClass && messageConstructorMethodID && objj && messageToSendMethodID);
 
     msg_ = o.env()->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
 
-    PEP_STATUS status = (PEP_STATUS) o.env()->CallIntMethod(obj, messageToSendMethodID, msg_);
+    PEP_STATUS status = (PEP_STATUS) o.env()->CallIntMethod(objj, messageToSendMethodID, msg_);
     if (o.env()->ExceptionCheck()) {
         o.env()->ExceptionDescribe();
         status = PEP_UNKNOWN_ERROR;
@@ -158,9 +155,9 @@ PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handsha
         }
     }
 
-    assert(obj && notifyHandShakeMethodID);
+    assert(objj && notifyHandShakeMethodID);
 
-    PEP_STATUS status = (PEP_STATUS) o.env()->CallIntMethod(obj, notifyHandShakeMethodID, me_, partner_, signal_);
+    PEP_STATUS status = (PEP_STATUS) o.env()->CallIntMethod(objj, notifyHandShakeMethodID, me_, partner_, signal_);
     if (o.env()->ExceptionCheck()) {
         o.env()->ExceptionClear();
         return PEP_UNKNOWN_ERROR;
@@ -179,14 +176,18 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_init(
     )
 {
     pEpLog("called");
+    std::lock_guard<std::mutex> l(global_mutex); // global mutex for write access to <unordered_map>
+
     if (first) {
         pEpLog("first Engine instance");
         first = false;
         env->GetJavaVM(&jvm);
         jni_init();
-        obj = env->NewGlobalRef(me);
+        objj = env->NewGlobalRef(me);
         Adapter::_messageToSend = messageToSend;
     }
+
+    create_engine_java_object_mutex(env, me);  // Create a mutex per java object
     Adapter::session();
 }
 
@@ -196,24 +197,30 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_release(
     )
 {
     pEpLog("called");
+    std::lock_guard<std::mutex> l(global_mutex);  // global mutex for write access to <unordered_map>
+    release_engine_java_object_mutex(env, me);
     Adapter::session(pEp::Adapter::release);
 }
 
 JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_getVersion(
         JNIEnv *env,
-        jobject
+        jobject me
     )
 {
-    pEpLog("called");
+    pEpLog("called with lock_guard");
+    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+
     return env->NewStringUTF(::get_engine_version());
 }
 
 JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_getProtocolVersion(
         JNIEnv *env,
-        jobject
+        jobject me
     )
 {
-    pEpLog("called");
+    pEpLog("called with lock_guard");
+    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+
     return env->NewStringUTF(::get_protocol_version());
 }
 
@@ -259,7 +266,9 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_startKeyser
         jobject me
     )
 {
-    pEpLog("called");
+    pEpLog("called with lock_guard");
+    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+
     pthread_t *thread = nullptr;
     locked_queue< pEp_identity * > *queue = nullptr;
 
@@ -296,7 +305,9 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_stopKeyserv
         jobject me
     )
 {
-    pEpLog("called");
+    pEpLog("called with lock_guard");
+    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+
     pthread_t *thread = nullptr;
     locked_queue< pEp_identity * > *queue = nullptr;
 
@@ -333,7 +344,9 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_startSync(
         jobject me
     )
 {
-    pEpLog("called");
+    pEpLog("called with lock_guard");
+    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+
     pEpLog("######## starting sync");
     try {
         Adapter::startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::onSyncStartup, &JNISync::onSyncShutdown);
@@ -349,7 +362,9 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_stopSync(
         jobject me
     )
 {
-    pEpLog("called");
+    pEpLog("called with lock_guard");
+    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+
     Adapter::shutdown();
 }
 
@@ -358,7 +373,9 @@ JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_isSyncR
         jobject me
     )
 {
-    pEpLog("called");
+    pEpLog("called with lock_guard");
+    std::lock_guard<std::mutex> l(*get_engine_java_object_mutex(env, me));
+
     return (jboolean) Adapter::is_sync_running();
 }
 

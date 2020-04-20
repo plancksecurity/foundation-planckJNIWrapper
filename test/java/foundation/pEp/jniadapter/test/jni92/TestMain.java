@@ -4,6 +4,7 @@ import foundation.pEp.jniadapter.*;
 
 import java.lang.Thread;
 import java.util.Vector;
+import java.util.function.Consumer;
 
 
 /*
@@ -14,13 +15,15 @@ https://pep.foundation/jira/browse/JNI-81
 */
 
 class TestThread extends Thread {
-    TestThread(String threadName) {
+    int nrEngines = 1;
+    TestThread(String threadName, int nrEngines) {
         Thread.currentThread().setName(threadName);
+        this.nrEngines = nrEngines;
     }
 
     public void run() {
         TestUtils.logH1( "Thread Starting");
-        TestMain.TestMainRun(2);
+        TestMain.TestMainRun(nrEngines);
     }
 }
 
@@ -31,7 +34,7 @@ class TestMain {
         Engine e;
         TestUtils.logH2("Creating new Engine");
         e = new Engine();
-        TestUtils.log("Engine created\n");
+        TestUtils.log("Engine created with java object hash: " + e.hashCode());
         return e;
     }
 
@@ -43,51 +46,64 @@ class TestMain {
         return ev;
     }
 
-    public static void own_identities_retrieve_on_EngineVector(Vector<Engine> ev) {
+    public static void engineConsumer(Vector<Engine> ev, Consumer<Engine> ec) {
         ev.forEach(e -> {
-            TestUtils.logH2("own_identities_retrieve()");
-            e.own_identities_retrieve();
-            TestUtils.log("\n");
+            TestUtils.logH2("engineConsumer: on engine object hash: " + e.hashCode());
+            ec.accept(e);
         });
     }
-
 
 
     public static void TestMainRun(int nrEngines) {
         Vector<Engine> engineVector = TestMain.createEngines(nrEngines);
 //        TestUtils.sleep(200);
-        TestMain.own_identities_retrieve_on_EngineVector(engineVector);
+        Consumer<Engine> c = (e) -> {
+//           Vector<Identity> v = e.own_identities_retrieve();
+//
+//            TestUtils.log("own idents: " + v.size());
+//            v.forEach( i -> {
+//                TestUtils.log(TestUtils.identityToString(i));
+//            });
+            e.getVersion();
+//            e.OpenPGP_list_keyinfo("");
+        };
+//        TestMain.engineConsumer(engineVector, c);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         TestUtils.logH1("JNI-92 Starting");
+
+        int nrTestruns = 1000;
         boolean multiThreaded = true;
-        int nrEngines = 3;
+        int nrThreads = 200;
+        int nrEnginesPerThread = 1000;
 
-        if (!multiThreaded) {
-            // Single Threaded
-            TestMainRun(nrEngines);
-        } else {
-            // Mutli Threaded
-            Vector<TestThread> tts = new Vector<TestThread>();
-            int nrThreads = nrEngines;
-            for (int i = 0; i < nrThreads; i++) {
-                tts.add(new TestThread("TestThread-" + i));
+        for (int run = 0; run < nrTestruns; run++ ) {
+             TestUtils.logH1("Testrun Nr: " + run);
+            if (!multiThreaded) {
+                // Single Threaded
+                TestMainRun(nrEnginesPerThread);
+            } else {
+                // Mutli Threaded
+                Vector<TestThread> tts = new Vector<TestThread>();
+                for (int i = 0; i < nrThreads; i++) {
+                    tts.add(new TestThread("TestThread-" + i, nrEnginesPerThread));
 //                TestUtils.sleep(200);
-            }
-
-            tts.forEach(t -> {
-                t.start();
-//                TestUtils.sleep(2000);
-            });
-
-            tts.forEach(t -> {
-                try {
-                    t.join();
-                } catch (Exception e) {
-                    TestUtils.log("Exception joining thread" + e.toString());
                 }
-            });
+
+                tts.forEach(t -> {
+                    t.start();
+//                TestUtils.sleep(2000);
+                });
+
+                tts.forEach(t -> {
+                    try {
+                        t.join();
+                    } catch (Exception e) {
+                        TestUtils.log("Exception joining thread" + e.toString());
+                    }
+                });
+            }
         }
     }
 }
