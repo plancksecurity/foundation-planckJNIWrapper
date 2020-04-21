@@ -331,5 +331,22 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine_getCrashdumpL
     return from_string(env, _logdata);
 }
 
+JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1getUserDirectory(
+    JNIEnv *env,
+    jobject obj
+    )
+{
+    return from_string(env, ::per_user_directory());
+}
+
+JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1getMachineDirectory(
+    JNIEnv *env,
+    jobject obj
+    )
+{
+    return from_string(env, ::per_machine_directory());
+}
+
+
 } // extern "C"
 

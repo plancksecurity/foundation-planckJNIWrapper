@@ -37,20 +37,20 @@ tstylesheet {
             ||
             otherwise {
             ||
-            private native «$itype» «@name»(`apply "parm/*", mode=basic_iparm`);
+            private native «$itype» _«@name»(`apply "parm/*", mode=basic_iparm`);
 
             public «$jtype» «@name»(`apply "parm/*", mode=basic_parm`) {
             ||
             apply "parm/*", mode=basic_parm_set;
             choose {
                 when "@type = 'void'"
-                    |> «@name»(`apply "parm/*", mode=basic_parm_name`);
+                    |> _«@name»(`apply "parm/*", mode=basic_parm_name`);
                 when "@type = 'identity'"
-                    |> return new Identity(«@name»(`apply "parm/*", mode=basic_parm_name`));
+                    |> return new Identity(_«@name»(`apply "parm/*", mode=basic_parm_name`));
                 when "@type = 'bool'"
-                    |> return new Boolean(«@name»(`apply "parm/*", mode=basic_parm_name`));
+                    |> return new Boolean(_«@name»(`apply "parm/*", mode=basic_parm_name`));
                 otherwise
-                    |> return AbstractEngine.toUTF16(«@name»(`apply "parm/*", mode=basic_parm_name`));
+                    |> return AbstractEngine.toUTF16(_«@name»(`apply "parm/*", mode=basic_parm_name`));
             }
             ||
             }
