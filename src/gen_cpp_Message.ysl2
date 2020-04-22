@@ -19,7 +19,7 @@ tstylesheet {
             #include <assert.h>
             #include <pEp/«@name».h>
             #include <pEp/mime.h>
-            #include <pEp/utils.hh>
+            #include <pEp/pEpLog.hh>
 
             #include "jniutils.hh"
             #include "throw_pEp_exception.hh"

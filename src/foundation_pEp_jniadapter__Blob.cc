@@ -1,7 +1,7 @@
 #include <pEp/bloblist.h>
 #include <pEp/sync_codec.h>
 #include <pEp/distribution_codec.h>
-#include <pEp/utils.hh>
+#include <pEp/pEpLog.hh>
 #include <iostream>
 #include <cstring>
 #include <cassert>

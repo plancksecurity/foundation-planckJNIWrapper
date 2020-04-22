@@ -1,5 +1,5 @@
 #include <pEp/message_api.h>
-#include <pEp/utils.hh>
+#include <pEp/pEpLog.hh>
 #include "jniutils.hh"
 
 
