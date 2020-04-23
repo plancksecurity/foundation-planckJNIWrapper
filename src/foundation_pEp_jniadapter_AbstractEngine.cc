@@ -7,7 +7,7 @@
 #include <pEp/message_api.h>
 #include <pEp/sync_api.h>
 #include <pEp/Adapter.hh>
-#include <pEp/utils.hh>
+#include <pEp/pEpLog.hh>
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
 
