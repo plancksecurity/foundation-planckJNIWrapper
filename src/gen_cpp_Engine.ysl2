@@ -13,7 +13,8 @@ tstylesheet {
         #include <pEp/openpgp_compat.h>
         #include <pEp/key_reset.h>
         #include <pEp/Adapter.hh>
-        #include "foundation_pEp_jniadapter_Engine.h"
+        #include <pEp/pEpLog.hh>
+        #include "foundation_pEp_jniadapter_«@name».h"
         #include "throw_pEp_exception.hh"
         #include "jniutils.hh"
 

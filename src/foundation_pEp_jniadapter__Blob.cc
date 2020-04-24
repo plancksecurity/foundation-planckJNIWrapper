@@ -1,6 +1,6 @@
 #include <pEp/sync_codec.h>
 #include <pEp/distribution_codec.h>
-#include <pEp/utils.hh>
+#include <pEp/pEpLog.hh>
 #include "jniutils.hh"
 #include "throw_pEp_exception.hh"
 #include "foundation_pEp_jniadapter__Blob.h"

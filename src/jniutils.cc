@@ -1,5 +1,5 @@
 #include "jniutils.hh"
-#include <pEp/utils.hh>
+#include <pEp/pEpLog.hh>
 #ifndef __LP64__
 #include <time64.h>
 #define time_t time64_t
