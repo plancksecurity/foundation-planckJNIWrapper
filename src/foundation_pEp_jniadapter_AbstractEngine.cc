@@ -36,7 +36,6 @@ class JNISync {
 public:
     JNIEnv * env()
     {
-        pEpLog("called");
         JNIEnv *thread_env = nullptr;
         int status = jvm->GetEnv((void**)&thread_env, JNI_VERSION_1_6);
         if (status < 0) {
@@ -52,19 +51,16 @@ public:
 
     void onSyncStartup()
     {
-        pEpLog("called");
         env();
     }
 
     void onSyncShutdown()
     {
-        pEpLog("called");
         jvm->DetachCurrentThread();
     }
 } o;
 
 void jni_init() {
-    pEpLog("called");
     JNIEnv *_env = o.env();
 
     messageClass = reinterpret_cast<jclass>(
@@ -96,7 +92,6 @@ void jni_init() {
 
 PEP_STATUS messageToSend(message *msg)
 {
-    pEpLog("called");
     std::lock_guard<std::mutex> l(mutex_obj);
 
     pEpLog("############### messageToSend() called");
@@ -119,7 +114,6 @@ PEP_STATUS messageToSend(message *msg)
 
 PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handshake_signal signal)
 {
-    pEpLog("called");
     std::lock_guard<std::mutex> l(mutex_obj);
 
     pEpLog("############### notifyHandshake() called");
@@ -236,7 +230,6 @@ JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_getProto
 
 int examine_identity(pEp_identity *ident, void *arg)
 {
-    pEpLog("called");
     locked_queue< pEp_identity * > *queue = (locked_queue< pEp_identity * > *) arg;
     queue->push_back(identity_dup(ident));
     return 0;
@@ -257,7 +250,6 @@ pEp_identity *retrieve_next_identity(void *arg)
 
 static void *keyserver_thread_routine(void *arg)
 {
-    pEpLog("called");
     PEP_STATUS status = do_keymanagement(retrieve_next_identity, arg);
     locked_queue< pEp_identity * > *queue = (locked_queue< pEp_identity * > *) arg;
 
