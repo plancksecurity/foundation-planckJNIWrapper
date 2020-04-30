@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <thread>
+#include <mutex>
 #include <jni.h>
 #include <pEp/stringpair.h>
 #include <pEp/identity_list.h>
