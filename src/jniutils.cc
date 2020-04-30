@@ -1,3 +1,4 @@
+#include <cassert>
 #include "jniutils.hh"
 #include <pEp/pEpLog.hh>
 #ifndef __LP64__
