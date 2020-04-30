@@ -1,3 +1,5 @@
+#include <cassert>
+#include <pEp/platform.h>
 #include <pEp/sync_codec.h>
 #include <pEp/distribution_codec.h>
 #include <pEp/pEpLog.hh>
