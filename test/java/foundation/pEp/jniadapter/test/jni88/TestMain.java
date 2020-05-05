@@ -89,8 +89,8 @@ class TestThread extends Thread {
 class TestMain {
     public static void main(String[] args) {
         // Test parameters
-        boolean useSharedEngine = true;
-        int numThreads = 2;
+        boolean useSharedEngine = false;
+        int numThreads = 200;
         int numIters = 1000000000;
 
         Engine sharedEngine = null;

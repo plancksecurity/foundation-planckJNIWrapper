@@ -4,6 +4,7 @@ import foundation.pEp.jniadapter.*;
 
 import java.lang.Thread;
 import java.util.Vector;
+import java.util.function.Consumer;
 
 
 /*
@@ -14,24 +15,29 @@ https://pep.foundation/jira/browse/JNI-81
 */
 
 class TestThread extends Thread {
-    TestThread(String threadName) {
+    int nrEngines = 1;
+    boolean useSharedEngines = false;
+    TestThread(String threadName, int nrEngines, boolean useSharedEngines) {
         Thread.currentThread().setName(threadName);
+        this.nrEngines = nrEngines;
+        this.useSharedEngines = useSharedEngines;
     }
 
     public void run() {
         TestUtils.logH1( "Thread Starting");
-        TestMain.TestMainRun(2);
+        TestMain.TestMainRun(nrEngines, useSharedEngines);
     }
 }
 
 
 class TestMain {
+    static Vector<Engine> sharedEngines;
 
     public static Engine createNewEngine() throws pEpException {
         Engine e;
         TestUtils.logH2("Creating new Engine");
         e = new Engine();
-        TestUtils.log("Engine created\n");
+        TestUtils.log("Engine created with java object ID: " + e.getId());
         return e;
     }
 
@@ -43,51 +49,73 @@ class TestMain {
         return ev;
     }
 
-    public static void own_identities_retrieve_on_EngineVector(Vector<Engine> ev) {
+    public static void engineConsumer(Vector<Engine> ev, Consumer<Engine> ec) {
         ev.forEach(e -> {
-            TestUtils.logH2("own_identities_retrieve()");
-            e.own_identities_retrieve();
-            TestUtils.log("\n");
+            TestUtils.logH2("engineConsumer: on engine java object ID: " + e.getId());
+            ec.accept(e);
         });
     }
 
+    public static void TestMainRun(int nrEngines, boolean useSharedEngines) {
+        Consumer<Engine> c = (e) -> {
+           Vector<Identity> v = e.own_identities_retrieve();
 
+            TestUtils.log("own idents: " + v.size());
+            v.forEach( i -> {
+                TestUtils.log(TestUtils.identityToString(i));
+            });
+            e.getVersion();
+            e.OpenPGP_list_keyinfo("");
+        };
 
-    public static void TestMainRun(int nrEngines) {
-        Vector<Engine> engineVector = TestMain.createEngines(nrEngines);
-//        TestUtils.sleep(200);
-        TestMain.own_identities_retrieve_on_EngineVector(engineVector);
+        if(useSharedEngines) {
+            TestMain.engineConsumer(sharedEngines, c);
+        } else {
+            Vector<Engine> threadLocalEngines = TestMain.createEngines(nrEngines);
+            TestMain.engineConsumer(threadLocalEngines, c);
+        }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         TestUtils.logH1("JNI-92 Starting");
+        TestUtils.setLoggingEnabled(false);
+        int nrTestruns = 1000;
         boolean multiThreaded = true;
-        int nrEngines = 3;
+        boolean useSharedEngines = true;
+        int nrThreads = 100;
+        int nrEnginesPerThread = 1;
 
-        if (!multiThreaded) {
-            // Single Threaded
-            TestMainRun(nrEngines);
-        } else {
-            // Mutli Threaded
-            Vector<TestThread> tts = new Vector<TestThread>();
-            int nrThreads = nrEngines;
-            for (int i = 0; i < nrThreads; i++) {
-                tts.add(new TestThread("TestThread-" + i));
-//                TestUtils.sleep(200);
-            }
+        if(useSharedEngines) {
+            sharedEngines = TestMain.createEngines(nrEnginesPerThread);
+        }
 
-            tts.forEach(t -> {
-                t.start();
-//                TestUtils.sleep(2000);
-            });
-
-            tts.forEach(t -> {
-                try {
-                    t.join();
-                } catch (Exception e) {
-                    TestUtils.log("Exception joining thread" + e.toString());
+        for (int run = 0; run < nrTestruns; run++ ) {
+            TestUtils.logH1("Testrun Nr: " + run);
+            if (!multiThreaded) {
+                // Single Threaded
+                TestMainRun(nrEnginesPerThread, useSharedEngines);
+            } else {
+                // Mutli Threaded
+                Vector<TestThread> tts = new Vector<TestThread>();
+                for (int i = 0; i < nrThreads; i++) {
+                    tts.add(new TestThread("TestThread-" + i, nrEnginesPerThread, useSharedEngines));
                 }
-            });
+
+                tts.forEach(t -> {
+                    t.start();
+                });
+
+                tts.forEach(t -> {
+                    try {
+                        t.join();
+                    } catch (Exception e) {
+                        TestUtils.log("Exception joining thread" + e.toString());
+                    }
+                });
+            }
+            TestUtils.logH1("Testrun DONE" );
+            System.gc();
+//            TestUtils.sleep(2000);
         }
     }
 }

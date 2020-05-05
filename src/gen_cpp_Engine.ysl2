@@ -9,8 +9,6 @@ tstylesheet {
 
     template "interface" document("foundation_pEp_jniadapter_{@name}.cc", "text")
         ||
-        #include <assert.h>
-        #include <pEp/message_api.h>
         #include <pEp/blacklist.h>
         #include <pEp/openpgp_compat.h>
         #include <pEp/key_reset.h>
@@ -50,7 +48,14 @@ tstylesheet {
                 jobject obj`apply "parm[in|inout]", mode=sig`
             )
         {
-            pEpLog("called");
+            std::mutex *mutex_local = nullptr;
+            {
+                std::lock_guard<std::mutex> l(global_mutex);
+                pEpLog("called with lock_guard");
+                mutex_local = get_engine_java_object_mutex(env, obj);
+            }
+            std::lock_guard<std::mutex> l(*mutex_local);
+
         ||
 
         apply "parm[in|inout]", mode=in;

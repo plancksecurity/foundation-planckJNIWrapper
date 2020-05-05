@@ -1,11 +1,6 @@
+#include <cassert>
 #include "jniutils.hh"
-#include <stdexcept>
-#include <typeinfo>
-#include <time.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <string>
-
+#include <pEp/pEpLog.hh>
 #ifndef __LP64__
 #include <time64.h>
 #define time_t time64_t
@@ -17,6 +12,54 @@
 
 namespace pEp {
     namespace JNIAdapter {
+        std::mutex global_mutex;
+        std::unordered_map<long, std::mutex*> engine_objid_mutex;
+
+        std::mutex* get_engine_java_object_mutex(
+                JNIEnv *env,
+                jobject obj
+            )
+        {
+            long engine_obj_id = (long)callLongMethod(env, obj, "getId");
+            assert(engine_obj_id);
+            pEpLog("for java object id: " << engine_obj_id);
+            std::mutex *engine_obj_mutex = engine_objid_mutex.at(engine_obj_id);
+            pEpLog("found mutex: " << engine_obj_mutex << " with native_handle: " << engine_obj_mutex->native_handle());
+            assert(engine_obj_mutex);
+            return engine_obj_mutex;
+        }
+
+        void create_engine_java_object_mutex(
+                JNIEnv *env,
+                jobject obj
+            )
+        {
+            long engine_obj_id = (long)callLongMethod(env, obj, "getId");
+            assert(engine_obj_id);
+            std::mutex *engine_obj_mutex = new std::mutex();
+            pEpLog(engine_obj_mutex << " with native_handle: " << engine_obj_mutex->native_handle() << " for java object id: " << engine_obj_id);
+            assert(engine_obj_mutex);
+            if(engine_objid_mutex.count(engine_obj_id) > 0) {
+                pEpLog("Fatal: mutex already existing for object id: " << engine_obj_id);
+                assert(0);
+            }
+            engine_objid_mutex.insert(std::make_pair(engine_obj_id, engine_obj_mutex ));
+        }
+
+        void release_engine_java_object_mutex(
+                JNIEnv *env,
+                jobject obj
+            )
+        {
+            long engine_obj_id = (long)callLongMethod(env, obj, "getId");
+            assert(engine_obj_id);
+            std::mutex *engine_obj_mutex = engine_objid_mutex.at(engine_obj_id);
+            pEpLog(engine_obj_mutex << " with native_handle: " << engine_obj_mutex->native_handle() << " for java object id: " << engine_obj_id);
+            assert(engine_obj_mutex);
+            engine_objid_mutex.erase(engine_obj_id);
+            delete engine_obj_mutex;
+        }
+
         jclass findClass(JNIEnv *env, const char *classname)
         {
             jclass clazz = env->FindClass(classname);

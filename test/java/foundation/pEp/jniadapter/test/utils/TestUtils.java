@@ -22,10 +22,24 @@ public class TestUtils {
         return ret;
     }
 
+    // ------------------------ Logging ------------------------
+
+    private static boolean logEnabled = true;
+
+    public static void setLoggingEnabled(boolean enabled) {
+        logEnabled = enabled;
+    }
+
+    public static boolean isLoggingEnabled() {
+        return logEnabled;
+    }
+
     public static void log(String msg) {
-        String threadNameFmt = String.format("%-10s", Thread.currentThread().getName());
-        String msgOut = threadNameFmt + ": " + msg;
-        System.out.println(msgOut);
+        if(logEnabled) {
+            String threadNameFmt = String.format("%-10s", Thread.currentThread().getName());
+            String msgOut = threadNameFmt + ": " + msg;
+            System.out.println(msgOut);
+        }
     }
 
     public static void logH1(String msg) {

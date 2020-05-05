@@ -1,11 +1,8 @@
-#include <pEp/bloblist.h>
+#include <cassert>
+#include <pEp/platform.h>
 #include <pEp/sync_codec.h>
 #include <pEp/distribution_codec.h>
 #include <pEp/pEpLog.hh>
-#include <iostream>
-#include <cstring>
-#include <cassert>
-
 #include "jniutils.hh"
 #include "throw_pEp_exception.hh"
 #include "foundation_pEp_jniadapter__Blob.h"

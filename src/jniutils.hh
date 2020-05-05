@@ -1,8 +1,7 @@
 #pragma once
-
-#include <list>
-#include <pthread.h>
-#include <errno.h>
+#include <unordered_map>
+#include <thread>
+#include <mutex>
 #include <jni.h>
 #include <pEp/stringpair.h>
 #include <pEp/identity_list.h>
@@ -15,11 +14,42 @@
 #define  LOG_TAG    "pEpJNIAdapter"
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 #else
-#define  LOGD(...)
+#define  LOGD(...) do{}while(0)
 #endif
 
 namespace pEp {
     namespace JNIAdapter {
+
+        // Global mutex needs to be locked in all constructors which insert their own mutex object
+        // into the unordered_map (which is thread safe for read, but not for write)
+        extern std::mutex global_mutex;
+
+        // Stores mutex per java object
+        extern std::unordered_map<long, std::mutex*> engine_objid_mutex;
+
+        // needs to be called after create_engine_java_object_mutex()
+        // and before release_engine_java_object_mutex()
+        // Thread safe
+        std::mutex* get_engine_java_object_mutex(
+                JNIEnv *env,
+                jobject me
+            );
+
+        // Needs to be called exactly once per obj, in the constructor of the obj
+        // You need to lock a global mutex before calling this function (write to unordered_map)
+        void create_engine_java_object_mutex(
+                JNIEnv *env,
+                jobject me
+            );
+
+        // Needs to be called exactly once per obj, in the destructor of this obj
+        // You need to lock a global mutex before calling this function (write to unordered_map)
+        void release_engine_java_object_mutex(
+                JNIEnv *env,
+                jobject me
+            );
+
+
         jclass findClass(JNIEnv *env, const char *classname);
 
         jfieldID getFieldID(
