@@ -20,12 +20,12 @@ endif
 LIBRARY=libpEpJNI.a
 JAR=pEp.jar
 
-ifeq ($(BUILD_FOR),Linux)
+ifeq ($(PLATFORM),linux)
     SHARED=libpEpJNI.so
-else ifeq ($(BUILD_FOR),Darwin)
+else ifeq ($(PLATFORM),darwin)
     SHARED=libpEpJNI.dylib
 else
-    $(error I dont know how to build for $(BUILD_FOR).)
+    $(error I dont know how to build for $(PLATFORM).)
 endif
 
 JAVA_SOURCES=foundation/pEp/jniadapter/AbstractEngine.java \
@@ -108,6 +108,8 @@ basic_api.o: basic_api.cc jniutils.hh throw_pEp_exception.hh
 .PHONY: clean
 clean:
 	rm -f $(JAR) $(LIBRARY) $(SHARED)
+	rm -f *.so
+	rm -f *.dylib
 	rm -f *.o
 	rm -f *.class
 	rm -f *.xml *.xsl
