@@ -250,6 +250,9 @@ namespace pEp {
                 in CipherSuite suite
             );
 
+        // "basic" methods are generated on the java side, but
+        // on the C++ side, manually implemented in basic_api.cc
+
         basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);

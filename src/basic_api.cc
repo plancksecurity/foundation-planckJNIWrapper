@@ -13,7 +13,7 @@ extern "C" {
     using namespace pEp::JNIAdapter;
     using pEp::Adapter::session;
 
-JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine_trustwords(
+JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1trustwords(
         JNIEnv *env,
         jobject obj,
         jobject ident
@@ -58,7 +58,7 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine_trustwords(
     return from_string(env, words);
 }
 
-JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine_myself(
+JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1myself(
         JNIEnv *env,
         jobject obj,
         jobject ident
@@ -84,7 +84,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine_myself(
     return from_identity(env, _ident);
 }
 
-JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine_updateIdentity(
+JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1updateIdentity(
         JNIEnv *env,
         jobject obj,
         jobject ident
@@ -105,7 +105,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine_updateIdentity(
     return from_identity(env, _ident);
 }
 
-JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine_setOwnKey(
+JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1setOwnKey(
         JNIEnv *env,
         jobject obj,
         jobject ident,
@@ -134,7 +134,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine_setOwnKey(
     return from_identity(env, _ident);
 }
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_keyMistrusted(
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1keyMistrusted(
         JNIEnv *env,
         jobject obj,
         jobject ident
@@ -165,7 +165,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_keyMistrusted(
     ::key_mistrusted(session(), _ident);
 }
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_keyResetTrust(
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1keyResetTrust(
         JNIEnv *env,
         jobject obj,
         jobject ident
@@ -196,7 +196,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_keyResetTrust(
     ::key_reset_trust(session(), _ident);
 }
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_trustPersonalKey(
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1trustPersonalKey(
         JNIEnv *env,
         jobject obj,
         jobject ident
@@ -227,7 +227,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_trustPersonalKey(
     ::trust_personal_key(session(), _ident);
 }
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_trustOwnKey(
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1trustOwnKey(
         JNIEnv *env,
         jobject obj,
         jobject ident
@@ -282,7 +282,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_importKey(
     env->ReleaseByteArrayElements(key, (jbyte *) _key, JNI_ABORT);
 }
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_config_1passive_1mode(
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passive_1mode(
         JNIEnv *env,
         jobject obj,
         jboolean enable
@@ -300,7 +300,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_config_1passive_1mo
 }
 
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_config_1unencrypted_1subject(
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1unencrypted_1subject(
         JNIEnv *env,
         jobject obj,
         jboolean enable
@@ -317,7 +317,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_config_1unencrypted
     ::config_unencrypted_subject(session(), (bool)enable);
 }
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_blacklist_1add(
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1blacklist_1add(
         JNIEnv *env,
         jobject obj,
         jbyteArray fpr
@@ -346,7 +346,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_blacklist_1add(
 
 }
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_blacklist_1delete(
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1blacklist_1delete(
         JNIEnv *env,
         jobject obj,
         jbyteArray fpr
@@ -375,7 +375,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_blacklist_1delete(
 
 }
 
-JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_Engine_blacklist_1is_1listed(
+JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_Engine__1blacklist_1is_1listed(
         JNIEnv *env,
         jobject obj,
         jbyteArray fpr
@@ -406,7 +406,7 @@ JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_Engine_blacklist_1is_1
     return (jboolean)_listed;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine_getCrashdumpLog(
+JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1getCrashdumpLog(
         JNIEnv *env,
         jobject obj,
         jint dummy,
