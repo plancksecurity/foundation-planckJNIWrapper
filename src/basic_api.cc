@@ -440,6 +440,7 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1getUserDire
     jobject obj
     )
 {
+    pEpLog("called");
     return from_string(env, ::per_user_directory());
 }
 
@@ -448,6 +449,7 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1getMachineD
     jobject obj
     )
 {
+    pEpLog("called");
     return from_string(env, ::per_machine_directory());
 }
 
