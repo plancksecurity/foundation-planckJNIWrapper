@@ -1,6 +1,7 @@
 #include <pEp/keymanagement.h>
 #include <pEp/blacklist.h>
 #include <pEp/Adapter.hh>
+#include <pEp/pEpLog.hh>
 
 #ifndef ANDROID
 #include <string.h>
