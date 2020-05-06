@@ -27,7 +27,7 @@ public class TestUtils {
             ret += "me: " + i.me + "\n";
             ret += "comm_type: " + i.comm_type + "\n";
         } else {
-            ret += i.address + "/" + i.fpr;
+            ret += i.address + "/" + i.user_id + "/" + i.fpr;
         }
         ret = ret.trim();
         return ret;
@@ -35,25 +35,132 @@ public class TestUtils {
 
     public static String msgToString(Message msg) {
         String ret = "";
-        ret += "Id: " + msg.getId() + "\n";
-        ret += "getDir: " + msg.getDir().toString() + "\n";
-        ret += "getShortmsg: " + msg.getShortmsg() + "\n";
-        ret += "getLongmsg: " + msg.getLongmsg() + "\n";
-        ret += "getLongmsgFormatted: " + msg.getLongmsgFormatted() + "\n";
-        ret += "getAttachments: \n" + blobListToString(msg.getAttachments()) + "\n";
-        ret += "getFrom: " + identityToString(msg.getFrom(), false) + "\n";
-        ret += "getTo: " + identityListToString(msg.getTo(), false) + "\n";
-// FIXME: They all throw NullPointerException
-//        ret += "getRecvBy: " + identityToString(msg.getRecvBy(), false) + "\n";
-//        ret += "getCc: " + identityListToString(msg.getCc(), false)+ "\n";
-//        ret += "getBcc: " + identityListToString(msg.getBcc(), false) + "\n";
-//        ret += "getReplyTo: " + identityListToString(msg.getReplyTo(), false) + "\n";
-//        ret += "getInReplyTo: " + stringVectorToString(msg.getInReplyTo())  + "\n";
-//        ret += "getReferences: " + stringVectorToString(msg.getReferences())  + "\n";
-//        ret += "getKeywords: " + stringVectorToString(msg.getKeywords())  + "\n";
-        ret += "getComments: " + msg.getComments() + "\n";
-        ret += "getOptFields: " + stringPairListToString(msg.getOptFields()) + "\n";
-        ret += "getEncFormat: " + msg.getEncFormat().toString() + "\n";
+        ret += "getAttachments: ";
+        try {
+            ret += blobListToString(msg.getAttachments()) + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "Id: ";
+        try {
+            ret += msg.getId() + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getDir: ";
+        try {
+            ret += msg.getDir().toString() + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getShortmsg: ";
+        try {
+            ret += msg.getShortmsg() + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getLongmsg: ";
+        try {
+            ret += msg.getLongmsg() + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getLongmsgFormatted: ";
+        try {
+            ret += msg.getLongmsgFormatted() + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getFrom: ";
+        try {
+            ret += identityToString(msg.getFrom(), false) + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getTo: ";
+        try {
+            ret += identityListToString(msg.getTo(), false) + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getRecvBy: ";
+        try {
+            ret += identityToString(msg.getRecvBy(), false) + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getCc: ";
+        try {
+            ret += identityListToString(msg.getCc(), false)+ "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getBcc: ";
+        try {
+            ret += identityListToString(msg.getBcc(), false) + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getReplyTo: ";
+        try {
+            ret += identityListToString(msg.getReplyTo(), false) + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getInReplyTo: ";
+        try {
+            ret += stringVectorToString(msg.getInReplyTo())  + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getReferences: ";
+        try {
+            ret += stringVectorToString(msg.getReferences())  + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getKeywords: ";
+        try {
+            ret += stringVectorToString(msg.getKeywords())  + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getComments: ";
+        try {
+            ret += msg.getComments() + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getOptFields: ";
+        try {
+            ret += stringPairListToString(msg.getOptFields()) + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
+        ret += "getEncFormat: ";
+        try {
+            ret += msg.getEncFormat().toString() + "\n";
+        } catch(Throwable e) {
+            ret += e.toString() + "\n";
+        }
+
         ret = ret.trim();
         return ret;
     }
