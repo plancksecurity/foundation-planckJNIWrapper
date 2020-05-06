@@ -62,7 +62,7 @@ class TestMain {
 
             TestUtils.log("own idents: " + v.size());
             v.forEach( i -> {
-                TestUtils.log(TestUtils.identityToString(i));
+                TestUtils.log(TestUtils.identityToString(i, true));
             });
             e.getVersion();
             e.OpenPGP_list_keyinfo("");
