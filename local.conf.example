@@ -6,6 +6,8 @@
 ######### C++ Compiler #########
 # Should work with clang and g++
 # CXX=g++
+# DEBUG=1       # DEBUG Build (Default)
+# DEBUG=0       # RELEASE Build
 
 ######### JAVA #########
 # JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_231.jdk/Contents/Home
