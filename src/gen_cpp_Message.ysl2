@@ -70,7 +70,7 @@ tstylesheet {
                 size_t _size = (size_t) env->GetArrayLength(mime_text);
 
                 ::«@name» *_msg = nullptr;
-                PEP_STATUS status = mime_decode_«@name»(_mime_text, _size, &_msg);
+                PEP_STATUS status = mime_decode_«@name»(_mime_text, _size, &_msg, NULL);
                 if (status)
                     throw_pEp_Exception(env, status);
                 return (jlong) (int64_t) (intptr_t) _msg;
@@ -81,7 +81,7 @@ tstylesheet {
                 pEpLog("called");
                 «@name» *_obj = «@name»_ptr(env, msg);
                 char *mime_text = nullptr;
-                PEP_STATUS status = ::mime_encode_«@name»(_obj, false, &mime_text);
+                PEP_STATUS status = ::mime_encode_«@name»(_obj, false, &mime_text, false);
                 if (status)
                     throw_pEp_Exception(env, status);
                 jbyteArray result = from_string(env, mime_text);
