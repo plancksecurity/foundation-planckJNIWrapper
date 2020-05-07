@@ -5,6 +5,19 @@
 
 include ../Makefile.conf
 
+$(info PLATFORM:        $(PLATFORM))
+$(info DEBUG:           $(DEBUG))
+$(info CXX:             $(CXX))
+$(info JAVA_HOME:       $(JAVA_HOME))
+$(info ENGINE_LIB_PATH: $(ENGINE_LIB_PATH))
+$(info ENGINE_INC_PATH: $(ENGINE_INC_PATH))
+$(info AD_LIB_PATH:     $(AD_LIB_PATH))
+$(info AD_INC_PATH:     $(AD_INC_PATH))
+$(info YML2_PATH:       $(YML2_PATH))
+$(info CXXFLAGS:        $(CXXFLAGS))
+$(info LDFLAGS:         $(LDFLAGS))
+$(info LDLIBS:          $(LDLIBS))
+
 ifndef JAVA_HOME
     $(error JAVA_HOME is not set!)
 endif
