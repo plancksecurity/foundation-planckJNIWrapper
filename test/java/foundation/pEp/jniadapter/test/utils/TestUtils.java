@@ -204,6 +204,18 @@ public class TestUtils {
         return  ret;
     }
 
+    public static Message makeNewTestMessage(Identity from, Identity to, Message.Direction dir) {
+        Message msg = new Message();
+        Vector<Identity> vID = new Vector<Identity>();
+        vID.add(to);
+
+        msg.setFrom(from);
+        msg.setTo(vID);
+        msg.setDir(dir);
+        msg.setLongmsg("Hi i am the message longmsg");
+        return msg;
+    }
+
     // ------------------------ Logging ------------------------
 
     private static boolean logEnabled = true;
