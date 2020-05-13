@@ -3,6 +3,7 @@
 all: compile
 
 run: compile
+	$(MAKE) -C template run
 	$(MAKE) -C basic run
 	$(MAKE) -C regression run
 #BROKEN	$(MAKE) -C jni85 run
@@ -12,6 +13,7 @@ run: compile
 	$(MAKE) -C jni94 run
 
 compile:
+	$(MAKE) -C template compile
 	$(MAKE) -C basic compile
 	$(MAKE) -C regression compile
 #BROKEN	$(MAKE) -C jni85 compile
@@ -21,6 +23,7 @@ compile:
 	$(MAKE) -C jni94 compile
 
 clean:
+	$(MAKE) -C template clean
 	$(MAKE) -C basic clean
 	$(MAKE) -C regression clean
 	$(MAKE) -C jni85 clean
