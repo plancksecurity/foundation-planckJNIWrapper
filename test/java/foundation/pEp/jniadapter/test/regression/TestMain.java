@@ -1,336 +1,252 @@
 package foundation.pEp.jniadapter.test.regression;
-
-import foundation.pEp.jniadapter.test.utils.TestUtils;
+import foundation.pEp.jniadapter.test.framework.*;
 import foundation.pEp.jniadapter.*;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Vector;
-import java.util.function.Consumer;
-
-
-/*
-This test is just only checking for unsatisfiedLinkExceptions to make sure all the native calls are implemented
-*/
-
-class TestEnv {
-    public Sync.DefaultCallback cb = new Sync.DefaultCallback();
-    public Identity alice = new Identity();
-    public Identity bob = new Identity();
-    public Message msgToSelf;
-    public Message msgToBob;
-    public Vector<Identity> vID = new Vector<Identity>();
-    public Vector<String> vStr = new Vector<String>();
-    public byte[] key;
-    private String fileName = "../resources/test_keys/pub/pep-test-alice-0x6FF00E97_pub.asc";
-    public Engine engine = new Engine();
-
-    public TestEnv() throws Exception {
-        alice.user_id = "23";
-        alice.address = "alice@peptest.org";
-        alice.me = true;
-
-        bob.user_id = "42";
-        bob.address = "bob@peptest.org";
-
-        msgToSelf = makeNewMessage(alice, alice, Message.Direction.Outgoing);
-        msgToBob = makeNewMessage(alice, bob, Message.Direction.Outgoing);
-
-        vID.add(bob);
-        vStr.add("StringItem");
-
-        try {
-            Path path = Paths.get(fileName);
-            key = Files.readAllBytes(path);
-        } catch (Exception e) {
-            TestUtils.log("Could not open key file:" + fileName);
-            throw e;
-        }
-    }
-
-    public static Message makeNewMessage(Identity from, Identity to, Message.Direction dir) {
-        Message msg = new Message();
-        Vector<Identity> vID = new Vector<Identity>();
-        vID.add(to);
-
-        msg.setFrom(from);
-        msg.setTo(vID);
-        msg.setDir(dir);
-        msg.setLongmsg("Hi i am the message longmsg");
-        return msg;
-    }
-}
-
-class TestUnit {
-    TestEnv env;
-    String testUnitName = "default test unit";
-    Consumer<TestEnv> lambda;
-
-    public TestUnit(String name, Consumer<TestEnv> consumer) throws Exception {
-        testUnitName = name;
-        lambda = consumer;
-        env = new TestEnv();
-
-    }
-
-    public void run() {
-        TestUtils.logH1(testUnitName);
-        try {
-            lambda.accept(env);
-        } catch (Throwable e) {
-            TestUtils.logH1("TestUnit FAILED: " + e.toString());
-            return;
-        }
-        TestUtils.logH2("SUCCESS!");
-    }
-}
-
-
 class TestMain {
-
     public static void main(String[] args) throws Exception {
-        testRunNew();
-    }
-
-    public static void testRunNew() throws Exception {
-        new TestUnit("Engine.myself", env -> {
-            env.alice = env.engine.myself(env.alice);
+        new TestUnit("Engine.myself", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
         }).run();
 
-        new TestUnit("Engine.encrypt_message", env -> {
-            env.engine.encrypt_message(env.msgToBob, null, Message.EncFormat.PEP);
+        new TestUnit("Engine.encrypt_message", new TestContext(), ctx -> {
+            ctx.engine.encrypt_message(ctx.msgToBob, null, Message.EncFormat.PEP);
         }).run();
 
-        new TestUnit("Engine.encrypt_message_and_add_priv_key", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.engine.encrypt_message_and_add_priv_key(env.msgToSelf, env.alice.fpr);
+        new TestUnit("Engine.encrypt_message_and_add_priv_key", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.engine.encrypt_message_and_add_priv_key(ctx.msgToSelf, ctx.alice.fpr);
         }).run();
 
-        new TestUnit("Engine.encrypt_message_for_self", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.engine.encrypt_message_for_self(env.alice, env.msgToSelf, null);
+        new TestUnit("Engine.encrypt_message_for_self", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.engine.encrypt_message_for_self(ctx.alice, ctx.msgToSelf, null);
         }).run();
 
-        new TestUnit("Engine.decrypt_message", env -> {
-            env.engine.decrypt_message(env.msgToSelf, env.vStr, 0);
+        new TestUnit("Engine.decrypt_message", new TestContext(), ctx -> {
+            ctx.engine.decrypt_message(ctx.msgToSelf, ctx.vStr, 0);
         }).run();
 
         //TODO: Coredump
-//        new TestUnit("Engine.re_evaluate_message_rating", env -> {
-//            env.alice = env.engine.myself(env.alice);
-//            env.bob = env.engine.myself(env.bob);
-//            Message msg = env.engine.encrypt_message(env.msgToBob,null, Message.EncFormat.PEP);
-//            env.engine.re_evaluate_message_rating(msg);
+//        new TestUnit("Engine.re_evaluate_message_rating", new TestContext(), ctx -> {
+//            ctx.alice = ctx.engine.myself(ctx.alice);
+//            ctx.bob = ctx.engine.myself(ctx.bob);
+//            Message msg = ctx.engine.encrypt_message(ctx.msgToBob,null, Message.EncFormat.PEP);
+//            ctx.engine.re_evaluate_message_rating(msg);
 //        }).run();
 
-        new TestUnit("Engine.outgoing_message_rating", env -> {
-            env.engine.outgoing_message_rating(env.msgToBob);
+        new TestUnit("Engine.outgoing_message_rating", new TestContext(), ctx -> {
+            ctx.engine.outgoing_message_rating(ctx.msgToBob);
         }).run();
 
-        new TestUnit("Engine.outgoing_message_rating_preview", env -> {
-            env.engine.outgoing_message_rating_preview(env.msgToBob);
+        new TestUnit("Engine.outgoing_message_rating_preview", new TestContext(), ctx -> {
+            ctx.engine.outgoing_message_rating_preview(ctx.msgToBob);
         }).run();
 
-        new TestUnit("Engine.get_identity", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.engine.get_identity(env.alice.address, env.alice.user_id);
+        new TestUnit("Engine.get_identity", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.engine.get_identity(ctx.alice.address, ctx.alice.user_id);
         }).run();
 
-        new TestUnit("Engine.identity_rating", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.engine.identity_rating(env.alice);
+        new TestUnit("Engine.identity_rating", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.engine.identity_rating(ctx.alice);
         }).run();
 
-        new TestUnit("Engine.blacklist_retrieve", env -> {
-            env.engine.blacklist_retrieve();
+        new TestUnit("Engine.blacklist_retrieve", new TestContext(), ctx -> {
+            ctx.engine.blacklist_retrieve();
         }).run();
 
         //FAIL
-        new TestUnit("Engine.own_message_private_key_details", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.bob = env.engine.myself(env.bob);
+        new TestUnit("Engine.own_message_private_key_details", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.bob = ctx.engine.myself(ctx.bob);
 
-            env.engine.encrypt_message(env.msgToBob,null, Message.EncFormat.PEP);
-            env.engine.own_message_private_key_details(env.msgToBob);
+            ctx.engine.encrypt_message(ctx.msgToBob, null, Message.EncFormat.PEP);
+            ctx.engine.own_message_private_key_details(ctx.msgToBob);
         }).run();
 
-        new TestUnit("Engine.OpenPGP_list_keyinfo", env -> {
-            env.engine.OpenPGP_list_keyinfo("");
+        new TestUnit("Engine.OpenPGP_list_keyinfo", new TestContext(), ctx -> {
+            ctx.engine.OpenPGP_list_keyinfo("");
         }).run();
 
-        new TestUnit("Engine.set_identity_flags", env -> {
-            env.engine.set_identity_flags(env.alice, 0);
+        new TestUnit("Engine.set_identity_flags", new TestContext(), ctx -> {
+            ctx.engine.set_identity_flags(ctx.alice, 0);
         }).run();
 
-        new TestUnit("Engine.unset_identity_flags", env -> {
-            env.engine.unset_identity_flags(env.alice, 0);
+        new TestUnit("Engine.unset_identity_flags", new TestContext(), ctx -> {
+            ctx.engine.unset_identity_flags(ctx.alice, 0);
         }).run();
 
-        new TestUnit("Engine.own_identities_retrieve", env -> {
-            env.engine.own_identities_retrieve();
+        new TestUnit("Engine.own_identities_retrieve", new TestContext(), ctx -> {
+            ctx.engine.own_identities_retrieve();
         }).run();
 
-        new TestUnit("Engine.get_trustwords", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.bob = env.engine.myself(env.bob);
-            env.engine.get_trustwords(env.alice, env.bob, "en", false);
+        new TestUnit("Engine.get_trustwords", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.bob = ctx.engine.myself(ctx.bob);
+            ctx.engine.get_trustwords(ctx.alice, ctx.bob, "en", false);
         }).run();
 
-        new TestUnit("Engine.get_trustwords_for_fprs", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.bob = env.engine.myself(env.bob);
+        new TestUnit("Engine.get_trustwords_for_fprs", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.bob = ctx.engine.myself(ctx.bob);
 
-            env.engine.get_trustwords_for_fprs(env.alice.fpr, env.bob.fpr, "en", false);
+            ctx.engine.get_trustwords_for_fprs(ctx.alice.fpr, ctx.bob.fpr, "en", false);
         }).run();
 
-        new TestUnit("Engine.get_message_trustwords", env -> {
-            env.engine.get_message_trustwords(env.msgToBob, null, env.bob, "en", false);
+        new TestUnit("Engine.get_message_trustwords", new TestContext(), ctx -> {
+            ctx.engine.get_message_trustwords(ctx.msgToBob, null, ctx.bob, "en", false);
         }).run();
 
-        new TestUnit("Engine.get_languagelist", env -> {
-            env.engine.get_languagelist();
+        new TestUnit("Engine.get_languagelist", new TestContext(), ctx -> {
+            ctx.engine.get_languagelist();
         }).run();
 
-        new TestUnit("Engine.key_reset_trust", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.engine.key_reset_trust(env.alice);
+        new TestUnit("Engine.key_reset_trust", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.engine.key_reset_trust(ctx.alice);
         }).run();
 
-        new TestUnit("Engine.key_reset_identity", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.engine.key_reset_identity(env.alice, "");
+        new TestUnit("Engine.key_reset_identity", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.engine.key_reset_identity(ctx.alice, "");
         }).run();
 
-        new TestUnit("Engine.key_reset_user", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.engine.key_reset_user("fsdjugsh", env.alice.fpr);
+        new TestUnit("Engine.key_reset_user", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.engine.key_reset_user("fsdjugsh", ctx.alice.fpr);
         }).run();
 
-        new TestUnit("Engine.key_reset_all_own_keys", env -> {
-            env.engine.key_reset_all_own_keys();
+        new TestUnit("Engine.key_reset_all_own_keys", new TestContext(), ctx -> {
+            ctx.engine.key_reset_all_own_keys();
         }).run();
 
-        new TestUnit("Engine.deliverHandshakeResult", env -> {
-            env.engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel, env.vID);
+        new TestUnit("Engine.deliverHandshakeResult", new TestContext(), ctx -> {
+            ctx.engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel, ctx.vID);
         }).run();
 
-        new TestUnit("Engine.leave_device_group", env -> {
-            env.engine.startSync();
-            env.engine.leave_device_group();
+
+        //[17:51] <        heck> | this one fails since: 4665:f067c9e95455
+        //[17:52] <        heck> | i confirmed it still works in the parent revision 4662:71147c43e31b
+        //[17:52] <        heck> | the error i get is:
+        //[17:53] <        heck> | *** send message KeySync Beacon service KeySync_fsm.c:234
+        //[17:53] <        heck> | Assertion failed: (msg->from && msg->from->fpr), function attach_own_key, file message_api.c, line 1581.
+
+//        new TestUnit("Engine.leave_device_group", new TestContext(), ctx -> {
+//            ctx.engine.startSync();
+//            ctx.engine.leave_device_group();
+//        }).run();
+
+        new TestUnit("Engine.enable_identity_for_sync", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.engine.enable_identity_for_sync(ctx.alice);
         }).run();
 
-        new TestUnit("Engine.enable_identity_for_sync", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.engine.enable_identity_for_sync(env.alice);
-        }).run();
-
-        new TestUnit("Engine.disable_identity_for_sync", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.engine.disable_identity_for_sync(env.alice);
+        new TestUnit("Engine.disable_identity_for_sync", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.engine.disable_identity_for_sync(ctx.alice);
         }).run();
 
         // TODO: class not found: foundation/pEp/jniadapter/Message$CipherSuite
-//        new TestUnit("Engine.config_cipher_suite", env -> {
-//            env.engine.config_cipher_suite(CipherSuite.pEpCipherSuiteDefault);
+//        new TestUnit("Engine.config_cipher_suite", new TestContext(), ctx -> {
+//            ctx.engine.config_cipher_suite(CipherSuite.pEpCipherSuiteDefault);
 //        }).run();
 
-        new TestUnit("Engine.trustwords", env -> {
-            env.engine.trustwords(env.alice);
+        new TestUnit("Engine.trustwords", new TestContext(), ctx -> {
+            ctx.engine.trustwords(ctx.alice);
         }).run();
 
-        new TestUnit("Engine.updateIdentity", env -> {
-            env.engine.updateIdentity(env.alice);
+        new TestUnit("Engine.updateIdentity", new TestContext(), ctx -> {
+            ctx.engine.updateIdentity(ctx.alice);
         }).run();
 
-        new TestUnit("Engine.setOwnKey", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.engine.setOwnKey(env.alice, env.alice.fpr);
+        new TestUnit("Engine.setOwnKey", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.engine.setOwnKey(ctx.alice, ctx.alice.fpr);
         }).run();
 
-        new TestUnit("Engine.keyMistrusted", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.engine.keyMistrusted(env.alice);
+        new TestUnit("Engine.keyMistrusted", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.engine.keyMistrusted(ctx.alice);
         }).run();
 
-        new TestUnit("Engine.keyResetTrust", env -> {
-            env.engine.keyResetTrust(env.alice);
+        new TestUnit("Engine.keyResetTrust", new TestContext(), ctx -> {
+            ctx.engine.keyResetTrust(ctx.alice);
         }).run();
 
-        new TestUnit("Engine.trustPersonalKey", env -> {
-            env.engine.trustPersonalKey(env.alice);
+        new TestUnit("Engine.trustPersonalKey", new TestContext(), ctx -> {
+            ctx.engine.trustPersonalKey(ctx.alice);
         }).run();
 
-        new TestUnit("Engine.trustOwnKey", env -> {
-            env.alice = env.engine.myself(env.alice);
-            env.engine.trustOwnKey(env.alice);
+        new TestUnit("Engine.trustOwnKey", new TestContext(), ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            ctx.engine.trustOwnKey(ctx.alice);
         }).run();
 
-        new TestUnit("Engine.importKey", env -> {
-            env.engine.importKey(env.key);
+        new TestUnit("Engine.importKey", new TestContext(), ctx -> {
+            ctx.engine.importKey(ctx.key);
         }).run();
 
-        new TestUnit("Engine.blacklist_add", env -> {
-            env.engine.blacklist_add("43");
+        new TestUnit("Engine.blacklist_add", new TestContext(), ctx -> {
+            ctx.engine.blacklist_add("43");
         }).run();
 
-        new TestUnit("Engine.blacklist_delete", env -> {
-            env.engine.blacklist_delete("43");
+        new TestUnit("Engine.blacklist_delete", new TestContext(), ctx -> {
+            ctx.engine.blacklist_delete("43");
         }).run();
 
-        new TestUnit("Engine.blacklist_is_listed", env -> {
-            env.engine.blacklist_is_listed("43");
+        new TestUnit("Engine.blacklist_is_listed", new TestContext(), ctx -> {
+            ctx.engine.blacklist_is_listed("43");
         }).run();
 
-        new TestUnit("Engine.config_passive_mode", env -> {
-            env.engine.config_passive_mode(false);
+        new TestUnit("Engine.config_passive_mode", new TestContext(), ctx -> {
+            ctx.engine.config_passive_mode(false);
         }).run();
 
-        new TestUnit("Engine.config_unencrypted_subject", env -> {
-            env.engine.config_unencrypted_subject(false);
+        new TestUnit("Engine.config_unencrypted_subject", new TestContext(), ctx -> {
+            ctx.engine.config_unencrypted_subject(false);
         }).run();
 
-        new TestUnit("Engine.getCrashdumpLog", env -> {
-            env.engine.getCrashdumpLog(0);
+        new TestUnit("Engine.getCrashdumpLog", new TestContext(), ctx -> {
+            ctx.engine.getCrashdumpLog(0);
         }).run();
 
-//        new TestUnit("Engine.getUserDirectory", env -> {
-//            env.engine.getUserDirectory();
-//        }).run();
+        new TestUnit("Engine.getUserDirectory", new TestContext(), ctx -> {
+            ctx.engine.getUserDirectory();
+        }).run();
 
-//        new TestUnit("Engine.getMachineDirectory", env -> {
-//            env.engine.getMachineDirectory();
-//        }).run();
+        new TestUnit("Engine.getMachineDirectory", new TestContext(), ctx -> {
+            ctx.engine.getMachineDirectory();
+        }).run();
 
         // AbstractEngine.java
-        new TestUnit("Engine.close", env -> {
-            env.engine.close();
+        new TestUnit("Engine.close", new TestContext(), ctx -> {
+            ctx.engine.close();
         }).run();
 
-        new TestUnit("Engine.getVersion", env -> {
-            env.engine.getVersion();
+        new TestUnit("Engine.getVersion", new TestContext(), ctx -> {
+            ctx.engine.getVersion();
         }).run();
 
-        new TestUnit("Engine.getProtocolVersion", env -> {
-            env.engine.getProtocolVersion();
+        new TestUnit("Engine.getProtocolVersion", new TestContext(), ctx -> {
+            ctx.engine.getProtocolVersion();
         }).run();
 
-        new TestUnit("Engine.startKeyserverLookup", env -> {
-            env.engine.startKeyserverLookup();
+        new TestUnit("Engine.startKeyserverLookup", new TestContext(), ctx -> {
+            ctx.engine.startKeyserverLookup();
         }).run();
 
-        new TestUnit("Engine.startSync", env -> {
-            env.engine.startSync();
+        new TestUnit("Engine.startSync", new TestContext(), ctx -> {
+            ctx.engine.startSync();
         }).run();
 
-        new TestUnit("Engine.stopSync", env -> {
-            env.engine.stopSync();
+        new TestUnit("Engine.stopSync", new TestContext(), ctx -> {
+            ctx.engine.stopSync();
         }).run();
 
-        new TestUnit("Engine.isSyncRunning", env -> {
-            env.engine.isSyncRunning();
+        new TestUnit("Engine.isSyncRunning", new TestContext(), ctx -> {
+            ctx.engine.isSyncRunning();
         }).run();
-
     }
 }
 
