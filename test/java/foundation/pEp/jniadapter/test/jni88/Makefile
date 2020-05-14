@@ -4,8 +4,7 @@ include ../Makefile.conf
 TEST_UNIT_NAME=jni88
 
 JAVA_CLASSES = \
- 	TestMain.class \
- 	../utils/TestUtils.class
+ 	TestMain.class
 
 .PHONY: compile run test clean
 

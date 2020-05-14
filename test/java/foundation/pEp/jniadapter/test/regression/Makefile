@@ -5,7 +5,9 @@ TEST_UNIT_NAME=regression
 
 JAVA_CLASSES = \
  	TestMain.class \
- 	../utils/TestUtils.class
+	../utils/AdapterBaseTestContext.class
+
+JAVA_CLASSES += $(JAVA_CLASSES_FRAMEWORK)
 
 .PHONY: compile run test clean
 

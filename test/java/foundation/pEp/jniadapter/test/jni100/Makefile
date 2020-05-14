@@ -1,12 +1,14 @@
 include ../../../../../../../Makefile.conf
 include ../Makefile.conf
 
-TEST_UNIT_NAME=basic
+TEST_UNIT_NAME=jni100
 
 JAVA_CLASSES = \
-	SyncCallbacks.class \
- 	TestMain.class
+ 	TestMain.class \
+ 	../utils/AdapterTestUtils.class \
+ 	../utils/TestCallbacks.class
 
+JAVA_CLASSES += $(JAVA_CLASSES_FRAMEWORK)
 
 .PHONY: compile run test clean
 
@@ -14,7 +16,7 @@ all: compile
 	$(MAKE) run
 
 run: compile clean-pep-home
-	cd $(JAVA_CWD);HOME=$(JAVA_PEP_HOME_DIR) $(JAVA) $(JAVA_PKG_BASENAME).$(TEST_UNIT_NAME).TestMain
+	cd $(JAVA_CWD);pwd;HOME=$(JAVA_PEP_HOME_DIR) $(JAVA) $(JAVA_PKG_BASENAME).$(TEST_UNIT_NAME).TestMain
 
 compile: $(JAVA_CLASSES)
 

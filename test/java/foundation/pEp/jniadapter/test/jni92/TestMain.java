@@ -1,5 +1,6 @@
 package foundation.pEp.jniadapter.test.jni92;
-import foundation.pEp.jniadapter.test.utils.TestUtils;
+import foundation.pEp.jniadapter.test.utils.*;
+import foundation.pEp.jniadapter.test.framework.*;
 import foundation.pEp.jniadapter.*;
 
 import java.lang.Thread;
@@ -24,7 +25,7 @@ class TestThread extends Thread {
     }
 
     public void run() {
-        TestUtils.logH1( "Thread Starting");
+        TestLogger.logH1( "Thread Starting");
         TestMain.TestMainRun(nrEngines, useSharedEngines);
     }
 }
@@ -35,9 +36,9 @@ class TestMain {
 
     public static Engine createNewEngine() throws pEpException {
         Engine e;
-        TestUtils.logH2("Creating new Engine");
+        TestLogger.logH2("Creating new Engine");
         e = new Engine();
-        TestUtils.log("Engine created with java object ID: " + e.getId());
+        TestLogger.log("Engine created with java object ID: " + e.getId());
         return e;
     }
 
@@ -51,7 +52,7 @@ class TestMain {
 
     public static void engineConsumer(Vector<Engine> ev, Consumer<Engine> ec) {
         ev.forEach(e -> {
-            TestUtils.logH2("engineConsumer: on engine java object ID: " + e.getId());
+            TestLogger.logH2("engineConsumer: on engine java object ID: " + e.getId());
             ec.accept(e);
         });
     }
@@ -60,9 +61,9 @@ class TestMain {
         Consumer<Engine> c = (e) -> {
            Vector<Identity> v = e.own_identities_retrieve();
 
-            TestUtils.log("own idents: " + v.size());
+            TestLogger.log("own idents: " + v.size());
             v.forEach( i -> {
-                TestUtils.log(TestUtils.identityToString(i, true));
+                TestLogger.log(AdapterTestUtils.identityToString(i, true));
             });
             e.getVersion();
             e.OpenPGP_list_keyinfo("");
@@ -77,8 +78,8 @@ class TestMain {
     }
 
     public static void main(String[] args) {
-        TestUtils.logH1("JNI-92 Starting");
-        TestUtils.setLoggingEnabled(false);
+        TestLogger.logH1("JNI-92 Starting");
+        TestLogger.setLoggingEnabled(false);
         int nrTestruns = 1000;
         boolean multiThreaded = true;
         boolean useSharedEngines = true;
@@ -90,7 +91,7 @@ class TestMain {
         }
 
         for (int run = 0; run < nrTestruns; run++ ) {
-            TestUtils.logH1("Testrun Nr: " + run);
+            TestLogger.logH1("Testrun Nr: " + run);
             if (!multiThreaded) {
                 // Single Threaded
                 TestMainRun(nrEnginesPerThread, useSharedEngines);
@@ -109,11 +110,11 @@ class TestMain {
                     try {
                         t.join();
                     } catch (Exception e) {
-                        TestUtils.log("Exception joining thread" + e.toString());
+                        TestLogger.log("Exception joining thread" + e.toString());
                     }
                 });
             }
-            TestUtils.logH1("Testrun DONE" );
+            TestLogger.logH1("Testrun DONE" );
             System.gc();
 //            TestUtils.sleep(2000);
         }

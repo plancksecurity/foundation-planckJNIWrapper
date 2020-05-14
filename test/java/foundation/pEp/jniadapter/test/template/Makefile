@@ -4,10 +4,9 @@ include ../Makefile.conf
 TEST_UNIT_NAME=template
 
 JAVA_CLASSES = \
- 	TestMain.class \
- 	../framework/TestUnit.class \
- 	../framework/TestContext.class \
- 	../utils/TestUtils.class
+ 	TestMain.class
+
+JAVA_CLASSES += $(JAVA_CLASSES_FRAMEWORK)
 
 .PHONY: compile run test clean
 

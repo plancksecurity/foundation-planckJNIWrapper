@@ -1,11 +1,11 @@
 package foundation.pEp.jniadapter.test.template;
 import  foundation.pEp.jniadapter.test.framework.*;
-import foundation.pEp.jniadapter.*;
+import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
 
 
 class TestMain {
     public static void main(String[] args) throws Exception {
-        new TestUnit<TestContext>("Test Template",new TestContext() , ctx  -> {
+        new TestUnit<AdapterBaseTestContext>("Test Template",new AdapterBaseTestContext() , ctx  -> {
             // do stuff using the context
             // Test FAILS on unhandled exception, otherwise SUCCESS
 

@@ -1,29 +1,32 @@
 package foundation.pEp.jniadapter.test.framework;
-import foundation.pEp.jniadapter.test.utils.TestUtils;
 
 import java.util.function.Consumer;
 
-public class TestUnit<T extends TestContext> implements Runnable {
+public class TestUnit<T extends AbstractTestContext> implements Runnable {
     String testUnitName = "default test unit";
     T ctx;
     Consumer<T> lambda;
 
-    public TestUnit(String name, T c, Consumer<T> consumer) {
-        testUnitName = name;
-        lambda = consumer;
-        ctx = c;
+    public TestUnit(String name, T context, Consumer<T> lambda) {
+        this.testUnitName = name;
+        this.lambda = lambda;
+        this.ctx = context;
     }
 
     public void run() {
-        TestUtils.logH1(testUnitName);
+        TestLogger.logH1(testUnitName);
+
         try {
+            //Init the Context
             ctx.init();
+            //Run the test against the context
             lambda.accept(ctx);
-        } catch (Throwable e) {
-            TestUtils.logH1("TestUnit FAILED: " + e.toString());
+        } catch (Throwable t) {
+            //Test fails, upon cought exception, otherwise succeeds
+            TestLogger.logH1("TestUnit FAILED: " + t.toString());
             return;
         }
-        TestUtils.logH2("SUCCESS!");
+
+        TestLogger.logH2("SUCCESS!");
     }
 }
-

@@ -1,6 +1,6 @@
 package foundation.pEp.jniadapter.test.basic;
 import foundation.pEp.jniadapter.*;
-import foundation.pEp.jniadapter.test.utils.TestUtils;
+
 import java.util.Vector;
 import java.net.URL;
 import java.net.URLClassLoader;

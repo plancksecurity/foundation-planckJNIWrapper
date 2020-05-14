@@ -1,8 +1,9 @@
 package foundation.pEp.jniadapter.test.regression;
 import foundation.pEp.jniadapter.test.framework.*;
+import foundation.pEp.jniadapter.test.utils.*;
 import foundation.pEp.jniadapter.*;
 
-class RegTestContext extends TestContext {
+class RegTestContext extends AdapterBaseTestContext {
     // enhance the context
 
     @Override
