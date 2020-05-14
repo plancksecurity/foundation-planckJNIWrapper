@@ -9,21 +9,30 @@ import java.util.Vector;
 
 public class TestContext {
     public Sync.DefaultCallback cb = new Sync.DefaultCallback();
-    public Identity alice = new Identity();
-    public Identity bob = new Identity();
+    public Identity alice;
+    public Identity bob;
     public Message msgToSelf;
     public Message msgToBob;
-    public Vector<Identity> vID = new Vector<Identity>();
-    public Vector<String> vStr = new Vector<String>();
+    public Vector<Identity> vID;
+    public Vector<String> vStr;
     public byte[] key;
     private String fileName = "../resources/test_keys/pub/pep-test-alice-0x6FF00E97_pub.asc";
-    public Engine engine = new Engine();
+    public Engine engine;
 
-    public TestContext() throws Exception {
+    public TestContext() { }
+
+    public void init() throws Exception {
+        vID = new Vector<Identity>();
+        vStr = new Vector<String>();
+
+        engine = new Engine();
+
+        alice = new Identity();
         alice.user_id = "23";
         alice.address = "alice@peptest.org";
         alice.me = true;
 
+        bob = new Identity();
         bob.user_id = "42";
         bob.address = "bob@peptest.org";
 

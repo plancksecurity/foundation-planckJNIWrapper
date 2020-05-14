@@ -3,12 +3,12 @@ import foundation.pEp.jniadapter.test.utils.TestUtils;
 
 import java.util.function.Consumer;
 
-public class TestUnit {
+public class TestUnit<T extends TestContext> implements Runnable {
     String testUnitName = "default test unit";
-    TestContext ctx;
-    Consumer<TestContext> lambda;
+    T ctx;
+    Consumer<T> lambda;
 
-    public TestUnit(String name, TestContext c, Consumer<TestContext> consumer) throws Exception {
+    public TestUnit(String name, T c, Consumer<T> consumer) {
         testUnitName = name;
         lambda = consumer;
         ctx = c;
@@ -17,6 +17,7 @@ public class TestUnit {
     public void run() {
         TestUtils.logH1(testUnitName);
         try {
+            ctx.init();
             lambda.accept(ctx);
         } catch (Throwable e) {
             TestUtils.logH1("TestUnit FAILED: " + e.toString());

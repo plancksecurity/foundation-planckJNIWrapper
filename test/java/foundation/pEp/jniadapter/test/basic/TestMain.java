@@ -28,7 +28,6 @@ class TestMain {
         // load
         try {
             engine = new Engine();
-            SyncCallbacks c = new SyncCallbacks();
             SyncCallbacks callbacks = new SyncCallbacks();
 //            e.setNotifyHandshakeCallback(callbacks);
             engine.setMessageToSendCallback(callbacks);
@@ -171,7 +170,7 @@ class TestMain {
         user2.me = true;
         user2.username = "Test User 2";
         user2.address = "jniTestUser2@peptest.ch";
-//        user2 = e.myself(user2);
+        user2 = engine.myself(user2);
         System.out.print("Keys generated: ");
         System.out.println(user2.fpr);
 
