@@ -1,6 +1,6 @@
 package foundation.pEp.jniadapter.test.jni98;
 
-import foundation.pEp.jniadapter.test.utils.TestUtils;
+import static foundation.pEp.jniadapter.test.utils.TestUtils.*;
 import foundation.pEp.jniadapter.*;
 
 import java.nio.file.Files;
@@ -54,7 +54,7 @@ class TestEnv {
             Path path = Paths.get(fileNameKeyBobPub);
             keyBobPub = Files.readAllBytes(path);
         } catch (Exception e) {
-            TestUtils.log("Could not open key file:" + fileNameKeyBobPub);
+            log("Could not open key file:" + fileNameKeyBobPub);
             throw e;
         }
         engine.importKey(keyBobPub);
@@ -93,14 +93,14 @@ class TestUnit {
     }
 
     public void run() {
-        TestUtils.logH1(testUnitName);
+        logH1(testUnitName);
         try {
             lambda.accept(env);
         } catch (Throwable e) {
-            TestUtils.logH1("TestUnit FAILED: " + e.toString());
+            logH1("TestUnit FAILED: " + e.toString());
             return;
         }
-        TestUtils.logH2("SUCCESS!");
+        logH2("SUCCESS!");
     }
 }
 
@@ -111,27 +111,49 @@ class TestMain {
     }
 
     public static void testRunNew() throws Exception {
-        new TestUnit("JNI-98 - Factory function for generating incoming message from PGP text", env -> {
+        new TestUnit("JNI-98 - Message.EncFormat.PEP", env -> {
             // Make msg1 by encrypting msgToBob
-            TestUtils.logH2("Create target Message");
+            logH2("Create target Message");
             Message msg1 = env.engine.encrypt_message(env.msgToBob, null, Message.EncFormat.PEP);
-            TestUtils.log(TestUtils.msgToString(msg1));
-            TestUtils.log("msg returned from encrypt_message is null");
+            log(msgToString(msg1));
+            log("EncPep:" + Message.EncFormat.PEP.value);
 
             // Lets get the pgpText of the msg1, and the EncFormat
             String pgpText = Engine.toUTF16(msg1.getAttachments().elementAt(1).data);
             Message.EncFormat ef = msg1.getEncFormat();
+            log("EncPepReturn:" + ef.value);
+            //TODO: setting encformat to 4 (PEP) getting back 3 (PGPMIME)
 
             // Create msg2 by using incomingMessageFromPGPText with the pgpText and EncFormat from msg1
-            TestUtils.logH2("incomingMessageFromPGPText()");
-            Message msg2 = Engine.incomingMessageFromPGPText(pgpText, ef);
-            TestUtils.log(TestUtils.msgToString(msg2));
-            TestUtils.log("msg returned from incomingMessageFromPGPText() is null");
+            logH2("incomingMessageFromPGPText()");
+            Message msg2 = Engine.incomingMessageFromPGPText(pgpText, Message.EncFormat.PEP);
+            log(msgToString(msg2));
 
-            TestUtils.logH2("Verify msg2");
+            logH2("Verify msg2");
             Engine.decrypt_message_Return result = null;
             result = env.engine.decrypt_message(msg2, env.vStr, 0);
-            TestUtils.log(TestUtils.msgToString(result.dst));
+            log(msgToString(result.dst));
+        }).run();
+
+        new TestUnit("JNI-98 - Message.EncFormat.PEP_enc_inline_EA", env -> {
+            // Make msg1 by encrypting msgToBob
+            logH2("Create target Message");
+            Message msg1 = env.engine.encrypt_message(env.msgToBob, null, Message.EncFormat.PEPEncInlineEA);
+            log(msgToString(msg1));
+
+            // Lets get the pgpText of the msg1, and the EncFormat
+            String pgpText = msg1.getLongmsg();
+            Message.EncFormat ef = msg1.getEncFormat();
+
+            // Create msg2 by using incomingMessageFromPGPText with the pgpText and EncFormat from msg1
+            logH2("incomingMessageFromPGPText()");
+            Message msg2 = Engine.incomingMessageFromPGPText(pgpText, ef);
+            log(msgToString(msg2));
+
+            logH2("Verify msg2");
+            Engine.decrypt_message_Return result = null;
+            result = env.engine.decrypt_message(msg2, env.vStr, 0);
+            log(msgToString(result.dst));
         }).run();
     }
 }

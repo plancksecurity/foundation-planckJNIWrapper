@@ -198,25 +198,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
     public static Message incomingMessageFromPGPText(String pgpText, Message.EncFormat encFormat) {
         Message msg = new Message();
         msg.setDir(Message.Direction.Incoming);
-        msg.setShortmsg("p≡p");
-        msg.setLongmsg("this message was encrypted with p≡p https://pEp-project.org");
         msg.setEncFormat(encFormat);
-
-        // Attachments
-        Blob att0 = new Blob();
-        att0.mime_type = "application/pgp-encrypted";
-        att0.filename = null;
-        att0.data = "Version: 1".getBytes();
-
-        Blob att1 = new Blob();
-        att1.mime_type = "application/octet-stream";
-        att1.filename = "file://msg.asc";
-        att1.data = pgpText.getBytes();
-
-        Vector<Blob> attachments = new Vector<>();
-        attachments.add(att0);
-        attachments.add(att1);
-        msg.setAttachments(attachments);
 
         // Opts
         ArrayList<Pair<String, String>> opts = new ArrayList<>();
@@ -226,7 +208,41 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         opts.add(xpEp);
         msg.setOptFields(opts);
 
+        if(encFormat == Message.EncFormat.PEP) {
+            // For EncFormat.PEP
+            // The pgpText goes into the attachment index 1
+            msg.setShortmsg("p≡p");
+            msg.setLongmsg("this message was encrypted with p≡p https://pEp-project.org");
+
+            // Attachments
+            Blob att0 = new Blob();
+            att0.mime_type = "application/pgp-encrypted";
+            att0.filename = null;
+            att0.data = "Version: 1".getBytes();
+
+            Blob att1 = new Blob();
+            att1.mime_type = "application/octet-stream";
+            att1.filename = "file://msg.asc";
+            att1.data = pgpText.getBytes();
+
+            Vector<Blob> attachments = new Vector<>();
+            attachments.add(att0);
+            attachments.add(att1);
+            msg.setAttachments(attachments);
+        }
+        else if (encFormat == Message.EncFormat.PEPEncInlineEA) {
+            // For EncFormat.PEPEncInlineEA
+            // The pgpText goes into the longMessage
+            // TODO: Attachment index 0 should contain, i guess, the pubkey of the sender
+            // TODO: BUT why is there an attachemnt ElevatedAttachments are for non attachment transports
+
+            msg.setShortmsg("");
+            msg.setLongmsg(pgpText);
+        }
+        else {
+            throw new pEpCannotEncode("Message.Encformat not supported: " + encFormat.toString());
+        }
+
         return msg;
     }
 }
-
