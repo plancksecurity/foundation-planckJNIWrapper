@@ -115,7 +115,7 @@ class TestMain {
             // Make msg1 by encrypting msgToBob
             logH2("Create target Message");
             Message msg1 = env.engine.encrypt_message(env.msgToBob, null, Message.EncFormat.PEP);
-            log(msgToString(msg1));
+            log("\n" + msgToString(msg1, false));
             log("EncPep:" + Message.EncFormat.PEP.value);
 
             // Lets get the pgpText of the msg1, and the EncFormat
@@ -127,19 +127,19 @@ class TestMain {
             // Create msg2 by using incomingMessageFromPGPText with the pgpText and EncFormat from msg1
             logH2("incomingMessageFromPGPText()");
             Message msg2 = Engine.incomingMessageFromPGPText(pgpText, Message.EncFormat.PEP);
-            log(msgToString(msg2));
+            log("\n" + msgToString(msg2, false));
 
             logH2("Verify msg2");
             Engine.decrypt_message_Return result = null;
             result = env.engine.decrypt_message(msg2, env.vStr, 0);
-            log(msgToString(result.dst));
+            log("\n" + msgToString(result.dst, false));
         }).run();
 
         new TestUnit("JNI-98 - Message.EncFormat.PEP_enc_inline_EA", env -> {
             // Make msg1 by encrypting msgToBob
             logH2("Create target Message");
             Message msg1 = env.engine.encrypt_message(env.msgToBob, null, Message.EncFormat.PEPEncInlineEA);
-            log(msgToString(msg1));
+            log("\n" + msgToString(msg1, false));
 
             // Lets get the pgpText of the msg1, and the EncFormat
             String pgpText = msg1.getLongmsg();
@@ -148,12 +148,22 @@ class TestMain {
             // Create msg2 by using incomingMessageFromPGPText with the pgpText and EncFormat from msg1
             logH2("incomingMessageFromPGPText()");
             Message msg2 = Engine.incomingMessageFromPGPText(pgpText, ef);
-            log(msgToString(msg2));
+            log("\n" + msgToString(msg2, false));
 
-            logH2("Verify msg2");
-            Engine.decrypt_message_Return result = null;
-            result = env.engine.decrypt_message(msg2, env.vStr, 0);
-            log(msgToString(result.dst));
+            // Cant be just simply decrypted again
+            // And thats correct according to fdik
+            //[21:29] <        heck> | Assertion failed: (value && size && mime_type && code && !code[0] && code_size), function decode_internal, file internal_format.c, line 113.
+            //[21:31] <        fdik> | ja
+            //[21:31] <        fdik> | auch das ist korrekt
+            //[21:31] <        fdik> | wenn Du EA verwendest, dann geht es nicht, dass man die Nachricht so wie sie ist wieder decrypted
+            //[21:31] <        fdik> | sondern das geht nur, wenn man sie zerlegt
+            //[21:32] <        fdik> | dafür ist das Verfahren da
+            //[21:34] <        fdik> | ich hab einen Test dafür geschrieben
+            //[21:34] <        fdik> | pEpEngine/test/src/ElevatedAttachmentsTest.cc
+            //[21:34] <        fdik> | in default
+            //[21:35] <        fdik> | Doku hier https://dev.pep.foundation/Engine/ElevatedAttachments
+            //[21:35] <        fdik> | siehe hier:
+            //[21:35] <        fdik> | https://dev.pep.foundation/Engine/ElevatedAttachments#support-in-message-api
         }).run();
     }
 }

@@ -233,9 +233,6 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         else if (encFormat == Message.EncFormat.PEPEncInlineEA) {
             // For EncFormat.PEPEncInlineEA
             // The pgpText goes into the longMessage
-            // TODO: Attachment index 0 should contain, i guess, the pubkey of the sender
-            // TODO: BUT why is there an attachemnt ElevatedAttachments are for non attachment transports
-
             msg.setShortmsg("");
             msg.setLongmsg(pgpText);
         }
