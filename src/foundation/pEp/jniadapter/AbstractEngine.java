@@ -195,7 +195,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         return 0;
     }
 
-    public static Message incomingMessageFromPGPText(String pgpText, Message.EncFormat encFormat) {
+    public Message incomingMessageFromPGPText(String pgpText, Message.EncFormat encFormat) {
         Message msg = new Message();
         msg.setDir(Message.Direction.Incoming);
         msg.setEncFormat(encFormat);
@@ -204,7 +204,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         ArrayList<Pair<String, String>> opts = new ArrayList<>();
         Pair<String, String> xpEp = new Pair<>();
         xpEp.first = "X-pEp-Version";
-        xpEp.second = "2.1";
+        xpEp.second = this.getProtocolVersion();;
         opts.add(xpEp);
         msg.setOptFields(opts);
 

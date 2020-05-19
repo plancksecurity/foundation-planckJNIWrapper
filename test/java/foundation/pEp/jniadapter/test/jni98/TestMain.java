@@ -126,9 +126,8 @@ class TestMain {
 
             // Create msg2 by using incomingMessageFromPGPText with the pgpText and EncFormat from msg1
             logH2("incomingMessageFromPGPText()");
-            Message msg2 = Engine.incomingMessageFromPGPText(pgpText, Message.EncFormat.PEP);
+            Message msg2 = env.engine.incomingMessageFromPGPText(pgpText, Message.EncFormat.PEP);
             log("\n" + msgToString(msg2, false));
-
             logH2("Verify msg2");
             Engine.decrypt_message_Return result = null;
             result = env.engine.decrypt_message(msg2, env.vStr, 0);
@@ -147,7 +146,7 @@ class TestMain {
 
             // Create msg2 by using incomingMessageFromPGPText with the pgpText and EncFormat from msg1
             logH2("incomingMessageFromPGPText()");
-            Message msg2 = Engine.incomingMessageFromPGPText(pgpText, ef);
+            Message msg2 = env.engine.incomingMessageFromPGPText(pgpText, ef);
             log("\n" + msgToString(msg2, false));
 
             // Cant be just simply decrypted again
