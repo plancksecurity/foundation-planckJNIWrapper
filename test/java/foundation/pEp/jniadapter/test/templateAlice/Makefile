@@ -1,7 +1,7 @@
 include ../../../../../../../Makefile.conf
 include ../Makefile.conf
 
-TEST_UNIT_NAME=template
+TEST_UNIT_NAME=templateAlice
 
 JAVA_CLASSES = \
  	TestMain.class

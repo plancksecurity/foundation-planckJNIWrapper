@@ -1,5 +1,5 @@
-package foundation.pEp.jniadapter.test.template;
-import  foundation.pEp.jniadapter.test.framework.*;
+package foundation.pEp.jniadapter.test.templateAlice;
+import foundation.pEp.jniadapter.test.framework.*;
 import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
 
 
