@@ -37,16 +37,21 @@ public class TestLogger {
     }
 
     private static String getDecoratedString(String msg, String decoration) {
-        byte var2 = 80;
+        byte lineWidth = 80;
         String ret = "";
 
-        for(int i = 0; (double)i < Math.ceil((double)((var2 - msg.length() + 2) / 2)); ++i) {
+        for(int i = 0; (double)i < Math.ceil((double)((lineWidth - msg.length() + 2) / 2)); ++i) {
             ret = ret + decoration;
         }
 
         return ret + " " + msg + " " + ret;
     }
 
+    public static void spacer() {
+        System.out.print('\n');
+    }
+
+    // Deprecated
     public static void logSectEnd(String msg) {
         log(msg + "\n");
     }

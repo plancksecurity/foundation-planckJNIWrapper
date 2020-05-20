@@ -1,8 +1,10 @@
 package foundation.pEp.jniadapter.test.framework;
 
+import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
+
 import java.util.function.Consumer;
 
-public class TestUnit<T extends AbstractTestContext> implements Runnable {
+public class TestUnit<T extends TestContextInterface> implements Runnable {
     String testUnitName = "default test unit";
     T ctx;
     Consumer<T> lambda;
@@ -14,19 +16,39 @@ public class TestUnit<T extends AbstractTestContext> implements Runnable {
     }
 
     public void run() {
-        TestLogger.logH1(testUnitName);
+        if (ctx.isUninitializable()) {
+            // Context uninitializable
+            log("Context has been uninitializable");
+        } else {
+            // Init the Context
+            try {
+                if (!ctx.isInitialized()) {
+                    logH1("TEST: '" + testUnitName + "' ==== CTX: '" + ctx.getTestContextName() + "' ===== CTX INIT");
+                    ctx.init();
+                    ctx.setInitialized(true);
+                }
+            } catch (Throwable t) {
+                //Context Init problems need to throw for fail
+                logH1("TEST: '" + testUnitName + "' ==== CTX: '" + ctx.getTestContextName() + "' ===== CTX FAIL");
+                log(t.toString());
+                spacer();
+                ctx.setUninitializable(true);
+                return;
+            }
 
-        try {
-            //Init the Context
-            ctx.init();
-            //Run the test against the context
-            lambda.accept(ctx);
-        } catch (Throwable t) {
-            //Test fails, upon cought exception, otherwise succeeds
-            TestLogger.logH1("TestUnit FAILED: " + t.toString());
-            return;
+            // Run the test
+            logH1("TEST: '" + testUnitName + "' ==== CTX: '" + ctx.getTestContextName() + "' ===== STARTING");
+            try {
+                lambda.accept(ctx);
+            } catch (Throwable t) {
+                //Test fails, upon cought exception, otherwise succeeds
+                logH1("TEST: '" + testUnitName + "' ==== CTX: '" + ctx.getTestContextName() + "' ===== FAILED");
+                log(t.toString());
+                spacer();
+                return;
+            }
+            logH1("TEST: '" + testUnitName + "' ==== CTX: '" + ctx.getTestContextName() + "' ===== SUCCESS");
+            spacer();
         }
-
-        TestLogger.logH2("SUCCESS!");
     }
 }

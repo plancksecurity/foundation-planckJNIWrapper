@@ -1,7 +1,9 @@
 package foundation.pEp.jniadapter.test.framework.examples.helloworld;
+import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
 import foundation.pEp.jniadapter.test.framework.*;
 
-class HelloWorldTestContext implements AbstractTestContext {
+
+class HelloWorldTestContext implements TestContextInterface {
     String name;
 
     @Override
@@ -15,7 +17,7 @@ class TestMain {
         new TestUnit<HelloWorldTestContext>("Hello World",new HelloWorldTestContext() , ctx  -> {
             // do stuff using the context
             // Test FAILS on unhandled exception, otherwise SUCCESS
-            TestLogger.log("Hello World from: " + ctx.name);
+            log("Hello World from: " + ctx.name);
         }).run();
     }
 }
