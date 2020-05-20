@@ -3,7 +3,7 @@ import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
 import foundation.pEp.jniadapter.test.framework.*;
 
 
-class HelloWorldTestContext implements TestContextInterface {
+class HelloWorldTestContext extends AbstractTestContext {
     String name;
 
     @Override
