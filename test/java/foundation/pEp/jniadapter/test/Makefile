@@ -3,7 +3,8 @@
 all: compile
 
 run: compile
-	$(MAKE) -C template run
+	$(MAKE) -C templateAlice run
+	$(MAKE) -C templateAliceBob run
 	$(MAKE) -C basic run
 	$(MAKE) -C regression run
 	$(MAKE) -C jni88 run
@@ -13,7 +14,8 @@ run: compile
 	$(MAKE) -C jni98 run
 
 compile:
-	$(MAKE) -C template compile
+	$(MAKE) -C templateAlice compile
+	$(MAKE) -C templateAliceBob compile
 	$(MAKE) -C basic compile
 	$(MAKE) -C regression compile
 	$(MAKE) -C jni88 compile
@@ -23,7 +25,8 @@ compile:
 	$(MAKE) -C jni98 compile
 
 clean:
-	$(MAKE) -C template clean
+	$(MAKE) -C templateAlice clean
+	$(MAKE) -C templateAliceBob clean
 	$(MAKE) -C basic clean
 	$(MAKE) -C regression clean
 	$(MAKE) -C jni88 clean
