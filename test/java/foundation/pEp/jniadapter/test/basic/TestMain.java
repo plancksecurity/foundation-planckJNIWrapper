@@ -6,6 +6,7 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.test.framework.TestUnit;
 import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
+import foundation.pEp.jniadapter.test.utils.AdapterTestUtils;
 
 import java.util.Vector;
 
@@ -57,7 +58,7 @@ class TestMain {
 
         new TestUnit<BasicTestContext>("Encrypt", btc, ctx -> {
             ctx.enc = ctx.engine.encrypt_message(ctx.msgToBob, null, Message.EncFormat.PEP);
-            log(ctx.enc.getLongmsg());
+            log(AdapterTestUtils.msgToString(ctx.enc, false));
         }).run();
 
         new TestUnit<BasicTestContext>("Rating Preview", btc, ctx -> {
@@ -70,21 +71,7 @@ class TestMain {
 
         new TestUnit<BasicTestContext>("Decrypt", btc, ctx -> {
             ctx.result = ctx.engine.decrypt_message(ctx.enc, new Vector<>(), 0);
-            log("decrypted");
-            log(ctx.result.dst.getShortmsg());
-            log(ctx.result.dst.getLongmsg());
-        }).run();
-
-        new TestUnit<BasicTestContext>("getAttachments", btc, ctx -> {
-            Vector<Blob> attachments = ctx.result.dst.getAttachments();
-            log("get attachement data");
-            log("Attachement count: " + attachments.size());
-            for (Blob a : attachments) {
-                log("Attachement nr: " + attachments.indexOf(a));
-                log("[");
-                log(a.toString());
-                log("]");
-            }
+            log(AdapterTestUtils.msgToString(ctx.result.dst, false));
         }).run();
 
         new TestUnit<BasicTestContext>("key_reset_all_own_keys()", btc, ctx -> {
