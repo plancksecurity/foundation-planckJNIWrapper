@@ -159,9 +159,9 @@ class TestMain {
         }).run();
 
         // TODO: class not found: foundation/pEp/jniadapter/Message$CipherSuite
-//        new TestUnit<RegTestContext>("Engine.config_cipher_suite", new RegTestContext(), ctx -> {
-//            ctx.engine.config_cipher_suite(CipherSuite.pEpCipherSuiteDefault);
-//        }).run();
+        new TestUnit<RegTestContext>("Engine.config_cipher_suite", new RegTestContext(), ctx -> {
+            ctx.engine.config_cipher_suite(CipherSuite.pEpCipherSuiteDefault);
+        }).run();
 
         new TestUnit<RegTestContext>("Engine.trustwords", new RegTestContext(), ctx -> {
             ctx.engine.trustwords(ctx.alice);
