@@ -26,10 +26,11 @@ Please see https://pep.foundation/jira/browse/JNI-98 for further discussion
 
 class TestMain {
     public static void main(String[] args) throws Exception {
-        new TestUnit<AdapterBaseTestContext>("JNI-98 - Message.EncFormat.PEP", new AdapterBaseTestContext(), env -> {
+        new TestUnit<AdapterBaseTestContext>("JNI-98 - Message.EncFormat.PEP", new AdapterBaseTestContext(), ctx -> {
+            ctx.engine.importKey(ctx.keyBobPub);
             // Make msg1 by encrypting msgToBob
             logH2("Create target Message");
-            Message msg1 = env.engine.encrypt_message(env.msgToBob, null, Message.EncFormat.PEP);
+            Message msg1 = ctx.engine.encrypt_message(ctx.msgToBob, null, Message.EncFormat.PEP);
             log("\n" + msgToString(msg1, false));
 
             // Lets get the pgpText of the msg1, and the EncFormat
@@ -39,19 +40,20 @@ class TestMain {
 
             // Create msg2 by using incomingMessageFromPGPText with the pgpText and EncFormat from msg1
             logH2("incomingMessageFromPGPText()");
-            Message msg2 = env.engine.incomingMessageFromPGPText(pgpText, Message.EncFormat.PEP);
+            Message msg2 = ctx.engine.incomingMessageFromPGPText(pgpText, Message.EncFormat.PEP);
             log("\n" + msgToString(msg2, false));
 
             logH2("Verify msg2");
             Engine.decrypt_message_Return result = null;
-            result = env.engine.decrypt_message(msg2, env.vStr, 0);
+            result = ctx.engine.decrypt_message(msg2, ctx.vStr, 0);
             log("\n" + msgToString(result.dst, false));
         }).run();
 
-        new TestUnit<AdapterBaseTestContext>("JNI-98 - Message.EncFormat.PEP_enc_inline_EA", new AdapterBaseTestContext(), env -> {
+        new TestUnit<AdapterBaseTestContext>("JNI-98 - Message.EncFormat.PEP_enc_inline_EA", new AdapterBaseTestContext(), ctx -> {
+            ctx.engine.importKey(ctx.keyBobPub);
             // Make msg1 by encrypting msgToBob
             logH2("Create target Message");
-            Message msg1 = env.engine.encrypt_message(env.msgToBob, null, Message.EncFormat.PEPEncInlineEA);
+            Message msg1 = ctx.engine.encrypt_message(ctx.msgToBob, null, Message.EncFormat.PEPEncInlineEA);
             log("\n" + msgToString(msg1, false));
 
             // Lets get the pgpText of the msg1, and the EncFormat
@@ -60,7 +62,7 @@ class TestMain {
 
             // Create msg2 by using incomingMessageFromPGPText with the pgpText and EncFormat from msg1
             logH2("incomingMessageFromPGPText()");
-            Message msg2 = env.engine.incomingMessageFromPGPText(pgpText, ef);
+            Message msg2 = ctx.engine.incomingMessageFromPGPText(pgpText, ef);
             log("\n" + msgToString(msg2, false));
 
             // Cant be just simply decrypted again

@@ -14,7 +14,7 @@ JAVA_CLASSES += $(JAVA_CLASSES_FRAMEWORK)
 all: compile
 	$(MAKE) run
 
-run: compile
+run: compile clean-pep-home
 	cd $(JAVA_CWD);pwd;HOME=$(JAVA_PEP_HOME_DIR) $(JAVA) $(JAVA_PKG_BASENAME).$(TEST_UNIT_NAME).TestMain
 
 compile: $(JAVA_CLASSES)
