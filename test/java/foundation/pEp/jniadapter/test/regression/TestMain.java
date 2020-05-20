@@ -7,14 +7,14 @@ class RegTestContext extends AdapterBaseTestContext {
     // enhance the context
 
     @Override
-    public void init() throws Exception {
+    public void init() throws Throwable {
         super.init();
         // init the enhancements
     }
 }
 
 class TestMain {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         new TestUnit<RegTestContext>("Engine.myself", new RegTestContext(), ctx -> {
             ctx.alice = ctx.engine.myself(ctx.alice);
         }).run();
@@ -194,7 +194,7 @@ class TestMain {
         }).run();
 
         new TestUnit<RegTestContext>("Engine.importKey", new RegTestContext(), ctx -> {
-            ctx.engine.importKey(ctx.key);
+            ctx.engine.importKey(ctx.keyBobPub);
         }).run();
 
         new TestUnit<RegTestContext>("Engine.blacklist_add", new RegTestContext(), ctx -> {

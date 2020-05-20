@@ -7,8 +7,6 @@ JAVA_CLASSES = \
  	TestMain.class \
  	../utils/AdapterTestUtils.class
 
-JAVA_CLASSES += $(JAVA_CLASSES_FRAMEWORK)
-
 .PHONY: compile run test clean
 
 all: compile
