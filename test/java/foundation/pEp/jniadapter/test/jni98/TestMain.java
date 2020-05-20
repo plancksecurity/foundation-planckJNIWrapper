@@ -1,6 +1,7 @@
 package foundation.pEp.jniadapter.test.jni98;
 
-import static foundation.pEp.jniadapter.test.utils.TestUtils.*;
+import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
+import static foundation.pEp.jniadapter.test.utils.AdapterTestUtils.*;
 import foundation.pEp.jniadapter.*;
 
 import java.nio.file.Files;

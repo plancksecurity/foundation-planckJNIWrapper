@@ -5,7 +5,9 @@ TEST_UNIT_NAME=jni98
 
 JAVA_CLASSES = \
  	TestMain.class \
- 	../utils/TestUtils.class
+	../utils/AdapterTestUtils.class
+
+JAVA_CLASSES += $(JAVA_CLASSES_FRAMEWORK)
 
 .PHONY: compile run test clean
 

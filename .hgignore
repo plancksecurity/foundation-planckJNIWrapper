@@ -12,6 +12,8 @@ syntax: glob
 *.orig
 *~
 .DS_Store
+*.db
+*.log
 
 # ignore generated files
 

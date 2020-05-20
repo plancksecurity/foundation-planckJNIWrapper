@@ -5,14 +5,15 @@ TEST_UNIT_NAME=jni94
 
 JAVA_CLASSES = \
  	TestMain.class \
- 	../utils/TestUtils.class
+
+JAVA_CLASSES += $(JAVA_CLASSES_FRAMEWORK)
 
 .PHONY: compile run test clean
 
 all: compile
 	$(MAKE) run
 
-run: compile
+run: compile clean-pep-home
 	cd $(JAVA_CWD);HOME=$(JAVA_PEP_HOME_DIR) $(JAVA) $(JAVA_PKG_BASENAME).$(TEST_UNIT_NAME).TestMain
 
 compile: $(JAVA_CLASSES)

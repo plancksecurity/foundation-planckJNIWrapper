@@ -1,24 +1,13 @@
 package foundation.pEp.jniadapter.test.utils;
-
 import foundation.pEp.jniadapter.*;
 
 import java.util.ArrayList;
 import java.util.Vector;
 
-public class TestUtils {
-
-
-    public static void sleep(int mSec) {
-        try {
-            Thread.sleep(mSec);
-        } catch (InterruptedException ex) {
-            System.out.println("sleep got interrupted");
-        }
-    }
-
+public class AdapterTestUtils {
     public static String identityToString(Identity i, Boolean full) {
         String ret = "";
-        if (full) {
+        if(full) {
             ret += "address: " + i.address + "\n";
             ret += "fpr: " + i.fpr + "\n";
             ret += "username: " + i.username + "\n";
@@ -33,6 +22,7 @@ public class TestUtils {
         ret = ret.trim();
         return ret;
     }
+
 
     public static String msgToString(Message msg, boolean full) {
         String ret = "";
@@ -287,45 +277,16 @@ public class TestUtils {
         }
         return spv;
     }
-    // ------------------------ Logging ------------------------
 
-    private static boolean logEnabled = true;
+    public static Message makeNewTestMessage(Identity from, Identity to, Message.Direction dir) {
+        Message msg = new Message();
+        Vector<Identity> vID = new Vector<Identity>();
+        vID.add(to);
 
-    public static void setLoggingEnabled(boolean enabled) {
-        logEnabled = enabled;
-    }
-
-    public static boolean isLoggingEnabled() {
-        return logEnabled;
-    }
-
-    public static void log(String msg) {
-        if (logEnabled) {
-            String threadNameFmt = String.format("%-10s", Thread.currentThread().getName());
-            String msgOut = threadNameFmt + ": " + msg;
-            System.out.println(msgOut);
-        }
-    }
-
-    public static void logH1(String msg) {
-        log(getDecoratedString(msg, "="));
-    }
-
-    public static void logH2(String msg) {
-        log(getDecoratedString(msg, "-"));
-    }
-
-    private static String getDecoratedString(String msg, String s) {
-        int lineWidth = 80;
-        String decorationChar = s;
-        String decorationStr = "";
-        for (int i = 0; i < Math.ceil((lineWidth - msg.length() + 2) / 2); i++) {
-            decorationStr += decorationChar;
-        }
-        return decorationStr + " " + msg + " " + decorationStr;
-    }
-
-    public static void logSectEnd(String msg) {
-        log(msg + "\n");
+        msg.setFrom(from);
+        msg.setTo(vID);
+        msg.setDir(dir);
+        msg.setLongmsg("Hi i am the message longmsg");
+        return msg;
     }
 }
