@@ -285,11 +285,12 @@ namespace pEp {
         }
 
         enum EncFormat {
-            none        > 0
-            inline      > 1
-            SMIME       > 2
-            PGPMIME     > 3
-            PEP         > 4
+            none               > 0
+            inline             > 1
+            SMIME              > 2
+            PGPMIME            > 3
+            PEP                > 4
+            PEP_enc_inline_EA  > 6
         }
 
          direction dir;

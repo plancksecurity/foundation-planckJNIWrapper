@@ -23,133 +23,162 @@ public class AdapterTestUtils {
         return ret;
     }
 
-    public static String msgToString(Message msg) {
+
+    public static String msgToString(Message msg, boolean full) {
         String ret = "";
-        ret += "getAttachments: ";
+        ArrayList<Pair<String, String>> kvs = new ArrayList<>();
+        String key = "";
+        String value = "";
+
+        key = "getAttachments";
         try {
-            ret += blobListToString(msg.getAttachments()) + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
+            value = blobListToString(msg.getAttachments(), full) + "\n";
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "Id";
+        try {
+            value = msg.getId();
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getDir";
+        try {
+            value = msg.getDir().toString();
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getShortmsg";
+        try {
+            value = msg.getShortmsg();
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getLongmsg";
+        try {
+            value = msg.getLongmsg();
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getLongmsgFormatted";
+        try {
+            value = msg.getLongmsgFormatted();
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getFrom";
+        try {
+            value = identityToString(msg.getFrom(), full);
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getTo";
+        try {
+            value = identityListToString(msg.getTo(), full);
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getRecvBy";
+        try {
+            value = identityToString(msg.getRecvBy(), full);
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getCc";
+        try {
+            value = identityListToString(msg.getCc(), full) + "\n";
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getBcc";
+        try {
+            value = identityListToString(msg.getBcc(), full);
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getReplyTo";
+        try {
+            value = identityListToString(msg.getReplyTo(), full);
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getInReplyTo";
+        try {
+            value = stringVectorToString(msg.getInReplyTo());
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getReferences";
+        try {
+            value = stringVectorToString(msg.getReferences());
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getKeywords";
+        try {
+            value = stringVectorToString(msg.getKeywords());
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getComments";
+        try {
+            value = msg.getComments();
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getOptFields";
+        try {
+            value = stringPairListToString(msg.getOptFields());
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<>(key, value));
+
+        key = "getEncFormat";
+        try {
+            value = msg.getEncFormat().toString();
+        } catch (Throwable e) {
+            value = e.toString();
+        }
+        kvs.add(new Pair<String,String>(key, value));
+
+        if (!full) {
+            kvs = clipStrings(kvs, 200);
         }
 
-        ret += "Id: ";
-        try {
-            ret += msg.getId() + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getDir: ";
-        try {
-            ret += msg.getDir().toString() + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getShortmsg: ";
-        try {
-            ret += msg.getShortmsg() + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getLongmsg: ";
-        try {
-            ret += msg.getLongmsg() + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getLongmsgFormatted: ";
-        try {
-            ret += msg.getLongmsgFormatted() + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getFrom: ";
-        try {
-            ret += identityToString(msg.getFrom(), false) + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getTo: ";
-        try {
-            ret += identityListToString(msg.getTo(), false) + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getRecvBy: ";
-        try {
-            ret += identityToString(msg.getRecvBy(), false) + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getCc: ";
-        try {
-            ret += identityListToString(msg.getCc(), false)+ "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getBcc: ";
-        try {
-            ret += identityListToString(msg.getBcc(), false) + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getReplyTo: ";
-        try {
-            ret += identityListToString(msg.getReplyTo(), false) + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getInReplyTo: ";
-        try {
-            ret += stringVectorToString(msg.getInReplyTo())  + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getReferences: ";
-        try {
-            ret += stringVectorToString(msg.getReferences())  + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getKeywords: ";
-        try {
-            ret += stringVectorToString(msg.getKeywords())  + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getComments: ";
-        try {
-            ret += msg.getComments() + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getOptFields: ";
-        try {
-            ret += stringPairListToString(msg.getOptFields()) + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
-
-        ret += "getEncFormat: ";
-        try {
-            ret += msg.getEncFormat().toString() + "\n";
-        } catch(Throwable e) {
-            ret += e.toString() + "\n";
-        }
+        ret = stringPairListToString(kvs);
 
         ret = ret.trim();
         return ret;
@@ -157,7 +186,7 @@ public class AdapterTestUtils {
 
     public static String stringVectorToString(Vector<String> vS) {
         String ret = "";
-        for (String s : vS){
+        for (String s : vS) {
             ret += s + "\n";
         }
         ret = ret.trim();
@@ -166,32 +195,87 @@ public class AdapterTestUtils {
 
     public static String identityListToString(Vector<Identity> vI, Boolean full) {
         String ret = "";
-        for(Identity i : vI) {
+        for (Identity i : vI) {
             ret += identityToString(i, full) + "\n";
         }
         ret = ret.trim();
         return ret;
     }
 
-    public static String stringPairListToString(ArrayList<Pair<String, String>> opts) {
-        String ret = "";
-        for(Pair<String, String> el : opts) {
-            ret += el.first + "=" + el.second + "\n";
-        };
+    public static String stringPairListToString(ArrayList<Pair<String, String>> spl) {
+        String ret = "Invalid List: null object\n";
+        if (spl != null) {
+            ret = "";
+            for (Pair<String, String> el : spl) {
+                String item = "Invalid StringPair: null object\n";
+                if (el != null) {
+                    item = "";
+                    String k = "Invalid String: null object";
+                    String v = "Invalid String: null object";
+                    if (el.first != null) {
+                        k = el.first;
+                    }
+                    if (el.second != null) {
+                        v = el.second;
+                    }
+
+                    String delimBegin = "'";
+                    String delimEnd = "'";
+                    String indent = "";
+                    if (v.contains("\n") || (v.length() > 200)) {
+                        delimBegin = " {\n";
+                        delimEnd = "\n}";
+                        delimEnd = String.format("%-100s", delimEnd);
+                        indent = String.format("%4s", " ");
+                        v = v.replace("\n", "\n" + indent);
+                    }
+
+                    item = k + " = " + delimBegin + indent + v + delimEnd + "\n";
+                }
+                ret += item;
+            }
+        }
         ret = ret.trim();
         return ret;
     }
 
-    public static String blobListToString(Vector<Blob> attachments) {
+    public static String blobListToString(Vector<Blob> attachments, boolean full) {
         String ret = "";
         ret += "Attachments count: " + attachments.size() + "\n";
-        for( Blob a: attachments) {
+        for (Blob a : attachments) {
             ret += "-----BEGIN Attachment index: " + attachments.indexOf(a) + "-----\n";
-            ret += a.toString();
+            String tmp = a.toString();
+            if (!full) {
+                tmp = clipString(tmp, 250);
+            }
+            ret += tmp + "\n";
             ret += "-----END Attachment index: " + attachments.indexOf(a) + "-----\n";
         }
         ret = ret.trim();
-        return  ret;
+        return ret;
+    }
+
+    public static String clipString(String str, int len) {
+        String ret = str;
+        if (str.length() > len) {
+            ret = str.substring(0, len);
+            ret += " clipped... ";
+        }
+        return ret;
+    }
+
+    public static ArrayList<Pair<String,String>> clipStrings(ArrayList<Pair<String,String>> spv, int len) {
+        for (Pair<String,String> p : spv) {
+            if(p != null) {
+                if(p.first != null) {
+                    p.first = clipString(p.first, len);
+                }
+                if(p.second != null) {
+                    p.second = clipString(p.second, len);
+                }
+            }
+        }
+        return spv;
     }
 
     public static Message makeNewTestMessage(Identity from, Identity to, Message.Direction dir) {
