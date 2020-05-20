@@ -4,9 +4,12 @@ include ../Makefile.conf
 TEST_UNIT_NAME=basic
 
 JAVA_CLASSES = \
-	SyncCallbacks.class \
- 	TestMain.class
+ 	TestMain.class \
+	../utils/AdapterBaseTestContext.class \
+	../utils/AdapterTestUtils.class \
+	../utils/TestCallbacks.class
 
+JAVA_CLASSES += $(JAVA_CLASSES_FRAMEWORK)
 
 .PHONY: compile run test clean
 

@@ -1,93 +1,48 @@
 package foundation.pEp.jniadapter.test.basic;
-import foundation.pEp.jniadapter.*;
+
+import foundation.pEp.jniadapter.Blob;
+import foundation.pEp.jniadapter.Engine;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.test.framework.TestUnit;
+import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
 
 import java.util.Vector;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.lang.Thread;
-import java.lang.InterruptedException;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import static foundation.pEp.jniadapter.test.framework.TestLogger.log;
+
+class BasicTestContext extends AdapterBaseTestContext {
+    Message enc;
+    Engine.decrypt_message_Return result;
+
+    public BasicTestContext() {
+        setTestContextName("BasicTestContext");
+    }
+}
 
 class TestMain {
-    public void printClassPath() {
-        ClassLoader cl = ClassLoader.getSystemClassLoader();
-
-        URL[] urls = ((URLClassLoader)cl).getURLs();
-
-        for(URL url: urls){
-            System.out.println(url.getFile());
-        }
-    }
-
     public static void main(String[] args) {
-        Engine engine;
-        // load
-        try {
-            engine = new Engine();
-            SyncCallbacks callbacks = new SyncCallbacks();
-//            e.setNotifyHandshakeCallback(callbacks);
-            engine.setMessageToSendCallback(callbacks);
-        }
-        catch (pEpException ex) {
-            System.out.println("Cannot load");
-            return;
-        }
-        System.out.println("Test loaded");
+        BasicTestContext btc = new BasicTestContext();
 
-        // Keygen
-        System.out.println("Generating keys: ");
-        Identity user = new Identity();
-        user.user_id = "pEp_own_userId";
-        user.me = true;
-        user.username = "Test User";
-        user.address = "jniTestUser@peptest.ch";
-        user = engine.myself(user);
-        System.out.print("Keys generated: ");
-        System.out.println(user.fpr);
+        new TestUnit<BasicTestContext>("Gen Keys", btc, ctx -> {
+            ctx.alice = ctx.engine.myself(ctx.alice);
+            log("Keys generated: " + ctx.alice.fpr);
+        }).run();
 
-        // Import key
-        try {
-            Path path = Paths.get("../resources/test_keys/pub/pep-test-alice-0x6FF00E97_pub.asc");
-            byte[] key = Files.readAllBytes(path);
-            engine.importKey(key);
-        } catch (IOException exception) {
-            System.out.println("Could not import key");
-            exception.printStackTrace();
+        new TestUnit<BasicTestContext>("Import key", btc, ctx -> {
+            ctx.engine.importKey(ctx.keyBobPub);
+        }).run();
 
-        }
-        // trustwords
-        Identity alice = new Identity();
-        alice.fpr = "4ABE3AAF59AC32CFE4F86500A9411D176FF00E97";
-        String t = engine.trustwords(alice);
-        System.out.print("Trustwords: ");
-        System.out.println(t);
+        new TestUnit<BasicTestContext>("Trustwords", btc, ctx -> {
+            ctx.carol = new Identity();
+            ctx.carol.fpr = "4ABE3AAF59AC32CFE4F86500A9411D176FF00E97";
+            String t = ctx.engine.trustwords(ctx.carol);
+            log("Trustwords: " + t);
+        }).run();
 
-        // message
-        Message msg = new Message();
-
-        msg.setFrom(user);
-
-        Vector<Identity> to = new Vector<Identity>();
-        Identity to1 = new Identity();
-        to1.username = "pEp Test Alice (test key don't use)";
-        to1.address = "pep.test.alice@pep-project.org";
-        to1.user_id = "42";
-        to.add(to1);
-        //to.add(user);
-        msg.setTo(to);
-
-        msg.setShortmsg("hello, world");
-        msg.setLongmsg("this is a test");
-        msg.setDir(Message.Direction.Outgoing);
-
-        // Test setAttachements() with nrAttachemnts
-        int nrAttachemnts = 3;
-        {
-            System.out.print("Adding " + nrAttachemnts + " attachements [");
+        new TestUnit<BasicTestContext>("setAttachments", btc, ctx -> {
+            int nrAttachemnts = 3;
+            log("Adding " + nrAttachemnts + " attachments");
             Vector<Blob> attachments = new Vector<>();
 
             for (int i = 0; i < nrAttachemnts; i++) {
@@ -96,95 +51,63 @@ class TestMain {
                 blb.data = dataString.getBytes();
                 blb.filename = "testfilename.txt";
                 attachments.add(blb);
-                System.out.print(".");
             }
-            msg.setAttachments(attachments);
-            System.out.println("]");
-        }
+            ctx.msgToBob.setAttachments(attachments);
+        }).run();
 
-        Message enc = null;
-        try {
-            enc = engine.encrypt_message(msg, null, Message.EncFormat.PEP);
-            System.out.println("encrypted");
-        }
-        catch (pEpException ex) {
-            System.out.println("cannot encrypt");
-            ex.printStackTrace();
-        }
+        new TestUnit<BasicTestContext>("Encrypt", btc, ctx -> {
+            ctx.enc = ctx.engine.encrypt_message(ctx.msgToBob, null, Message.EncFormat.PEP);
+            log(ctx.enc.getLongmsg());
+        }).run();
 
-        System.out.println(enc.getLongmsg());
+        new TestUnit<BasicTestContext>("Rating Preview", btc, ctx -> {
+            log("Rating preview: " + ctx.engine.outgoing_message_rating_preview(ctx.msgToBob));
+        }).run();
 
-        try {
-            System.out.println("Rating preview: " + engine.outgoing_message_rating_preview(msg));
-            System.out.println("Rating" + engine.outgoing_message_rating(msg));
-        }
-        catch (pEpException ex) {
-            System.out.println("cannot measure outgoing message rating");
-        }
+        new TestUnit<BasicTestContext>("Rating", btc, ctx -> {
+            log("Rating" + ctx.engine.outgoing_message_rating(ctx.msgToBob));
+        }).run();
 
-        Engine.decrypt_message_Return result = null;
-        try {
-            result = engine.decrypt_message(enc, new Vector<>(), 0);
-            System.out.println("decrypted");
-        }
-        catch (pEpException ex) {
-            System.out.println("cannot decrypt");
-            ex.printStackTrace();
-        }
+        new TestUnit<BasicTestContext>("Decrypt", btc, ctx -> {
+            ctx.result = ctx.engine.decrypt_message(ctx.enc, new Vector<>(), 0);
+            log("decrypted");
+            log(ctx.result.dst.getShortmsg());
+            log(ctx.result.dst.getLongmsg());
+        }).run();
 
-
-        System.out.println(result.dst.getShortmsg());
-        System.out.println(result.dst.getLongmsg());
-
-        // Test getAttachments()
-        {
-            Vector<Blob> attachments = result.dst.getAttachments();
-
-            System.out.println("get attachement data");
-            System.out.println("Attachement count: " + attachments.size());
-            for( Blob a: attachments) {
-                System.out.println("Attachement nr: " + attachments.indexOf(a));
-                System.out.println("[");
-                System.out.println(a.toString());
-                System.out.println("]");
+        new TestUnit<BasicTestContext>("getAttachments", btc, ctx -> {
+            Vector<Blob> attachments = ctx.result.dst.getAttachments();
+            log("get attachement data");
+            log("Attachement count: " + attachments.size());
+            for (Blob a : attachments) {
+                log("Attachement nr: " + attachments.indexOf(a));
+                log("[");
+                log(a.toString());
+                log("]");
             }
-        }
+        }).run();
 
-        System.out.println("TEST DONE - FINISHED");
+        new TestUnit<BasicTestContext>("key_reset_all_own_keys()", btc, ctx -> {
+            ctx.engine.key_reset_all_own_keys();
+        }).run();
 
-        try {
-            engine.key_reset_all_own_keys();
-        }
-        catch (pEpException ex) {
-            System.out.println("cannot reset all own keys");
-            ex.printStackTrace();
-        }
+        new TestUnit<BasicTestContext>("startSync()", btc, ctx -> {
+            ctx.engine.startSync();
+        }).run();
 
-        System.out.println("Testing.java: e.StartSync()");
-        engine.startSync();
+        new TestUnit<BasicTestContext>("Keygen2", btc, ctx -> {
+            Identity user2 = new Identity();
+            user2.user_id = "pEp_own_userId";
+            user2.me = true;
+            user2.username = "Test User 2";
+            user2.address = "jniTestUser2@peptest.ch";
+            user2 = ctx.engine.myself(user2);
+            log("Keys generated: " + user2.fpr);
+        }).run();
 
-        // Keygen
-        System.out.println("Generating keys: ");
-        Identity user2 = new Identity();
-        user2.user_id = "pEp_own_userId";
-        user2.me = true;
-        user2.username = "Test User 2";
-        user2.address = "jniTestUser2@peptest.ch";
-        user2 = engine.myself(user2);
-        System.out.print("Keys generated: ");
-        System.out.println(user2.fpr);
-
-        // it's not necessary - you can just shutdown Sync and that's it
-        // but for this test give sync a chance to process all messages
-         try {
-             Thread.sleep(2000);
-         }
-         catch (InterruptedException ex) { }
-
-        System.out.println("STOP SYNC");
-        engine.stopSync();
-
-        System.exit(0);
+        new TestUnit<BasicTestContext>("stopSync()", btc, ctx -> {
+            ctx.engine.stopSync();
+        }).run();
     }
 }
 
