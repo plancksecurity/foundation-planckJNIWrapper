@@ -1,4 +1,5 @@
 package foundation.pEp.jniadapter.test.utils;
+
 import foundation.pEp.jniadapter.test.framework.*;
 import foundation.pEp.jniadapter.*;
 
@@ -7,25 +8,49 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Vector;
 
-public class AdapterBaseTestContext implements AbstractTestContext {
-    public Sync.DefaultCallback cb = new Sync.DefaultCallback();
+public class AdapterBaseTestContext extends AbstractTestContext {
+    // Basic
+    public Engine engine;
+    public TestCallbacks callbacks;
+
+    // Identities
     public Identity alice;
     public Identity bob;
+    public Identity carol;
+
+    // Keys
+    public byte[] keyBobSec;
+    private String filenameBobSec = "../resources/test_keys/bob-sec.asc";
+
+    public byte[] keyBobPub;
+    private String filenameBobPub = "../resources/test_keys/bob-pub.asc";
+
+    public byte[] keyAlicePub;
+    private String filenameAlicePub = "../resources/test_keys/alice-pub.asc";
+
+    public byte[] keyAliceSec;
+    private String filenameAliceSec = "../resources/test_keys/alice-sec.asc";
+
+    // Messages
     public Message msgToSelf;
     public Message msgToBob;
+
+    // Misc
     public Vector<Identity> vID;
     public Vector<String> vStr;
-    public byte[] key;
-    private String fileName = "../resources/test_keys/pub/pep-test-alice-0x6FF00E97_pub.asc";
-    public Engine engine;
 
-    public AdapterBaseTestContext() { }
+    public AdapterBaseTestContext() {
+        setTestContextName("AdapterBaseTestContext");
+    }
 
-    public void init() throws Exception {
+    public void init() throws Throwable {
         vID = new Vector<Identity>();
         vStr = new Vector<String>();
 
+        callbacks = new TestCallbacks();
         engine = new Engine();
+        engine.setMessageToSendCallback(callbacks);
+        engine.setNotifyHandshakeCallback(callbacks);
 
         alice = new Identity();
         alice.user_id = "23";
@@ -33,6 +58,7 @@ public class AdapterBaseTestContext implements AbstractTestContext {
         alice.me = true;
 
         bob = new Identity();
+        bob.username = "pEp Test Bob";
         bob.user_id = "42";
         bob.address = "bob@peptest.org";
 
@@ -42,64 +68,18 @@ public class AdapterBaseTestContext implements AbstractTestContext {
         vID.add(bob);
         vStr.add("StringItem");
 
-        try {
-            Path path = Paths.get(fileName);
-            key = Files.readAllBytes(path);
-        } catch (Exception e) {
-            TestLogger.log("Could not open key file:" + fileName);
-            throw e;
-        }
+        Path path;
+        path = Paths.get(filenameBobPub);
+        keyBobPub = Files.readAllBytes(path);
+
+        path = Paths.get(filenameBobSec);
+        keyBobSec = Files.readAllBytes(path);
+
+        path = Paths.get(filenameAlicePub);
+        keyAlicePub = Files.readAllBytes(path);
+
+        path = Paths.get(filenameAliceSec);
+        keyAliceSec = Files.readAllBytes(path);
     }
+
 }
-
-
-/*package foundation.pEp.jniadapter.test.framework;
-import foundation.pEp.jniadapter.test.utils.*;
-import foundation.pEp.jniadapter.*;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Vector;
-
-public class TestContext {
-    public TestCallbacks cb = new TestCallbacks();
-    public Identity alice;
-    public Identity bob;
-    public Message msgToSelf;
-    public Message msgToBob;
-    public Vector<Identity> vID;
-    public Vector<String> vStr;
-    public byte[] key;
-    private String fileName = "../resources/test_keys/pub/pep-test-alice-0x6FF00E97_pub.asc";
-    public Engine engine;
-
-    public TestContext() {
-    }
-
-    public void init() throws Exception {
-        this.vID = new Vector();
-        this.vStr = new Vector();
-        this.engine = new Engine();
-        this.alice = new Identity();
-        this.alice.user_id = "23";
-        this.alice.address = "alice@peptest.org";
-        this.alice.me = true;
-        this.bob = new Identity();
-        this.bob.user_id = "42";
-        this.bob.address = "bob@peptest.org";
-        this.msgToSelf = AdapterTestUtils.makeNewTestMessage(this.alice, this.alice, Message.Direction.Outgoing);
-        this.msgToBob = AdapterTestUtils.makeNewTestMessage(this.alice, this.bob, Message.Direction.Outgoing);
-        this.vID.add(this.bob);
-        this.vStr.add("StringItem");
-
-        try {
-            Path var1 = Paths.get(this.fileName);
-            this.key = Files.readAllBytes(var1);
-        } catch (Exception var2) {
-            TestLogger.log("Could not open key file:" + this.fileName);
-            throw var2;
-        }
-    }
-}
-*/

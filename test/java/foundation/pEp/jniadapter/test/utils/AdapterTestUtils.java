@@ -286,7 +286,7 @@ public class AdapterTestUtils {
         msg.setFrom(from);
         msg.setTo(vID);
         msg.setDir(dir);
-        msg.setLongmsg("Hi i am the message longmsg");
+        msg.setLongmsg("Hi i am the message longmessage");
         return msg;
     }
 }
