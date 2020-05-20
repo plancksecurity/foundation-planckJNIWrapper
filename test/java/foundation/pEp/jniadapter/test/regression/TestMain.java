@@ -158,7 +158,6 @@ class TestMain {
             ctx.engine.disable_identity_for_sync(ctx.alice);
         }).run();
 
-        // TODO: class not found: foundation/pEp/jniadapter/Message$CipherSuite
         new TestUnit<RegTestContext>("Engine.config_cipher_suite", new RegTestContext(), ctx -> {
             ctx.engine.config_cipher_suite(CipherSuite.pEpCipherSuiteDefault);
         }).run();
