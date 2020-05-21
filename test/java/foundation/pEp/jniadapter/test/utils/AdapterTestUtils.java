@@ -4,6 +4,8 @@ import foundation.pEp.jniadapter.*;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import static foundation.pEp.jniadapter.test.framework.TestUtils.clipString;
+
 public class AdapterTestUtils {
     public static String identityToString(Identity i, Boolean full) {
         String ret = "";
@@ -175,7 +177,7 @@ public class AdapterTestUtils {
         kvs.add(new Pair<String,String>(key, value));
 
         if (!full) {
-            kvs = clipStrings(kvs, 200);
+            kvs = clipStrings(kvs, 200, "clipped...");
         }
 
         ret = stringPairListToString(kvs);
@@ -246,7 +248,7 @@ public class AdapterTestUtils {
             ret += "-----BEGIN Attachment index: " + attachments.indexOf(a) + "-----\n";
             String tmp = a.toString();
             if (!full) {
-                tmp = clipString(tmp, 250);
+                tmp = clipString(tmp, 250, "clipped...");
             }
             ret += tmp + "\n";
             ret += "-----END Attachment index: " + attachments.indexOf(a) + "-----\n";
@@ -255,23 +257,14 @@ public class AdapterTestUtils {
         return ret;
     }
 
-    public static String clipString(String str, int len) {
-        String ret = str;
-        if (str.length() > len) {
-            ret = str.substring(0, len);
-            ret += " clipped... ";
-        }
-        return ret;
-    }
-
-    public static ArrayList<Pair<String,String>> clipStrings(ArrayList<Pair<String,String>> spv, int len) {
+    public static ArrayList<Pair<String,String>> clipStrings(ArrayList<Pair<String,String>> spv, int len, String clipMsg) {
         for (Pair<String,String> p : spv) {
             if(p != null) {
                 if(p.first != null) {
-                    p.first = clipString(p.first, len);
+                    p.first = clipString(p.first, len, clipMsg);
                 }
                 if(p.second != null) {
-                    p.second = clipString(p.second, len);
+                    p.second = clipString(p.second, len,clipMsg);
                 }
             }
         }
