@@ -250,6 +250,9 @@ namespace pEp {
                 in CipherSuite suite
             );
 
+        // "basic" methods are generated on the java side, but
+        // on the C++ side, manually implemented in basic_api.cc
+
         basic string trustwords(identity ident);
         basic identity myself(identity ident);
         basic identity updateIdentity(identity ident);
@@ -265,6 +268,8 @@ namespace pEp {
         basic void config_passive_mode(bool enable);
         basic void config_unencrypted_subject(bool enable);
         basic string getCrashdumpLog(int maxlines);
+        basic string getUserDirectory();
+        basic string getMachineDirectory();
     };
 
     struct message {
