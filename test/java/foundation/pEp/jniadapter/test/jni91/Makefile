@@ -27,5 +27,4 @@ clean:
 	rm -Rf .lldb
 
 clean-pep-home:
-	rm -rf $(PEP_HOME_DIR)/*
 	rm -rf $(PEP_HOME_DIR)/.pEp
