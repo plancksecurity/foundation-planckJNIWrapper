@@ -19,7 +19,7 @@ class CtxMembersTestContext extends AbstractTestContext {
     @Override
     public void init() throws Throwable {
         log("=== OUTPUT FROM TEST CONTEXT INIT BEGIN ===");
-        log("HelloWorldTestContext: init() called");
+        log(getTestContextName()+ " - init() called");
         correct = new ExampleCtxMember(true);
         name = "UnitTestFrameWorkWithoutAName";
         log("=== OUTPUT FROM TEST CONTEXT INIT END   ===");
@@ -28,7 +28,7 @@ class CtxMembersTestContext extends AbstractTestContext {
 
 class TestMain {
     public static void main(String[] args) throws Exception {
-        TestUnit test = new TestUnit<CtxMembersTestContext>("Hello World",new CtxMembersTestContext() , ctx  -> {
+        TestUnit test = new TestUnit<CtxMembersTestContext>("ctxmembers",new CtxMembersTestContext() , ctx  -> {
             // do stuff using the context
             // Test FAILS on unhandled exception, otherwise SUCCESS
             log("=== OUTPUT FROM THE TEST ITSELF BEGIN ===");
@@ -50,7 +50,7 @@ class ExampleCtxMember {
         if(correct) {
             log("Hya from member obj used correctly");
         } else {
-            log("Hya from member obj used wrong");
+            log("Hya from member obj used wrong", TestUtils.TermColor.RED);
         }
     }
 }

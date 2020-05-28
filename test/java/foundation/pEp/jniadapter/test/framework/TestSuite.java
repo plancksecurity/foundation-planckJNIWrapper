@@ -1,4 +1,6 @@
 package foundation.pEp.jniadapter.test.framework;
+import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
+import static foundation.pEp.jniadapter.test.framework.TestUtils.TermColor;
 
 import java.util.ArrayList;
 
@@ -25,5 +27,26 @@ public class TestSuite {
             t.setVerboseMode(verbose);
             t.run();
         }
+        printStats();
+    }
+
+    private static void printStats() {
+        int totalCount = tests.size();
+        int skippedCount = 0;
+        int failedCount = 0;
+        int successCount = 0;
+        for (TestUnit t : tests) {
+            if (t.getResult() == TestResult.SKIPPED) skippedCount++;
+            if (t.getResult() == TestResult.FAILED) failedCount++;
+            if (t.getResult() == TestResult.SUCCESS) successCount++;
+        }
+
+        failedCount = failedCount + skippedCount;
+
+        log("SUCCESS: " + successCount, TermColor.GREEN);
+        String failedStr = "FAILED : " + failedCount;
+        if(skippedCount > 0 ) failedStr += " ("+skippedCount + " Skipped)";
+        log(failedStr, TermColor.RED);
+        log("TOTAL  : " + totalCount);
     }
 }

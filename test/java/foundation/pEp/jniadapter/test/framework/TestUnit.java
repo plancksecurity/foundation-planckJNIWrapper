@@ -1,6 +1,8 @@
 package foundation.pEp.jniadapter.test.framework;
 
 import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
+import static foundation.pEp.jniadapter.test.framework.TestUtils.TermColor;
+import static foundation.pEp.jniadapter.test.framework.TestUtils.colorString;
 
 import java.util.function.Consumer;
 
@@ -52,6 +54,7 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
         TestUtils.standardOutErrEnabled(verboseMode);
         if (ctx.isUninitializable()) {
             setTestState(TestState.CTX_INIT_FAILED);
+            TestUtils.standardOutErrEnabled(true);
             return;
         }
         try {
@@ -61,23 +64,32 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
                 //Context init problems need to throw to fail
                 try {
                     setTestState(TestState.CTX_INIT);
+                    setTermColor(TermColor.BLUE);
                     ctx.init();
+                    setTermColor(TermColor.RESET);
                 } catch (Throwable t) {
                     lastException = t;
+                    setTermColor(TermColor.RESET);
                     setTestState(TestState.CTX_INIT_FAILED);
+                    TestUtils.standardOutErrEnabled(true);
                     return;
                 }
                 ctx.setInitialized(true);
             }
             //tests need to throw to fail
             setTestState(TestState.RUNNING);
+            setTermColor(TermColor.CYAN);
             lambda.accept(ctx);
+            setTermColor(TermColor.RESET);
             setTestState(TestState.SUCCESS);
         } catch (Throwable t) {
             lastException = t;
+            setTermColor(TermColor.RESET);
             setTestState(TestState.FAILED);
+            TestUtils.standardOutErrEnabled(true);
             return;
         }
+        setTermColor(TermColor.RESET);
         TestUtils.standardOutErrEnabled(true);
     }
 
@@ -117,8 +129,16 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
 
     private void setTestResult(TestResult r) {
         result = r;
+        String resultStr = r.toString();
+
+        if(r != TestResult.SUCCESS) {
+            resultStr = colorString(resultStr, TermColor.RED);
+        } else {
+            resultStr = colorString(resultStr, TermColor.GREEN);
+        }
+
         TestUtils.standardOutErrEnabled(true);
-        logH1(makeLogString(result.toString()));
+        logH1(makeLogString(resultStr));
         if( r != TestResult.SUCCESS) {
             log("ERROR: " + getLastException().toString());
         }
@@ -133,9 +153,9 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
     }
 
     private String makeLogString(String str) {
-        String testUnitNameFmtd = TestUtils.fixedWidthPaddedString(" TEST: '" + testUnitName + "' ", "=", logFmtTestNameLen, TestUtils.Alignment.Left, ".. ");
-        String testCtxNameFmtd = TestUtils.fixedWidthPaddedString(" CTX: '" + ctx.getTestContextName() + "' ", "=", logFmtCtxNameLen, TestUtils.Alignment.Center, ".. ");
-        String strFmtd = TestUtils.fixedWidthPaddedString(" " + str + " ", "=", logFmtMsgLen, TestUtils.Alignment.Right, ".. ");
+        String testUnitNameFmtd = TestUtils.padOrClipString(" TEST: '" + testUnitName + "' ", "=", logFmtTestNameLen, TestUtils.Alignment.Left, ".. ");
+        String testCtxNameFmtd = TestUtils.padOrClipString(" CTX: '" + ctx.getTestContextName() + "' ", "=", logFmtCtxNameLen, TestUtils.Alignment.Center, ".. ");
+        String strFmtd = TestUtils.padOrClipString(" " + str + " ", "=", logFmtMsgLen, TestUtils.Alignment.Right, ".. ");
         return testUnitNameFmtd + testCtxNameFmtd + strFmtd;
     }
 }
