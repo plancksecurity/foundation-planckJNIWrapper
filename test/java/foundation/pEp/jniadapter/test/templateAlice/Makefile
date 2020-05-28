@@ -1,20 +1,22 @@
 include ../../../../../../../Makefile.conf
 include ../Makefile.conf
 
-TEST_UNIT_NAME=templateAlice
+TEST_UNIT_NAME=templateAliceBob
 
 JAVA_CLASSES = \
- 	TestMain.class
+ 	TestAlice.class \
+ 	../utils/AdapterBaseTestContext.class \
+ 	../utils/AdapterTestUtils.class \
+ 	../utils/TestCallbacks.class
 
 JAVA_CLASSES += $(JAVA_CLASSES_FRAMEWORK)
 
-.PHONY: compile run test clean
+.PHONY: compile alice test clean
 
-all: compile
-	$(MAKE) run
+all: alice compile
 
-run: compile clean-pep-home
-	cd $(JAVA_CWD);pwd;HOME=$(JAVA_PEP_HOME_DIR) $(JAVA) $(JAVA_PKG_BASENAME).$(TEST_UNIT_NAME).TestMain
+alice: compile clean-pep-home-alice
+	cd $(JAVA_CWD);pwd;HOME=$(JAVA_PEP_HOME_DIR_ALICE) $(JAVA) $(JAVA_PKG_BASENAME).$(TEST_UNIT_NAME).TestAlice
 
 compile: $(JAVA_CLASSES)
 
@@ -28,6 +30,7 @@ clean:
 	rm -Rf .gnupg
 	rm -Rf .lldb
 
-clean-pep-home:
-	rm -rf $(PEP_HOME_DIR)/*
-	rm -rf $(PEP_HOME_DIR)/.pEp
+clean-pep-home: clean-pep-home-alice
+
+clean-pep-home-alice:
+	rm -rf $(PEP_HOME_DIR_ALICE)/.pEp
