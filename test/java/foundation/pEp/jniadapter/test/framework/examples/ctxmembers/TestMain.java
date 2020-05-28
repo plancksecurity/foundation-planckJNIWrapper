@@ -11,7 +11,7 @@ import foundation.pEp.jniadapter.test.framework.*;
 // Otherwise, all test contexts in a program partially execute before the test using it is actually being run
 // Context init() is part of the test
 
-class HelloWorldTestContext extends AbstractTestContext {
+class CtxMembersTestContext extends AbstractTestContext {
     String name;
     ExampleCtxMember correct;
     ExampleCtxMember incorrect = new ExampleCtxMember(false); // WRONG
@@ -26,15 +26,17 @@ class HelloWorldTestContext extends AbstractTestContext {
 
 class TestMain {
     public static void main(String[] args) throws Exception {
-        new TestUnit<HelloWorldTestContext>("Hello World",new HelloWorldTestContext() , ctx  -> {
+        TestUnit test = new TestUnit<CtxMembersTestContext>("Hello World",new CtxMembersTestContext() , ctx  -> {
             // do stuff using the context
             // Test FAILS on unhandled exception, otherwise SUCCESS
             log("Hello World from: " + ctx.name);
-        }).run();
+        });
+
+        TestUtils.sleep(2000);
+
+        test.run();
     }
 }
-
-
 
 
 

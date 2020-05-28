@@ -13,7 +13,7 @@ class TestSuiteTestContext extends AbstractTestContext {
 
 class TestMain {
     public static void main(String[] args) throws Exception {
-        TestSuite.setVerbose(true);
+//        TestSuite.setVerbose(true);
 
         new TestUnit<TestSuiteTestContext>("Unit Test 1", new TestSuiteTestContext(), ctx -> {
             log("Unit Test 1 " + ctx.name);

@@ -15,7 +15,7 @@ class CtxInitFailContext extends AbstractTestContext {
 
 class TestMain {
     public static void main(String[] args) throws Exception {
-//        TestSuite.setVerbose(true);
+        TestSuite.setVerbose(true);
 
         new TestUnit<CtxInitFailContext>("ctxinitfail1",new CtxInitFailContext() , ctx  -> {
             // do stuff using the context

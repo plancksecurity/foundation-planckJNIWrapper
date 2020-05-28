@@ -11,13 +11,13 @@ public class TestUtils {
     private static boolean stderrHasBeenDisabled = false;
     private static PrintStream origSTDERR;
 
-    public static void standardOutErrDisable(boolean mute) {
-        standardOutDisabled(mute);
-        standardErrDisabled(mute);
+    public static void standardOutErrEnabled(boolean mute) {
+        standardOutEnabled(mute);
+        standardErrEnabled(mute);
     }
 
-    public static void standardOutDisabled(boolean disable) {
-        if (disable) {
+    public static void standardOutEnabled(boolean enable) {
+        if (!enable) {
             origSTDOUT = System.out;
             stdoutHasBeenDisabled = true;
             System.setOut(new PrintStream(new OutputStream() {
@@ -32,8 +32,8 @@ public class TestUtils {
         }
     }
 
-    public static void standardErrDisabled(boolean disable) {
-        if (disable) {
+    public static void standardErrEnabled(boolean enable) {
+        if (!enable) {
             origSTDOUT = System.err;
             stderrHasBeenDisabled = true;
             System.setErr(new PrintStream(new OutputStream() {

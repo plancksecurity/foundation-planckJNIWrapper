@@ -3,7 +3,11 @@ package foundation.pEp.jniadapter.test.framework;
 public abstract class AbstractTestContext implements TestContextInterface{
     private boolean isInitialized = false;
     private boolean isUninitializable = false;
-    private String testContextName = "AbstractTestContext";
+    private String testContextName = "Undefined";
+
+    public AbstractTestContext() {
+        setTestContextName(this.getClass().getSimpleName());
+    }
 
     public boolean isInitialized() {
         return isInitialized;
