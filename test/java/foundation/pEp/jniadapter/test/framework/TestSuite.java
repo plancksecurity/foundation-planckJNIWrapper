@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class TestSuite {
     private static ArrayList<TestUnit> tests = new ArrayList<TestUnit>();
     private static boolean verbose = false;
+    private static TermColor testColor = TermColor.CYAN;
 
     private TestSuite() { }
 
@@ -18,6 +19,15 @@ public class TestSuite {
         verbose = v;
     }
 
+    public static TermColor getTestColor() {
+        return testColor;
+    }
+
+    public static void setTestColor(TermColor color) {
+        testColor = color;
+    }
+
+
     public static void add(TestUnit t) {
         tests.add(t);
     }
@@ -25,6 +35,7 @@ public class TestSuite {
     public static void run() {
         for (TestUnit t : tests) {
             t.setVerboseMode(verbose);
+            t.setTestColor(testColor);
             t.run();
         }
         printStats();

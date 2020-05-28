@@ -16,6 +16,7 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
     private Throwable lastException;
 
     private boolean verboseMode = true;
+    private TermColor testColor = TermColor.CYAN;
 
     // Defaults (line width 80)
     private int logFmtTestNameLen = 35;
@@ -35,6 +36,14 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
 
     public void setVerboseMode(boolean verboseMode) {
         this.verboseMode = verboseMode;
+    }
+
+    public TermColor getTestColor() {
+        return testColor;
+    }
+
+    public void setTestColor(TermColor testColor) {
+        this.testColor = testColor;
     }
 
     public TestResult getResult() {
@@ -64,7 +73,7 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
                 //Context init problems need to throw to fail
                 try {
                     setTestState(TestState.CTX_INIT);
-                    setTermColor(TermColor.BLUE);
+                    setTermColor(testColor);
                     ctx.init();
                     setTermColor(TermColor.RESET);
                 } catch (Throwable t) {
@@ -78,7 +87,7 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
             }
             //tests need to throw to fail
             setTestState(TestState.RUNNING);
-            setTermColor(TermColor.CYAN);
+            setTermColor(testColor);
             lambda.accept(ctx);
             setTermColor(TermColor.RESET);
             setTestState(TestState.SUCCESS);
