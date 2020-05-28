@@ -44,9 +44,13 @@ public class TestSuite {
         failedCount = failedCount + skippedCount;
 
         log("SUCCESS: " + successCount, TermColor.GREEN);
+        TermColor failedColor = TermColor.RED;
+        if (failedCount <= 0) {
+            failedColor = TermColor.RESET;
+        }
         String failedStr = "FAILED : " + failedCount;
         if(skippedCount > 0 ) failedStr += " ("+skippedCount + " Skipped)";
-        log(failedStr, TermColor.RED);
+        log(failedStr, failedColor);
         log("TOTAL  : " + totalCount);
     }
 }
