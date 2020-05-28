@@ -16,17 +16,23 @@ class TestMain {
 //        TestSuite.setVerbose(true);
 
         new TestUnit<TestSuiteTestContext>("Unit Test 1", new TestSuiteTestContext(), ctx -> {
+            log("=== OUTPUT FROM THE TEST ITSELF BEGIN ===");
             log("Unit Test 1 " + ctx.name);
             ctx.name = "new name";
+            log("=== OUTPUT FROM THE TEST ITSELF END   ===");
         }).add();
 
         new TestUnit<TestSuiteTestContext>("Unit Test 2", new TestSuiteTestContext(), ctx -> {
+            log("=== OUTPUT FROM THE TEST ITSELF BEGIN ===");
             log("Unit Test 2 " + ctx.name);
+            log("=== OUTPUT FROM THE TEST ITSELF END   ===");
         }).add();
 
         new TestUnit<TestSuiteTestContext>("Unit Test 3", new TestSuiteTestContext(), ctx -> {
+            log("=== OUTPUT FROM THE TEST ITSELF BEGIN ===");
             log("Unit Test 3 Failing " + ctx.name);
             int x = 4 / 0;
+            log("=== OUTPUT FROM THE TEST ITSELF END   ===");
         }).add();
 
         TestSuite.run();

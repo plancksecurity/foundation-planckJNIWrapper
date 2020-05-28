@@ -18,9 +18,11 @@ class CtxMembersTestContext extends AbstractTestContext {
 
     @Override
     public void init() throws Throwable {
+        log("=== OUTPUT FROM TEST CONTEXT INIT BEGIN ===");
         log("HelloWorldTestContext: init() called");
         correct = new ExampleCtxMember(true);
         name = "UnitTestFrameWorkWithoutAName";
+        log("=== OUTPUT FROM TEST CONTEXT INIT END   ===");
     }
 }
 
@@ -29,7 +31,9 @@ class TestMain {
         TestUnit test = new TestUnit<CtxMembersTestContext>("Hello World",new CtxMembersTestContext() , ctx  -> {
             // do stuff using the context
             // Test FAILS on unhandled exception, otherwise SUCCESS
+            log("=== OUTPUT FROM THE TEST ITSELF BEGIN ===");
             log("Hello World from: " + ctx.name);
+            log("=== OUTPUT FROM THE TEST ITSELF END   ===");
         });
 
         TestUtils.sleep(2000);
