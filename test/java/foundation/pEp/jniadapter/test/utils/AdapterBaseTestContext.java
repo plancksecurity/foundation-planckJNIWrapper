@@ -1,11 +1,13 @@
 package foundation.pEp.jniadapter.test.utils;
 
+import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
 import foundation.pEp.jniadapter.test.framework.*;
 import foundation.pEp.jniadapter.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Vector;
 
 public class AdapterBaseTestContext extends AbstractTestContext {
@@ -38,10 +40,6 @@ public class AdapterBaseTestContext extends AbstractTestContext {
     // Misc
     public Vector<Identity> vID;
     public Vector<String> vStr;
-
-    public AdapterBaseTestContext() {
-        setTestContextName("AdapterBaseTestContext");
-    }
 
     public void init() throws Throwable {
         vID = new Vector<Identity>();
