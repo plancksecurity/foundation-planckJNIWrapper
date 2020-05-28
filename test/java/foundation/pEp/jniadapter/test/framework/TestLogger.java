@@ -1,8 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package foundation.pEp.jniadapter.test.framework;
 
 public class TestLogger {
@@ -40,17 +35,14 @@ public class TestLogger {
             String logStr = threadStr + separator + msg;
             System.out.println(logStr);
         }
-
     }
 
     public static void logH1(String msg) {
         log(TestUtils.fixedWidthPaddedString(msg, "=", lineWidth, TestUtils.Alignment.Center, null));
-//        log(getDecoratedString(msg, "="));
     }
 
     public static void logH2(String msg) {
         log(TestUtils.fixedWidthPaddedString(msg, "-", lineWidth, TestUtils.Alignment.Center, null));
-//        log(getDecoratedString(msg, "-"));
     }
 
     public static void logRaw(String msg) {

@@ -8,14 +8,19 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
     private String testUnitName = "default test unit";
     private T ctx;
     private Consumer<T> lambda;
-
     private boolean verboseMode = true;
 
     // Defaults (line width 80)
     private int logFmtTestNameLen = 35;
     private int logFmtCtxNameLen = 24;
     private int logFmtMsgLen = 8;
-    private String logFormat = "";
+
+    public TestUnit(String name, T context, Consumer<T> lambda) {
+        this.testUnitName = name;
+        this.lambda = lambda;
+        this.ctx = context;
+        logLayout();
+    }
 
     public boolean isVerboseMode() {
         return verboseMode;
@@ -25,65 +30,80 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
         this.verboseMode = verboseMode;
     }
 
-    public TestUnit(String name, T context, Consumer<T> lambda) {
-        this.testUnitName = name;
-        this.lambda = lambda;
-        this.ctx = context;
+    public TestUnit<T> add() {
+        TestSuite.add(this);
+        return this;
+    }
 
+    public void run() {
+        if (!verboseMode) TestUtils.standardOutErrDisable(true);
+        try {
+            if (!ctx.isUninitializable()) {
+                // Init the Context if not already done
+                if (!ctx.isInitialized()) {
+                    //Context init problems need to throw to fail
+                    try {
+                        ctxInit();
+                    } catch (Throwable t) {
+                        ctx.setUninitializable(true);
+                        throw new TestFrameWorkContextInitFailedException();
+                    }
+                    ctx.setInitialized(true);
+                }
+                //tests need to throw to fail
+                runTest();
+                if (!verboseMode) TestUtils.standardOutErrDisable(false);
+                testSuceeded();
+            } else {
+                throw new TestFrameWorkContextUnitializableException();
+            }
+        } catch (Throwable t) {
+            if (!verboseMode) TestUtils.standardOutErrDisable(false);
+            testFailed(t);
+            return;
+        }
+    }
+
+    private void ctxInit() throws Throwable{
+        logH1(makeLogString("CTX INIT"));
+        ctx.init();
+    }
+
+    private void runTest() throws Throwable{
+        logH1(makeLogString("STARTING"));
+        //tests need to throw to fail
+        lambda.accept(ctx);
+    }
+
+    private void testSuceeded() {
+        logH1(makeLogString("SUCCESS"));
+        if (verboseMode) logRaw("\n\n");
+    }
+
+    private void testFailed(Throwable t) {
+        logH1(makeLogString("FAILED"));
+        log("ERROR: " + t.toString());
+        if (verboseMode)  logRaw("\n\n");
+    }
+
+    private void logLayout() {
         logFmtTestNameLen = (int) Math.floor(TestLogger.getLineWidth() * 0.45);
         logFmtCtxNameLen = (int) Math.floor(TestLogger.getLineWidth() * 0.3);
         logFmtMsgLen = (int) Math.floor(TestLogger.getLineWidth() * 0.2);
     }
 
-    public void run() {
-        if (ctx.isUninitializable()) {
-            logH1("Skipping, context has been uninitializable");
-        } else {
-
-            // Init the Context if not already done
-            if (!ctx.isInitialized()) {
-                try {
-                    if (!verboseMode) TestUtils.standardOutErrDisable(true);
-                    logH1(logString("CTX INIT"));
-                    ctx.init();
-                    ctx.setInitialized(true);
-                    if (!verboseMode) TestUtils.standardOutErrDisable(false);
-                } catch (Throwable t) {
-                    //Context init problems need to throw to fail
-                    if (!verboseMode) TestUtils.standardOutErrDisable(false);
-                    ctx.setUninitializable(true);
-                    logH1(logString("CTX FAIL"));
-                    log(t.toString());
-                    logRaw("\n");
-                    return;
-                }
-            }
-
-            // Run the test
-            try {
-                if (!verboseMode) TestUtils.standardOutErrDisable(true);
-                logH1(logString("STARTING"));
-                lambda.accept(ctx);
-                if (!verboseMode) TestUtils.standardOutErrDisable(false);
-                logH1(logString("SUCCESS"));
-                if (verboseMode) logRaw("\n\n");
-            } catch (Throwable t) {
-                //Test fails, upon cought exception, otherwise succeeds
-                if (!verboseMode) TestUtils.standardOutErrDisable(false);
-                logH1(logString("FAILED"));
-                log(t.toString());
-                if (verboseMode) logRaw("\n\n");
-                return;
-            }
-        }
-    }
-
-    private String logString(String str) {
+    private String makeLogString(String str) {
         String testUnitNameFmtd = TestUtils.fixedWidthPaddedString(" TEST: '" + testUnitName + "' ", "=", logFmtTestNameLen, TestUtils.Alignment.Left, ".. ");
         String testCtxNameFmtd = TestUtils.fixedWidthPaddedString(" CTX: '" + ctx.getTestContextName() + "' ", "=", logFmtCtxNameLen, TestUtils.Alignment.Center, ".. ");
         String strFmtd = TestUtils.fixedWidthPaddedString(" " + str + " ", "=", logFmtMsgLen, TestUtils.Alignment.Right, ".. ");
-        return testUnitNameFmtd + testCtxNameFmtd +  strFmtd;
+        return testUnitNameFmtd + testCtxNameFmtd + strFmtd;
     }
+}
 
+class TestFrameWorkContextInitFailedException extends Exception {
+
+}
+
+class TestFrameWorkContextUnitializableException extends Exception {
 
 }

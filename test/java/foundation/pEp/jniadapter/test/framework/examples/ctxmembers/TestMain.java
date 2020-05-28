@@ -38,21 +38,6 @@ class TestMain {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Just an example member obj
 class ExampleCtxMember {
     ExampleCtxMember(boolean correct){

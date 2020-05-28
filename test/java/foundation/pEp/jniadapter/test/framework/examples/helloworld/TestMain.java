@@ -14,10 +14,22 @@ class HelloWorldTestContext extends AbstractTestContext {
 
 class TestMain {
     public static void main(String[] args) throws Exception {
-        new TestUnit<HelloWorldTestContext>("Hello World",new HelloWorldTestContext() , ctx  -> {
+        new TestUnit<HelloWorldTestContext>("Hello World1",new HelloWorldTestContext() , ctx  -> {
             // do stuff using the context
             // Test FAILS on unhandled exception, otherwise SUCCESS
-            log("Hello World from: " + ctx.name);
+            log("Hello World 1 from: " + ctx.name);
+        }).run();
+
+        new TestUnit<HelloWorldTestContext>("Hello World2",new HelloWorldTestContext() , ctx  -> {
+            // do stuff using the context
+            // Test FAILS on unhandled exception, otherwise SUCCESS
+            log("Hello World 2 from: " + ctx.name);
+        }).run();
+
+        new TestUnit<HelloWorldTestContext>("Hello World3",new HelloWorldTestContext() , ctx  -> {
+            // do stuff using the context
+            // Test FAILS on unhandled exception, otherwise SUCCESS
+            log("Hello World 3 from: " + ctx.name);
         }).run();
     }
 }
