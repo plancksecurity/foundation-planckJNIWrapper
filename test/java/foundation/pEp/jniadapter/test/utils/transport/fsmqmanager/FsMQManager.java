@@ -1,17 +1,18 @@
 package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager;
 
-import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.test.framework.TestUtils;
 import foundation.pEp.jniadapter.test.utils.transport.fsmsgqueue.FsMsgQueue;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import static foundation.pEp.jniadapter.test.framework.TestLogger.log;
 
 public class FsMQManager {
     private FsMQIdentity self = null;
+
     private List<FsMQIdentity> identities = new ArrayList<>();
     private Map<String, FsMsgQueue> identityAddressQueues = new HashMap<String, FsMsgQueue>();
 
@@ -19,24 +20,27 @@ public class FsMQManager {
     private static String SYNACKMSG = "SYNACK";
     private static String ACKMSG = "ACK";
 
-    public FsMQManager(String ownAddr, String ownQueueDir) {
-        self = new FsMQIdentity(ownAddr, ownQueueDir);
+    public FsMQManager(FsMQIdentity self) {
+        this.self = self;
         addOrUpdateIdentity(self);
     }
 
     // Identity address must be unique
-    public void addOrUpdateIdentity(FsMQIdentity ident) {
+    // Returns
+    // - true for added
+    // - false for updated
+    public boolean addOrUpdateIdentity(FsMQIdentity ident) {
         try {
             getIdentityForAddress(ident.getAddress());
         } catch (UnknownIdentityException e) {
             // Good, add new ident
             addIdent(ident);
-            return;
+            return true;
         }
         // Ok, update ident
         removeIdent(ident);
         addIdent(ident);
-        return;
+        return false;
     }
 
     public void sendMsgToIdentity(FsMQIdentity ident, String msg) throws UnknownIdentityException, IOException {
@@ -49,13 +53,24 @@ public class FsMQManager {
         getQueueForIdentity(self).clear();
     }
 
-    public String waitForMsg() throws UnknownIdentityException, IOException, ClassNotFoundException {
+    public String waitForMsg() throws UnknownIdentityException, IOException, ClassNotFoundException, TimeoutException {
+        return waitForMsg(0);
+    }
+
+    public String waitForMsg(int timeoutSec) throws UnknownIdentityException, IOException, ClassNotFoundException, TimeoutException {
         String ret = null;
         FsMsgQueue onwQueue = getQueueForIdentity(self);
         FsMQMessage mqMsg = null;
+        int pollInterval = 100;
+        int pollRepeats = timeoutSec * 1000 / pollInterval;
+        int pollCounter = 0;
         do {
             while (onwQueue.isEmpty()) {
                 TestUtils.sleep(100);
+                pollCounter++;
+                if (pollCounter >= pollRepeats) {
+                    throw new TimeoutException("");
+                }
             }
             String serializedMsg = onwQueue.remove();
             mqMsg = FsMQMessage.deserialize(serializedMsg);
@@ -70,7 +85,6 @@ public class FsMQManager {
         createQueueForIdent(ident);
     }
 
-    // undefined behaviour if already existing
     // Removes the identity from identities and identityQueues by address
     private void removeIdent(FsMQIdentity ident) {
         identities.removeIf(i -> i.getAddress().equals(ident.getAddress()));
@@ -85,13 +99,13 @@ public class FsMQManager {
     private FsMsgQueue getQueueForIdentity(FsMQIdentity ident) throws UnknownIdentityException {
         FsMsgQueue ret = null;
         ret = identityAddressQueues.get(ident.getAddress());
-        if (ret != null) {
+        if (ret == null) {
             throw new UnknownIdentityException("Unknown identity address: " + ident.getAddress());
         }
         return ret;
     }
 
-    private FsMQIdentity getIdentityForAddress(String address) throws UnknownIdentityException, IllegalStateException {
+    public FsMQIdentity getIdentityForAddress(String address) throws UnknownIdentityException, IllegalStateException {
         FsMQIdentity ret = null;
         List<FsMQIdentity> matches = identities.stream().filter(i -> i.getAddress().equals(address)).collect(Collectors.toList());
         if (matches.size() <= 0) {
@@ -139,7 +153,7 @@ public class FsMQManager {
 //        log("Sending ACK to: " + ident.getAddress());
 //        sendMsgToIdentity(ident, msg);
 //    }
-    
+
 }
 
 class FsMQMessage implements java.io.Serializable {
@@ -147,8 +161,8 @@ class FsMQMessage implements java.io.Serializable {
     FsMQHandshakeHeader header = null;
     String msg = null;
 
-    FsMQMessage(FsMQIdentity from, String msg) throws IllegalStateException{
-        if(from == null || msg == null) {
+    FsMQMessage(FsMQIdentity from, String msg) throws IllegalStateException {
+        if (from == null || msg == null) {
             throw new IllegalStateException("from and msg cant be null");
         }
         this.from = from;
@@ -173,10 +187,10 @@ class FsMQMessage implements java.io.Serializable {
         ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
         Object obj = ois.readObject();
         ois.close();
-        if(!(obj instanceof FsMQMessage)) {
+        if (!(obj instanceof FsMQMessage)) {
             throw new ClassNotFoundException("Unvalid serialized string");
         } else {
-           ret = (FsMQMessage) obj;
+            ret = (FsMQMessage) obj;
         }
         return ret;
     }
@@ -197,8 +211,3 @@ class FsMQMessage implements java.io.Serializable {
 }
 
 
-class UnknownIdentityException extends RuntimeException {
-    UnknownIdentityException(String message) {
-        super(message);
-    }
-}
