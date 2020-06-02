@@ -1,14 +1,33 @@
 package foundation.pEp.jniadapter.test.utils;
 
 import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
+
 import foundation.pEp.jniadapter.test.framework.*;
 import foundation.pEp.jniadapter.*;
+import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
+
+
+//public class ABAliceTestContext extends AdapterBaseTestContext {
+//    FsMQManager transport;
+//
+//    @Override
+//    public void init() throws Throwable {
+//        super.init();
+//        transport = new FsMQManager(alice.address, "../resources/per-user-dir/alice/inbox");
+//        transport.clearOwnQueue();
+//        transport.addPeer(bob.address, "../resources/per-user-dir/bob/inbox");
+//
+//        transport.broadcastSigOnline();
+//        transport.waitForPeerOnline(bob.address);
+//    }
+//
+//}
+
 
 public class AdapterBaseTestContext extends AbstractTestContext {
     // Basic

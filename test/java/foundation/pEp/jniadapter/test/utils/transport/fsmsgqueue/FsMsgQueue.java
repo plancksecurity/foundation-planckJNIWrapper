@@ -1,24 +1,13 @@
-package foundation.pEp.jniadapter.test.utils.fsmsgqueue;
+package foundation.pEp.jniadapter.test.utils.transport.fsmsgqueue;
 
 import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
-
-import foundation.pEp.jniadapter.test.framework.*;
-import foundation.pEp.jniadapter.test.framework.TestUtils.*;
-import foundation.pEp.jniadapter.test.utils.*;
-
+import static foundation.pEp.jniadapter.test.framework.TestUtils.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Parameter;
-import java.math.BigInteger;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javafx.util.Pair;
 
@@ -85,21 +74,6 @@ public class FsMsgQueue implements Queue<String> {
         return ret;
     }
 
-
-    private String getNewFilename() {
-        String ret = "";
-        List<File> msgFiles = dotMsgFilesSorted(qDir, true);
-        int newNumber = 0;
-        if(msgFiles.size() > 0) {
-            File latest = msgFiles.get(msgFiles.size() - 1);
-            newNumber = Integer.parseInt(latest.getName().replace(".msg", "")) + 1;
-        }
-        ret = TestUtils.padOrClipString(String.valueOf(newNumber),"0",12,Alignment.Right,"");
-        ret += ".msg";
-
-        return ret;
-    }
-
     @Override
     public boolean offer(String msg) {
         boolean ret = true;
@@ -107,30 +81,6 @@ public class FsMsgQueue implements Queue<String> {
             add(msg);
         } catch (Exception e) {
             ret = false;
-        }
-        return ret;
-    }
-
-    private File getOldestMsgFilename() {
-        File ret = null;
-        List<File> msgFiles = dotMsgFilesSorted(qDir, false);
-        if(msgFiles.size() > 0) {
-            File oldest = msgFiles.get(msgFiles.size() - 1);
-            ret = oldest;
-        }
-        return ret;
-    }
-
-    private Pair<File, String> get() throws Exception {
-        Pair<File, String> ret = null;
-        File oldestFile = getOldestMsgFilename();
-        log("reading file:" + oldestFile.getName());
-        if (oldestFile == null) {
-            throw new NoSuchElementException("MNo .msg file in dir: " + qDir);
-        } else {
-            String fContent = null;
-            fContent = readFile(oldestFile.toPath(), fileEncoding);
-            ret = new Pair<>(oldestFile, fContent);
         }
         return ret;
     }
@@ -199,7 +149,6 @@ public class FsMsgQueue implements Queue<String> {
         return ret;
     }
 
-
     @Override
     public void clear() {
         deleteContentsRecursively(qDir);
@@ -260,20 +209,47 @@ public class FsMsgQueue implements Queue<String> {
     }
 
 
-    //Math Utils
-    public static int clip(int val, int min, int max) {
-        return Math.max(min, Math.min(max, val));
+
+    private String getNewFilename() {
+        String ret = "";
+        List<File> msgFiles = dotMsgFilesSorted(qDir, true);
+        int newNumber = 0;
+        if(msgFiles.size() > 0) {
+            File latest = msgFiles.get(msgFiles.size() - 1);
+            newNumber = Integer.parseInt(latest.getName().replace(".msg", "")) + 1;
+        }
+        ret = padOrClipString(String.valueOf(newNumber),"0",12,Alignment.Right,"");
+        ret += ".msg";
+
+        return ret;
     }
 
-    public static long clip(long val, long min, long max) {
-        return Math.max(min, Math.min(max, val));
+    private File getOldestMsgFilename() {
+        File ret = null;
+        List<File> msgFiles = dotMsgFilesSorted(qDir, false);
+        if(msgFiles.size() > 0) {
+            File oldest = msgFiles.get(msgFiles.size() - 1);
+            ret = oldest;
+        }
+        return ret;
     }
 
-
-    // File Utils
+    private Pair<File, String> get() throws Exception {
+        Pair<File, String> ret = null;
+        File oldestFile = getOldestMsgFilename();
+        log("reading file:" + oldestFile.getName());
+        if (oldestFile == null) {
+            throw new NoSuchElementException("MNo .msg file in dir: " + qDir);
+        } else {
+            String fContent = null;
+            fContent = readFile(oldestFile.toPath(), fileEncoding);
+            ret = new Pair<>(oldestFile, fContent);
+        }
+        return ret;
+    }
 
     // Possibly returns an empty List
-    private static List<File> dotMsgFilesSorted(File dir, boolean ascending) {
+    private List<File> dotMsgFilesSorted(File dir, boolean ascending) {
         List<File> ret = new ArrayList<>();
         File[] listOfFiles = dir.listFiles();
         if (listOfFiles != null) {
@@ -295,78 +271,7 @@ public class FsMsgQueue implements Queue<String> {
         return ret;
     }
 
-    // possibly returns an empty list
-    private static List<File> filterbyFilename(List<File> files, String regex) {
-        List<File> ret = null;
-        Predicate<File> dotMsg = file -> file.getName().matches(regex);
-        ret = files.stream().filter(dotMsg).collect(Collectors.toList());
-        return ret;
-    }
 
-    // Possibly returns an empty ArrayList
-    private static List<File> listFilesByMtime(File dir) {
-        List<File> ret = new ArrayList<>();
-        File[] listOfFiles = dir.listFiles();
-        if (listOfFiles != null) {
-            Collections.addAll(ret, listOfFiles);
-            ret = sortFilesByMtime(ret);
-        }
-        return ret;
-    }
-
-    // null in null out
-    private static List<File> sortFilesByMtime(List<File> files) {
-        List<File> ret = null;
-        if (files != null) {
-            ret = new ArrayList(files);
-            Collections.sort(ret, (o1, o2) -> {
-                long ret1 = 0;
-                ret1 = o1.lastModified() - o2.lastModified();
-                return (int) clip(ret1, -1, 1);
-            });
-        }
-        return ret;
-    }
-
-    public static String readFile(Path path, Charset decoding) throws IOException {
-        String ret = null;
-        byte[] encoded = Files.readAllBytes(path);
-        ret = new String(encoded, decoding);
-        if (ret == null) {
-            throw new IOException("Error reading file: " + path);
-        }
-        return ret;
-    }
-
-    public static void writeFile(Path path, String msg, Charset encoding) throws IOException {
-        Files.write(path, msg.getBytes(encoding));
-    }
-
-    public static boolean deleteRecursively(File dir) {
-        deleteContentsRecursively(dir);
-        log("deleting: " + dir.getAbsolutePath());
-        return dir.delete();
-    }
-
-    public static boolean deleteContentsRecursively(File dir) {
-        boolean ret = false;
-        File[] allContents = dir.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                ret = deleteRecursively(file);
-            }
-        }
-        return ret;
-    }
-
-    private static List<String> getAvailableCharsetNames() {
-        List<String> ret = new ArrayList<>();
-        for (String key : Charset.availableCharsets().keySet()) {
-            Charset val = Charset.forName(key);
-            ret.add(val.name());
-        }
-        return ret;
-    }
 }
 
 

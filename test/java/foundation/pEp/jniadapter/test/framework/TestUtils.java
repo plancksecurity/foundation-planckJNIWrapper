@@ -1,8 +1,18 @@
 package foundation.pEp.jniadapter.test.framework;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static foundation.pEp.jniadapter.test.framework.TestLogger.log;
 
@@ -51,6 +61,7 @@ public class TestUtils {
     }
 
 
+
     /*
     Time Utils
      */
@@ -61,6 +72,8 @@ public class TestUtils {
             System.out.println("sleep got interrupted");
         }
     }
+
+
 
     /*
     String Utils
@@ -192,5 +205,99 @@ public class TestUtils {
             return text;
         }
     }
+
+
+
+    /*
+    FSUtils
+     */
+
+    // possibly returns an empty list
+    public static List<File> filterbyFilename(List<File> files, String regex) {
+        List<File> ret = null;
+        Predicate<File> dotMsg = file -> file.getName().matches(regex);
+        ret = files.stream().filter(dotMsg).collect(Collectors.toList());
+        return ret;
+    }
+
+    // Possibly returns an empty ArrayList
+    public static List<File> listFilesByMtime(File dir) {
+        List<File> ret = new ArrayList<>();
+        File[] listOfFiles = dir.listFiles();
+        if (listOfFiles != null) {
+            Collections.addAll(ret, listOfFiles);
+            ret = sortFilesByMtime(ret);
+        }
+        return ret;
+    }
+
+    // null in null out
+    private static List<File> sortFilesByMtime(List<File> files) {
+        List<File> ret = null;
+        if (files != null) {
+            ret = new ArrayList(files);
+            Collections.sort(ret, (o1, o2) -> {
+                long ret1 = 0;
+                ret1 = o1.lastModified() - o2.lastModified();
+                return (int) clip(ret1, -1, 1);
+            });
+        }
+        return ret;
+    }
+
+    public static String readFile(Path path, Charset decoding) throws IOException {
+        String ret = null;
+        byte[] encoded = Files.readAllBytes(path);
+        ret = new String(encoded, decoding);
+        if (ret == null) {
+            throw new IOException("Error reading file: " + path);
+        }
+        return ret;
+    }
+
+    public static void writeFile(Path path, String msg, Charset encoding) throws IOException {
+        Files.write(path, msg.getBytes(encoding));
+    }
+
+    public static boolean deleteRecursively(File dir) {
+        deleteContentsRecursively(dir);
+        log("deleting: " + dir.getAbsolutePath());
+        return dir.delete();
+    }
+
+    public static boolean deleteContentsRecursively(File dir) {
+        boolean ret = false;
+        File[] allContents = dir.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                ret = deleteRecursively(file);
+            }
+        }
+        return ret;
+    }
+
+    public static List<String> getAvailableCharsetNames() {
+        List<String> ret = new ArrayList<>();
+        for (String key : Charset.availableCharsets().keySet()) {
+            Charset val = Charset.forName(key);
+            ret.add(val.name());
+        }
+        return ret;
+    }
+
+
+
+    /*
+    Math Utils
+     */
+
+    public static int clip(int val, int min, int max) {
+        return Math.max(min, Math.min(max, val));
+    }
+
+    public static long clip(long val, long min, long max) {
+        return Math.max(min, Math.min(max, val));
+    }
+
 }
 

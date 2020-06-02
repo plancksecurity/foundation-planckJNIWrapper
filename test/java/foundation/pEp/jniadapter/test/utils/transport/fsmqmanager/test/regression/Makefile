@@ -1,6 +1,6 @@
 include ../Makefile.conf
 
-TEST_UNIT_NAME=readwrite
+TEST_UNIT_NAME=regression
 
 JAVA_CLASSES = \
  	TestMain.class \
