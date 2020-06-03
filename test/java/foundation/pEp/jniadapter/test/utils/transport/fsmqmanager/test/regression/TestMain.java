@@ -7,6 +7,7 @@ import foundation.pEp.jniadapter.test.framework.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 
@@ -14,7 +15,10 @@ class FsMQManagerTestContext extends AbstractTestContext {
     String ownAddress = "Alice";
     String ownQDir = "../resources/fsmsgqueue-test/alice";
     String bobAddress = "Bob";
+    String bobQDirWrong = "../resources/fsmsgqueue-test/Wr0ngD1r3ct0ry";
     String bobQDir = "../resources/fsmsgqueue-test/bob";
+    String carolAddress = "Carol";
+    String carolQDir = "../resources/fsmsgqueue-test/carol";
 
     int msgCount = 10;
     ArrayList<String> messages;
@@ -22,6 +26,7 @@ class FsMQManagerTestContext extends AbstractTestContext {
     FsMQManager qm;
     FsMQIdentity self = null;
     FsMQIdentity bob = null;
+    FsMQIdentity carol = null;
 
     @Override
     public void init() throws Throwable {
@@ -49,13 +54,25 @@ class TestMain {
         new TestUnit<FsMQManagerTestContext>("Create own ident: " + testCtx.ownAddress, testCtx, ctx -> {
             ctx.self = new FsMQIdentity(ctx.ownAddress, ctx.ownQDir);
             assert ctx.self != null : "null";
-            assert ctx.self.getAddress().equals(ctx.ownAddress): "Address mismatch";
-            assert ctx.self.getqDir().equals(ctx.ownQDir): "qDir mismatch";
+            assert ctx.self.getAddress().equals(ctx.ownAddress) : "Address mismatch";
+            assert ctx.self.getqDir().equals(ctx.ownQDir) : "qDir mismatch";
         }).add();
 
         new TestUnit<FsMQManagerTestContext>("Constructor with: " + testCtx.ownAddress, testCtx, ctx -> {
             ctx.qm = new FsMQManager(ctx.self);
             assert ctx.qm != null : "null";
+        }).add();
+
+        new TestUnit<FsMQManagerTestContext>("identExists" + testCtx.ownAddress, testCtx, ctx -> {
+            assert ctx.qm.identityExists(ctx.ownAddress);
+        }).add();
+
+        new TestUnit<FsMQManagerTestContext>("getIdentities", testCtx, ctx -> {
+            List<FsMQIdentity> idents = ctx.qm.getIdentities();
+            for (FsMQIdentity i : idents) {
+                log(i.toString());
+            }
+            assert idents.size() == 1 : "identity count wrong";
         }).add();
 
         new TestUnit<FsMQManagerTestContext>("Ident known: " + testCtx.ownAddress, testCtx, ctx -> {
@@ -67,19 +84,15 @@ class TestMain {
         }).add();
 
         new TestUnit<FsMQManagerTestContext>("Create ident " + testCtx.bobAddress, testCtx, ctx -> {
-            ctx.bob = new FsMQIdentity(ctx.bobAddress, ctx.bobQDir);
+            ctx.bob = new FsMQIdentity(ctx.bobAddress, ctx.bobQDirWrong);
             assert ctx.bob != null : "null";
             assert ctx.bob.getAddress().equals(ctx.bobAddress) : "Address mismatch";
-            assert ctx.bob.getqDir().equals(ctx.bobQDir) : "qDir mismatch";
+            assert ctx.bob.getqDir().equals(ctx.bobQDirWrong) : "qDir mismatch";
         }).add();
 
         new TestUnit<FsMQManagerTestContext>("Ident unknown: " + testCtx.bobAddress, testCtx, ctx -> {
-            try {
-                FsMQIdentity self = ctx.qm.getIdentityForAddress(ctx.bobAddress);
-            } catch (UnknownIdentityException e) {
-                return;
-            }
-            assert false : "Ident is known but shouldnt";
+            FsMQIdentity bob = ctx.qm.getIdentityForAddress(ctx.bobAddress);
+            assert bob == null : "Ident is known but shouldnt";
         }).add();
 
         new TestUnit<FsMQManagerTestContext>("Add ident " + testCtx.bobAddress, testCtx, ctx -> {
@@ -91,9 +104,69 @@ class TestMain {
             assert bob.equals(ctx.bob) : "Obj mismatch";
         }).add();
 
+        new TestUnit<FsMQManagerTestContext>("Create/Add Ident " + testCtx.carolAddress, testCtx, ctx -> {
+            ctx.carol = new FsMQIdentity(ctx.carolAddress, ctx.carolQDir);
+            assert ctx.carol != null : "null";
+            assert ctx.carol.getAddress().equals(ctx.carolAddress) : "Address mismatch";
+            assert ctx.carol.getqDir().equals(ctx.carolQDir) : "qDir mismatch";
+            assert ctx.qm.addOrUpdateIdentity(ctx.carol) : "Ident got updated but should have been added";
+        }).add();
+
+        new TestUnit<FsMQManagerTestContext>("getIdentities", testCtx, ctx -> {
+            List<FsMQIdentity> idents = ctx.qm.getIdentities();
+            for (FsMQIdentity i : idents) {
+                log(i.toString());
+            }
+            assert idents.size() == 3 : "identity count wrong";
+        }).add();
+
+        new TestUnit<FsMQManagerTestContext>("getIdents is copy", testCtx, ctx -> {
+            List<FsMQIdentity> idents = ctx.qm.getIdentities();
+            int identSize = idents.size();
+            idents.add(new FsMQIdentity("Eve", "EvilEveDir"));
+            assert identSize == ctx.qm.getIdentities().size() : "ident count wrong";
+            assert !ctx.qm.identityExists("Eve") : "Identity Eve should not be known";
+        }).add();
+
         new TestUnit<FsMQManagerTestContext>("Update ident " + testCtx.bobAddress, testCtx, ctx -> {
+            ctx.bob.setqDir(ctx.bobQDir);
+            assert ctx.bob.getqDir().equals(ctx.bobQDir);
             assert !ctx.qm.addOrUpdateIdentity(ctx.bob) : "Ident got added but should have been updated";
         }).add();
+
+        new TestUnit<FsMQManagerTestContext>("getIdentities", testCtx, ctx -> {
+            List<FsMQIdentity> idents = ctx.qm.getIdentities();
+            for (FsMQIdentity i : idents) {
+                log(i.toString());
+            }
+            assert idents.size() == 3 : "identity count wrong";
+        }).add();
+
+        new TestUnit<FsMQManagerTestContext>("removeIdent" + testCtx.carolAddress, testCtx, ctx -> {
+            ctx.qm.removeIdentity(ctx.carol.getAddress());
+            assert ctx.qm.getIdentities().size() == 2 : "identity count wrong";
+            assert !ctx.qm.identityExists(ctx.carol.getAddress()) : "Remove failed";
+        }).add();
+
+        new TestUnit<FsMQManagerTestContext>("getIdentities", testCtx, ctx -> {
+            List<FsMQIdentity> idents = ctx.qm.getIdentities();
+            for (FsMQIdentity i : idents) {
+                log(i.toString());
+            }
+            assert idents.size() == 2 : "identity count wrong";
+        }).add();
+
+//        new TestUnit<FsMQManagerTestContext>("cant remove own ident", testCtx, ctx -> {
+//            ctx.qm.removeIdentity(ctx.self.getAddress());
+//            assert ctx.qm.getIdentities().size() == 2 : "identity count wrong";
+//            try {
+//                ctx.qm.getIdentityForAddress(ctx.carol.getAddress());
+//            } catch (UnknownIdentityException e) {
+//                return;
+//            }
+//            assert false : "Identity Eve should not be known";
+//        }).add();
+
 
         new TestUnit<FsMQManagerTestContext>("ClearOwnQueue: " + testCtx.bobAddress, testCtx, ctx -> {
             ctx.qm.clearOwnQueue();
@@ -102,10 +175,10 @@ class TestMain {
         new TestUnit<FsMQManagerTestContext>("waitForMsg timeout", testCtx, ctx -> {
             log("waitForMessage with timeout...");
             try {
-                 ctx.qm.waitForMsg(3);
-            } catch(IOException e) {
+                ctx.qm.receiveMessage(3);
+            } catch (IOException e) {
                 throw new RuntimeException(e.toString());
-            } catch(ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e.toString());
             } catch (TimeoutException e) {
                 return;
@@ -116,8 +189,8 @@ class TestMain {
             String msg = ctx.messages.get(0);
             log("TX MSG: " + msg);
             try {
-                ctx.qm.sendMsgToIdentity(ctx.self, msg);
-            } catch(IOException e) {
+                ctx.qm.sendMessage(ctx.self.getAddress(), msg);
+            } catch (IOException e) {
                 throw new RuntimeException(e.toString());
             }
         }).add();
@@ -125,8 +198,8 @@ class TestMain {
         new TestUnit<FsMQManagerTestContext>("waitForMsg", testCtx, ctx -> {
             String msg = null;
             try {
-                msg = ctx.qm.waitForMsg(10);
-            } catch(Exception e) {
+                msg = ctx.qm.receiveMessage(10);
+            } catch (Exception e) {
                 throw new RuntimeException(e.toString());
             }
             log("RX MSG: " + msg);

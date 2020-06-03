@@ -30,36 +30,43 @@ public class FsMQManager {
     // - true for added
     // - false for updated
     public boolean addOrUpdateIdentity(FsMQIdentity ident) {
-        try {
-            getIdentityForAddress(ident.getAddress());
-        } catch (UnknownIdentityException e) {
+        boolean ret = false;
+        if(!identityExists(ident.getAddress())) {
             // Good, add new ident
             addIdent(ident);
-            return true;
+            ret = true;
+        } else{
+            // Ok, update ident
+            removeIdentity(ident.getAddress());
+            addIdent(ident);
+            ret = false;
         }
-        // Ok, update ident
-        removeIdent(ident);
-        addIdent(ident);
-        return false;
+        return ret;
     }
 
-    public void sendMsgToIdentity(FsMQIdentity ident, String msg) throws UnknownIdentityException, IOException {
+    // Removes the identity from identities and identityQueues by address
+    public void removeIdentity(String address) {
+        identities.removeIf(i -> i.getAddress().equals(address));
+        identityAddressQueues.entrySet().removeIf(iq -> iq.getKey().equals(address));
+    }
+
+    public void sendMessage(String address, String msg) throws UnknownIdentityException, IOException {
         FsMQMessage mqMsg = new FsMQMessage(self, msg);
         String serializedStr = mqMsg.serialize();
-        getQueueForIdentity(ident).add(serializedStr);
+        getQueueForIdentity(address).add(serializedStr);
     }
 
     public void clearOwnQueue() {
-        getQueueForIdentity(self).clear();
+        getQueueForIdentity(self.getAddress()).clear();
     }
 
-    public String waitForMsg() throws UnknownIdentityException, IOException, ClassNotFoundException, TimeoutException {
-        return waitForMsg(0);
+    public String receiveMessage() throws UnknownIdentityException, IOException, ClassNotFoundException, TimeoutException {
+        return receiveMessage(0);
     }
 
-    public String waitForMsg(int timeoutSec) throws UnknownIdentityException, IOException, ClassNotFoundException, TimeoutException {
+    public String receiveMessage(int timeoutSec) throws UnknownIdentityException, IOException, ClassNotFoundException, TimeoutException {
         String ret = null;
-        FsMsgQueue onwQueue = getQueueForIdentity(self);
+        FsMsgQueue onwQueue = getQueueForIdentity(self.getAddress());
         FsMQMessage mqMsg = null;
         int pollInterval = 100;
         int pollRepeats = timeoutSec * 1000 / pollInterval;
@@ -79,16 +86,47 @@ public class FsMQManager {
         return ret;
     }
 
+    // True if existing
+    // False if not
+    // Exception on not unique
+    public boolean identityExists(String address) {
+        boolean ret = false;
+        List<FsMQIdentity> matches = identities.stream().filter(i -> i.getAddress().equals(address)).collect(Collectors.toList());
+        if (matches.size() > 1) {
+            throw new IllegalStateException("Internal Error: Identity address not unique: " + address);
+        }
+        if (matches.size() == 1) {
+            ret = true;
+        }
+        return ret;
+    }
+
+
+    // Return null if not existing
+    public FsMQIdentity getIdentityForAddress(String address) throws UnknownIdentityException, IllegalStateException {
+        FsMQIdentity ret = null;
+        if (identityExists(address)) {
+            ret  = identities.stream().filter(i -> i.getAddress().equals(address)).collect(Collectors.toList()).get(0);
+        }
+        return ret;
+    }
+
+    public List<FsMQIdentity> getIdentities() {
+        return new ArrayList<FsMQIdentity>(identities);
+    }
+
+    public List<String> getIdentityAddresses() {
+        List <String> ret = new ArrayList<>();
+        for(FsMQIdentity i : identities) {
+            ret.add(i.getAddress());
+        }
+        return ret;
+    }
+
     // undefined behaviour if already existing
     private void addIdent(FsMQIdentity ident) {
         identities.add(ident);
         createQueueForIdent(ident);
-    }
-
-    // Removes the identity from identities and identityQueues by address
-    private void removeIdent(FsMQIdentity ident) {
-        identities.removeIf(i -> i.getAddress().equals(ident.getAddress()));
-        identityAddressQueues.entrySet().removeIf(iq -> iq.getKey().equals(ident.getAddress()));
     }
 
     private void createQueueForIdent(FsMQIdentity ident) {
@@ -96,25 +134,12 @@ public class FsMQManager {
         identityAddressQueues.put(ident.getAddress(), q);
     }
 
-    private FsMsgQueue getQueueForIdentity(FsMQIdentity ident) throws UnknownIdentityException {
+    private FsMsgQueue getQueueForIdentity(String address) throws UnknownIdentityException {
         FsMsgQueue ret = null;
-        ret = identityAddressQueues.get(ident.getAddress());
+        ret = identityAddressQueues.get(address);
         if (ret == null) {
-            throw new UnknownIdentityException("Unknown identity address: " + ident.getAddress());
+            throw new UnknownIdentityException("Unknown identity address: " + address);
         }
-        return ret;
-    }
-
-    public FsMQIdentity getIdentityForAddress(String address) throws UnknownIdentityException, IllegalStateException {
-        FsMQIdentity ret = null;
-        List<FsMQIdentity> matches = identities.stream().filter(i -> i.getAddress().equals(address)).collect(Collectors.toList());
-        if (matches.size() <= 0) {
-            throw new UnknownIdentityException("No identity with address:" + address);
-        }
-        if (matches.size() > 1) {
-            throw new IllegalStateException("Identity address not unique: " + address);
-        }
-        ret = matches.get(0);
         return ret;
     }
 

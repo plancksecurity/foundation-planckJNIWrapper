@@ -16,4 +16,16 @@ public class FsMQIdentity implements java.io.Serializable {
     public String getqDir() {
         return qDir;
     }
+
+    public void setqDir(String qDir) {
+        this.qDir = qDir;
+    }
+
+    public String toString(){
+        String ret = "";
+
+        ret += "Address: '" + address + "'\n";
+        ret += "qDir   : '" + qDir + "'";
+        return  ret;
+    }
 }
