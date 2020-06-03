@@ -12,7 +12,6 @@ import static foundation.pEp.jniadapter.test.framework.TestLogger.log;
 
 public class FsMQManager {
     private FsMQIdentity self = null;
-
     private List<FsMQIdentity> identities = new ArrayList<>();
     private Map<String, FsMsgQueue> identityAddressQueues = new HashMap<String, FsMsgQueue>();
 
@@ -20,40 +19,112 @@ public class FsMQManager {
     private static String SYNACKMSG = "SYNACK";
     private static String ACKMSG = "ACK";
 
-    public FsMQManager(FsMQIdentity self) {
-        this.self = self;
-        addOrUpdateIdentity(self);
+    public FsMQManager(FsMQIdentity self) throws NullPointerException {
+        if (self != null) {
+            this.self = self;
+            addOrUpdateIdentity(self);
+        } else {
+            throw new NullPointerException("self cant be null");
+        }
     }
 
     // Identity address must be unique
     // Returns
     // - true for added
-    // - false for updated
-    public boolean addOrUpdateIdentity(FsMQIdentity ident) {
+    // - false for updated or own ident (which cant be updated)
+    public boolean addOrUpdateIdentity(FsMQIdentity ident) throws NullPointerException {
         boolean ret = false;
-        if(!identityExists(ident.getAddress())) {
-            // Good, add new ident
-            addIdent(ident);
-            ret = true;
-        } else{
-            // Ok, update ident
-            removeIdentity(ident.getAddress());
-            addIdent(ident);
-            ret = false;
+        if (ident != null) {
+            if (addIdent(ident)) {
+                // Good, add new ident
+                ret = true;
+            } else {
+                // Ok, update ident
+                updateIdentity(ident);
+                ret = false;
+            }
+        } else {
+            throw new NullPointerException("ident cant be null");
+        }
+        return ret;
+    }
+
+    // cant update own identity
+    // True - Success
+    // False - ident not existing or own identity
+    public boolean updateIdentity(FsMQIdentity ident) throws NullPointerException {
+        boolean ret = false;
+        if (ident != null) {
+            if (!isOwnIdentity(ident.getAddress()) && identityExists(ident.getAddress())) {
+                removeIdentity(ident.getAddress());
+                addIdent(ident);
+                ret = true;
+            }
+        } else {
+            throw new NullPointerException("ident cant be null");
         }
         return ret;
     }
 
     // Removes the identity from identities and identityQueues by address
-    public void removeIdentity(String address) {
-        identities.removeIf(i -> i.getAddress().equals(address));
-        identityAddressQueues.entrySet().removeIf(iq -> iq.getKey().equals(address));
+    public boolean removeIdentity(String address) throws NullPointerException {
+        boolean ret = false;
+        if (address != null) {
+            if (identityExists(address) && !isOwnIdentity(address)) {
+                identities.removeIf(i -> i.getAddress().equals(address));
+                identityAddressQueues.entrySet().removeIf(iq -> iq.getKey().equals(address));
+                ret = true;
+            }
+        } else {
+            throw new NullPointerException("address cant be null");
+        }
+        return ret;
     }
 
-    public void sendMessage(String address, String msg) throws UnknownIdentityException, IOException {
-        FsMQMessage mqMsg = new FsMQMessage(self, msg);
-        String serializedStr = mqMsg.serialize();
-        getQueueForIdentity(address).add(serializedStr);
+    // cant fail haha
+    public void removeAllIdentities() {
+        for (FsMQIdentity i : getIdentities()) {
+            removeIdentity(i.getAddress());
+        }
+    }
+
+    // Returns number of identities added
+    public int addIdentities(List<FsMQIdentity> idents) throws NullPointerException {
+        int ret = 0;
+        if (idents != null) {
+            for (FsMQIdentity i : idents) {
+                if (addOrUpdateIdentity(i)) {
+                    ret++;
+                }
+            }
+        } else {
+            throw new NullPointerException("idents cant be null");
+        }
+        return ret;
+    }
+
+    public boolean isOwnIdentity(String address) throws NullPointerException {
+        boolean ret = false;
+        if (address != null) {
+            ret = self.getAddress() == address;
+        } else {
+            throw new NullPointerException("address cant be null");
+        }
+        return ret;
+    }
+
+    public void sendMessage(String address, String msg) throws UnknownIdentityException, IOException, NullPointerException {
+        if (address != null) {
+            if (msg != null) {
+                FsMQMessage mqMsg = new FsMQMessage(self, msg);
+                String serializedStr = mqMsg.serialize();
+                getQueueForIdentity(address).add(serializedStr);
+            } else {
+                throw new NullPointerException("msg cant be null");
+            }
+        } else {
+            throw new NullPointerException("address cant be null");
+        }
     }
 
     public void clearOwnQueue() {
@@ -64,6 +135,7 @@ public class FsMQManager {
         return receiveMessage(0);
     }
 
+    // Blocks until timeout
     public String receiveMessage(int timeoutSec) throws UnknownIdentityException, IOException, ClassNotFoundException, TimeoutException {
         String ret = null;
         FsMsgQueue onwQueue = getQueueForIdentity(self.getAddress());
@@ -91,42 +163,52 @@ public class FsMQManager {
     // Exception on not unique
     public boolean identityExists(String address) {
         boolean ret = false;
-        List<FsMQIdentity> matches = identities.stream().filter(i -> i.getAddress().equals(address)).collect(Collectors.toList());
-        if (matches.size() > 1) {
-            throw new IllegalStateException("Internal Error: Identity address not unique: " + address);
-        }
-        if (matches.size() == 1) {
-            ret = true;
+        if (address != null) {
+            List<FsMQIdentity> matches = identities.stream().filter(i -> i.getAddress().equals(address)).collect(Collectors.toList());
+            if (matches.size() > 1) {
+                throw new IllegalStateException("Internal Error: Identity address not unique: " + address);
+            }
+            if (matches.size() == 1) {
+                ret = true;
+            }
+        } else {
+            throw new NullPointerException("address cant be null");
         }
         return ret;
     }
 
 
-    // Return null if not existing
-    public FsMQIdentity getIdentityForAddress(String address) throws UnknownIdentityException, IllegalStateException {
-        FsMQIdentity ret = null;
-        if (identityExists(address)) {
-            ret  = identities.stream().filter(i -> i.getAddress().equals(address)).collect(Collectors.toList()).get(0);
-        }
-        return ret;
-    }
+//    // Return null if not existing
+//    public FsMQIdentity getIdentityForAddress(String address) throws UnknownIdentityException, IllegalStateException {
+//        FsMQIdentity ret = null;
+//        if (identityExists(address)) {
+//            ret  = identities.stream().filter(i -> i.getAddress().equals(address)).collect(Collectors.toList()).get(0);
+//        }
+//        return ret;
+//    }
 
     public List<FsMQIdentity> getIdentities() {
         return new ArrayList<FsMQIdentity>(identities);
     }
 
     public List<String> getIdentityAddresses() {
-        List <String> ret = new ArrayList<>();
-        for(FsMQIdentity i : identities) {
+        List<String> ret = new ArrayList<>();
+        for (FsMQIdentity i : identities) {
             ret.add(i.getAddress());
         }
         return ret;
     }
 
-    // undefined behaviour if already existing
-    private void addIdent(FsMQIdentity ident) {
-        identities.add(ident);
-        createQueueForIdent(ident);
+    // True  - success
+    // False - already existing
+    private boolean addIdent(FsMQIdentity ident) {
+        boolean ret = false;
+        if (!identityExists(ident.getAddress())) {
+            identities.add(ident);
+            createQueueForIdent(ident);
+            ret = true;
+        }
+        return ret;
     }
 
     private void createQueueForIdent(FsMQIdentity ident) {
