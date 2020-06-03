@@ -66,10 +66,6 @@ class TestMain {
             assert ctx.qm != null : "null";
         }).add();
 
-        new TestUnit<FsMQManagerTestContext>("Ident known: " + testCtx.ownAddress, testCtx, ctx -> {
-            assert ctx.qm.identityExists(ctx.ownAddress);
-        }).add();
-
         new TestUnit<FsMQManagerTestContext>("getIdentities", testCtx, ctx -> {
             List<FsMQIdentity> idents = ctx.qm.getIdentities();
             for (FsMQIdentity i : idents) {
@@ -79,7 +75,7 @@ class TestMain {
         }).add();
 
         new TestUnit<FsMQManagerTestContext>("Ident known: " + testCtx.ownAddress, testCtx, ctx -> {
-            assert ctx.qm.identityExists(ctx.self.getAddress()) : "Own identity uknown";
+            assert ctx.qm.identityExists(ctx.self.getAddress()) : "Own identity unknown";
         }).add();
 
         new TestUnit<FsMQManagerTestContext>("Create ident " + testCtx.bobAddress, testCtx, ctx -> {
@@ -134,11 +130,11 @@ class TestMain {
 
         new TestUnit<FsMQManagerTestContext>("Update ident " + testCtx.carolAddress, testCtx, ctx -> {
             ctx.carol.setqDir(ctx.carolQDir);
-            assert ctx.qm.updateIdentity(ctx.carol): "Error updating ident";
+            assert ctx.qm.updateIdentity(ctx.carol) : "Error updating ident";
         }).add();
 
         new TestUnit<FsMQManagerTestContext>("Update ownIdent Fails " + testCtx.carolAddress, testCtx, ctx -> {
-            assert !ctx.qm.updateIdentity(ctx.self): "upadted own ident";
+            assert !ctx.qm.updateIdentity(ctx.self) : "upadted own ident";
         }).add();
 
         new TestUnit<FsMQManagerTestContext>("getIdentities", testCtx, ctx -> {
@@ -204,13 +200,27 @@ class TestMain {
             assert idents.size() == 2 : "identity count wrong";
         }).add();
 
-
         new TestUnit<FsMQManagerTestContext>("cant remove own ident", testCtx, ctx -> {
             ctx.qm.removeIdentity(ctx.self.getAddress());
             assert ctx.qm.getIdentities().size() == 2 : "identity count wrong";
             assert ctx.qm.identityExists(ctx.self.getAddress()) : "removed own identity";
         }).add();
 
+        new TestUnit<FsMQManagerTestContext>("getIdentForAddr" + testCtx.bobAddress, testCtx, ctx -> {
+            FsMQIdentity found = ctx.qm.getIdentityForAddress(ctx.bob.getAddress());
+            assert found != null :"failed to find known address";
+            assert found.getAddress().equals(ctx.bob.getAddress()) :"found wrong ident";
+        }).add();
+
+        new TestUnit<FsMQManagerTestContext>("getIdentForAdd" + testCtx.ownAddress, testCtx, ctx -> {
+            FsMQIdentity found = ctx.qm.getIdentityForAddress(ctx.self.getAddress());
+            assert found != null :"failed to find known address";
+            assert found.getAddress().equals(ctx.self.getAddress()) :"found wrong ident";
+        }).add();
+
+        new TestUnit<FsMQManagerTestContext>("getIdentityForAddress not existing", testCtx, ctx -> {
+            assert ctx.qm.getIdentityForAddress("UNKNOWN") == null : "Found an unknown address";
+        }).add();
 
         new TestUnit<FsMQManagerTestContext>("ClearOwnQueue: " + testCtx.bobAddress, testCtx, ctx -> {
             ctx.qm.clearOwnQueue();
@@ -219,7 +229,7 @@ class TestMain {
         new TestUnit<FsMQManagerTestContext>("waitForMsg timeout", testCtx, ctx -> {
             log("waitForMessage with timeout...");
             try {
-                ctx.qm.receiveMessage(3);
+                ctx.qm.receiveMessage(1);
             } catch (IOException e) {
                 throw new RuntimeException(e.toString());
             } catch (ClassNotFoundException e) {
@@ -240,14 +250,14 @@ class TestMain {
         }).add();
 
         new TestUnit<FsMQManagerTestContext>("waitForMsg", testCtx, ctx -> {
-            String msg = null;
+             FsMQMessage msg = null;
             try {
                 msg = ctx.qm.receiveMessage(10);
             } catch (Exception e) {
                 throw new RuntimeException(e.toString());
             }
-            log("RX MSG: " + msg);
-            assert msg.equals(ctx.messages.get(0)) : "message content mismatch";
+            log("RX MSG: \n" + msg.toString());
+            assert msg.getMsg().equals(ctx.messages.get(0)) : "message content mismatch";
         }).add();
 
 
