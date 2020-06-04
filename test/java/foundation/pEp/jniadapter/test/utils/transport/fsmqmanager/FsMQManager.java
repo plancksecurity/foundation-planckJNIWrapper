@@ -15,10 +15,6 @@ public class FsMQManager {
     private List<FsMQIdentity> identities = new ArrayList<>();
     private Map<String, FsMsgQueue> identityAddressQueues = new HashMap<String, FsMsgQueue>();
 
-    private static String SYNMSG = "SYN";
-    private static String SYNACKMSG = "SYNACK";
-    private static String ACKMSG = "ACK";
-
     public FsMQManager(FsMQIdentity self) throws NullPointerException {
         if (self != null) {
             this.self = self;
@@ -113,51 +109,6 @@ public class FsMQManager {
         return ret;
     }
 
-    public void sendMessage(String address, String msg) throws UnknownIdentityException, IOException, NullPointerException {
-        if (address != null) {
-            if (msg != null) {
-                FsMQMessageInternal mqMsg = new FsMQMessageInternal(self, msg);
-                String serializedStr = mqMsg.serialize();
-                getQueueForIdentity(address).add(serializedStr);
-            } else {
-                throw new NullPointerException("msg cant be null");
-            }
-        } else {
-            throw new NullPointerException("address cant be null");
-        }
-    }
-
-    public void clearOwnQueue() {
-        getQueueForIdentity(self.getAddress()).clear();
-    }
-
-    public FsMQMessage receiveMessage() throws IOException, ClassNotFoundException, TimeoutException {
-        return receiveMessage(0);
-    }
-
-    // Blocks until timeout
-    public FsMQMessage receiveMessage(int timeoutSec) throws IOException, ClassNotFoundException, TimeoutException {
-        FsMQMessage ret = null;
-        FsMsgQueue onwQueue = getQueueForIdentity(self.getAddress());
-        FsMQMessageInternal mqMsg = null;
-        int pollInterval = 100;
-        int pollRepeats = timeoutSec * 1000 / pollInterval;
-        int pollCounter = 0;
-        do {
-            while (onwQueue.isEmpty()) {
-                TestUtils.sleep(100);
-                pollCounter++;
-                if (pollCounter >= pollRepeats) {
-                    throw new TimeoutException("");
-                }
-            }
-            String serializedMsg = onwQueue.remove();
-            mqMsg = FsMQMessageInternal.deserialize(serializedMsg);
-        } while (doHandshakeProtocol(mqMsg));
-        ret = mqMsg.toFsMQMessage();
-        return ret;
-    }
-
     // True if existing
     // False if not
     // Exception on not unique
@@ -176,7 +127,6 @@ public class FsMQManager {
         }
         return ret;
     }
-
 
     // Returns null if not existing
     public FsMQIdentity getIdentityForAddress(String address) {
@@ -225,15 +175,54 @@ public class FsMQManager {
         return ret;
     }
 
-//    public void handshake(FsMQIdentity ident) {
-//        String msg = "";
-//        sendSYN(ident);
-//        while (msg != SYNACKMSG + " " + ident.getAddress()) {
-//            log("Waiting for SYNACK from " + ident.getAddress());
-//            msg = waitForMsg();
-//        }
-//        sendACK(ident);
-//    }
+    public void clearOwnQueue() {
+        getQueueForIdentity(self.getAddress()).clear();
+    }
+
+    public void sendMessage(String address, String msg) throws UnknownIdentityException, IOException, NullPointerException {
+        if (address != null) {
+            if (msg != null) {
+                FsMQMessageInternal mqMsg = new FsMQMessageInternal(self, msg);
+                String serializedStr = mqMsg.serialize();
+                getQueueForIdentity(address).add(serializedStr);
+            } else {
+                throw new NullPointerException("msg cant be null");
+            }
+        } else {
+            throw new NullPointerException("address cant be null");
+        }
+    }
+
+    // Non blocking read
+    // Returns null if no messages available
+    public FsMQMessage receiveMessage() throws IOException, ClassNotFoundException, TimeoutException {
+        return receiveMessage(0);
+    }
+
+    // Blocking read
+    // Returns null if no messages available
+    public FsMQMessage receiveMessage(int timeoutSec) throws IOException, ClassNotFoundException, TimeoutException {
+        FsMQMessage ret = null;
+        FsMsgQueue onwQueue = getQueueForIdentity(self.getAddress());
+        FsMQMessageInternal mqMsg = null;
+        int pollInterval = 100;
+        int pollRepeats = timeoutSec * 1000 / pollInterval;
+        int pollCounter = 0;
+        do {
+            while (onwQueue.isEmpty()) {
+                TestUtils.sleep(pollInterval);
+                pollCounter++;
+                if (pollCounter >= pollRepeats) {
+                    return ret;
+                }
+            }
+            String serializedMsg = onwQueue.remove();
+            mqMsg = FsMQMessageInternal.deserialize(serializedMsg);
+        } while (doHandshakeProtocol(mqMsg));
+        ret = mqMsg.toFsMQMessage();
+        return ret;
+    }
+
 
     private boolean doHandshakeProtocol(FsMQMessageInternal msg) {
         boolean ret = false;
@@ -247,18 +236,6 @@ public class FsMQManager {
 
         return ret;
     }
-
-//    public void sendSYN(FsMQIdentity ident) {
-//        String msg = SYNMSG + " " + self.getAddress();
-//        log("Sending SYN to: " + ident.getAddress());
-//        sendMsgToIdentity(ident, msg);
-//    }
-//
-//    public void sendACK(FsMQIdentity ident) {
-//        String msg = ACKMSG + " " + self.getAddress();
-//        log("Sending ACK to: " + ident.getAddress());
-//        sendMsgToIdentity(ident, msg);
-//    }
 
 }
 

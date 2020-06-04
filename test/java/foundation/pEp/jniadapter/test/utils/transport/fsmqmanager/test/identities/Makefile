@@ -1,6 +1,6 @@
 include ../Makefile.conf
 
-TEST_UNIT_NAME=regression
+TEST_UNIT_NAME=identities
 
 JAVA_CLASSES = \
  	TestMain.class \

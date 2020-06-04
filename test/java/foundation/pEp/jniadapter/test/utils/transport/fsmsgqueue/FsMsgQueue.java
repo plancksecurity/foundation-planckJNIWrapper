@@ -239,7 +239,7 @@ public class FsMsgQueue implements Queue<String> {
         File oldestFile = getOldestMsgFilename();
         log("reading file:" + oldestFile.getName());
         if (oldestFile == null) {
-            throw new NoSuchElementException("MNo .msg file in dir: " + qDir);
+            throw new NoSuchElementException("No .msg file in dir: " + qDir);
         } else {
             String fContent = null;
             fContent = readFile(oldestFile.toPath(), fileEncoding);

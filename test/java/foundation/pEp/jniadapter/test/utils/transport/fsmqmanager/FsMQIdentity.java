@@ -9,6 +9,12 @@ public class FsMQIdentity implements java.io.Serializable {
         this.qDir = qDir;
     }
 
+    public FsMQIdentity(FsMQIdentity ident) {
+        this.address = ident.address;
+        this.qDir = ident.qDir;
+    }
+
+
     public String getAddress() {
         return address;
     }

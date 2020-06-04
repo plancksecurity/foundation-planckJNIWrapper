@@ -1,4 +1,4 @@
-package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.regression;
+package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.identities;
 
 import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
 
@@ -222,48 +222,6 @@ class TestMain {
             assert ctx.qm.getIdentityForAddress("UNKNOWN") == null : "Found an unknown address";
         }).add();
 
-        new TestUnit<FsMQManagerTestContext>("ClearOwnQueue: " + testCtx.bobAddress, testCtx, ctx -> {
-            ctx.qm.clearOwnQueue();
-        }).add();
-
-        new TestUnit<FsMQManagerTestContext>("waitForMsg timeout", testCtx, ctx -> {
-            log("waitForMessage with timeout...");
-            try {
-                ctx.qm.receiveMessage(1);
-            } catch (IOException e) {
-                throw new RuntimeException(e.toString());
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e.toString());
-            } catch (TimeoutException e) {
-                return;
-            }
-        }).add();
-
-        new TestUnit<FsMQManagerTestContext>("sendMsgTo self " + testCtx.ownAddress, testCtx, ctx -> {
-            String msg = ctx.messages.get(0);
-            log("TX MSG: " + msg);
-            try {
-                ctx.qm.sendMessage(ctx.self.getAddress(), msg);
-            } catch (IOException e) {
-                throw new RuntimeException(e.toString());
-            }
-        }).add();
-
-        new TestUnit<FsMQManagerTestContext>("waitForMsg", testCtx, ctx -> {
-             FsMQMessage msg = null;
-            try {
-                msg = ctx.qm.receiveMessage(10);
-            } catch (Exception e) {
-                throw new RuntimeException(e.toString());
-            }
-            log("RX MSG: \n" + msg.toString());
-            assert msg.getMsg().equals(ctx.messages.get(0)) : "message content mismatch";
-        }).add();
-
-
         TestSuite.run();
     }
 }
-
-
-
