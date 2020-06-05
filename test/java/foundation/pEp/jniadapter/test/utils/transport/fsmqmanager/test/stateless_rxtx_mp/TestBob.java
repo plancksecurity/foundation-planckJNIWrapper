@@ -8,11 +8,11 @@ import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.ctx.*;
 
 import java.io.IOException;
 
-class TestAlice {
+class TestBob {
     public static void main(String[] args) throws Exception {
         TestSuite.getDefault().setVerbose(true);
-        TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
-        String myself = "Alice";
+        TestSuite.getDefault().setTestColor(TestUtils.TermColor.YELLOW);
+        String myself = "Bob";
         FsMQManagerTestContext testCtx = new FsMQManagerTestContext(myself);
 
         new TestUnit<FsMQManagerTestContext>("I am: " + myself, testCtx, ctx -> {
@@ -20,7 +20,7 @@ class TestAlice {
             assert ctx.self.getAddress().equals(myself);
         });
 
-        new TestUnit<FsMQManagerTestContext>("I know Bob and Carol", testCtx, ctx -> {
+        new TestUnit<FsMQManagerTestContext>("I know Alice and Carol", testCtx, ctx -> {
             log("I know:");
             log("QM");
             for (FsMQIdentity ident : ctx.qm.identities.getAll()) {
@@ -30,18 +30,6 @@ class TestAlice {
 
         new TestUnit<FsMQManagerTestContext>("Clear own queue", testCtx, ctx -> {
             ctx.qm.clearOwnQueue();
-        });
-
-        new TestUnit<FsMQManagerTestContext>("Initiate PingPong", testCtx, ctx -> {
-            try {
-                String toStr = ctx.qm.identities.getByAddress("Bob").getAddress();
-                String msgStr = "Ping";
-                log("TX to: " + toStr);
-                log(msgStr);
-                ctx.qm.sendMessage(toStr, msgStr);
-            } catch (IOException e) {
-                assert false :e.toString();
-            }
         });
 
         new TestUnit<FsMQManagerTestContext>("PingPong", testCtx, ctx -> {

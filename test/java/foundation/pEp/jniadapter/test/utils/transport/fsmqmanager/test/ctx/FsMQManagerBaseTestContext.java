@@ -4,22 +4,19 @@ import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.*;
 import foundation.pEp.jniadapter.test.framework.*;
 import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.utils.FsMQManagerTestUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 
 public class FsMQManagerBaseTestContext extends AbstractTestContext {
     private String qDirBase = "../resources/fsmsgqueue-test/";
     public String address = null;
     public FsMQIdentity self = null;
     private List<String> peerNames = null;
-    public Map<String, FsMQIdentity> peerMap = null;
-    public List<FsMQIdentity> peerList = null;
+    protected Map<String, FsMQIdentity> peerMap = null;
+    protected List<FsMQIdentity> peerList = null;
 
     private int MSG_COUNT = 10;
     private List<String> messages;
+
 
     public FsMQManagerBaseTestContext(String selfAddress) {
         address = selfAddress;
@@ -32,6 +29,7 @@ public class FsMQManagerBaseTestContext extends AbstractTestContext {
         peerNames.add("Bob");
         peerNames.add("Carol");
         createPeerMapAndPeerList();
+        defineSelfAndUpdatePeers();
         messages = FsMQManagerTestUtils.createTestMessages(self.getAddress(), MSG_COUNT);
     }
 
@@ -39,7 +37,7 @@ public class FsMQManagerBaseTestContext extends AbstractTestContext {
         peerMap = new HashMap<>();
         peerList = new ArrayList<>();
         for (String addr : peerNames) {
-            FsMQIdentity ident = new FsMQIdentity(addr, getOwnQDir());
+            FsMQIdentity ident = new FsMQIdentity(addr, getQDirForAddress(addr));
             peerMap.put(addr, ident);
             peerList.add(ident);
         }
@@ -54,10 +52,9 @@ public class FsMQManagerBaseTestContext extends AbstractTestContext {
         peerList.removeIf(p -> p.getAddress().equals(self.getAddress()));
     }
 
-    private String getOwnQDir() {
-        return qDirBase + "/" + address;
+    private String getQDirForAddress(String addr) {
+        return qDirBase + "/" + addr;
     }
-
 
     public List<String> getMessages() {
         return messages;

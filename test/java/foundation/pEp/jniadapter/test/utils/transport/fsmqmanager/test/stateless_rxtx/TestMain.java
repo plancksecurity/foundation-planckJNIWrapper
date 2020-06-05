@@ -5,11 +5,10 @@ import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
 import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.*;
 import foundation.pEp.jniadapter.test.framework.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 
-class FsMQManagerTestContext extends AbstractTestContext {
+class FsMQManagerBaseTestContext extends AbstractTestContext {
     Entity alice;
     Entity bob;
     Entity carol;
@@ -43,7 +42,7 @@ class FsMQManagerTestContext extends AbstractTestContext {
         }
 
         public void add(Entity ent) {
-            qm.addOrUpdateIdentity(ent.ident);
+            qm.identities.addOrUpdate(ent.ident);
         }
 
         public java.util.ArrayList<String> createTestMessages(int count) {
@@ -63,15 +62,15 @@ class FsMQManagerTestContext extends AbstractTestContext {
 class TestMain {
     public static void main(String[] args) throws Exception {
         TestSuite.getDefault().setVerbose(true);
-        FsMQManagerTestContext testCtx = new FsMQManagerTestContext();
+        FsMQManagerBaseTestContext testCtx = new FsMQManagerBaseTestContext();
 
-        new TestUnit<FsMQManagerTestContext>("a/b/c ClearOwnQueue: ", testCtx, ctx -> {
+        new TestUnit<FsMQManagerBaseTestContext>("a/b/c ClearOwnQueue: ", testCtx, ctx -> {
             ctx.alice.qm.clearOwnQueue();
             ctx.bob.qm.clearOwnQueue();
             ctx.carol.qm.clearOwnQueue();
         });
 
-        new TestUnit<FsMQManagerTestContext>("alice rx with timeout", testCtx, ctx -> {
+        new TestUnit<FsMQManagerBaseTestContext>("alice rx with timeout", testCtx, ctx -> {
             log("waitForMessage with timeout...");
             FsMQMessage msg = null;
             try {
@@ -83,7 +82,7 @@ class TestMain {
             }
         });
 
-        new TestUnit<FsMQManagerTestContext>("tx to null fails", testCtx, ctx -> {
+        new TestUnit<FsMQManagerBaseTestContext>("tx to null fails", testCtx, ctx -> {
             try {
                 ctx.alice.qm.sendMessage(null, "");
             } catch (Exception e) {
@@ -92,7 +91,7 @@ class TestMain {
             assert false : "receiver cant be null";
         });
 
-        new TestUnit<FsMQManagerTestContext>("tx null msg fails", testCtx, ctx -> {
+        new TestUnit<FsMQManagerBaseTestContext>("tx null msg fails", testCtx, ctx -> {
             try {
                 ctx.alice.qm.sendMessage(ctx.bob.name, null);
             } catch (Exception e) {
@@ -101,7 +100,7 @@ class TestMain {
             assert false : "msg cant be null";
         });
 
-        new TestUnit<FsMQManagerTestContext>("a2a rx==tx seq", testCtx, ctx -> {
+        new TestUnit<FsMQManagerBaseTestContext>("a2a rx==tx seq", testCtx, ctx -> {
             for (int i = 0; i < ctx.alice.msgCount; i++) {
                 String msg = ctx.alice.messages.get(i);
                 log("TX MSG: " + msg);
@@ -130,7 +129,7 @@ class TestMain {
 
         });
 
-        new TestUnit<FsMQManagerTestContext>("a2b rx==tx seq", testCtx, ctx -> {
+        new TestUnit<FsMQManagerBaseTestContext>("a2b rx==tx seq", testCtx, ctx -> {
             for (int i = 0; i < ctx.alice.msgCount; i++) {
                 String msg = ctx.alice.messages.get(i);
                 log("TX MSG: " + msg);
@@ -160,7 +159,7 @@ class TestMain {
 
         });
 
-        new TestUnit<FsMQManagerTestContext>("b2a not known", testCtx, ctx -> {
+        new TestUnit<FsMQManagerBaseTestContext>("b2a not known", testCtx, ctx -> {
             try {
                 ctx.bob.qm.sendMessage(ctx.alice.name, "WONT ARRIVE");
             } catch (UnknownIdentityException e) {
@@ -170,7 +169,7 @@ class TestMain {
             assert false : "identity should not be known";
         });
 
-        new TestUnit<FsMQManagerTestContext>("b add a, tx again", testCtx, ctx -> {
+        new TestUnit<FsMQManagerBaseTestContext>("b add a, tx again", testCtx, ctx -> {
             ctx.bob.add(ctx.alice);
             try {
                 ctx.bob.qm.sendMessage(ctx.alice.name, ctx.bob.messages.get(0));

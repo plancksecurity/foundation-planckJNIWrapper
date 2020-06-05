@@ -1,5 +1,7 @@
 package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager;
 
+import java.util.Objects;
+
 public class FsMQIdentity implements java.io.Serializable {
     private String address = null;
     private String qDir = null;
@@ -33,5 +35,18 @@ public class FsMQIdentity implements java.io.Serializable {
         ret += "Address: '" + address + "'\n";
         ret += "qDir   : '" + qDir + "'";
         return  ret;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FsMQIdentity that = (FsMQIdentity) o;
+        return address.equals(that.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(address);
     }
 }

@@ -4,8 +4,7 @@ TEST_UNIT_NAME=stateless_rxtx_mp
 
 JAVA_CLASSES = \
  	TestAlice.class \
- 	../utils/FsMQManagerTestUtils.class
-# 	TestBob.class
+ 	TestBob.class
 
 JAVA_CLASSES += $(JAVA_CLASSES_FSMSGQUEUE)
 JAVA_CLASSES += $(JAVA_CLASSES_TESTSCOMMON)
