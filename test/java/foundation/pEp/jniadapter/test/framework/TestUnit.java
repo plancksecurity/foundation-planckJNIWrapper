@@ -6,6 +6,9 @@ import static foundation.pEp.jniadapter.test.framework.TestUtils.colorString;
 
 import java.util.function.Consumer;
 
+//Automatically get added to the default TestSuite always
+//Can be added to any nr of TestSuites
+
 public class TestUnit<T extends TestContextInterface> implements Runnable {
     private String testUnitName = "default test unit";
     private T ctx;
@@ -28,6 +31,7 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
         this.lambda = lambda;
         this.ctx = context;
         logLayout();
+        add(TestSuite.getDefault());
     }
 
     public boolean isVerboseMode() {
@@ -54,8 +58,13 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
         return lastException;
     }
 
+    public TestUnit<T> add(TestSuite suite) {
+        suite.add(this);
+        return this;
+    }
+
     public TestUnit<T> add() {
-        TestSuite.add(this);
+        TestSuite.getDefault().add(this);
         return this;
     }
 

@@ -5,8 +5,8 @@ import foundation.pEp.jniadapter.test.utils.*;
 
 class TestBob {
     public static void main(String[] args) throws Exception {
-        TestSuite.setVerbose(true);
-        TestSuite.setTestColor(TestUtils.TermColor.YELLOW);
+        TestSuite.getDefault().setVerbose(true);
+        TestSuite.getDefault().setTestColor(TestUtils.TermColor.YELLOW);
 
         new TestUnit<AdapterBaseTestContext>("Test Bob",new AdapterBaseTestContext() , ctx  -> {
             // do stuff using the context
@@ -23,9 +23,9 @@ class TestBob {
                 TestUtils.sleep(1000);
             }
 
-        }).add();
+        });
 
-        TestSuite.run();
+        TestSuite.getDefault().run();
     }
 }
 

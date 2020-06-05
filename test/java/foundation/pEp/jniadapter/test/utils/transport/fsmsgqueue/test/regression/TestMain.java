@@ -50,52 +50,52 @@ class FsMsgQueueTestContext extends AbstractTestContext {
 
 class TestMain {
     public static void main(String[] args) throws Exception {
-        TestSuite.setVerbose(false);
+        TestSuite.getDefault().setVerbose(false);
         FsMsgQueueTestContext testCtx = new FsMsgQueueTestContext();
 
         new TestUnit<FsMsgQueueTestContext>("Constructor", testCtx, ctx -> {
             log("Creating queue obj on dir:" + ctx.qDirPath);
             ctx.queue = new FsMsgQueue(ctx.qDirPath);
-        }).add();
+        });
 
         TestUnit isEmpty = new TestUnit<FsMsgQueueTestContext>("isEmpty", testCtx, ctx -> {
             log("Checking queue is empty");
             assert ctx.queue.isEmpty();
-        }).add();
+        });
 
         TestUnit size0 = new TestUnit<FsMsgQueueTestContext>("Size == 0", testCtx, ctx -> {
             log("Checking queue size == 0");
             assert ctx.queue.size() == 0;
-        }).add();
+        });
 
         new TestUnit<FsMsgQueueTestContext>("write msg[0]", testCtx, ctx -> {
             String msg = ctx.messages.get(0);
             log("adding msg[0]:" + msg);
             ctx.queue.add(msg);
-        }).add();
+        });
 
         TestUnit notEmpty = new TestUnit<FsMsgQueueTestContext>("Not empty", testCtx, ctx -> {
             log("Checking queue not empty");
             assert !ctx.queue.isEmpty();
-        }).add();
+        });
 
         new TestUnit<FsMsgQueueTestContext>("Size == 1", testCtx, ctx -> {
             log("Checking queue size == 1");
             assert ctx.queue.size() == 1;
-        }).add();
+        });
 
 
         new TestUnit<FsMsgQueueTestContext>("read equals write (element)", testCtx, ctx -> {
             String msg = ctx.queue.element();
             log("Read:" + msg);
             assert msg.equals(ctx.messages.get(0));
-        }).add();
+        });
 
         new TestUnit<FsMsgQueueTestContext>("read equals write (remove)", testCtx, ctx -> {
             String msg = ctx.queue.remove();
             log("Read:" + msg);
             assert msg.equals(ctx.messages.get(0));
-        }).add();
+        });
 
         isEmpty.add();
         size0.add();
@@ -105,13 +105,13 @@ class TestMain {
                 log("Adding msg:" + msg);
                 ctx.queue.add(msg);
             }
-        }).add();
+        });
 
         TestUnit sizeFull = new TestUnit<FsMsgQueueTestContext>("Size == " + testCtx.msgCount, testCtx, ctx -> {
             int size = ctx.queue.size();
             log("Size: " + size);
             assert size == ctx.msgCount;
-        }).add();
+        });
 
         notEmpty.add();
 
@@ -125,7 +125,7 @@ class TestMain {
                 assert msg.equals(expected);
                 msgIndex++;
             }
-        }).add();
+        });
 
         addAllMsgs.add();
         notEmpty.add();
@@ -133,7 +133,7 @@ class TestMain {
 
         TestUnit clear = new TestUnit<FsMsgQueueTestContext>("Clear", testCtx, ctx -> {
             ctx.queue.clear();
-        }).add();
+        });
 
         isEmpty.add();
         size0.add();
@@ -143,25 +143,25 @@ class TestMain {
                 ctx.queue.element();
             } catch (NoSuchElementException e) {
             }
-        }).add();
+        });
 
         new TestUnit<FsMsgQueueTestContext>("Empty queue: peek()", testCtx, ctx -> {
             assert ctx.queue.peek() == null;
-        }).add();
+        });
 
         new TestUnit<FsMsgQueueTestContext>("Empty queue: remove()", testCtx, ctx -> {
             try {
                 ctx.queue.remove();
             } catch (NoSuchElementException e) {
             }
-        }).add();
+        });
 
         new TestUnit<FsMsgQueueTestContext>("Empty queue: poll()", testCtx, ctx -> {
             assert ctx.queue.poll() == null;
-        }).add();
+        });
 
 
-        TestSuite.run();
+        TestSuite.getDefault().run();
     }
 }
 

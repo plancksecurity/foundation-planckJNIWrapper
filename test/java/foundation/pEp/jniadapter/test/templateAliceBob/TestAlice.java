@@ -7,8 +7,8 @@ import foundation.pEp.jniadapter.test.utils.*;
 
 class TestAlice {
     public static void main(String[] args) throws Exception {
-        TestSuite.setVerbose(true);
-        TestSuite.setTestColor(TestUtils.TermColor.GREEN);
+        TestSuite.getDefault().setVerbose(true);
+        TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
 
         new TestUnit<AdapterBaseTestContext>("Alice tx msg", new AdapterBaseTestContext(), ctx -> {
             ctx.alice = ctx.engine.myself(ctx.alice);
@@ -18,7 +18,7 @@ class TestAlice {
             }
 
             //send message
-        }).add();
+        });
 
         new TestUnit<AdapterBaseTestContext>("Alice rx msg", new AdapterBaseTestContext(), ctx -> {
             for (int i = 0; i < 1000; i++) {
@@ -26,10 +26,9 @@ class TestAlice {
                 TestUtils.sleep(1000);
             }
 
-        }).add();
+        });
 
-
-        TestSuite.run();
+        TestSuite.getDefault().run();
     }
 }
 

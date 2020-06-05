@@ -24,24 +24,24 @@ class BasicTestContext extends AdapterBaseTestContext {
 
 class TestMain {
     public static void main(String[] args) {
-        TestSuite.setVerbose(true);
+        TestSuite.getDefault().setVerbose(false);
         BasicTestContext btc = new BasicTestContext();
 
         new TestUnit<BasicTestContext>("Gen Keys", btc, ctx -> {
             ctx.alice = ctx.engine.myself(ctx.alice);
             log("Keys generated: " + ctx.alice.fpr);
-        }).add();
+        });
 
         new TestUnit<BasicTestContext>("Import key", btc, ctx -> {
             ctx.engine.importKey(ctx.keyBobPub);
-        }).add();
+        });
 
         new TestUnit<BasicTestContext>("Trustwords", btc, ctx -> {
             ctx.carol = new Identity();
             ctx.carol.fpr = "4ABE3AAF59AC32CFE4F86500A9411D176FF00E97";
             String t = ctx.engine.trustwords(ctx.carol);
             log("Trustwords: " + t);
-        }).add();
+        });
 
         new TestUnit<BasicTestContext>("setAttachments", btc, ctx -> {
             int nrAttachemnts = 3;
@@ -56,33 +56,33 @@ class TestMain {
                 attachments.add(blb);
             }
             ctx.msgToBob.setAttachments(attachments);
-        }).add();
+        });
 
         new TestUnit<BasicTestContext>("Encrypt", btc, ctx -> {
             ctx.enc = ctx.engine.encrypt_message(ctx.msgToBob, null, Message.EncFormat.PEP);
             log(AdapterTestUtils.msgToString(ctx.enc, false));
-        }).add();
+        });
 
         new TestUnit<BasicTestContext>("Rating Preview", btc, ctx -> {
             log("Rating preview: " + ctx.engine.outgoing_message_rating_preview(ctx.msgToBob));
-        }).add();
+        });
 
         new TestUnit<BasicTestContext>("Rating", btc, ctx -> {
             log("Rating" + ctx.engine.outgoing_message_rating(ctx.msgToBob));
-        }).add();
+        });
 
         new TestUnit<BasicTestContext>("Decrypt", btc, ctx -> {
             ctx.result = ctx.engine.decrypt_message(ctx.enc, new Vector<>(), 0);
             log(AdapterTestUtils.msgToString(ctx.result.dst, false));
-        }).add();
+        });
 
         new TestUnit<BasicTestContext>("key_reset_all_own_keys()", btc, ctx -> {
             ctx.engine.key_reset_all_own_keys();
-        }).add();
+        });
 
         new TestUnit<BasicTestContext>("startSync()", btc, ctx -> {
             ctx.engine.startSync();
-        }).add();
+        });
 
         new TestUnit<BasicTestContext>("Keygen2", btc, ctx -> {
             Identity user2 = new Identity();
@@ -92,13 +92,13 @@ class TestMain {
             user2.address = "jniTestUser2@peptest.ch";
             user2 = ctx.engine.myself(user2);
             log("Keys generated: " + user2.fpr);
-        }).add();
+        });
 
         new TestUnit<BasicTestContext>("stopSync()", btc, ctx -> {
             ctx.engine.stopSync();
-        }).add();
+        });
 
-        TestSuite.run();
+        TestSuite.getDefault().run();
     }
 }
 

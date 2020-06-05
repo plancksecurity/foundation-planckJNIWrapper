@@ -62,14 +62,14 @@ class FsMQManagerTestContext extends AbstractTestContext {
 
 class TestMain {
     public static void main(String[] args) throws Exception {
-        TestSuite.setVerbose(true);
+        TestSuite.getDefault().setVerbose(true);
         FsMQManagerTestContext testCtx = new FsMQManagerTestContext();
 
         new TestUnit<FsMQManagerTestContext>("a/b/c ClearOwnQueue: ", testCtx, ctx -> {
             ctx.alice.qm.clearOwnQueue();
             ctx.bob.qm.clearOwnQueue();
             ctx.carol.qm.clearOwnQueue();
-        }).add();
+        });
 
         new TestUnit<FsMQManagerTestContext>("alice rx with timeout", testCtx, ctx -> {
             log("waitForMessage with timeout...");
@@ -81,7 +81,7 @@ class TestMain {
             } catch (Exception e) {
                 assert false : "Error receiving message";
             }
-        }).add();
+        });
 
         new TestUnit<FsMQManagerTestContext>("tx to null fails", testCtx, ctx -> {
             try {
@@ -90,7 +90,7 @@ class TestMain {
                 return;
             }
             assert false : "receiver cant be null";
-        }).add();
+        });
 
         new TestUnit<FsMQManagerTestContext>("tx null msg fails", testCtx, ctx -> {
             try {
@@ -99,7 +99,7 @@ class TestMain {
                 return;
             }
             assert false : "msg cant be null";
-        }).add();
+        });
 
         new TestUnit<FsMQManagerTestContext>("a2a rx==tx seq", testCtx, ctx -> {
             for (int i = 0; i < ctx.alice.msgCount; i++) {
@@ -128,7 +128,7 @@ class TestMain {
                 throw new RuntimeException(e.toString());
             }
 
-        }).add();
+        });
 
         new TestUnit<FsMQManagerTestContext>("a2b rx==tx seq", testCtx, ctx -> {
             for (int i = 0; i < ctx.alice.msgCount; i++) {
@@ -158,7 +158,7 @@ class TestMain {
                 throw new RuntimeException(e.toString());
             }
 
-        }).add();
+        });
 
         new TestUnit<FsMQManagerTestContext>("b2a not known", testCtx, ctx -> {
             try {
@@ -168,7 +168,7 @@ class TestMain {
             } catch (Exception e) {
             }
             assert false : "identity should not be known";
-        }).add();
+        });
 
         new TestUnit<FsMQManagerTestContext>("b add a, tx again", testCtx, ctx -> {
             ctx.bob.add(ctx.alice);
@@ -179,9 +179,9 @@ class TestMain {
             } catch (Exception e) {
                 assert false : e.toString();
             }
-        }).add();
+        });
 
 
-        TestSuite.run();
+        TestSuite.getDefault().run();
     }
 }
