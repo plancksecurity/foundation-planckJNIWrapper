@@ -38,10 +38,10 @@ class FsMQManagerIdentitiesTestContext extends AbstractTestContext {
 
 class TestMain {
     public static void main(String[] args) throws Exception {
-//        TestSuite.getDefault().setVerbose(true);
+        TestSuite.getDefault().setVerbose(false);
         FsMQManagerIdentitiesTestContext testCtx = new FsMQManagerIdentitiesTestContext();
 
-        new TestUnit<FsMQManagerIdentitiesTestContext>("Create own ident: " + testCtx.ownAddress, testCtx, ctx -> {
+        new TestUnit<FsMQManagerIdentitiesTestContext>("Constructor, own ident: " + testCtx.ownAddress, testCtx, ctx -> {
             ctx.self = new FsMQIdentity(ctx.ownAddress, ctx.ownQDir);
             assert ctx.self != null : "null";
             assert ctx.self.getAddress().equals(ctx.ownAddress) : "Address mismatch";
@@ -53,7 +53,7 @@ class TestMain {
             assert ctx.qm != null : "null";
         });
 
-        new TestUnit<FsMQManagerIdentitiesTestContext>("getIdentities", testCtx, ctx -> {
+        new TestUnit<FsMQManagerIdentitiesTestContext>("getAll", testCtx, ctx -> {
             List<FsMQIdentity> idents = ctx.qm.identities.getAll();
             for (FsMQIdentity i : idents) {
                 log(i.toString());
@@ -93,7 +93,7 @@ class TestMain {
         });
 
 
-        new TestUnit<FsMQManagerIdentitiesTestContext>("getIdentities", testCtx, ctx -> {
+        new TestUnit<FsMQManagerIdentitiesTestContext>("getAll", testCtx, ctx -> {
             List<FsMQIdentity> idents = ctx.qm.identities.getAll();
             for (FsMQIdentity i : idents) {
                 log(i.toString());
@@ -101,7 +101,7 @@ class TestMain {
             assert idents.size() == 3 : "identity count wrong";
         });
 
-        new TestUnit<FsMQManagerIdentitiesTestContext>("getIdents is copy", testCtx, ctx -> {
+        new TestUnit<FsMQManagerIdentitiesTestContext>("getAll is copy", testCtx, ctx -> {
             List<FsMQIdentity> idents = ctx.qm.identities.getAll();
             int identSize = idents.size();
             idents.add(new FsMQIdentity("Eve", "EvilEveDir"));
@@ -124,7 +124,7 @@ class TestMain {
             assert !ctx.qm.identities.update(ctx.self) : "upadted own ident";
         });
 
-        new TestUnit<FsMQManagerIdentitiesTestContext>("getIdentities", testCtx, ctx -> {
+        new TestUnit<FsMQManagerIdentitiesTestContext>("getAll", testCtx, ctx -> {
             List<FsMQIdentity> idents = ctx.qm.identities.getAll();
             for (FsMQIdentity i : idents) {
                 log(i.toString());
@@ -132,11 +132,11 @@ class TestMain {
             assert idents.size() == 3 : "identity count wrong";
         });
 
-        new TestUnit<FsMQManagerIdentitiesTestContext>("removeAllIdents", testCtx, ctx -> {
+        new TestUnit<FsMQManagerIdentitiesTestContext>("removeAll", testCtx, ctx -> {
             ctx.qm.identities.removeAll();
         });
 
-        new TestUnit<FsMQManagerIdentitiesTestContext>("getIdentities", testCtx, ctx -> {
+        new TestUnit<FsMQManagerIdentitiesTestContext>("getAll", testCtx, ctx -> {
             List<FsMQIdentity> idents = ctx.qm.identities.getAll();
             for (FsMQIdentity i : idents) {
                 log(i.toString());
@@ -144,7 +144,7 @@ class TestMain {
             assert idents.size() == 1 : "identity count wrong";
         });
 
-        new TestUnit<FsMQManagerIdentitiesTestContext>("addIdentities", testCtx, ctx -> {
+        new TestUnit<FsMQManagerIdentitiesTestContext>("addAll", testCtx, ctx -> {
             ctx.identList = new ArrayList<>();
             ctx.identList.add(ctx.self);
             ctx.identList.add(ctx.bob);
@@ -152,7 +152,7 @@ class TestMain {
             assert ctx.qm.identities.addAll(ctx.identList) == 2 : "indents added count wrong";
         });
 
-        new TestUnit<FsMQManagerIdentitiesTestContext>("getIdentities", testCtx, ctx -> {
+        new TestUnit<FsMQManagerIdentitiesTestContext>("getAll", testCtx, ctx -> {
             List<FsMQIdentity> idents = ctx.qm.identities.getAll();
             for (FsMQIdentity i : idents) {
                 log(i.toString());
@@ -173,7 +173,7 @@ class TestMain {
             }
         });
 
-        new TestUnit<FsMQManagerIdentitiesTestContext>("removeIdent" + testCtx.carolAddress, testCtx, ctx -> {
+        new TestUnit<FsMQManagerIdentitiesTestContext>("remove: " + testCtx.carolAddress, testCtx, ctx -> {
             ctx.qm.identities.remove(ctx.carol.getAddress());
             assert ctx.qm.identities.getAll().size() == 2 : "identity count wrong";
             assert !ctx.qm.identities.exists(ctx.carol.getAddress()) : "Remove failed";
@@ -188,24 +188,24 @@ class TestMain {
         });
 
         new TestUnit<FsMQManagerIdentitiesTestContext>("cant remove own ident", testCtx, ctx -> {
-            ctx.qm.identities.remove(ctx.self.getAddress());
+            assert !ctx.qm.identities.remove(ctx.self.getAddress()):"nothing should have been removed";
             assert ctx.qm.identities.getAll().size() == 2 : "identity count wrong";
             assert ctx.qm.identities.exists(ctx.self.getAddress()) : "removed own identity";
         });
 
-        new TestUnit<FsMQManagerIdentitiesTestContext>("getIdentForAddr" + testCtx.bobAddress, testCtx, ctx -> {
+        new TestUnit<FsMQManagerIdentitiesTestContext>("getByAddress: " + testCtx.bobAddress, testCtx, ctx -> {
             FsMQIdentity found = ctx.qm.identities.getByAddress(ctx.bob.getAddress());
             assert found != null :"failed to find known address";
             assert found.getAddress().equals(ctx.bob.getAddress()) :"found wrong ident";
         });
 
-        new TestUnit<FsMQManagerIdentitiesTestContext>("getIdentForAdd" + testCtx.ownAddress, testCtx, ctx -> {
+        new TestUnit<FsMQManagerIdentitiesTestContext>("getByAddress: " + testCtx.ownAddress, testCtx, ctx -> {
             FsMQIdentity found = ctx.qm.identities.getByAddress(ctx.self.getAddress());
             assert found != null :"failed to find known address";
             assert found.getAddress().equals(ctx.self.getAddress()) :"found wrong ident";
         });
 
-        new TestUnit<FsMQManagerIdentitiesTestContext>("getIdentityForAddress not existing", testCtx, ctx -> {
+        new TestUnit<FsMQManagerIdentitiesTestContext>("getByAddress not existing", testCtx, ctx -> {
             assert ctx.qm.identities.getByAddress("UNKNOWN") == null : "Found an unknown address";
         });
 
