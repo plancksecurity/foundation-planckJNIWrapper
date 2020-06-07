@@ -49,42 +49,27 @@ public class FsMQManager {
         int pollInterval = 100;
         int pollRepeats = timeoutSec * 1000 / pollInterval;
         int pollCounter = 0;
-        do {
-            while (onwQueue.isEmpty()) {
-                TestUtils.sleep(pollInterval);
-                pollCounter++;
-                if (pollCounter >= pollRepeats) {
-                    return ret;
-                }
+
+        while (onwQueue.isEmpty()) {
+            TestUtils.sleep(pollInterval);
+            pollCounter++;
+            if (pollCounter >= pollRepeats) {
+                return ret;
             }
-            String serializedMsg = onwQueue.remove();
-            mqMsg = FsMQMessageInternal.deserialize(serializedMsg);
-        } while (doHandshakeProtocol(mqMsg));
+        }
+        String serializedMsg = onwQueue.remove();
+        mqMsg = FsMQMessageInternal.deserialize(serializedMsg);
+
         ret = mqMsg.toFsMQMessage();
         return ret;
     }
-
-
-    private boolean doHandshakeProtocol(FsMQMessageInternal msg) {
-        boolean ret = false;
-//
-//        if(msg.matches(SYNMSG)) {
-//
-//        }
-//        if(msg.matches(SYNACK)) {
-//
-//        }
-
-        return ret;
-    }
-
 }
 
 class FsMQMessageInternal extends FsMQMessage implements java.io.Serializable {
     FsMQHandshakeHeader header = null;
 
     FsMQMessageInternal(FsMQIdentity from, String msg) throws IllegalStateException {
-        super(from,msg);
+        super(from, msg);
     }
 
     public FsMQHandshakeHeader getHeader() {
@@ -96,7 +81,7 @@ class FsMQMessageInternal extends FsMQMessage implements java.io.Serializable {
     }
 
     public FsMQMessage toFsMQMessage() throws NullPointerException {
-        FsMQMessage ret = new FsMQMessage(this.getFrom(),this.getMsg());
+        FsMQMessage ret = new FsMQMessage(this.getFrom(), this.getMsg());
         return ret;
     }
 

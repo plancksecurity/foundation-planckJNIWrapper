@@ -1,4 +1,4 @@
-package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.stateless_rxtx_mp;
+package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.stateless_ping;
 
 import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
 
@@ -32,39 +32,43 @@ class TestAlice {
             ctx.qm.clearOwnQueue();
         });
 
-        new TestUnit<FsMQManagerTestContext>("Initiate PingPong", testCtx, ctx -> {
-            try {
-                String toStr = ctx.qm.identities.getByAddress("Bob").getAddress();
-                String msgStr = "Ping";
-                log("TX to: " + toStr);
-                log(msgStr);
-                ctx.qm.sendMessage(toStr, msgStr);
-            } catch (IOException e) {
-                assert false :e.toString();
-            }
-        });
-
-        new TestUnit<FsMQManagerTestContext>("PingPong", testCtx, ctx -> {
-            try {
-                FsMQMessage msg;
-                while((msg = ctx.qm.receiveMessage(5)) != null) {
-                    // RX
-                    String fromStr =  msg.getFrom().getAddress();
-                    String msgRx =  msg.getMsg();
-                    log("RX From: " + fromStr);
-                    log(msgRx);
-
-                    // TX
-                    String toStr = fromStr;
-                    String msgTx = ctx.getMessages().get(0) + msgRx;
+        new TestUnit<FsMQManagerTestContext>("Ping initiator", testCtx, ctx -> {
+            int pingMax = 10;
+            int pingCount = 0;
+            while (pingCount < pingMax) {
+                // TX
+                String toStr = "Bob";
+                String msgTx = "ping";
+                try {
                     log("TX to:" + toStr);
                     log(msgTx);
-                    ctx.qm.sendMessage(fromStr,msgTx);
+                    ctx.qm.sendMessage(toStr, msgTx);
+                } catch (IOException e) {
+                    assert false : e.toString();
                 }
-            } catch (IOException e) {
-                assert false :e.toString();
-            } catch (ClassNotFoundException e) {
-                assert false : e.toString();
+
+                // RX
+                String fromStr = null;
+                String msgRx = null;
+                try {
+                    FsMQMessage msg;
+                    while ((msg = ctx.qm.receiveMessage()) == null) {
+                        log("Waiting for ping-reply...");
+                        TestUtils.sleep(250);
+                    }
+                    fromStr = msg.getFrom().getAddress();
+                    msgRx = msg.getMsg();
+                    log("RX From: " + fromStr);
+                    log(msgRx);
+                } catch (Exception e) {
+                    assert false : e.toString();
+                }
+
+                if (fromStr.equals(toStr)) {
+                    if (msgRx.equals(msgTx)) {
+                        pingCount++;
+                    }
+                }
             }
         });
 

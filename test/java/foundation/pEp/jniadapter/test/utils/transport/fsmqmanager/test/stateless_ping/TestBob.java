@@ -1,4 +1,4 @@
-package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.stateless_rxtx_mp;
+package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.stateless_ping;
 
 import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
 
@@ -32,27 +32,41 @@ class TestBob {
             ctx.qm.clearOwnQueue();
         });
 
-        new TestUnit<FsMQManagerTestContext>("PingPong", testCtx, ctx -> {
-            try {
+        new TestUnit<FsMQManagerTestContext>("Ping responder", testCtx, ctx -> {
+            int pingMax = 10;
+            int pingCount = 0;
+
+            while(pingCount < pingMax) {
                 FsMQMessage msg;
-                while((msg = ctx.qm.receiveMessage(5)) != null) {
-                    // RX
-                    String fromStr =  msg.getFrom().getAddress();
-                    String msgRx =  msg.getMsg();
+                // RX
+                String fromStr = null;
+                String msgRx = null;
+                try {
+                    while ((msg = ctx.qm.receiveMessage()) == null) {
+                        log("Waiting for ping...");
+                        TestUtils.sleep(250);
+                    }
+                    fromStr = msg.getFrom().getAddress();
+                    msgRx = msg.getMsg();
                     log("RX From: " + fromStr);
                     log(msgRx);
+                } catch (Exception e) {
+                    assert false : e.toString();
+                }
 
+                if(msgRx.equals("ping")) {
                     // TX
                     String toStr = fromStr;
-                    String msgTx = ctx.getMessages().get(0) + msgRx;
-                    log("TX to:" + toStr);
-                    log(msgTx);
-                    ctx.qm.sendMessage(fromStr,msgTx);
+                    String msgTx = msgRx;
+                    try {
+                        log("TX to:" + toStr);
+                        log(msgTx);
+                        ctx.qm.sendMessage(toStr, msgTx);
+                    } catch (IOException e) {
+                        assert false : e.toString();
+                    }
+                    pingCount++;
                 }
-            } catch (IOException e) {
-                assert false :e.toString();
-            } catch (ClassNotFoundException e) {
-                assert false : e.toString();
             }
         });
 

@@ -1,6 +1,6 @@
 include ../Makefile.conf
 
-TEST_UNIT_NAME=stateless_rxtx_mp
+TEST_UNIT_NAME=stateless_ping
 
 JAVA_CLASSES = \
  	TestAlice.class \

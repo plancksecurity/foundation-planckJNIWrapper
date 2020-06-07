@@ -51,7 +51,7 @@ public class FsMsgQueue implements Queue<String> {
             String filename = getNewFilename();
             String path = qDir + "/" + filename;
             // check file not existing yet.
-            log("Adding msg file:" + filename);
+//            log("Adding msg file:" + filename);
             File file = new File(path);
 
             if(!file.exists()) {
@@ -237,7 +237,7 @@ public class FsMsgQueue implements Queue<String> {
     private Pair<File, String> get() throws Exception {
         Pair<File, String> ret = null;
         File oldestFile = getOldestMsgFilename();
-        log("reading file:" + oldestFile.getName());
+//        log("reading file:" + oldestFile.getName());
         if (oldestFile == null) {
             throw new NoSuchElementException("No .msg file in dir: " + qDir);
         } else {
