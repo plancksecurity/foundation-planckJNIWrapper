@@ -165,9 +165,9 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
     }
 
     private void logLayout() {
-        logFmtTestNameLen = (int) Math.floor(TestLogger.getLineWidth() * 0.39);
-        logFmtCtxNameLen = (int) Math.floor(TestLogger.getLineWidth() * 0.28);
-        logFmtMsgLen = (int) Math.floor(TestLogger.getLineWidth() * 0.25);
+        logFmtTestNameLen = (int) Math.floor(TestLogger.getMsgWidth() * 0.39);
+        logFmtCtxNameLen = (int) Math.floor(TestLogger.getMsgWidth() * 0.28);
+        logFmtMsgLen = (int) Math.floor(TestLogger.getMsgWidth() * 0.25);
     }
 
     private String makeLogString(String str) {

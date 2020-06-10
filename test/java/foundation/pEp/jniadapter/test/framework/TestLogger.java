@@ -1,14 +1,52 @@
 package foundation.pEp.jniadapter.test.framework;
 
-import static foundation.pEp.jniadapter.test.framework.TestUtils.TermColor;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+import static foundation.pEp.jniadapter.test.framework.TestUtils.*;
 
 public class TestLogger {
+    static {
+        init();
+    }
+
     // options
     private static boolean logEnabled = true;
-    private static int lineWidth = 80;
+    private static int lineWidth;
 
     // constants
     private static int threadStrLen = 10;
+    private static String threadSeparator = ": ";
+    private static boolean initialized = false;
+
+    private static void init() {
+        if (!initialized) {
+            tryDetermineTermSize();
+            initialized = true;
+        }
+    }
+
+    private static void tryDetermineTermSize() {
+        int nrCols = lineWidth;
+        try {
+            Process p = Runtime.getRuntime().exec("tput cols");
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            String cmdOutput = "";
+            String buf = null;
+            while ((buf = stdInput.readLine()) != null) {
+                cmdOutput += buf;
+            }
+
+            log("TERMSIZE: " + cmdOutput);
+
+            nrCols = Integer.valueOf(cmdOutput);
+            setLineWidth(clip(nrCols, 40, 2000));
+        } catch (Exception e) {
+            // something went wrong
+        }
+    }
+
 
     public static void setLoggingEnabled(boolean enabled) {
         logEnabled = enabled;
@@ -22,20 +60,22 @@ public class TestLogger {
         return lineWidth;
     }
 
-    public static void setLineWidth(int lineWidth) {
-        TestLogger.lineWidth = lineWidth;
+    public static int getMsgWidth() {
+        return lineWidth - threadStrLen - threadSeparator.length();
+    }
+
+    public static void setLineWidth(int width) {
+        lineWidth = width;
     }
 
     // Log
     public static void log(String msg) {
         if (logEnabled) {
-            String indent = "";
-            String separator = ": ";
-            int indentStrLen = threadStrLen + separator.length();
-            String threadStr = String.format("%-" + threadStrLen + "s", Thread.currentThread().getName());
-            indent = String.format("%" + indentStrLen + "s", " ");
+            String threadStr = padOrClipString(Thread.currentThread().getName(), " ", threadStrLen, Alignment.Left, "");
+            int indentStrLen = threadStrLen + threadSeparator.length();
+            String indent = repeatString(" ", indentStrLen);
             msg = msg.replace("\n", "\n" + indent);
-            String logStr = threadStr + separator + msg;
+            String logStr = threadStr + threadSeparator + msg;
             System.out.println(logStr);
         }
     }
@@ -48,7 +88,7 @@ public class TestLogger {
 
     // LogH1
     public static void logH1(String msg) {
-        log(TestUtils.padOrClipString(msg, "=", lineWidth, TestUtils.Alignment.Center, null));
+        log(TestUtils.padOrClipString(msg, "=", lineWidth - threadSeparator.length() - threadStrLen, TestUtils.Alignment.Center, null));
     }
 
     public static void logH1(String msg, TermColor color) {
@@ -59,7 +99,7 @@ public class TestLogger {
 
     // LogH2
     public static void logH2(String msg) {
-        log(TestUtils.padOrClipString(msg, "-", lineWidth, TestUtils.Alignment.Center, null));
+        log(TestUtils.padOrClipString(msg, "-", lineWidth - threadSeparator.length() - threadStrLen, TestUtils.Alignment.Center, null));
     }
 
     public static void logH2(String msg, TermColor color) {
