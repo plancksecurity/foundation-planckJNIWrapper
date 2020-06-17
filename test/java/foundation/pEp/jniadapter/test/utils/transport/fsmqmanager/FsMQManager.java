@@ -1,11 +1,10 @@
 package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager;
 
-import foundation.pEp.jniadapter.test.framework.TestUtils;
+import foundation.pEp.jniadapter.test.framework.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.transport.fsmsgqueue.FsMsgQueue;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeoutException;
 
 import static foundation.pEp.jniadapter.test.framework.TestLogger.log;
 
@@ -41,7 +40,7 @@ public class FsMQManager {
     }
 
     // Blocking read
-    // Returns null if no messages available
+    // Returns null if no messages available within timeout
     public FsMQMessage receiveMessage(int timeoutSec) throws IOException, ClassNotFoundException {
         FsMQMessage ret = null;
         FsMsgQueue onwQueue = identities.getQueueForIdentity(identities.self.getAddress());

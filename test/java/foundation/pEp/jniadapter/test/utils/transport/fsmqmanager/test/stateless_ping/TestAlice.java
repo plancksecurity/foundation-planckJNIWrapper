@@ -2,6 +2,7 @@ package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.stateles
 
 import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
 
+import foundation.pEp.jniadapter.test.framework.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.*;
 import foundation.pEp.jniadapter.test.framework.*;
 import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.ctx.*;

@@ -1,6 +1,7 @@
 package foundation.pEp.jniadapter.test.framework.examples.ctxmembers;
 import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
 import foundation.pEp.jniadapter.test.framework.*;
+import foundation.pEp.jniadapter.test.framework.utils.TestUtils;
 
 
 // Context member object instantiation

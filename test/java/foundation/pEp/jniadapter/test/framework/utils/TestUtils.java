@@ -1,4 +1,4 @@
-package foundation.pEp.jniadapter.test.framework;
+package foundation.pEp.jniadapter.test.framework.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 //import static foundation.pEp.jniadapter.test.framework.TestLogger.log;
 
 public class TestUtils {
+    // Pure static class
+    private TestUtils() { }
 
     /*
     System

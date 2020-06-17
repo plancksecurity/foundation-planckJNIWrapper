@@ -1,8 +1,10 @@
 package foundation.pEp.jniadapter.test.framework;
 
+import foundation.pEp.jniadapter.test.framework.utils.TestUtils;
+
 import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
-import static foundation.pEp.jniadapter.test.framework.TestUtils.TermColor;
-import static foundation.pEp.jniadapter.test.framework.TestUtils.colorString;
+import static foundation.pEp.jniadapter.test.framework.utils.TestUtils.TermColor;
+import static foundation.pEp.jniadapter.test.framework.utils.TestUtils.colorString;
 
 import java.util.function.Consumer;
 

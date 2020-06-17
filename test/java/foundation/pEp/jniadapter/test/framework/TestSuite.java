@@ -1,8 +1,8 @@
 package foundation.pEp.jniadapter.test.framework;
 
 import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
-import static foundation.pEp.jniadapter.test.framework.TestUtils.TermColor;
-import static foundation.pEp.jniadapter.test.framework.TestUtils.*;
+import static foundation.pEp.jniadapter.test.framework.utils.TestUtils.TermColor;
+import static foundation.pEp.jniadapter.test.framework.utils.TestUtils.*;
 
 import java.util.ArrayList;
 

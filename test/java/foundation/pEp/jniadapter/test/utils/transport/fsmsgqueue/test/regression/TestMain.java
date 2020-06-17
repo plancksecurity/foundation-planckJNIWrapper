@@ -1,7 +1,7 @@
 package foundation.pEp.jniadapter.test.utils.transport.fsmsgqueue.test.regression;
 
 import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
-import static foundation.pEp.jniadapter.test.framework.TestUtils.*;
+import static foundation.pEp.jniadapter.test.framework.utils.TestUtils.*;
 
 import foundation.pEp.jniadapter.test.utils.transport.fsmsgqueue.*;
 
