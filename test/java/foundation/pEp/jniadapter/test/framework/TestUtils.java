@@ -14,9 +14,13 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static foundation.pEp.jniadapter.test.framework.TestLogger.log;
+//import static foundation.pEp.jniadapter.test.framework.TestLogger.log;
 
 public class TestUtils {
+
+    /*
+    System
+     */
     private static boolean stdoutHasBeenDisabled = false;
     private static PrintStream origSTDOUT;
 
@@ -58,6 +62,25 @@ public class TestUtils {
                 System.setErr(origSTDOUT);
             }
         }
+    }
+
+    // Throws if var not defined in env
+    public static String getEnvVar(String name) throws RuntimeException {
+        String ret = null;
+        if (envVarExists(name)) {
+            ret = System.getenv(name);
+        } else {
+            throw new RuntimeException("ENV var does not exits");
+        }
+        return ret;
+    }
+
+    public static boolean envVarExists(String var) {
+        boolean ret = false;
+        if(System.getenv(var) != null) {
+            ret = true;
+        }
+        return ret;
     }
 
 
@@ -261,7 +284,7 @@ public class TestUtils {
 
     public static boolean deleteRecursively(File dir) {
         deleteContentsRecursively(dir);
-        log("deleting: " + dir.getAbsolutePath());
+//        log("deleting: " + dir.getAbsolutePath());
         return dir.delete();
     }
 

@@ -2,6 +2,7 @@ package foundation.pEp.jniadapter.test.framework;
 
 import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
 import static foundation.pEp.jniadapter.test.framework.TestUtils.TermColor;
+import static foundation.pEp.jniadapter.test.framework.TestUtils.*;
 
 import java.util.ArrayList;
 
@@ -11,19 +12,31 @@ import java.util.ArrayList;
 
 public class TestSuite {
     private static TestSuite defaultTestSuite = null;
-    private static int instanceCount = 0;
     private ArrayList<TestUnit> tests = new ArrayList<TestUnit>();
     private boolean verboseMode = false;
+    private boolean verboseModeSetByEnv = false;
     private TermColor testColor = TermColor.CYAN;
+    private String EVNVARNAME_VERBOSE = "TFVERBOSE";
 
     public TestSuite() {
         setDefault();
-        instanceCount++;
+        init();
     }
 
     public TestSuite(boolean makeDefault) {
         if (makeDefault) {
             setDefault();
+        }
+        init();
+    }
+
+    private void init() {
+        try {
+            setVerbose(getEnvVerbose());
+            verboseModeSetByEnv = true;
+        } catch(RuntimeException e) {
+            // Env var not set
+            verboseModeSetByEnv = false;
         }
     }
 
@@ -46,8 +59,11 @@ public class TestSuite {
         return verboseMode;
     }
 
+    // Will only set if not already set in env
     public void setVerbose(boolean v) {
-        verboseMode = v;
+        if(!verboseModeSetByEnv) {
+            verboseMode = v;
+        }
     }
 
     public TermColor getTestColor() {
@@ -63,14 +79,17 @@ public class TestSuite {
     }
 
     public void run() {
-        setVerbose(Boolean.valueOf(System.getenv("TFVERBOSE")));
-
         for (TestUnit t : tests) {
             t.setVerboseMode(verboseMode);
             t.setTestColor(testColor);
             t.run();
         }
         printStats();
+    }
+
+    private boolean getEnvVerbose() throws RuntimeException {
+        boolean ret = Boolean.parseBoolean(getEnvVar(EVNVARNAME_VERBOSE));
+        return ret;
     }
 
     private void printStats() {
