@@ -4,14 +4,14 @@ import foundation.pEp.jniadapter.Blob;
 import foundation.pEp.jniadapter.Engine;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
-import foundation.pEp.jniadapter.test.pitytest.TestSuite;
-import foundation.pEp.jniadapter.test.pitytest.TestUnit;
+import foundation.pEp.pitytest.TestSuite;
+import foundation.pEp.pitytest.TestUnit;
 import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
 import foundation.pEp.jniadapter.test.utils.AdapterTestUtils;
 
 import java.util.Vector;
 
-import static foundation.pEp.jniadapter.test.pitytest.TestLogger.log;
+import static foundation.pEp.pitytest.TestLogger.log;
 
 class BasicTestContext extends AdapterBaseTestContext {
     Message enc;

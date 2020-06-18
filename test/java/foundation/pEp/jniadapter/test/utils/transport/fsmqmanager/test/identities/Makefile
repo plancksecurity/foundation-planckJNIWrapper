@@ -8,15 +8,18 @@ JAVA_CLASSES = \
 JAVA_CLASSES += $(JAVA_CLASSES_FSMSGQUEUE)
 JAVA_CLASSES += $(JAVA_CLASSES_TESTSCOMMON)
 
-.PHONY: compile run test clean
+.PHONY: pitytest compile run test clean
 
 all: compile
 	$(MAKE) run
 
+pitytest:
+	$(MAKE) -C $(PITYTEST_DIR)
+
 run: compile
 	cd $(JAVA_CWD);$(JAVA) $(JAVA_PKG_BASENAME).$(TEST_UNIT_NAME).TestMain
 
-compile: $(JAVA_CLASSES)
+compile: $(JAVA_CLASSES) pitytest
 
 %.class: %.java
 	cd $(JAVA_CWD);pwd;javac $(JAVA_PKG_BASEPATH)/$(TEST_UNIT_NAME)/$<

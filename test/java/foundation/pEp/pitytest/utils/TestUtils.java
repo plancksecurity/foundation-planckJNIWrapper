@@ -1,4 +1,4 @@
-package foundation.pEp.jniadapter.test.pitytest.utils;
+package foundation.pEp.pitytest.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-//import static foundation.pEp.jniadapter.test.pitytest.TestLogger.log;
+//import static foundation.pEp.pitytest.TestLogger.log;
 
 public class TestUtils {
     // Pure static class

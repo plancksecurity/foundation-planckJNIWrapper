@@ -3,7 +3,7 @@ package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static foundation.pEp.jniadapter.test.pitytest.TestLogger.log;
+import static foundation.pEp.pitytest.TestLogger.log;
 
 public class FsMQManagerTestUtils {
     public static List<String> createTestMessages(String from, int count) {

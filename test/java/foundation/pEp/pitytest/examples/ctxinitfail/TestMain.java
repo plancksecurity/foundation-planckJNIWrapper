@@ -1,8 +1,8 @@
-package foundation.pEp.jniadapter.test.pitytest.examples.ctxinitfail;
+package foundation.pEp.pitytest.examples.ctxinitfail;
 
-import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
+import static foundation.pEp.pitytest.TestLogger.*;
 
-import foundation.pEp.jniadapter.test.pitytest.*;
+import foundation.pEp.pitytest.*;
 
 
 class CtxInitFailContext extends AbstractTestContext {

@@ -1,9 +1,9 @@
 package foundation.pEp.jniadapter.test.utils.transport.fsmsgqueue;
 
-import foundation.pEp.jniadapter.test.pitytest.utils.Pair;
+import foundation.pEp.pitytest.utils.Pair;
 
-import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
-import static foundation.pEp.jniadapter.test.pitytest.utils.TestUtils.*;
+import static foundation.pEp.pitytest.TestLogger.*;
+import static foundation.pEp.pitytest.utils.TestUtils.*;
 
 import java.io.File;
 import java.io.IOException;

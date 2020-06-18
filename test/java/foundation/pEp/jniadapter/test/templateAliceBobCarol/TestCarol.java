@@ -1,7 +1,7 @@
 package foundation.pEp.jniadapter.test.templateAliceBobCarol;
-import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
-import foundation.pEp.jniadapter.test.pitytest.*;
-import foundation.pEp.jniadapter.test.pitytest.utils.TestUtils;
+import static foundation.pEp.pitytest.TestLogger.*;
+import foundation.pEp.pitytest.*;
+import foundation.pEp.pitytest.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.*;
 
 class TestCarol {

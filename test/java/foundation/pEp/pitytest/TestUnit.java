@@ -1,10 +1,10 @@
-package foundation.pEp.jniadapter.test.pitytest;
+package foundation.pEp.pitytest;
 
-import foundation.pEp.jniadapter.test.pitytest.utils.TestUtils;
+import foundation.pEp.pitytest.utils.TestUtils;
 
-import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
-import static foundation.pEp.jniadapter.test.pitytest.utils.TestUtils.TermColor;
-import static foundation.pEp.jniadapter.test.pitytest.utils.TestUtils.colorString;
+import static foundation.pEp.pitytest.TestLogger.*;
+import static foundation.pEp.pitytest.utils.TestUtils.TermColor;
+import static foundation.pEp.pitytest.utils.TestUtils.colorString;
 
 import java.util.function.Consumer;
 

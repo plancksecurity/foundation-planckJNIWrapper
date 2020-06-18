@@ -1,4 +1,4 @@
-package foundation.pEp.jniadapter.test.pitytest;
+package foundation.pEp.pitytest;
 
 public enum TestState {
     UNEVALUATED,

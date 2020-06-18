@@ -1,6 +1,7 @@
+include ../../Makefile.conf
 include ../Makefile.conf
 
-TEST_UNIT_NAME=ctxinitfail
+TEST_UNIT_NAME=testsuite
 
 JAVA_CLASSES = \
  	TestMain.class \
@@ -8,15 +9,18 @@ JAVA_CLASSES = \
 # Use PityTest
 JAVA_CLASSES += $(JAVA_CLASSES_PITYTEST)
 
-.PHONY: compile run test clean
+.PHONY: pitytest compile run test clean
 
 all: compile
 	$(MAKE) run
 
+pitytest:
+	$(MAKE) -C $(PITYTEST_DIR)
+
 run: compile
 	cd $(JAVA_CWD);$(JAVA) $(JAVA_PKG_BASENAME).$(TEST_UNIT_NAME).TestMain
 
-compile: $(JAVA_CLASSES)
+compile: $(JAVA_CLASSES) pitytest
 
 %.class: %.java
 	cd $(JAVA_CWD);pwd;javac $(JAVA_PKG_BASEPATH)/$(TEST_UNIT_NAME)/$<

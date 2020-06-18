@@ -9,9 +9,12 @@ JAVA_CLASSES = \
 JAVA_CLASSES += $(JAVA_CLASSES_FSMSGQUEUE)
 JAVA_CLASSES += $(JAVA_CLASSES_TESTSCOMMON)
 
-.PHONY: all alice bob compile clean
+.PHONY: pitytest all alice bob compile clean
 
 all: alice compile
+
+pitytest:
+	$(MAKE) -C $(PITYTEST_DIR)
 
 alice: compile
 	cd $(JAVA_CWD);$(JAVA) $(JAVA_PKG_BASENAME).$(TEST_UNIT_NAME).TestAlice
@@ -19,7 +22,7 @@ alice: compile
 bob: compile
 	cd $(JAVA_CWD);$(JAVA) $(JAVA_PKG_BASENAME).$(TEST_UNIT_NAME).TestBob
 
-compile: $(JAVA_CLASSES)
+compile: $(JAVA_CLASSES) pitytest
 
 %.class: %.java
 	cd $(JAVA_CWD);pwd;javac $(JAVA_PKG_BASEPATH)/$(TEST_UNIT_NAME)/$<

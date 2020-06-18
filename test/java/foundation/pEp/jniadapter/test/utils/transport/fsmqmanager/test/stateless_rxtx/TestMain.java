@@ -1,9 +1,9 @@
 package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.stateless_rxtx;
 
-import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
+import static foundation.pEp.pitytest.TestLogger.*;
 
 import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.*;
-import foundation.pEp.jniadapter.test.pitytest.*;
+import foundation.pEp.pitytest.*;
 
 import java.util.ArrayList;
 

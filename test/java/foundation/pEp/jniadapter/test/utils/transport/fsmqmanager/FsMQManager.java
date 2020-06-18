@@ -1,12 +1,12 @@
 package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager;
 
-import foundation.pEp.jniadapter.test.pitytest.utils.TestUtils;
+import foundation.pEp.pitytest.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.transport.fsmsgqueue.FsMsgQueue;
 
 import java.io.*;
 import java.util.*;
 
-import static foundation.pEp.jniadapter.test.pitytest.TestLogger.log;
+import static foundation.pEp.pitytest.TestLogger.log;
 
 public class FsMQManager {
     public FsMQIdentities identities = null;

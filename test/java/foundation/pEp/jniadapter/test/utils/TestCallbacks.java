@@ -1,5 +1,5 @@
 package foundation.pEp.jniadapter.test.utils;
-import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
+import static foundation.pEp.pitytest.TestLogger.*;
 
 import foundation.pEp.jniadapter.*;
 

@@ -10,11 +10,12 @@ JAVA_CLASSES = \
  	../utils/AdapterTestUtils.class \
  	../utils/TestCallbacks.class
 
-JAVA_CLASSES += $(JAVA_CLASSES_PITYTEST)
-
-.PHONY: compile alice bob test clean
+.PHONY: pitytest compile alice bob test clean
 
 all: alice compile
+
+pitytest:
+	$(MAKE) -C $(PITYTEST_DIR)
 
 alice: compile clean-pep-home-alice
 	cd $(JAVA_CWD);pwd;HOME=$(JAVA_PEP_HOME_DIR_ALICE) $(JAVA) $(JAVA_PKG_BASENAME).$(TEST_UNIT_NAME).TestAlice
@@ -22,7 +23,7 @@ alice: compile clean-pep-home-alice
 bob: compile clean-pep-home-bob
 	cd $(JAVA_CWD);pwd;HOME=$(JAVA_PEP_HOME_DIR_BOB) $(JAVA) $(JAVA_PKG_BASENAME).$(TEST_UNIT_NAME).TestBob
 
-compile: $(JAVA_CLASSES)
+compile: $(JAVA_CLASSES) pitytest
 
 %.class: %.java
 	cd $(JAVA_CWD);javac -cp $(CLASSPATH) $(JAVA_PKG_BASEPATH)/$(TEST_UNIT_NAME)/$<

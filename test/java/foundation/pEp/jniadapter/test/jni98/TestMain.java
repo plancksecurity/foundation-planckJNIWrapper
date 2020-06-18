@@ -2,11 +2,11 @@ package foundation.pEp.jniadapter.test.jni98;
 
 import foundation.pEp.jniadapter.Engine;
 import foundation.pEp.jniadapter.Message;
-import foundation.pEp.jniadapter.test.pitytest.TestUnit;
+import foundation.pEp.pitytest.TestUnit;
 import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
 
-import static foundation.pEp.jniadapter.test.pitytest.TestLogger.log;
-import static foundation.pEp.jniadapter.test.pitytest.TestLogger.logH2;
+import static foundation.pEp.pitytest.TestLogger.log;
+import static foundation.pEp.pitytest.TestLogger.logH2;
 import static foundation.pEp.jniadapter.test.utils.AdapterTestUtils.msgToString;
 
 /*

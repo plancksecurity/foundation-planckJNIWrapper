@@ -1,6 +1,6 @@
-package foundation.pEp.jniadapter.test.pitytest.examples.testsuite;
-import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
-import foundation.pEp.jniadapter.test.pitytest.*;
+package foundation.pEp.pitytest.examples.testsuite;
+import static foundation.pEp.pitytest.TestLogger.*;
+import foundation.pEp.pitytest.*;
 
 class TestSuiteContext extends AbstractTestContext {
     String name;

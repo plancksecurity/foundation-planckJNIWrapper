@@ -1,6 +1,6 @@
-package foundation.pEp.jniadapter.test.pitytest.examples.helloworld;
-import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
-import foundation.pEp.jniadapter.test.pitytest.*;
+package foundation.pEp.pitytest.examples.helloworld;
+import static foundation.pEp.pitytest.TestLogger.*;
+import foundation.pEp.pitytest.*;
 
 
 class HelloWorldTestContext extends AbstractTestContext {

@@ -1,6 +1,6 @@
 package foundation.pEp.jniadapter.test.jni92;
 import foundation.pEp.jniadapter.test.utils.*;
-import foundation.pEp.jniadapter.test.pitytest.*;
+import foundation.pEp.pitytest.*;
 import foundation.pEp.jniadapter.*;
 
 import java.lang.Thread;
