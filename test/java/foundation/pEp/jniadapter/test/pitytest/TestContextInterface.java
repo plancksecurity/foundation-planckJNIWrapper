@@ -1,4 +1,4 @@
-package foundation.pEp.jniadapter.test.framework;
+package foundation.pEp.jniadapter.test.pitytest;
 
 public interface TestContextInterface {
     void init() throws Throwable;

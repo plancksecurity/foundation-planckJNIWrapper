@@ -1,7 +1,7 @@
 package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.ctx;
 
 import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.*;
-import foundation.pEp.jniadapter.test.framework.*;
+import foundation.pEp.jniadapter.test.pitytest.*;
 import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.utils.FsMQManagerTestUtils;
 
 import java.util.*;

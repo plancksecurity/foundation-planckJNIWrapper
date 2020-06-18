@@ -1,9 +1,9 @@
 package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.identities;
 
-import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
+import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
 
 import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.*;
-import foundation.pEp.jniadapter.test.framework.*;
+import foundation.pEp.jniadapter.test.pitytest.*;
 import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.utils.FsMQManagerTestUtils;
 
 import java.util.ArrayList;

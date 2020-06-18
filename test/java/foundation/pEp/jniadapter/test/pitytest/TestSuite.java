@@ -1,14 +1,14 @@
-package foundation.pEp.jniadapter.test.framework;
+package foundation.pEp.jniadapter.test.pitytest;
 
-import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
-import static foundation.pEp.jniadapter.test.framework.utils.TestUtils.TermColor;
-import static foundation.pEp.jniadapter.test.framework.utils.TestUtils.*;
+import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
+import static foundation.pEp.jniadapter.test.pitytest.utils.TestUtils.TermColor;
+import static foundation.pEp.jniadapter.test.pitytest.utils.TestUtils.*;
 
 import java.util.ArrayList;
 
 // There is a static defaultTestSuite
 // The last created instance is the defaultTestSuite by default
-// Env var: TFVERBOSE
+// Env var: PITYVERBOSE
 
 public class TestSuite {
     private static TestSuite defaultTestSuite = null;
@@ -16,7 +16,7 @@ public class TestSuite {
     private boolean verboseMode = false;
     private boolean verboseModeSetByEnv = false;
     private TermColor testColor = TermColor.CYAN;
-    private String EVNVARNAME_VERBOSE = "TFVERBOSE";
+    private String EVNVARNAME_VERBOSE = "PITYVERBOSE";
 
     public TestSuite() {
         setDefault();

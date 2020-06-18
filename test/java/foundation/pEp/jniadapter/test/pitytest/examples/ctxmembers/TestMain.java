@@ -1,7 +1,7 @@
-package foundation.pEp.jniadapter.test.framework.examples.ctxmembers;
-import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
-import foundation.pEp.jniadapter.test.framework.*;
-import foundation.pEp.jniadapter.test.framework.utils.TestUtils;
+package foundation.pEp.jniadapter.test.pitytest.examples.ctxmembers;
+import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
+import foundation.pEp.jniadapter.test.pitytest.*;
+import foundation.pEp.jniadapter.test.pitytest.utils.TestUtils;
 
 
 // Context member object instantiation
@@ -22,7 +22,7 @@ class CtxMembersTestContext extends AbstractTestContext {
         log("=== OUTPUT FROM TEST CONTEXT INIT BEGIN ===");
         log(getTestContextName()+ " - init() called");
         correct = new ExampleCtxMember(true);
-        name = "UnitTestFrameWorkWithoutAName";
+        name = "PityTest";
         log("=== OUTPUT FROM TEST CONTEXT INIT END   ===");
     }
 }
@@ -31,7 +31,7 @@ class TestMain {
     public static void main(String[] args) throws Exception {
         TestUnit test = new TestUnit<CtxMembersTestContext>("ctxmembers",new CtxMembersTestContext() , ctx  -> {
             // do stuff using the context
-            // Test FAILS on unhandled exception, otherwise SUCCESS
+            // throw or assert, to let a testunit fail
             log("=== OUTPUT FROM THE TEST ITSELF BEGIN ===");
             log("Hello World from: " + ctx.name);
             log("=== OUTPUT FROM THE TEST ITSELF END   ===");

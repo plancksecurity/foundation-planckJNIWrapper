@@ -6,6 +6,7 @@ JAVA_CLASSES = \
  	TestMain.class \
 
 JAVA_CLASSES += $(JAVA_CLASSES_FSMSGQUEUE)
+JAVA_CLASSES += $(JAVA_CLASSES_TESTSCOMMON)
 
 .PHONY: compile run test clean
 

@@ -1,11 +1,11 @@
 package foundation.pEp.jniadapter.test.utils.transport.fsmsgqueue.test.regression;
 
-import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
-import static foundation.pEp.jniadapter.test.framework.utils.TestUtils.*;
+import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
+import static foundation.pEp.jniadapter.test.pitytest.utils.TestUtils.*;
 
 import foundation.pEp.jniadapter.test.utils.transport.fsmsgqueue.*;
 
-import foundation.pEp.jniadapter.test.framework.*;
+import foundation.pEp.jniadapter.test.pitytest.*;
 
 import java.io.File;
 import java.util.ArrayList;

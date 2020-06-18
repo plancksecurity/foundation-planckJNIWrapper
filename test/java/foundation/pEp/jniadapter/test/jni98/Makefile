@@ -7,7 +7,7 @@ JAVA_CLASSES = \
  	TestMain.class \
 	../utils/AdapterTestUtils.class
 
-JAVA_CLASSES += $(JAVA_CLASSES_FRAMEWORK)
+JAVA_CLASSES += $(JAVA_CLASSES_PITYTEST)
 
 .PHONY: compile run test clean
 

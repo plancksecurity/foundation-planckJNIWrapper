@@ -1,12 +1,12 @@
 include ../Makefile.conf
 
-TEST_UNIT_NAME=ctxinitfail
+TEST_UNIT_NAME=ctxmembers
 
 JAVA_CLASSES = \
  	TestMain.class \
 
-# Use the test framework
-JAVA_CLASSES += $(JAVA_CLASSES_FRAMEWORK)
+# Use PityTest
+JAVA_CLASSES += $(JAVA_CLASSES_PITYTEST)
 
 .PHONY: compile run test clean
 

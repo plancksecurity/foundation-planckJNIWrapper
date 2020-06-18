@@ -1,4 +1,4 @@
-package foundation.pEp.jniadapter.test.framework.utils;
+package foundation.pEp.jniadapter.test.pitytest.utils;
 
 public class Pair<K, V> {
     private K key = null;

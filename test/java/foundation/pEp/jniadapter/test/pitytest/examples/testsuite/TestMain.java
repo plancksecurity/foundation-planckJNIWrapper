@@ -1,13 +1,13 @@
-package foundation.pEp.jniadapter.test.framework.examples.testsuite;
-import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
-import foundation.pEp.jniadapter.test.framework.*;
+package foundation.pEp.jniadapter.test.pitytest.examples.testsuite;
+import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
+import foundation.pEp.jniadapter.test.pitytest.*;
 
 class TestSuiteContext extends AbstractTestContext {
     String name;
 
     @Override
     public void init() throws Throwable {
-        name = "UnitTestFrameWorkWithoutAName";
+        name = "PityTest";
     }
 }
 

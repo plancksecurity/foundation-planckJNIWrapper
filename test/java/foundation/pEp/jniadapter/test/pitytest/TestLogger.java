@@ -1,11 +1,11 @@
-package foundation.pEp.jniadapter.test.framework;
+package foundation.pEp.jniadapter.test.pitytest;
 
-import foundation.pEp.jniadapter.test.framework.utils.TestUtils;
+import foundation.pEp.jniadapter.test.pitytest.utils.TestUtils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import static foundation.pEp.jniadapter.test.framework.utils.TestUtils.*;
+import static foundation.pEp.jniadapter.test.pitytest.utils.TestUtils.*;
 
 public class TestLogger {
     static {

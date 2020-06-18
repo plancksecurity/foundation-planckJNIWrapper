@@ -1,6 +1,6 @@
 package foundation.pEp.jniadapter.test.utils;
-import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
-import foundation.pEp.jniadapter.test.framework.*;
+import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
+
 import foundation.pEp.jniadapter.*;
 
 public class TestCallbacks implements Sync.MessageToSendCallback, Sync.NotifyHandshakeCallback {

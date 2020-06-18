@@ -1,5 +1,5 @@
 package foundation.pEp.jniadapter.test.jni100;
-import  foundation.pEp.jniadapter.test.framework.*;
+import  foundation.pEp.jniadapter.test.pitytest.*;
 import foundation.pEp.jniadapter.*;
 import foundation.pEp.jniadapter.test.utils.*;
 

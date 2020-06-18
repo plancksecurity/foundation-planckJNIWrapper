@@ -1,10 +1,10 @@
 package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.stateless_ping;
 
-import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
+import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
 
-import foundation.pEp.jniadapter.test.framework.utils.TestUtils;
+import foundation.pEp.jniadapter.test.pitytest.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.*;
-import foundation.pEp.jniadapter.test.framework.*;
+import foundation.pEp.jniadapter.test.pitytest.*;
 import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.test.ctx.*;
 
 import java.io.IOException;

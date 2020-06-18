@@ -1,10 +1,7 @@
 package foundation.pEp.jniadapter.test.utils;
 
-import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
-
-import foundation.pEp.jniadapter.test.framework.*;
+import foundation.pEp.jniadapter.test.pitytest.*;
 import foundation.pEp.jniadapter.*;
-import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

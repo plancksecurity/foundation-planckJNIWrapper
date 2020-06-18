@@ -6,6 +6,8 @@ TEST_UNIT_NAME=jni88
 JAVA_CLASSES = \
  	TestMain.class
 
+JAVA_CLASSES += $(JAVA_CLASSES_PITYTEST)
+
 .PHONY: compile run test clean
 
 all: compile

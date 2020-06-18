@@ -1,8 +1,8 @@
-package foundation.pEp.jniadapter.test.framework.examples.ctxinitfail;
+package foundation.pEp.jniadapter.test.pitytest.examples.ctxinitfail;
 
-import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
+import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
 
-import foundation.pEp.jniadapter.test.framework.*;
+import foundation.pEp.jniadapter.test.pitytest.*;
 
 
 class CtxInitFailContext extends AbstractTestContext {
@@ -11,7 +11,7 @@ class CtxInitFailContext extends AbstractTestContext {
 
     @Override
     public void init() throws Throwable {
-        name = "UnitTestFrameWorkWithoutAName";
+        name = "PityTest";
         result = 50 / 0;
     }
 }
@@ -22,13 +22,13 @@ class TestMain {
 
         new TestUnit<CtxInitFailContext>("ctxinitfail1", new CtxInitFailContext(), ctx -> {
             // do stuff using the context
-            // Test FAILS on unhandled exception, otherwise SUCCESS
+            // throw or assert, to let a testunit fail
             log("Hello World from: " + ctx.name);
         });
 
         new TestUnit<CtxInitFailContext>("ctxinitfail1", new CtxInitFailContext(), ctx -> {
             // do stuff using the context
-            // Test FAILS on unhandled exception, otherwise SUCCESS
+            // throw or assert, to let a testunit fail
             log("Hello World from: " + ctx.name);
         });
 
@@ -36,19 +36,19 @@ class TestMain {
 
         new TestUnit<CtxInitFailContext>("ctxinitfail2", failingContext, ctx -> {
             // do stuff using the context
-            // Test FAILS on unhandled exception, otherwise SUCCESS
+            // throw or assert, to let a testunit fail
             log("Hello World from: " + ctx.name);
         });
 
         new TestUnit<CtxInitFailContext>("ctxinitfail3", failingContext, ctx -> {
             // do stuff using the context
-            // Test FAILS on unhandled exception, otherwise SUCCESS
+            // throw or assert, to let a testunit fail
             log("Hello World from: " + ctx.name);
         });
 
         new TestUnit<CtxInitFailContext>("ctxinitfail4", failingContext, ctx -> {
             // do stuff using the context
-            // Test FAILS on unhandled exception, otherwise SUCCESS
+            // throw or assert, to let a testunit fail
             log("Hello World from: " + ctx.name);
         });
 

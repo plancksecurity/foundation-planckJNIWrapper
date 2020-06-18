@@ -1,4 +1,4 @@
-package foundation.pEp.jniadapter.test.framework;
+package foundation.pEp.jniadapter.test.pitytest;
 
 public abstract class AbstractTestContext implements TestContextInterface{
     private boolean isInitialized = false;

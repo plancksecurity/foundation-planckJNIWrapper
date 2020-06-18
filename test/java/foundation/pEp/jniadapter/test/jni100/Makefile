@@ -8,7 +8,7 @@ JAVA_CLASSES = \
  	../utils/AdapterTestUtils.class \
  	../utils/TestCallbacks.class
 
-JAVA_CLASSES += $(JAVA_CLASSES_FRAMEWORK)
+JAVA_CLASSES += $(JAVA_CLASSES_PITYTEST)
 
 .PHONY: compile run test clean
 

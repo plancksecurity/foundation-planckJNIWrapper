@@ -1,7 +1,7 @@
 package foundation.pEp.jniadapter.test.templateAliceBobCarol;
-import static foundation.pEp.jniadapter.test.framework.TestLogger.*;
-import foundation.pEp.jniadapter.test.framework.*;
-import foundation.pEp.jniadapter.test.framework.utils.TestUtils;
+import static foundation.pEp.jniadapter.test.pitytest.TestLogger.*;
+import foundation.pEp.jniadapter.test.pitytest.*;
+import foundation.pEp.jniadapter.test.pitytest.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.*;
 
 class TestBob {
@@ -11,7 +11,7 @@ class TestBob {
 
         new TestUnit<AdapterBaseTestContext>("Test Bob",new AdapterBaseTestContext() , ctx  -> {
             // do stuff using the context
-            // Test FAILS on unhandled exception, otherwise SUCCESS
+            // throw or assert, to let a testunit fail
 
             ctx.bob = ctx.engine.myself(ctx.bob);
 

@@ -4,7 +4,7 @@ import foundation.pEp.jniadapter.*;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import static foundation.pEp.jniadapter.test.framework.utils.TestUtils.clipString;
+import static foundation.pEp.jniadapter.test.pitytest.utils.TestUtils.clipString;
 
 public class AdapterTestUtils {
     public static String identityToString(Identity i, Boolean full) {
