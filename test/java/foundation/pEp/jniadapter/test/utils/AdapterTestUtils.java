@@ -1,4 +1,5 @@
 package foundation.pEp.jniadapter.test.utils;
+
 import foundation.pEp.jniadapter.*;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import static foundation.pEp.pitytest.utils.TestUtils.clipString;
 public class AdapterTestUtils {
     public static String identityToString(Identity i, Boolean full) {
         String ret = "";
-        if(full) {
+        if (full) {
             ret += "address: " + i.address + "\n";
             ret += "fpr: " + i.fpr + "\n";
             ret += "username: " + i.username + "\n";
@@ -174,7 +175,7 @@ public class AdapterTestUtils {
         } catch (Throwable e) {
             value = e.toString();
         }
-        kvs.add(new Pair<String,String>(key, value));
+        kvs.add(new Pair<String, String>(key, value));
 
         if (!full) {
             kvs = clipStrings(kvs, 200, "clipped...");
@@ -257,14 +258,14 @@ public class AdapterTestUtils {
         return ret;
     }
 
-    public static ArrayList<Pair<String,String>> clipStrings(ArrayList<Pair<String,String>> spv, int len, String clipMsg) {
-        for (Pair<String,String> p : spv) {
-            if(p != null) {
-                if(p.first != null) {
+    public static ArrayList<Pair<String, String>> clipStrings(ArrayList<Pair<String, String>> spv, int len, String clipMsg) {
+        for (Pair<String, String> p : spv) {
+            if (p != null) {
+                if (p.first != null) {
                     p.first = clipString(p.first, len, clipMsg);
                 }
-                if(p.second != null) {
-                    p.second = clipString(p.second, len,clipMsg);
+                if (p.second != null) {
+                    p.second = clipString(p.second, len, clipMsg);
                 }
             }
         }
@@ -274,7 +275,9 @@ public class AdapterTestUtils {
     public static Message makeNewTestMessage(Identity from, Identity to, Message.Direction dir) {
         Message msg = new Message();
         Vector<Identity> vID = new Vector<Identity>();
-        vID.add(to);
+        if (to != null) {
+            vID.add(to);
+        }
 
         msg.setFrom(from);
         msg.setTo(vID);
