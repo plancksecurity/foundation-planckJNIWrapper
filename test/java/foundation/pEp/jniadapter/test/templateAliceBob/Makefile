@@ -6,6 +6,8 @@ TEST_UNIT_NAME=templateAliceBob
 JAVA_CLASSES = \
  	TestAlice.class \
  	TestBob.class \
+ 	MultiPeerCTX.class \
+ 	pEpMessage.class \
  	../utils/AdapterBaseTestContext.class \
  	../utils/AdapterTestUtils.class \
  	../utils/TestCallbacks.class
