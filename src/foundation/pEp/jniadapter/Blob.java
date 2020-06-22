@@ -1,6 +1,8 @@
 package foundation.pEp.jniadapter;
 
-public class Blob {
+import java.io.Serializable;
+
+public class Blob implements Serializable {
     public byte[] data;
     public String mime_type;
     public String filename;
