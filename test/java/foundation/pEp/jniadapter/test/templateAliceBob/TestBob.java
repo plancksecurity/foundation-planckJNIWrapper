@@ -10,6 +10,7 @@ import foundation.pEp.pitytest.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 class TestBob {
@@ -24,36 +25,40 @@ class TestBob {
             ctx.bob = ctx.engine.myself(ctx.bob);
             log(AdapterTestUtils.identityToString(ctx.bob, false));
 
-            log(AdapterTestUtils.identityToString(ctx.alice, false));
-            log("update()");
-            ctx.alice = ctx.engine.updateIdentity(ctx.alice);
-            log(AdapterTestUtils.identityToString(ctx.alice, false));
+//            log(AdapterTestUtils.identityToString(ctx.alice, false));
+//            log("update()");
+//            ctx.alice = ctx.engine.updateIdentity(ctx.alice);
+//            log(AdapterTestUtils.identityToString(ctx.alice, false));
 
             try {
                 FsMQMessage msgRxSerialized = null;
                 while ((msgRxSerialized = ctx.qm.receiveMessage(3)) != null) {
 //                    log("MSG RX from [" + msgRxSerialized.getFrom().getAddress() + "]: " + msgRxSerialized.getMsg());
 
-                    Message msgRx = Utils.deserializepEpMessageEA(ctx, msgRxSerialized);
+//                    Message msgRx = Utils.deserializepEpMessage(ctx, msgRxSerialized, Message.EncFormat.PEP);
+                    Message msgRx = Utils.deserializepEpMessage(ctx, msgRxSerialized, Message.EncFormat.PEPEncInlineEA);
                     log("ENCRYPTED IN: \n" + AdapterTestUtils.msgToString(msgRx, false));
 
                     Engine.decrypt_message_Return result = ctx.engine.decrypt_message(msgRx, null, 0);
                     log("DECRYPTED msg: \n" + AdapterTestUtils.msgToString(result.dst, false));
                     log("DECRYPTED rating:" + result.rating.toString());
                     log("DECRYPTED flags:" + result.flags);
+
+                    log(AdapterTestUtils.identityToString(ctx.alice, false));
+                    ctx.alice = ctx.engine.updateIdentity(msgRx.getFrom());
+                    log(AdapterTestUtils.identityToString(ctx.alice, false));
                 }
             } catch (Exception e) {
                 assert false : e.toString();
             }
-            log(AdapterTestUtils.identityToString(ctx.alice, false));
-            ctx.alice = ctx.engine.updateIdentity(ctx.alice);
-            log(AdapterTestUtils.identityToString(ctx.alice, false));
             log("Stop Receiving, no more messages...");
         });
 
         new TestUnit<MultiPeerCTX>("Bob tx msg", mpctx, ctx -> {
             String payloadPlain = "PONG";
-            List<TransportMessage> msgTx = Utils.encryptInlineEA(ctx, ctx.bob, ctx.alice, payloadPlain);
+            List<TransportMessage> msgTx = new ArrayList<>();
+//            msgTx.add(Utils.encryptPEP(ctx, ctx.bob, ctx.alice, payloadPlain));
+            msgTx = Utils.encryptInlineEA(ctx, ctx.bob, ctx.alice, payloadPlain);
 
             for (TransportMessage out : msgTx) {
                 log("MSG TX: \n" + out.toString());

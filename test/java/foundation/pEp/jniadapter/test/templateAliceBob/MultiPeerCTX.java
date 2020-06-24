@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Vector;
 
+import static foundation.pEp.pitytest.TestLogger.log;
+
 
 class MultiPeerCTX extends FsMQManagerTestContext {
     // Basic
@@ -88,6 +90,12 @@ class MultiPeerCTX extends FsMQManagerTestContext {
         path = Paths.get(filenameAliceSec);
         keyAliceSec = Files.readAllBytes(path);
 
+        log("Clearing transport queue...");
         qm.clearOwnQueue();
+
+        log("pEp PER_MACHINE_DIR: " + engine.getMachineDirectory());
+        log("pEp PER_USER_DIR   : " + engine.getUserDirectory());
+        log("pEp ProtocolVersion: " + engine.getProtocolVersion());
+        log("pEp Version        : " + engine.getVersion());
     }
 }

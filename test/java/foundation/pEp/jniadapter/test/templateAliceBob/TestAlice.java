@@ -10,6 +10,7 @@ import foundation.pEp.pitytest.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.*;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 class TestAlice {
@@ -24,13 +25,17 @@ class TestAlice {
             ctx.alice = ctx.engine.myself(ctx.alice);
             log(AdapterTestUtils.identityToString(ctx.alice, false));
 
-            log(AdapterTestUtils.identityToString(ctx.bob, false));
-            log("update()");
-            ctx.bob = ctx.engine.updateIdentity(ctx.bob);
-            log(AdapterTestUtils.identityToString(ctx.bob, false));
+//            ctx.engine.importKey(ctx.keyBobPub);
+
+//            log(AdapterTestUtils.identityToString(ctx.bob, false));
+//            log("update()");
+//            ctx.bob = ctx.engine.updateIdentity(ctx.bob);
+//            log(AdapterTestUtils.identityToString(ctx.bob, false));
 
             String payloadPlain = "PING";
-            List<TransportMessage> msgTx = Utils.encryptInlineEA(ctx, ctx.alice, ctx.bob, payloadPlain);
+            List<TransportMessage> msgTx = new ArrayList<>();
+//            msgTx.add(Utils.encryptPEP(ctx, ctx.alice, ctx.bob, payloadPlain));
+            msgTx = Utils.encryptInlineEA(ctx, ctx.alice, ctx.bob, payloadPlain);
 
             for (TransportMessage out : msgTx) {
                 log("MSG TX: \n" + out.toString());
@@ -50,20 +55,22 @@ class TestAlice {
                 while ((msgRxSerialized = ctx.qm.receiveMessage(6)) != null) {
 //                    log("MSG RX from [" + msgRxSerialized.getFrom().getAddress() + "]: " + msgRxSerialized.getMsg());
 
-                    Message msgRx = Utils.deserializepEpMessageEA(ctx, msgRxSerialized);
+//                    Message msgRx = Utils.deserializepEpMessage(ctx, msgRxSerialized, Message.EncFormat.PEP);
+                    Message msgRx = Utils.deserializepEpMessage(ctx, msgRxSerialized, Message.EncFormat.PEPEncInlineEA);
                     log("ENCRYPTED IN: \n" + AdapterTestUtils.msgToString(msgRx, false));
 
                     Engine.decrypt_message_Return result = ctx.engine.decrypt_message(msgRx, null, 0);
                     log("DECRYPTED msg: \n" + AdapterTestUtils.msgToString(result.dst, false));
                     log("DECRYPTED rating:" + result.rating.toString());
                     log("DECRYPTED flags:" + result.flags);
+
+                    log(AdapterTestUtils.identityToString(ctx.bob, false));
+                    ctx.bob = ctx.engine.updateIdentity(msgRx.getFrom());
+                    log(AdapterTestUtils.identityToString(ctx.bob, false));
                 }
             } catch (Exception e) {
                 assert false : e.toString();
             }
-            log(AdapterTestUtils.identityToString(ctx.bob, false));
-            ctx.bob = ctx.engine.updateIdentity(ctx.bob);
-            log(AdapterTestUtils.identityToString(ctx.bob, false));
             log("Stop Receiving, no more messages...");
         });
 

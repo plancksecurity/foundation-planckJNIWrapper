@@ -43,13 +43,38 @@ public class Utils {
 
         // 5. send messages for each attachment in .attachments with the crypto text of .value, respectively
         for (Blob b : msgTx.getAttachments()) {
-            if(b != null) {
+            if (b != null) {
                 tmp.setLongMessage(new String(b.data));
                 ret.add(new TransportMessage(tmp));
             } else {
                 throw new RuntimeException("NULL ATTACHMENT");
             }
         }
+        return ret;
+    }
+
+    public static TransportMessage encryptPEP(MultiPeerCTX ctx, Identity from, Identity to, String payloadPlain) throws RuntimeException {
+        TransportMessage ret = null;
+
+        // 1. put payload into .longmsg
+        Message msgPlain = AdapterTestUtils.makeNewTestMessage(from, to, Message.Direction.Outgoing);
+        msgPlain.setLongmsg(payloadPlain);
+        msgPlain.setEncFormat(Message.EncFormat.PEP);
+        log("MSG PLAIN: " + AdapterTestUtils.msgToString(msgPlain, false));
+
+        // 2. call encrypt_message() with enc_format = PEP
+        Message msgEnc = ctx.engine.encrypt_message(msgPlain, null, Message.EncFormat.PEP);
+        Message msgTx = null;
+        if (msgEnc == null) {
+            log("UNENCRYPTED");
+            msgTx = msgPlain;
+        } else {
+            log("ENCRYPTED");
+            msgTx = msgEnc;
+        }
+        log("MSG AFTER ENCRYPT: \n" + AdapterTestUtils.msgToString(msgTx, false));
+
+        ret = new TransportMessage(msgTx);
         return ret;
     }
 
@@ -64,11 +89,12 @@ public class Utils {
         return msgTxSerialized;
     }
 
-    public static Message deserializepEpMessageEA(MultiPeerCTX ctx, FsMQMessage msgRxSerialized) {
+    public static Message deserializepEpMessage(MultiPeerCTX ctx, FsMQMessage msgRxSerialized, Message.EncFormat enc) {
         Message ret = null;
         try {
             TransportMessage msgTransportRx = TransportMessage.deserialize(msgRxSerialized.getMsg());
-            ret = ctx.engine.incomingMessageFromPGPText(msgTransportRx.getLongMessage(), Message.EncFormat.PEPEncInlineEA);
+            log("DESERIALIZED: \n" + msgTransportRx.toString());
+            ret = ctx.engine.incomingMessageFromPGPText(msgTransportRx.getLongMessage(), enc);
             // From
             Identity from = new Identity();
             from.address = msgTransportRx.getFromAddress();
@@ -77,7 +103,7 @@ public class Utils {
 
             // To
             Vector<Identity> toList = new Vector<>();
-            for (String addr: msgTransportRx.getToAddresses()) {
+            for (String addr : msgTransportRx.getToAddresses()) {
                 Identity to = new Identity();
                 to.address = addr;
                 to = ctx.engine.myself(to);
