@@ -20,7 +20,7 @@ public class AdapterTestUtils {
             ret += "me: " + i.me + "\n";
             ret += "comm_type: " + i.comm_type + "\n";
         } else {
-            ret += i.address + "/" + i.user_id + "/" + i.fpr;
+            ret += i.address + "/" + i.user_id + "/" + i.username + "/" + i.fpr;
         }
         ret = ret.trim();
         return ret;
@@ -282,7 +282,8 @@ public class AdapterTestUtils {
         msg.setFrom(from);
         msg.setTo(vID);
         msg.setDir(dir);
-        msg.setLongmsg("Hi i am the message longmessage");
+        msg.setShortmsg("Hi i am the shortMessage");
+        msg.setLongmsg("Hi i am the longMessage");
         return msg;
     }
 }

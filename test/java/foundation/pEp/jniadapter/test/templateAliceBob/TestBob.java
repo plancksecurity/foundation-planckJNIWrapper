@@ -10,7 +10,7 @@ import foundation.pEp.pitytest.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.*;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.List;
 
 class TestBob {
     public static void main(String[] args) throws Exception {
@@ -20,61 +20,58 @@ class TestBob {
         MultiPeerCTX mpctx = new MultiPeerCTX("Bob");
 
         new TestUnit<MultiPeerCTX>("Bob rx msg", mpctx, ctx -> {
-            log(AdapterTestUtils.identityToString(ctx.bob, true));
             log("myself()");
             ctx.bob = ctx.engine.myself(ctx.bob);
-            log(AdapterTestUtils.identityToString(ctx.bob, true));
+            log(AdapterTestUtils.identityToString(ctx.bob, false));
 
-            log(AdapterTestUtils.identityToString(ctx.alice, true));
+            log(AdapterTestUtils.identityToString(ctx.alice, false));
             log("update()");
-            ctx.engine.updateIdentity(ctx.alice);
-            log(AdapterTestUtils.identityToString(ctx.alice, true));
+            ctx.alice = ctx.engine.updateIdentity(ctx.alice);
+            log(AdapterTestUtils.identityToString(ctx.alice, false));
 
-            FsMQMessage msgRx = null;
+            try {
+                FsMQMessage msgRxSerialized = null;
+                while ((msgRxSerialized = ctx.qm.receiveMessage(3)) != null) {
+//                    log("MSG RX from [" + msgRxSerialized.getFrom().getAddress() + "]: " + msgRxSerialized.getMsg());
 
-            while (true) {
-                try {
-                    msgRx = ctx.qm.receiveMessage(1000000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    assert false : e.toString();
+                    Message msgRx = Utils.deserializepEpMessageEA(ctx, msgRxSerialized);
+                    log("ENCRYPTED IN: \n" + AdapterTestUtils.msgToString(msgRx, false));
+
+                    Engine.decrypt_message_Return result = ctx.engine.decrypt_message(msgRx, null, 0);
+                    log("DECRYPTED msg: \n" + AdapterTestUtils.msgToString(result.dst, false));
+                    log("DECRYPTED rating:" + result.rating.toString());
+                    log("DECRYPTED flags:" + result.flags);
                 }
-                log("Msg Rx from[" + msgRx.getFrom().getAddress() + "]: " + msgRx.getMsg());
-
-                Message rxMsg = null;
-                if(false) {
-                    rxMsg = ctx.engine.incomingMessageFromPGPText(msgRx.getMsg(), Message.EncFormat.PEP);
-                } else {
-                    pEpMessage rxMsgpEp = null;
-                    try {
-                        rxMsgpEp = pEpMessage.deserialize(msgRx.getMsg());
-                    } catch (Exception e) {
-                        log("Exception while deserializing: " + e.toString());
-                    }
-                    rxMsg = rxMsgpEp.toMessage();
-                }
-                log("Orig IN: " + AdapterTestUtils.msgToString(rxMsg, false));
-
-                // decrypt
-                Engine.decrypt_message_Return result = ctx.engine.decrypt_message(rxMsg, null, 0);
-                log("Msg Rx from[" + msgRx.getFrom().getAddress() + "]: " + AdapterTestUtils.msgToString(result.dst,false));
-
+            } catch (Exception e) {
+                assert false : e.toString();
             }
+            log(AdapterTestUtils.identityToString(ctx.alice, false));
+            ctx.alice = ctx.engine.updateIdentity(ctx.alice);
+            log(AdapterTestUtils.identityToString(ctx.alice, false));
+            log("Stop Receiving, no more messages...");
         });
 
         new TestUnit<MultiPeerCTX>("Bob tx msg", mpctx, ctx -> {
-            ctx.bob = ctx.engine.myself(ctx.bob);
+            String payloadPlain = "PONG";
+            List<TransportMessage> msgTx = Utils.encryptInlineEA(ctx, ctx.bob, ctx.alice, payloadPlain);
 
-            if (ctx.bob.fpr == null) {
-                throw new RuntimeException();
+            for (TransportMessage out : msgTx) {
+                log("MSG TX: \n" + out.toString());
+                try {
+                    String msgTxSerialized = out.serialize();
+                    ctx.qm.sendMessage("Alice", msgTxSerialized);
+                } catch (IOException e) {
+                    assert false : e.toString();
+                }
             }
-
-            //send message
+            log("Sending messages finished...");
         });
 
 
         TestSuite.getDefault().run();
     }
+
+
 }
 
 

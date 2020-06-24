@@ -87,5 +87,7 @@ class MultiPeerCTX extends FsMQManagerTestContext {
 
         path = Paths.get(filenameAliceSec);
         keyAliceSec = Files.readAllBytes(path);
+
+        qm.clearOwnQueue();
     }
 }

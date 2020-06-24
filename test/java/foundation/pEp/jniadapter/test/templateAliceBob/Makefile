@@ -7,7 +7,8 @@ JAVA_CLASSES = \
  	TestAlice.class \
  	TestBob.class \
  	MultiPeerCTX.class \
- 	pEpMessage.class \
+ 	Utils.class \
+ 	TransportMessage.class \
  	../utils/AdapterBaseTestContext.class \
  	../utils/AdapterTestUtils.class \
  	../utils/TestCallbacks.class
