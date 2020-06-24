@@ -250,6 +250,15 @@ namespace pEp {
                 in CipherSuite suite
             );
 
+        method config_passphrase(
+                in string passphrase
+            );
+
+        method config_passphrase_for_new_keys(
+                in bool enable,
+                in string passphrase
+            );
+
         // "basic" methods are generated on the java side, but
         // on the C++ side, manually implemented in basic_api.cc
 

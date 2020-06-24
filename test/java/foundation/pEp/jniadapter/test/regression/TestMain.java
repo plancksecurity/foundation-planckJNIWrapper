@@ -260,6 +260,15 @@ class TestMain {
             ctx.engine.isSyncRunning();
         });
 
+        new TestUnit<AdapterBaseTestContext>("Engine.config_passphrase",new RegTestContext() , ctx  -> {
+            ctx.engine.config_passphrase("SUPERCOMPLICATEDPASSPHRASE");
+        });
+
+        new TestUnit<AdapterBaseTestContext>("Engine.config_passphrase_for_new_keys",new RegTestContext() , ctx  -> {
+            ctx.engine.config_passphrase_for_new_keys(true, "SUPERCOMPLICATEDPASSPHRASE");
+        });
+
+
         TestSuite.getDefault().run();
     }
 }
