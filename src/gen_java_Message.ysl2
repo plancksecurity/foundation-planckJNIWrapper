@@ -18,7 +18,7 @@ tstylesheet {
             import java.util.HashMap;
             import java.io.Serializable;
 
-            public class «$cname» implements AutoCloseable, Serializable {
+            public class «$cname» implements MessageInterface, AutoCloseable, Serializable {
                 private static final long serialVersionUID = 2119420428331150924L;
                 private long handle;
 
@@ -58,6 +58,20 @@ tstylesheet {
 
                 `` apply "enum", mode=inner
                 `` apply "*[name(.)!='enum']", mode=entry
+            }
+            ||
+        document("foundation/pEp/jniadapter/{$cname}Interface.java", "text")
+            ||
+            package foundation.pEp.jniadapter;
+
+            import foundation.pEp.jniadapter.Message.Direction;
+            import java.util.Date;
+            import java.util.Vector;
+            import java.util.ArrayList;
+
+            public interface «$cname»Interface {
+                public String encodeMIME();
+                `` apply "*[name(.)!='enum']", mode=interface
             }
             ||
     }
@@ -240,6 +254,69 @@ tstylesheet {
             public native «$itype» get«$name»();
             public native void set«$name»(«$itype» value);
 
+            ||
+        }
+    }
+
+    template "*", mode=interface {
+        const "ctype", "name(.)";
+        const "type" call "toJava" with "type", "name(.)";
+        const "itype" call "toIntermediate" with "type", "name(.)";
+        const "name" call "toJava" with "type", "name(*[position()=1])";
+
+        choose {
+            when "$ctype = 'identity'"
+            ||
+            public «$type» get«$name»();
+            public void set«$name»(«$type» value);
+            ||
+
+            when "$ctype = 'identitylist' or $ctype = 'bloblist' or $ctype = 'stringlist' or $ctype = 'stringpairlist'"
+            {
+                const "ename", "substring-after(substring($type,1,string-length($type)-1), '<')";
+                const "iename" choose {
+                    when "$ctype = 'stringlist'" > byte[]
+                    when "$ctype = 'stringpairlist'" > Pair<byte[],byte[]>
+                    otherwise > _«$ename»
+                }
+                const "convget" choose {
+                    when "$ctype = 'stringlist'" > AbstractEngine.toUTF16(i)
+                    when "$ctype = 'stringpairlist'" > new Pair<String, String>(AbstractEngine.toUTF16(i.first), AbstractEngine.toUTF16(i.second))
+                    otherwise > new «$ename»(i)
+                }
+                const "convset" choose {
+                    when "$ctype = 'stringlist'" > AbstractEngine.toUTF8(i)
+                    when "$ctype = 'stringpairlist'" > new Pair<byte[],byte[]>(AbstractEngine.toUTF8(i.first), AbstractEngine.toUTF8(i.second))
+                    otherwise > new _«$ename»(i)
+                }
+                ||
+                public «$type» get«$name»();
+                public void set«$name»(«$type» value);
+                ||
+            }
+
+            when "$itype != $type"
+            ||
+            public «$type» get«$name»();
+            public void set«$name»(«$type» value);
+            ||
+
+            when "$itype != $type"
+            ||
+            public «$type» get«$name»();
+            public void set«$name»(«$type» value);
+            ||
+
+            when "../enum[@name=$ctype]"
+            ||
+            public «$itype» get«$name»();
+            public void set«$name»(«$itype» value);
+            ||
+
+            otherwise
+            ||
+            public «$itype» get«$name»();
+            public void set«$name»(«$itype» value);
             ||
         }
     }

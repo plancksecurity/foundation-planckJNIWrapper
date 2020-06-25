@@ -2,7 +2,7 @@ package foundation.pEp.jniadapter;
 
 import java.io.Serializable;
 
-public class Identity implements Serializable{
+public class Identity implements IdentityInterface, Serializable {
     public String address;
     public String fpr;
     public String user_id;
