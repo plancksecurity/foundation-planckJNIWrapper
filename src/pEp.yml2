@@ -250,10 +250,6 @@ namespace pEp {
                 in CipherSuite suite
             );
 
-        method config_passphrase(
-                in string passphrase
-            );
-
         method config_passphrase_for_new_keys(
                 in bool enable,
                 in string passphrase
@@ -279,6 +275,7 @@ namespace pEp {
         basic string getCrashdumpLog(int maxlines);
         basic string getUserDirectory();
         basic string getMachineDirectory();
+        basic void config_passphrase(string passphrase);
     };
 
     struct message {
