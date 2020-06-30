@@ -191,7 +191,7 @@ namespace pEp {
 		in bool full
             );
 
-        method get_message_trustwords(
+        method cached=true get_message_trustwords(
                 in message msg,
                 in stringlist keylist,
                 in identity receivedby,
@@ -210,27 +210,17 @@ namespace pEp {
                 in identity ident
             );
 
-        // old key_reset function needs to be replaced
-/*
-        method key_reset(
-                in string fpr, 
-                in identity ident
-            );
-*/
-
-        // new key reset API
-
-        method key_reset_identity(
+        method cached=true key_reset_identity(
                 in identity ident,
                 in string fpr
             );
 
-        method key_reset_user(
+        method cached=true key_reset_user(
                 in string userid,
                 in string fpr
             );
 
-        method key_reset_all_own_keys();
+        method cached=true key_reset_all_own_keys();
                 
         method deliverHandshakeResult(
                 in SyncHandshakeResult shr,
@@ -243,7 +233,7 @@ namespace pEp {
                 in identity ident
             );
 
-	    method disable_identity_for_sync(
+	    method cached=true disable_identity_for_sync(
                 in identity ident
             );
 
