@@ -252,7 +252,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1trustOwnKey(
     ::trust_own_key(session(), _ident);
 }
 
-JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine_importKey(
+JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1importKey(
         JNIEnv *env,
         jobject obj,
         jbyteArray key
