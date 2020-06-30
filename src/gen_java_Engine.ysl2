@@ -30,7 +30,7 @@ tstylesheet {
         const "jtype" call "toJava" with "type", "@type";
 
         choose {
-            when "name(parm/*[1])='bytearray'"
+            when "name(parm/*[1])='bytearray|identitylist'"
             ||
             public native «$itype» «@name»(`apply "parm/*", mode=basic_iparm`);
 
@@ -49,7 +49,18 @@ tstylesheet {
                     |> return new Identity(_«@name»(`apply "parm/*", mode=basic_parm_name`));
                 when "@type = 'bool'"
                     |> return new Boolean(_«@name»(`apply "parm/*", mode=basic_parm_name`));
-                otherwise
+                when "@type = 'identitylist'" {
+                ||
+                    Vector<_Identity> glist = _«@name»(`apply "parm/*", mode=basic_parm_name`);
+                    Vector<Identity> ret = new Vector<Identity>();
+                    if(glist != null) {
+                        for (_Identity i : glist) {
+                            ret.add(new Identity(i));
+                        }
+                    }
+                    return ret;
+                ||
+                } otherwise
                     |> return AbstractEngine.toUTF16(_«@name»(`apply "parm/*", mode=basic_parm_name`));
             }
             ||
@@ -83,6 +94,8 @@ tstylesheet {
                     > IdentityList 
                 when "name(.) = 'bool'"
                     > Boolean 
+                when "name(.) = 'bytearray'"
+                    > byte[] 
                 otherwise
                     > «name(.)» 
             }
@@ -115,6 +128,8 @@ tstylesheet {
             | «$pitype» _«$pname» = «$pname».getBytes();
             when "$ptype = 'bool'"
             | «$pitype» _«$pname» = «$pname».booleanValue();
+            when "$ptype = 'bytearray'"
+            | «$pitype» _«$pname» = «$pname».clone();
             when "$ptype = 'int'"
             | «$pitype» _«$pname» = «$pname»; 
             when "ancestor::namespace/child::enum[@name=$ptype]"
