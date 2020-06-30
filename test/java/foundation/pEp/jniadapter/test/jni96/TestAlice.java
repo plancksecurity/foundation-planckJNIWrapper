@@ -15,36 +15,45 @@ class TestAlice {
         TestSuite.getDefault().setVerbose(true);
         TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
 
-        new TestUnit<AdapterBaseTestContext>("import_key() with pub no return",new AdapterBaseTestContext() , ctx  -> {
+        new TestUnit<AdapterBaseTestContext>("import_key() 1 pub key",new AdapterBaseTestContext() , ctx  -> {
             Vector<Identity> privKeys = null;
             privKeys = ctx.engine.importKey(ctx.keyAlicePub);
             log(AdapterTestUtils.identityListToString(privKeys, false));
             assert privKeys.size() == 0: "pub key should not be in return";
         });
 
-        new TestUnit<AdapterBaseTestContext>("import_key() with priv key",new AdapterBaseTestContext() , ctx  -> {
+        new TestUnit<AdapterBaseTestContext>("import_key() 1 sec key",new AdapterBaseTestContext() , ctx  -> {
             Vector<Identity> privKeys = null;
             privKeys = ctx.engine.importKey(ctx.keyAliceSec);
             log(AdapterTestUtils.identityListToString(privKeys, false));
-            assert privKeys.size() == 1: "imported priv key should be returned";
+            assert privKeys.size() == 1: "imported sec key should be returned";
         });
 
-        new TestUnit<AdapterBaseTestContext>("import_key() 2 pub",new AdapterBaseTestContext() , ctx  -> {
+        new TestUnit<AdapterBaseTestContext>("import_key() 2 pub keys",new AdapterBaseTestContext() , ctx  -> {
             byte[] keys = concat(ctx.keyAlicePub, ctx.keyBobPub);
 
             Vector<Identity> privKeys = null;
             privKeys = ctx.engine.importKey(keys);
             log(AdapterTestUtils.identityListToString(privKeys, false));
-            assert privKeys.size() == 0: "imported priv key should be returned";
+            assert privKeys.size() == 0: "imported pub keys should not be returned";
         });
 
-        new TestUnit<AdapterBaseTestContext>("import_key() with key array",new AdapterBaseTestContext() , ctx  -> {
+        new TestUnit<AdapterBaseTestContext>("import_key() 2 sec keys",new AdapterBaseTestContext() , ctx  -> {
+            byte[] keys = concat(ctx.keyAliceSec, ctx.keyBobSec);
+
+            Vector<Identity> privKeys = null;
+            privKeys = ctx.engine.importKey(keys);
+            log(AdapterTestUtils.identityListToString(privKeys, false));
+            assert privKeys.size() == 2: "imported sec keys should be returned";
+        });
+
+        new TestUnit<AdapterBaseTestContext>("import_key() 4 keys pub/sec",new AdapterBaseTestContext() , ctx  -> {
             byte[] keys = concat(ctx.keyAlicePub, concat(ctx.keyAliceSec, concat(ctx.keyBobPub, ctx.keyBobSec)));
 
             Vector<Identity> privKeys = null;
             privKeys = ctx.engine.importKey(keys);
             log(AdapterTestUtils.identityListToString(privKeys, false));
-            assert privKeys.size() == 3: "imported priv key should be returned";
+            assert privKeys.size() == 2: "nr of imported keys doesnt match";
         });
 
         TestSuite.getDefault().run();
