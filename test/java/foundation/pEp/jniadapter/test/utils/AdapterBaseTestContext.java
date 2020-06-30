@@ -44,10 +44,10 @@ public class AdapterBaseTestContext extends AbstractTestContext {
     private String filenameBobPub = "../resources/test_keys/bob-pub.asc";
 
     public byte[] keyAlicePub;
-    private String filenameAlicePub = "../resources/test_keys/alice-pub.asc";
+    private String filenameAlicePub = "../resources/test_keys/alicenew-pub.asc";
 
     public byte[] keyAliceSec;
-    private String filenameAliceSec = "../resources/test_keys/alice-sec.asc";
+    private String filenameAliceSec = "../resources/test_keys/alicenew-sec.asc";
 
     // Messages
     public Message msgToSelf;
