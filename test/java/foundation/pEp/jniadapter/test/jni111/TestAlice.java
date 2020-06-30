@@ -1,5 +1,7 @@
 package foundation.pEp.jniadapter.test.jni111;
+
 import static foundation.pEp.pitytest.TestLogger.*;
+
 import foundation.pEp.pitytest.*;
 import foundation.pEp.pitytest.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.*;
@@ -12,12 +14,16 @@ class TestAlice {
         TestSuite.getDefault().setVerbose(true);
         TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
 
-        new TestUnit<AdapterBaseTestContext>("config_passphrase",new AdapterBaseTestContext() , ctx  -> {
-          ctx.engine.config_passphrase("SUPERCOMPLICATEDPASSPHRASE");
+        AdapterBaseTestContext jni111Ctx = new AdapterBaseTestContext();
+
+        new TestUnit<AdapterBaseTestContext>("config_passphrase", jni111Ctx, ctx -> {
+            ctx.engine.config_passphrase("chocolate");
+            ctx.engine.config_passphrase("Bar");
+            ctx.engine.config_passphrase("Foo");
         });
 
-        new TestUnit<AdapterBaseTestContext>("config_passphrase_for_new_keys",new AdapterBaseTestContext() , ctx  -> {
-          ctx.engine.config_passphrase_for_new_keys(true, "SUPERCOMPLICATEDPASSPHRASE");
+        new TestUnit<AdapterBaseTestContext>("config_passphrase_for_new_keys", jni111Ctx, ctx -> {
+            ctx.engine.config_passphrase_for_new_keys(true, "SUPERCOMPLICATEDPASSPHRASE");
         });
 
         TestSuite.getDefault().run();

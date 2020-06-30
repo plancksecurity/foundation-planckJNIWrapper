@@ -85,32 +85,32 @@ namespace pEp {
     };
 
     interface Engine {
-        method encrypt_message(
+        method cached=true encrypt_message(
                 in message src,
                 in stringlist extra,
                 creates message dst,
                 in EncFormat format,
-                Cconst PEP_encrypt_flags flags "0"
+                Cconst PEP_encrypt_flags flags "(PEP_encrypt_flags_t)0"
             );
 
-        method encrypt_message_and_add_priv_key(
+        method cached=true encrypt_message_and_add_priv_key(
                 in message src,
                 creates message dst,
                 in string fpr,
                 Cconst PEP_enc_format encformat "PEP_enc_PEP",
-                Cconst PEP_encrypt_flags flags "0"
+                Cconst PEP_encrypt_flags flags "(PEP_encrypt_flags_t)0"
             );
 
-        method encrypt_message_for_self(
+        method cached=true encrypt_message_for_self(
                 in identity target,
                 in message src,
                 in stringlist extra,
                 creates message dst,
                 Cconst PEP_enc_format encformat "PEP_enc_PEP",
-                Cconst PEP_encrypt_flags flags "0"
+                Cconst PEP_encrypt_flags flags "(PEP_encrypt_flags_t)0"
             );
 
-        method decrypt_message(
+        method cached=true decrypt_message(
                 inout message src,
                 creates message dst,
                 inout stringlist keylist,
@@ -150,7 +150,8 @@ namespace pEp {
                 returns stringlist blacklist
             );
 
-        method own_message_private_key_details(
+        // TODO: WTF is...
+        method cached=true own_message_private_key_details(
                 in message msg,
                 returns identity ident 
             );
@@ -250,10 +251,6 @@ namespace pEp {
                 in CipherSuite suite
             );
 
-        method config_passphrase(
-                in string passphrase
-            );
-
         method config_passphrase_for_new_keys(
                 in bool enable,
                 in string passphrase
@@ -279,6 +276,7 @@ namespace pEp {
         basic string getCrashdumpLog(int maxlines);
         basic string getUserDirectory();
         basic string getMachineDirectory();
+        basic void config_passphrase(string passphrase);
     };
 
     struct message {

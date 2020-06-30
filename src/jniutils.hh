@@ -8,6 +8,7 @@
 #include <pEp/bloblist.h>
 #include <pEp/message.h>
 #include <pEp/sync_api.h>
+#include <pEp/passphrase_cache.hh>
 
 #if 0 // Enable if log needed
 #include <android/log.h>
@@ -20,6 +21,7 @@
 namespace pEp {
     namespace JNIAdapter {
 
+        static pEp::PassphraseCache cache;
         // Global mutex needs to be locked in all constructors which insert their own mutex object
         // into the unordered_map (which is thread safe for read, but not for write)
         extern std::mutex global_mutex;
