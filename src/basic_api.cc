@@ -463,17 +463,17 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1getMachineD
     return from_string(env, ::per_machine_directory());
 }
 
-void logPassphraseCache() {
-    try {
-        while(true) {
-            pEpLog("Cache: '" << cache.latest_passphrase() << "'");
-        }
-    } catch(pEp::PassphraseCache::Empty e) {
-        pEpLog(e.what());
-    } catch(pEp::PassphraseCache::Exhausted ex) {
-        pEpLog(ex.what());
-    }
-}
+//void logPassphraseCache() {
+//    try {
+////        while(true) {
+//            pEpLog("Cache: '" << cache.latest_passphrase() << "'");
+////        }
+//    } catch(pEp::PassphraseCache::Empty e) {
+//        pEpLog(e.what());
+//    } catch(pEp::PassphraseCache::Exhausted ex) {
+//        pEpLog(ex.what());
+//    }
+//}
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphrase
   (JNIEnv * env,
@@ -488,7 +488,6 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    logPassphraseCache();
     char *_passphrase = to_string(env, passphrase);
 
     PEP_STATUS status = ::config_passphrase(session(),cache.add(_passphrase));
@@ -496,7 +495,6 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
         throw_pEp_Exception(env, status);
         return;
     }
-    logPassphraseCache();
 }
 
 } // extern "C"
