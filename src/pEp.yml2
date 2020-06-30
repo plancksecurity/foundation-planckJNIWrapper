@@ -267,7 +267,7 @@ namespace pEp {
         basic void keyResetTrust(identity ident);
         basic void trustPersonalKey(identity ident);
         basic void trustOwnKey(identity ident);
-        basic void importKey(bytearray key);
+        basic identitylist importKey(bytearray key);
         basic void blacklist_add(string fpr);
         basic void blacklist_delete(string fpr);
         basic bool blacklist_is_listed(string fpr);

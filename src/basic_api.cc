@@ -252,7 +252,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1trustOwnKey(
     ::trust_own_key(session(), _ident);
 }
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_importKey(
+JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine_importKey(
         JNIEnv *env,
         jobject obj,
         jbyteArray key
@@ -271,17 +271,26 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine_importKey(
 
     if(_key == NULL){
         throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
-        return;
+        return NULL;
     }
 
-    PEP_STATUS status = ::import_key(session(), _key, _size, NULL);
+    identity_list *_identities;
+
+    PEP_STATUS status = ::import_key(session(), _key, _size, &_identities);
     if (status != PEP_STATUS_OK && status != PEP_KEY_IMPORTED) {
         throw_pEp_Exception(env, status);
-        return;
+        return NULL;
+    }
+
+    jobject identities_ = NULL;
+    if (_identities) {
+        identities_ = from_identitylist(env, _identities);
     }
 
     env->ReleaseByteArrayElements(key, (jbyte *) _key, JNI_ABORT);
+    return identities_;
 }
+
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passive_1mode(
         JNIEnv *env,
