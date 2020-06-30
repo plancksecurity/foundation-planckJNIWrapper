@@ -8,7 +8,7 @@ import foundation.pEp.jniadapter.Sync.DefaultCallback;
 import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;
 
-abstract class AbstractEngine extends UniquelyIdentifiable implements AutoCloseable {
+abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEngineInterface, AutoCloseable {
     static {
         System.loadLibrary("pEpJNI");
     }
@@ -34,18 +34,46 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         }
     }
 
-    public native String getVersion();
-    public native String getProtocolVersion();
+    private native String _getVersion();
+
+    public String getVersion() {
+        return _getVersion();
+    }
+
+    private native String _getProtocolVersion();
+
+    public String getProtocolVersion() {
+        return _getProtocolVersion();
+    }
 
     private long keyserverThread;
     private long keyserverQueue;
 
-    public native void startKeyserverLookup();
-    public native void stopKeyserverLookup();
+    private native void _startKeyserverLookup();
 
-    public native void startSync();
-    public native void stopSync();
-    public native boolean isSyncRunning();
+    public void startKeyserverLookup() {
+        _startKeyserverLookup();
+    }
+
+    private native void _stopKeyserverLookup();
+
+    public void stopKeyserverLookup() {
+        _startKeyserverLookup();
+    }
+
+    private native void _startSync();
+
+    public void startSync() {
+        _startSync();
+    }
+
+    private native void _stopSync();
+
+    public void stopSync() {
+        _stopSync();
+    }
+
+    private native boolean _isSyncRunning();
 
     public static byte[] toUTF8(String str) {
         if (str == null)
