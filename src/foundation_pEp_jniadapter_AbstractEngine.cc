@@ -5,6 +5,7 @@
 #include <pEp/sync_api.h>
 #include <pEp/Adapter.hh>
 #include <pEp/pEpLog.hh>
+#include <pEp/passphrase_cache.hh>
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
 
@@ -95,8 +96,16 @@ PEP_STATUS messageToSend(message *msg)
     std::lock_guard<std::mutex> l(mutex_obj);
 
     pEpLog("############### messageToSend() called");
-    jobject msg_ = nullptr;
 
+    // Passphrase
+    // When a protocol implementation of the p≡p engine using messageToSend() cannot sign or encrypt with an
+    // empty passphrase and not with the configured passphrase it is calling messageToSend() with a NULL instead
+    // of a struct _message object.
+    if (Adapter::on_sync_thread() && !msg) {
+        return pEp::PassphraseCache::messageToSend(cache, Adapter::session());
+    }
+
+    jobject msg_ = nullptr;
     assert(messageClass && messageConstructorMethodID && objj && messageToSendMethodID);
 
     msg_ = o.env()->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
