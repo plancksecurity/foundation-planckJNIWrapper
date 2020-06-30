@@ -34,14 +34,14 @@ tstylesheet {
                     ) throws pEpException;
                 
                 public «$cname»(String mime_text) {
-                    byte[] _mime_text = AbstractEngine.toUTF8(mime_text);
+                    byte[] _mime_text = Utils.toUTF8(mime_text);
                     handle = _«$cname»(_mime_text);
                 }
 
                 public native byte[] _encodeMIME() throws pEpException;
 
                 public String encodeMIME() {
-                    return AbstractEngine.toUTF16(_encodeMIME());
+                    return Utils.toUTF16(_encodeMIME());
                 }
 
                 private «$cname»(long h) {
@@ -157,13 +157,13 @@ tstylesheet {
                     otherwise > _«$ename»
                 }
                 const "convget" choose {
-                    when "$ctype = 'stringlist'" > AbstractEngine.toUTF16(i)
-                    when "$ctype = 'stringpairlist'" > new Pair<String, String>(AbstractEngine.toUTF16(i.first), AbstractEngine.toUTF16(i.second))
+                    when "$ctype = 'stringlist'" > Utils.toUTF16(i)
+                    when "$ctype = 'stringpairlist'" > new Pair<String, String>(Utils.toUTF16(i.first), Utils.toUTF16(i.second))
                     otherwise > new «$ename»(i)
                 }
                 const "convset" choose {
-                    when "$ctype = 'stringlist'" > AbstractEngine.toUTF8(i)
-                    when "$ctype = 'stringpairlist'" > new Pair<byte[],byte[]>(AbstractEngine.toUTF8(i.first), AbstractEngine.toUTF8(i.second))
+                    when "$ctype = 'stringlist'" > Utils.toUTF8(i)
+                    when "$ctype = 'stringpairlist'" > new Pair<byte[],byte[]>(Utils.toUTF8(i.first), Utils.toUTF8(i.second))
                     otherwise > new _«$ename»(i)
                 }
                 ||
@@ -200,13 +200,13 @@ tstylesheet {
             public «$type» get«$name»() {
                 «$itype» res = _get«$name»();
                 if(res != null)
-                    return AbstractEngine.toUTF16(res);
+                    return Utils.toUTF16(res);
                 else
                     return null;
             }
             public void set«$name»(«$type» value) {
                 if(value != null)
-                    _set«$name»(AbstractEngine.toUTF8(value));
+                    _set«$name»(Utils.toUTF8(value));
                 else
                     _set«$name»(new byte[0]);
             }
@@ -220,13 +220,13 @@ tstylesheet {
             public «$type» get«$name»() {
                 «$itype» res = _get«$name»();
                 if(res != null)
-                    return AbstractEngine.toUTF16(res);
+                    return Utils.toUTF16(res);
                 else
                     return null;
             }
             public void set«$name»(«$type» value) {
                 if(value != null)
-                    _set«$name»(AbstractEngine.toUTF8(value));
+                    _set«$name»(Utils.toUTF8(value));
                 else
                     _set«$name»(null);
             }
@@ -280,13 +280,13 @@ tstylesheet {
                     otherwise > _«$ename»
                 }
                 const "convget" choose {
-                    when "$ctype = 'stringlist'" > AbstractEngine.toUTF16(i)
-                    when "$ctype = 'stringpairlist'" > new Pair<String, String>(AbstractEngine.toUTF16(i.first), AbstractEngine.toUTF16(i.second))
+                    when "$ctype = 'stringlist'" > Utils.toUTF16(i)
+                    when "$ctype = 'stringpairlist'" > new Pair<String, String>(Utils.toUTF16(i.first), Utils.toUTF16(i.second))
                     otherwise > new «$ename»(i)
                 }
                 const "convset" choose {
-                    when "$ctype = 'stringlist'" > AbstractEngine.toUTF8(i)
-                    when "$ctype = 'stringpairlist'" > new Pair<byte[],byte[]>(AbstractEngine.toUTF8(i.first), AbstractEngine.toUTF8(i.second))
+                    when "$ctype = 'stringlist'" > Utils.toUTF8(i)
+                    when "$ctype = 'stringpairlist'" > new Pair<byte[],byte[]>(Utils.toUTF8(i.first), Utils.toUTF8(i.second))
                     otherwise > new _«$ename»(i)
                 }
                 ||

@@ -22,15 +22,15 @@ public class Blob implements BlobInterface, Serializable {
         String ret = "";
         ret += "mime_type: \"" + mime_type + "\"\n";
         ret += "filename: \"" + filename + "\"\n";
-        ret += "data plain: \"" + AbstractEngine.toUTF16(data) + "\"\n";
+        ret += "data plain: \"" + Utils.toUTF16(data) + "\"\n";
         ret += "data decoded: \"" + _b.dataToXER() + "\"\n";
         return ret;
     }
 
     Blob(_Blob b) {
         data = b.data;
-        mime_type = AbstractEngine.toUTF16(b.mime_type);
-        filename = AbstractEngine.toUTF16(b.filename);
+        mime_type = Utils.toUTF16(b.mime_type);
+        filename = Utils.toUTF16(b.filename);
     }
 }
 

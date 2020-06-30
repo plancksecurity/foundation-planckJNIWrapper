@@ -23,12 +23,12 @@ public class Identity implements IdentityInterface, Serializable {
     }
 
     public Identity(_Identity i) {
-        address = AbstractEngine.toUTF16(i.address);
-        fpr = AbstractEngine.toUTF16(i.fpr);
-        user_id = AbstractEngine.toUTF16(i.user_id);
-        username = AbstractEngine.toUTF16(i.username);
+        address = Utils.toUTF16(i.address);
+        fpr = Utils.toUTF16(i.fpr);
+        user_id = Utils.toUTF16(i.user_id);
+        username = Utils.toUTF16(i.username);
         comm_type = CommType.Management.tag.get(i.comm_type);
-        lang = AbstractEngine.toUTF16(i.lang);
+        lang = Utils.toUTF16(i.lang);
         me = i.me;
         flags = i.flags;
     }

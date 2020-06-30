@@ -50,7 +50,7 @@ tstylesheet {
                 when "@type = 'bool'"
                     |> return new Boolean(_«@name»(`apply "parm/*", mode=basic_parm_name`));
                 otherwise
-                    |> return AbstractEngine.toUTF16(_«@name»(`apply "parm/*", mode=basic_parm_name`));
+                    |> return Utils.toUTF16(_«@name»(`apply "parm/*", mode=basic_parm_name`));
             }
             ||
             }
@@ -191,14 +191,14 @@ tstylesheet {
                 // TODO factorize type conversion with multireturn and gen_java_message.java
 
                 when "count(parm[returns][stringlist|string|sstring]) > 0"
-                    |> return AbstractEngine.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
+                    |> return Utils.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
                 when "count(parm[returns]/stringpairlist) > 0"
                     ||
                         ArrayList<Pair<byte[], byte[]>> glist = _«@name»(`apply "parm[in]", mode=call;`);
                         if(glist != null){
                             ArrayList<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
                             for (Pair<byte[],byte[]> i : glist)
-                                list.add(new Pair<String, String>(AbstractEngine.toUTF16(i.first), AbstractEngine.toUTF16(i.second)));
+                                list.add(new Pair<String, String>(Utils.toUTF16(i.first), Utils.toUTF16(i.second)));
                             return list;
                         }
                         return null;
@@ -287,7 +287,7 @@ tstylesheet {
 
         if "$dir = 'in' or $dir = 'inout'" choose {
             when "$type = 'string' or $type = 'stringlist'"
-                | ¡$type _«$name» = AbstractEngine.toUTF8(«$name»);
+                | ¡$type _«$name» = Utils.toUTF8(«$name»);
             when "$type = 'identity'"
                 ||
                 _Identity _«$name» = null; 
@@ -311,7 +311,7 @@ tstylesheet {
 
         if "$dir != 'in'" choose {
             when "$type = 'string' or $type = 'stringlist'"
-                | result.«$name» = AbstractEngine.toUTF16(_result.«$name»);
+                | result.«$name» = Utils.toUTF16(_result.«$name»);
             when "$type = 'identity'"
                 | result.«$name» = Identity(«$name»);
             otherwise

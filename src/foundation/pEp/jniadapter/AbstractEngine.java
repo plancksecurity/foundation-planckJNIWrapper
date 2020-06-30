@@ -29,7 +29,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
     }
 
     final public void close() {
-        synchronized (AbstractEngine.class){
+        synchronized (AbstractEngine.class) {
             release();
         }
     }
@@ -75,110 +75,10 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
 
     private native boolean _isSyncRunning();
 
-    public static byte[] toUTF8(String str) {
-        if (str == null)
-            return null;
-
-        try {
-            String _str = Normalizer.normalize(str, Normalizer.Form.NFC);
-            byte _buf[] = _str.getBytes("UTF-8");
-            byte _cpy[] = new byte[_buf.length];
-            System.arraycopy(_buf,0,_cpy,0,_buf.length);
-            return _cpy;
-        }
-        catch (UnsupportedEncodingException e) {
-            assert false;
-            return new byte[0];
-        }
+    public boolean isSyncRunning() {
+        return _isSyncRunning();
     }
 
-    public static Vector<byte[]> toUTF8(Vector<String> list) {
-        if (list == null)
-            return null;
-
-        Vector<byte[]> result = new Vector<byte[]>(list.size());
-
-        for (int i=0; i<list.size(); i++)
-            result.add(toUTF8(list.get(i)));
-
-        return result;
-    }
-
-    public static Pair<byte[], byte[]> toUTF8(Pair<String, String> pair) {
-        if (pair == null)
-            return null;
-
-        Pair<byte[], byte[]> result = new Pair<byte[], byte[]>();
-
-        result.first = toUTF8(pair.first);
-        result.second = toUTF8(pair.second);
-
-        return result;
-    }
-
-    public static ArrayList<Pair<byte[], byte[]>> toUTF8(ArrayList<Pair<String, String>> list) {
-        if (list == null)
-            return null;
-
-        ArrayList<Pair<byte[], byte[]>> result = new ArrayList<Pair<byte[], byte[]>>(list.size());
-
-        for (int i=0; i<list.size(); i++)
-            result.set(i, toUTF8(list.get(i)));
-
-        return result;
-    }
-
-    public static String toUTF16(byte[] utf8) {
-        if (utf8 == null)
-            return null;
-
-        try {
-            byte newUtf8[] = new byte[utf8.length];
-            System.arraycopy(utf8,0,newUtf8,0,utf8.length);
-
-            return new String(newUtf8, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e) {
-            assert false;
-            return new String();
-        }
-    }
-
-    public static Vector<String> toUTF16(Vector<byte[]> list) {
-        if (list == null)
-            return null;
-
-        Vector<String> result = new Vector<String>(list.size());
-
-        for (int i=0; i<list.size(); i++)
-            result.add(toUTF16(list.get(i)));
-
-        return result;
-    }
-
-    public static Pair<String, String> toUTF16(Pair<byte[], byte[]> pair) {
-        if (pair == null)
-            return null;
-
-        Pair<String, String> result = new Pair<String,String>();
-
-        result.first = toUTF16(pair.first);
-        result.second = toUTF16(pair.second);
-
-        return result;
-    }
-
-    public static ArrayList<Pair<String, String>> toUTF16(ArrayList<Pair<byte[], byte[]>> list) {
-        if (list == null)
-            return null;
-
-        ArrayList<Pair<String, String>> result = new ArrayList<Pair<String, String>>(list.size());
-
-        for (int i=0; i<list.size(); i++)
-            result.set(i, toUTF16(list.get(i)));
-
-        return result;
-    }
 
     public void setMessageToSendCallback(Sync.MessageToSendCallback messageToSendCallback) {
         this.messageToSendCallback = messageToSendCallback;
@@ -204,7 +104,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
     public int notifyHandshakeCallFromC(_Identity _myself, _Identity _partner, SyncHandshakeSignal _signal) {
         Identity myself = new Identity(_myself);
         Identity partner = new Identity(_partner);
-        System.out.println("pEpSync" +"notifyHandshakeCallFromC: " + notifyHandshakeCallback);
+        System.out.println("pEpSync" + "notifyHandshakeCallFromC: " + notifyHandshakeCallback);
         if (notifyHandshakeCallback != null) {
             notifyHandshakeCallback.notifyHandshake(myself, partner, _signal);
         } else {
@@ -213,8 +113,8 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
         return 0;
     }
 
-    public int messageToSendCallFromC (Message message) {
-        System.out.println("pEpSync" + "messageToSendCallFromC: " + messageToSendCallback );
+    public int messageToSendCallFromC(Message message) {
+        System.out.println("pEpSync" + "messageToSendCallFromC: " + messageToSendCallback);
         if (messageToSendCallback != null) {
             messageToSendCallback.messageToSend(message);
         } else {
@@ -232,11 +132,11 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
         ArrayList<Pair<String, String>> opts = new ArrayList<>();
         Pair<String, String> xpEp = new Pair<>();
         xpEp.first = "X-pEp-Version";
-        xpEp.second = this.getProtocolVersion();;
+        xpEp.second = this.getProtocolVersion();
         opts.add(xpEp);
         msg.setOptFields(opts);
 
-        if(encFormat == Message.EncFormat.PEP) {
+        if (encFormat == Message.EncFormat.PEP) {
             // For EncFormat.PEP
             // The pgpText goes into the attachment index 1
             msg.setShortmsg("p≡p");
@@ -257,14 +157,12 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
             attachments.add(att0);
             attachments.add(att1);
             msg.setAttachments(attachments);
-        }
-        else if (encFormat == Message.EncFormat.PEPEncInlineEA) {
+        } else if (encFormat == Message.EncFormat.PEPEncInlineEA) {
             // For EncFormat.PEPEncInlineEA
             // The pgpText goes into the longMessage
             msg.setShortmsg("");
             msg.setLongmsg(pgpText);
-        }
-        else {
+        } else {
             throw new pEpCannotEncode("Message.Encformat not supported: " + encFormat.toString());
         }
 
