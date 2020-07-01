@@ -15,7 +15,7 @@ tstylesheet {
             import java.util.ArrayList;
             import java.util.Vector;
 
-            final public class «$cname» extends AbstractEngine {
+            final public class «$cname» extends AbstractEngine implements EngineInterface {
                 public «$cname»() throws pEpException { }
 
                 `` apply "method", mode=plain
@@ -23,7 +23,6 @@ tstylesheet {
             }
 
             ||
-/*
         document("foundation/pEp/jniadapter/{$cname}Interface.java", "text")
             ||
             package foundation.pEp.jniadapter;
@@ -31,12 +30,11 @@ tstylesheet {
             import java.util.ArrayList;
             import java.util.Vector;
 
-            public interface «$cname»Interface {
+            public interface «$cname»Interface extends AbstractEngineInterface {
                 `` apply "method", mode=java_interface
                 `` apply "basic", mode=java_interface
             }
             ||
-*/
     }
 
     template "basic" {
@@ -109,7 +107,7 @@ tstylesheet {
                 when "name(.) = 'bool'"
                     > Boolean 
                 when "name(.) = 'bytearray'"
-                    > byte[]
+                    > byte[] 
                 otherwise
                     > «name(.)» 
             }
