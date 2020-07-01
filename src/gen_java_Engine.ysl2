@@ -176,12 +176,10 @@ tstylesheet {
     }
 
     template "method", mode=plain {
-        const "convert", "1";
         const "singlereturn", "count(parm/creates|parm/returns|parm/inout[../int]) = 1";
         const "multireturn", "count(parm/creates|parm/returns|parm/inout[../int]) > 1";
 
         if "$multireturn" {
-            if "$convert"
             ||
             private class _«@name»_Return {
             `` apply "parm[creates|returns|inout[../int]]", 1, mode=intermediate with "public", 1;
@@ -190,90 +188,80 @@ tstylesheet {
             ||
         }
 
-        if "$convert"
         ||
         private native `call "returnInter"` _«@name»(
         `` apply "parm[in|inout]", 2, mode=intermediate
             ) throws pEpException;
 
-        ||
-
-        ||
-        public `if "not($convert)" > native ``call "returnJava"` «@name»(
+        public `call "returnJava"` «@name»(
         `` apply "parm[in|inout]", 2, mode=java
-            ) throws pEpException`if "not($convert)" > ;`
+            ) throws pEpException
+        {
         ||
 
-        if "$convert" {
-            | {
-            apply "parm", mode=convertIn;
+        apply "parm", mode=convertIn;
 
-            if "$singlereturn" choose {
+        if "$singlereturn" choose {
 
-                // TODO factorize type conversion with multireturn and gen_java_message.java
+            // TODO factorize type conversion with multireturn and gen_java_message.java
 
-                when "count(parm[returns][stringlist|string|sstring]) > 0"
-                    |> return Utils.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
-                when "count(parm[returns]/stringpairlist) > 0"
-                    ||
-                        ArrayList<Pair<byte[], byte[]>> glist = _«@name»(`apply "parm[in]", mode=call;`);
-                        if(glist != null){
-                            ArrayList<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
-                            for (Pair<byte[],byte[]> i : glist) {
-                                list.add(new Pair<String, String>(Utils.toUTF16(i.first), Utils.toUTF16(i.second)));
-                            }
-                            return list;
+            when "count(parm[returns][stringlist|string|sstring]) > 0"
+                |> return Utils.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
+            when "count(parm[returns]/stringpairlist) > 0"
+                ||
+                    ArrayList<Pair<byte[], byte[]>> glist = _«@name»(`apply "parm[in]", mode=call;`);
+                    if(glist != null){
+                        ArrayList<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
+                        for (Pair<byte[],byte[]> i : glist) {
+                            list.add(new Pair<String, String>(Utils.toUTF16(i.first), Utils.toUTF16(i.second)));
                         }
-                        return null;
-                    ||
+                        return list;
+                    }
+                    return null;
+                ||
 
-                when "count(parm[returns]/identity) > 0"
-                    |> return new Identity(_«@name»(`apply "parm[in]", mode=call;`));
-                when "count(parm[returns]/identitylist) > 0"
-                    ||
-                        Vector<_Identity> glist = _«@name»(`apply "parm[in]", mode=call;`);
-                        if(glist != null){
-                            Vector<Identity> list = new Vector<Identity>();
-                            for (_Identity i : glist) {
-                                list.add(new Identity(i));
-                            }
-                            return list;
+            when "count(parm[returns]/identity) > 0"
+                |> return new Identity(_«@name»(`apply "parm[in]", mode=call;`));
+            when "count(parm[returns]/identitylist) > 0"
+                ||
+                    Vector<_Identity> glist = _«@name»(`apply "parm[in]", mode=call;`);
+                    if(glist != null){
+                        Vector<Identity> list = new Vector<Identity>();
+                        for (_Identity i : glist) {
+                            list.add(new Identity(i));
                         }
-                        return null;
-                    ||
-                otherwise
-                    |> return _«@name»(`apply "parm[in]", mode=call;`);
-            }
-
-            if "$multireturn"
-            ||
-                _«@name»_Return _result = _«@name»(`apply "parm[in|inout]", mode=call;`);
-                «@name»_Return result = new «@name»_Return();
-                `` apply "parm[creates|returns|inout[../int]]", mode=convertOut;
-                return result;
-            ||
-
-            if "not($singlereturn) and not($multireturn)"
-            ||
-                _«@name»(`apply "parm[in]", mode=call;`);
-            ||
-
-            ||
-            }
-            ||
+                        return list;
+                    }
+                    return null;
+                ||
+            otherwise
+                |> return _«@name»(`apply "parm[in]", mode=call;`);
         }
+
+        if "$multireturn"
+        ||
+            _«@name»_Return _result = _«@name»(`apply "parm[in|inout]", mode=call;`);
+            «@name»_Return result = new «@name»_Return();
+            `` apply "parm[creates|returns|inout[../int]]", mode=convertOut;
+            return result;
         ||
 
+        if "not($singlereturn) and not($multireturn)"
+        ||
+            _«@name»(`apply "parm[in]", mode=call;`);
+        ||
+
+        ||
+        }
         ||
     }
 
     template "method", mode=java_interface {
-        const "convert", "count(parm/stringlist|parm/stringpairlist|parm/string|parm/identity|parm/identitylist) > 0";
         const "singlereturn", "count(parm/creates|parm/returns|parm/inout[../int]) = 1";
         const "multireturn", "count(parm/creates|parm/returns|parm/inout[../int]) > 1";
 
         ||
-        public `if "not($convert)" > native ``call "returnJava"` «@name»(
+        public `call "returnJava"` «@name»(
         `` apply "parm[in|inout]", 2, mode=java
             ) throws pEpException;
 

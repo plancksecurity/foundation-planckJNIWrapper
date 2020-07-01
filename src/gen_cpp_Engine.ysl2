@@ -298,14 +298,7 @@ tstylesheet {
     }
 
     function "mangle" {
-        const "convert", "1";
-
-        choose {
-            when "$convert"
-                > «concat('Java_foundation_pEp_jniadapter_', ../@name, '__1', str:replace(@name, '_', '_1'))»
-            otherwise
-                > «concat('Java_foundation_pEp_jniadapter_', ../@name, '_', str:replace(@name, '_', '_1'))»
-        }
+        > «concat('Java_foundation_pEp_jniadapter_', ../@name, '__1', str:replace(@name, '_', '_1'))»
     }
 
     template "parm", mode=sig {
