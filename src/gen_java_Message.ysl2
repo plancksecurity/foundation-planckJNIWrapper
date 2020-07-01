@@ -38,7 +38,7 @@ tstylesheet {
                     handle = _«$cname»(_mime_text);
                 }
 
-                public native byte[] _encodeMIME() throws pEpException;
+                private native byte[] _encodeMIME() throws pEpException;
 
                 public String encodeMIME() {
                     return Utils.toUTF16(_encodeMIME());
@@ -126,30 +126,28 @@ tstylesheet {
         const "name" call "toJava" with "type", "name(*[position()=1])";
 
         choose {
-            when "$ctype = 'identity'"
-            ||
-            private native «$itype» _get«$name»();
-            private native void _set«$name»(«$itype» value);
-            public «$type» get«$name»() {
-                «$itype» res = _get«$name»();
-                if(res != null){
-                    return new «$type»(_get«$name»());
-                }else{
-                    return null;
+            when "$ctype = 'identity'" {
+                ||
+                private native «$itype» _get«$name»();
+                private native void _set«$name»(«$itype» value);
+                public «$type» get«$name»() {
+                    «$itype» res = _get«$name»();
+                    if(res != null){
+                        return new «$type»(_get«$name»());
+                    }else{
+                        return null;
+                    }
                 }
-            }
-            public void set«$name»(«$type» value) {
-                if(value != null)
-                    _set«$name»(new «$itype»(value));
-                else
-                    _set«$name»(null);
-            }
-            
-            ||
+                public void set«$name»(«$type» value) {
+                    if(value != null)
+                        _set«$name»(new «$itype»(value));
+                    else
+                        _set«$name»(null);
+                }
 
-            when "$ctype = 'identitylist' or $ctype = 'bloblist' or $ctype = 'stringlist' or $ctype = 'stringpairlist'"
-            {
-
+                ||
+            }
+            when "$ctype = 'identitylist' or $ctype = 'bloblist' or $ctype = 'stringlist' or $ctype = 'stringpairlist'" {
                 const "ename", "substring-after(substring($type,1,string-length($type)-1), '<')";
                 const "iename" choose {
                     when "$ctype = 'stringlist'" > byte[]
@@ -193,68 +191,72 @@ tstylesheet {
                 ||
             }
             
-            when "$itype != $type"
-            ||
-            private native «$itype» _get«$name»();
-            private native void _set«$name»(«$itype» value);
-            public «$type» get«$name»() {
-                «$itype» res = _get«$name»();
-                if(res != null)
-                    return Utils.toUTF16(res);
-                else
-                    return null;
-            }
-            public void set«$name»(«$type» value) {
-                if(value != null)
-                    _set«$name»(Utils.toUTF8(value));
-                else
-                    _set«$name»(new byte[0]);
-            }
+            when "$itype != $type" {
+                ||
+                private native «$itype» _get«$name»();
+                private native void _set«$name»(«$itype» value);
+                public «$type» get«$name»() {
+                    «$itype» res = _get«$name»();
+                    if(res != null)
+                        return Utils.toUTF16(res);
+                    else
+                        return null;
+                }
+                public void set«$name»(«$type» value) {
+                    if(value != null)
+                        _set«$name»(Utils.toUTF8(value));
+                    else
+                        _set«$name»(new byte[0]);
+                }
 
-            ||
-
-            when "$itype != $type"
-            ||
-            private native «$itype» _get«$name»();
-            private native void _set«$name»(«$itype» value);
-            public «$type» get«$name»() {
-                «$itype» res = _get«$name»();
-                if(res != null)
-                    return Utils.toUTF16(res);
-                else
-                    return null;
-            }
-            public void set«$name»(«$type» value) {
-                if(value != null)
-                    _set«$name»(Utils.toUTF8(value));
-                else
-                    _set«$name»(null);
+                ||
             }
 
-            ||
+            when "$itype != $type" {
+                ||
+                private native «$itype» _get«$name»();
+                private native void _set«$name»(«$itype» value);
+                public «$type» get«$name»() {
+                    «$itype» res = _get«$name»();
+                    if(res != null)
+                        return Utils.toUTF16(res);
+                    else
+                        return null;
+                }
+                public void set«$name»(«$type» value) {
+                    if(value != null)
+                        _set«$name»(Utils.toUTF8(value));
+                    else
+                        _set«$name»(null);
+                }
 
-            when "../enum[@name=$ctype]"
-            ||
-            private native int _get«$name»();
-            public «$itype» get«$name»() {
-                return «$itype».getByInt(_get«$name»());
+                ||
             }
-            private native void _set«$name»(int value);
-            public void set«$name»(«$itype» value) {
-                if(value != null)
-                    _set«$name»(value.value);
-                else
-                    _set«$name»(0);
+
+            when "../enum[@name=$ctype]" {
+                ||
+                private native int _get«$name»();
+                public «$itype» get«$name»() {
+                    return «$itype».getByInt(_get«$name»());
+                }
+                private native void _set«$name»(int value);
+                public void set«$name»(«$itype» value) {
+                    if(value != null)
+                        _set«$name»(value.value);
+                    else
+                        _set«$name»(0);
+                }
+
+                ||
             }
 
-            ||
+            otherwise {
+                ||
+                public native «$itype» get«$name»();
+                public native void set«$name»(«$itype» value);
 
-            otherwise
-            ||
-            public native «$itype» get«$name»();
-            public native void set«$name»(«$itype» value);
-
-            ||
+                ||
+            }
         }
     }
 
