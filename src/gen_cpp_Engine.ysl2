@@ -298,7 +298,7 @@ tstylesheet {
     }
 
     function "mangle" {
-        const "convert", "count(parm/stringlist|parm/string|parm/identity|parm/identitylist) > 0";
+        const "convert", "1";
 
         choose {
             when "$convert"

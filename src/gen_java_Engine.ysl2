@@ -23,6 +23,7 @@ tstylesheet {
             }
 
             ||
+/*
         document("foundation/pEp/jniadapter/{$cname}Interface.java", "text")
             ||
             package foundation.pEp.jniadapter;
@@ -34,72 +35,54 @@ tstylesheet {
                 `` apply "method", mode=java_interface
                 `` apply "basic", mode=java_interface
             }
-
             ||
+*/
     }
 
     template "basic" {
         const "itype" call "toIntermediate" with "type", "@type";
         const "jtype" call "toJava" with "type", "@type";
 
+        ||
+        private native «$itype» _«@name»(`apply "parm/*", mode=basic_iparm`);
+
+        public «$jtype» «@name»(`apply "parm/*", mode=basic_parm`) {
+        ||
+        apply "parm/*", mode=basic_parm_set;
         choose {
-            when "name(parm/*[1])='bytearray|identitylist'"
+            when "@type = 'void'"
+                |> _«@name»(`apply "parm/*", mode=basic_parm_name`);
+            when "@type = 'identity'"
+                |> return new Identity(_«@name»(`apply "parm/*", mode=basic_parm_name`));
+            when "@type = 'bool'"
+                |> return new Boolean(_«@name»(`apply "parm/*", mode=basic_parm_name`));
+            when "@type = 'identitylist'" {
             ||
-            public native «$itype» «@name»(`apply "parm/*", mode=basic_iparm`);
-
-            ||
-            otherwise {
-            ||
-            private native «$itype» _«@name»(`apply "parm/*", mode=basic_iparm`);
-
-            public «$jtype» «@name»(`apply "parm/*", mode=basic_parm`) {
-            ||
-            apply "parm/*", mode=basic_parm_set;
-            choose {
-                when "@type = 'void'"
-                    |> _«@name»(`apply "parm/*", mode=basic_parm_name`);
-                when "@type = 'identity'"
-                    |> return new Identity(_«@name»(`apply "parm/*", mode=basic_parm_name`));
-                when "@type = 'bool'"
-                    |> return new Boolean(_«@name»(`apply "parm/*", mode=basic_parm_name`));
-                when "@type = 'identitylist'" {
-                ||
-                    Vector<_Identity> glist = _«@name»(`apply "parm/*", mode=basic_parm_name`);
-                    Vector<Identity> ret = new Vector<Identity>();
-                    if(glist != null) {
-                        for (_Identity i : glist) {
-                            ret.add(new Identity(i));
-                        }
+                Vector<_Identity> glist = _«@name»(`apply "parm/*", mode=basic_parm_name`);
+                Vector<Identity> ret = new Vector<Identity>();
+                if(glist != null) {
+                    for (_Identity i : glist) {
+                        ret.add(new Identity(i));
                     }
-                    return ret;
-                ||
-                } otherwise
-                    |> return Utils.toUTF16(_«@name»(`apply "parm/*", mode=basic_parm_name`));
-            }
+                }
+                return ret;
             ||
-            }
-
-            ||
-            }
+            } otherwise
+                |> return Utils.toUTF16(_«@name»(`apply "parm/*", mode=basic_parm_name`));
         }
+        ||
+        }
+
+        ||
     }
 
     template "basic" mode=java_interface {
         const "itype" call "toIntermediate" with "type", "@type";
         const "jtype" call "toJava" with "type", "@type";
 
-        choose {
-            when "name(parm/*[1])='bytearray'"
-            ||
-            public native «$itype» «@name»(`apply "parm/*", mode=basic_iparm`);
-
-            ||
-            otherwise {
-            ||
-            public «$jtype» «@name»(`apply "parm/*", mode=basic_parm`);
-            ||
-            }
-        }
+        ||
+        public «$jtype» «@name»(`apply "parm/*", mode=basic_parm`);
+        ||
     }
 
     template "*", mode=basic_parm_name choose {
@@ -193,7 +176,7 @@ tstylesheet {
     }
 
     template "method", mode=plain {
-        const "convert", "count(parm/stringlist|parm/stringpairlist|parm/string|parm/identity|parm/identitylist) > 0";
+        const "convert", "1";
         const "singlereturn", "count(parm/creates|parm/returns|parm/inout[../int]) = 1";
         const "multireturn", "count(parm/creates|parm/returns|parm/inout[../int]) > 1";
 
@@ -236,8 +219,9 @@ tstylesheet {
                         ArrayList<Pair<byte[], byte[]>> glist = _«@name»(`apply "parm[in]", mode=call;`);
                         if(glist != null){
                             ArrayList<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
-                            for (Pair<byte[],byte[]> i : glist)
+                            for (Pair<byte[],byte[]> i : glist) {
                                 list.add(new Pair<String, String>(Utils.toUTF16(i.first), Utils.toUTF16(i.second)));
+                            }
                             return list;
                         }
                         return null;
@@ -250,8 +234,9 @@ tstylesheet {
                         Vector<_Identity> glist = _«@name»(`apply "parm[in]", mode=call;`);
                         if(glist != null){
                             Vector<Identity> list = new Vector<Identity>();
-                            for (_Identity i : glist)
+                            for (_Identity i : glist) {
                                 list.add(new Identity(i));
+                            }
                             return list;
                         }
                         return null;
@@ -271,9 +256,8 @@ tstylesheet {
             if "not($singlereturn) and not($multireturn)"
             ||
                 _«@name»(`apply "parm[in]", mode=call;`);
-                return;
             ||
-                
+
             ||
             }
             ||
@@ -350,8 +334,9 @@ tstylesheet {
             when "$type = 'identitylist'"
                 ||
                 Vector<_Identity> _«$name» = new Vector<_Identity>();
-                for (Identity i : «$name»)
+                for (Identity i : «$name») {
                     _«$name».add(new _Identity(i));
+                }
                 ||
         }
     }
