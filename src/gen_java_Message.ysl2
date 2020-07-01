@@ -134,6 +134,7 @@ tstylesheet {
         choose {
             when "$ctype = 'identity'" {
                 ||
+                // Property type: Identity. [java: «$type», intermediate: «$itype», ctype: «$ctype»]
                 public «$type» get«$name»() {
                     «$itype» res = _get«$name»();
                     if (res != null) {
@@ -175,6 +176,7 @@ tstylesheet {
                     otherwise > new _«$ename»(i)
                 }
                 ||
+                // Property type: list type. [java: «$type», intermediate: «$itype», ctype: «$ctype»]
                 public «$type» get«$name»() {
                     «$itype» glist = _get«$name»();
                     if (glist != null) {
@@ -207,6 +209,7 @@ tstylesheet {
             
             when "$itype != $type" {
                 ||
+                // Property type: differs from intermediate. [java: «$type», intermediate: «$itype», ctype: «$ctype»]
                 public «$type» get«$name»() {
                     «$itype» res = _get«$name»();
                     if (res != null) {
@@ -232,11 +235,12 @@ tstylesheet {
 
             when "../enum[@name=$ctype]" {
                 ||
-                public «$itype» get«$name»() {
-                    return «$itype».getByInt(_get«$name»());
+                // Property type: enum type. [java: «$type», intermediate: «$itype», ctype: «$ctype»]
+                public «$type» get«$name»() {
+                    return «$type».getByInt(_get«$name»());
                 }
                 private native int _get«$name»();
-                public void set«$name»(«$itype» value) {
+                public void set«$name»(«$type» value) {
                     if(value != null)
                         _set«$name»(value.value);
                     else
@@ -249,8 +253,17 @@ tstylesheet {
 
             otherwise {
                 ||
-                public native «$itype» get«$name»();
-                public native void set«$name»(«$itype» value);
+                // Property type: no intermediate type [java: «$type», intermediate: «$itype», ctype: «$ctype»]
+                public «$type» get«$name»() {
+                    return get«$name»();
+                }
+                private native «$type» _get«$name»();
+
+                public void set«$name»(«$type» value) {
+                    _set«$name»(value);
+                }
+                private native void _set«$name»(«$type» value);
+
 
                 ||
             }
