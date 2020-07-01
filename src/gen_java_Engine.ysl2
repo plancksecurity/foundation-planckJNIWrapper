@@ -23,6 +23,19 @@ tstylesheet {
             }
 
             ||
+        document("foundation/pEp/jniadapter/{$cname}Interface.java", "text")
+            ||
+            package foundation.pEp.jniadapter;
+
+            import java.util.ArrayList;
+            import java.util.Vector;
+
+            public interface «$cname»Interface {
+                `` apply "method", mode=java_interface
+                `` apply "basic", mode=java_interface
+            }
+
+            ||
     }
 
     template "basic" {
@@ -59,7 +72,25 @@ tstylesheet {
             }
         }
     }
-    
+
+    template "basic" mode=java_interface {
+        const "itype" call "toIntermediate" with "type", "@type";
+        const "jtype" call "toJava" with "type", "@type";
+
+        choose {
+            when "name(parm/*[1])='bytearray'"
+            ||
+            public native «$itype» «@name»(`apply "parm/*", mode=basic_iparm`);
+
+            ||
+            otherwise {
+            ||
+            public «$jtype» «@name»(`apply "parm/*", mode=basic_parm`);
+            ||
+            }
+        }
+    }
+
     template "*", mode=basic_parm_name choose {
         when "position() mod 2" {
             if "position() = 1 and name(.)='int'"
@@ -233,6 +264,19 @@ tstylesheet {
             ||
         }
         ||
+
+        ||
+    }
+
+    template "method", mode=java_interface {
+        const "convert", "count(parm/stringlist|parm/stringpairlist|parm/string|parm/identity|parm/identitylist) > 0";
+        const "singlereturn", "count(parm/creates|parm/returns|parm/inout[../int]) = 1";
+        const "multireturn", "count(parm/creates|parm/returns|parm/inout[../int]) > 1";
+
+        ||
+        public `if "not($convert)" > native ``call "returnJava"` «@name»(
+        `` apply "parm[in|inout]", 2, mode=java
+            ) throws pEpException;
 
         ||
     }
