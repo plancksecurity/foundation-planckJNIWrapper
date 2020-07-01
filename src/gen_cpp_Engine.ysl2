@@ -17,6 +17,7 @@ tstylesheet {
         #include "foundation_pEp_jniadapter_«@name».h"
         #include "throw_pEp_exception.hh"
         #include "jniutils.hh"
+        #include <pEp/passphrase_cache.hh>
 
         using pEp::Adapter::session;
         using namespace pEp::JNIAdapter;
@@ -62,7 +63,20 @@ tstylesheet {
         apply "parm[creates|returns]", mode=out;
         ||
 
-            PEP_STATUS status = ::«@name»(session()`apply "parm", mode=call`);
+        ||
+        choose {
+            when "@cached = 'true'" {
+            ||
+                pEpLog("cached passphrase");
+                PEP_STATUS status = cache.api(::«@name»,session()`apply "parm", mode=call`);
+            ||
+            } otherwise {
+            ||
+                PEP_STATUS status = ::«@name»(session()`apply "parm", mode=call`);
+            ||
+            }
+        }
+        ||
             if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) |`> |`
                     status < PEP_STATUS_OK |`> |`
                     status >= PEP_TRUSTWORD_NOT_FOUND) {
@@ -237,6 +251,8 @@ tstylesheet {
                 | bool _«$name» = (bool) «$name»;
             when "$type='int'"
                 | int _«$name» = (int) «$name»;
+            when "$type='string'"
+                | const char *_«$name» = to_string(env, «$name»);
             otherwise
                 | √$type *_«$name» = to_«$type»(env, «$name»);
         }

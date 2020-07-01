@@ -85,32 +85,32 @@ namespace pEp {
     };
 
     interface Engine {
-        method encrypt_message(
+        method cached=true encrypt_message(
                 in message src,
                 in stringlist extra,
                 creates message dst,
                 in EncFormat format,
-                Cconst PEP_encrypt_flags flags "0"
+                Cconst PEP_encrypt_flags flags "(PEP_encrypt_flags_t)0"
             );
 
-        method encrypt_message_and_add_priv_key(
+        method cached=true encrypt_message_and_add_priv_key(
                 in message src,
                 creates message dst,
                 in string fpr,
                 Cconst PEP_enc_format encformat "PEP_enc_PEP",
-                Cconst PEP_encrypt_flags flags "0"
+                Cconst PEP_encrypt_flags flags "(PEP_encrypt_flags_t)0"
             );
 
-        method encrypt_message_for_self(
+        method cached=true encrypt_message_for_self(
                 in identity target,
                 in message src,
                 in stringlist extra,
                 creates message dst,
                 Cconst PEP_enc_format encformat "PEP_enc_PEP",
-                Cconst PEP_encrypt_flags flags "0"
+                Cconst PEP_encrypt_flags flags "(PEP_encrypt_flags_t)0"
             );
 
-        method decrypt_message(
+        method cached=true decrypt_message(
                 inout message src,
                 creates message dst,
                 inout stringlist keylist,
@@ -150,7 +150,8 @@ namespace pEp {
                 returns stringlist blacklist
             );
 
-        method own_message_private_key_details(
+        // TODO: WTF is...
+        method cached=true own_message_private_key_details(
                 in message msg,
                 returns identity ident 
             );
@@ -190,7 +191,7 @@ namespace pEp {
 		in bool full
             );
 
-        method get_message_trustwords(
+        method cached=true get_message_trustwords(
                 in message msg,
                 in stringlist keylist,
                 in identity receivedby,
@@ -209,27 +210,17 @@ namespace pEp {
                 in identity ident
             );
 
-        // old key_reset function needs to be replaced
-/*
-        method key_reset(
-                in string fpr, 
-                in identity ident
-            );
-*/
-
-        // new key reset API
-
-        method key_reset_identity(
+        method cached=true key_reset_identity(
                 in identity ident,
                 in string fpr
             );
 
-        method key_reset_user(
+        method cached=true key_reset_user(
                 in string userid,
                 in string fpr
             );
 
-        method key_reset_all_own_keys();
+        method cached=true key_reset_all_own_keys();
                 
         method deliverHandshakeResult(
                 in SyncHandshakeResult shr,
@@ -242,16 +233,12 @@ namespace pEp {
                 in identity ident
             );
 
-	    method disable_identity_for_sync(
+	    method cached=true disable_identity_for_sync(
                 in identity ident
             );
 
         method config_cipher_suite(
                 in CipherSuite suite
-            );
-
-        method config_passphrase(
-                in string passphrase
             );
 
         method config_passphrase_for_new_keys(
@@ -270,7 +257,7 @@ namespace pEp {
         basic void keyResetTrust(identity ident);
         basic void trustPersonalKey(identity ident);
         basic void trustOwnKey(identity ident);
-        basic void importKey(bytearray key);
+        basic identitylist importKey(bytearray key);
         basic void blacklist_add(string fpr);
         basic void blacklist_delete(string fpr);
         basic bool blacklist_is_listed(string fpr);
@@ -279,6 +266,7 @@ namespace pEp {
         basic string getCrashdumpLog(int maxlines);
         basic string getUserDirectory();
         basic string getMachineDirectory();
+        basic void config_passphrase(string passphrase);
     };
 
     struct message {
