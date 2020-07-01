@@ -71,6 +71,7 @@ tstylesheet {
 
             public interface «$cname»Interface {
                 public String encodeMIME();
+
                 `` apply "*[name(.)!='enum']", mode=interface
             }
             ||
@@ -271,66 +272,15 @@ tstylesheet {
     }
 
     template "*", mode=interface {
-        const "ctype", "name(.)";
         const "type" call "toJava" with "type", "name(.)";
-        const "itype" call "toIntermediate" with "type", "name(.)";
         const "name" call "toJava" with "type", "name(*[position()=1])";
 
-        choose {
-            when "$ctype = 'identity'"
-            ||
-            public «$type» get«$name»();
-            public void set«$name»(«$type» value);
-            ||
+        ||
+        public «$type» get«$name»();
 
-            when "$ctype = 'identitylist' or $ctype = 'bloblist' or $ctype = 'stringlist' or $ctype = 'stringpairlist'"
-            {
-                const "ename", "substring-after(substring($type,1,string-length($type)-1), '<')";
-                const "iename" choose {
-                    when "$ctype = 'stringlist'" > byte[]
-                    when "$ctype = 'stringpairlist'" > Pair<byte[],byte[]>
-                    otherwise > _«$ename»
-                }
-                const "convget" choose {
-                    when "$ctype = 'stringlist'" > Utils.toUTF16(i)
-                    when "$ctype = 'stringpairlist'" > new Pair<String, String>(Utils.toUTF16(i.first), Utils.toUTF16(i.second))
-                    otherwise > new «$ename»(i)
-                }
-                const "convset" choose {
-                    when "$ctype = 'stringlist'" > Utils.toUTF8(i)
-                    when "$ctype = 'stringpairlist'" > new Pair<byte[],byte[]>(Utils.toUTF8(i.first), Utils.toUTF8(i.second))
-                    otherwise > new _«$ename»(i)
-                }
-                ||
-                public «$type» get«$name»();
-                public void set«$name»(«$type» value);
-                ||
-            }
+        public void set«$name»(«$type» value);
 
-            when "$itype != $type"
-            ||
-            public «$type» get«$name»();
-            public void set«$name»(«$type» value);
-            ||
-
-            when "$itype != $type"
-            ||
-            public «$type» get«$name»();
-            public void set«$name»(«$type» value);
-            ||
-
-            when "../enum[@name=$ctype]"
-            ||
-            public «$itype» get«$name»();
-            public void set«$name»(«$itype» value);
-            ||
-
-            otherwise
-            ||
-            public «$itype» get«$name»();
-            public void set«$name»(«$itype» value);
-            ||
-        }
+        ||
     }
 
     template "*", mode=value {
