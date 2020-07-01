@@ -80,6 +80,7 @@ tstylesheet {
         const "jname" call "toJava" with "type", "@name";
         document("foundation/pEp/jniadapter/{$jname}.java", "text")
             ||
+            // CodeGen template enum|exception
             package foundation.pEp.jniadapter;
 
             import java.util.HashMap;
@@ -91,6 +92,7 @@ tstylesheet {
     template "enum|exception", mode=inner {
         const "jname" call "CamelCase" with "text", "@name";
         ||
+        // CodeGen template enum|exception, mode=inner
         public enum «$jname» {
             `` apply "*", mode=value
             ;
@@ -116,6 +118,7 @@ tstylesheet {
                 return null;
             }
         }
+
         ||
     }
 
@@ -125,28 +128,35 @@ tstylesheet {
         const "itype" call "toIntermediate" with "type", "name(.)";
         const "name" call "toJava" with "type", "name(*[position()=1])";
 
+        ||
+        // CodeGen template * mode=entry
+        ||
         choose {
             when "$ctype = 'identity'" {
                 ||
-                private native «$itype» _get«$name»();
-                private native void _set«$name»(«$itype» value);
                 public «$type» get«$name»() {
                     «$itype» res = _get«$name»();
-                    if(res != null){
+                    if (res != null) {
                         return new «$type»(_get«$name»());
-                    }else{
+                    } else {
                         return null;
                     }
                 }
+                private native «$itype» _get«$name»();
+
                 public void set«$name»(«$type» value) {
-                    if(value != null)
+                    if (value != null) {
                         _set«$name»(new «$itype»(value));
-                    else
+                    } else {
                         _set«$name»(null);
+                    }
                 }
+                private native void _set«$name»(«$itype» value);
+
 
                 ||
             }
+
             when "$ctype = 'identitylist' or $ctype = 'bloblist' or $ctype = 'stringlist' or $ctype = 'stringpairlist'" {
                 const "ename", "substring-after(substring($type,1,string-length($type)-1), '<')";
                 const "iename" choose {
@@ -165,87 +175,99 @@ tstylesheet {
                     otherwise > new _«$ename»(i)
                 }
                 ||
-                private native «$itype» _get«$name»();
-                private native void _set«$name»(«$itype» value);
                 public «$type» get«$name»() {
                     «$itype» glist = _get«$name»();
-                    if(glist != null){
+                    if (glist != null) {
                         «$type» list = new «$type»();
-                        for («$iename» i : glist)
+                        for («$iename» i : glist) {
                             list.add(«$convget»);
+                        }
                         return list;
                     }
                     return null;
                 }
+                private native «$itype» _get«$name»();
+
                 public void set«$name»(«$type» value) {
-                    if(value != null){
+                    if (value != null) {
                         «$itype» list = new «$itype»();
-                        for («$ename» i : value)
+                        for («$ename» i : value) {
                             list.add(«$convset»);
+                        }
                         _set«$name»(list);
-                    }else{
+                    } else {
                         _set«$name»(null);
                     }
                 }
-                
+                private native void _set«$name»(«$itype» value);
+
+
                 ||
             }
             
             when "$itype != $type" {
                 ||
-                private native «$itype» _get«$name»();
-                private native void _set«$name»(«$itype» value);
                 public «$type» get«$name»() {
                     «$itype» res = _get«$name»();
-                    if(res != null)
+                    if (res != null) {
                         return Utils.toUTF16(res);
-                    else
+                    } else {
                         return null;
+                    }
                 }
+                private native «$itype» _get«$name»();
+
                 public void set«$name»(«$type» value) {
-                    if(value != null)
+                    if (value != null) {
                         _set«$name»(Utils.toUTF8(value));
-                    else
+                    } else {
                         _set«$name»(new byte[0]);
+                    }
                 }
+                private native void _set«$name»(«$itype» value);
+
 
                 ||
             }
 
             when "$itype != $type" {
                 ||
-                private native «$itype» _get«$name»();
-                private native void _set«$name»(«$itype» value);
                 public «$type» get«$name»() {
                     «$itype» res = _get«$name»();
-                    if(res != null)
+                    if (res != null) {
                         return Utils.toUTF16(res);
-                    else
+                    } else {
                         return null;
+                    }
                 }
+                private native «$itype» _get«$name»();
+
                 public void set«$name»(«$type» value) {
-                    if(value != null)
+                    if (value != null) {
                         _set«$name»(Utils.toUTF8(value));
-                    else
+                    } else {
                         _set«$name»(null);
+                    }
                 }
+                private native void _set«$name»(«$itype» value);
+
 
                 ||
             }
 
             when "../enum[@name=$ctype]" {
                 ||
-                private native int _get«$name»();
                 public «$itype» get«$name»() {
                     return «$itype».getByInt(_get«$name»());
                 }
-                private native void _set«$name»(int value);
+                private native int _get«$name»();
                 public void set«$name»(«$itype» value) {
                     if(value != null)
                         _set«$name»(value.value);
                     else
                         _set«$name»(0);
                 }
+                private native void _set«$name»(int value);
 
                 ||
             }
