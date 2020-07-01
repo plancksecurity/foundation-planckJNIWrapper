@@ -230,31 +230,6 @@ tstylesheet {
                 ||
             }
 
-            when "$itype != $type" {
-                ||
-                public «$type» get«$name»() {
-                    «$itype» res = _get«$name»();
-                    if (res != null) {
-                        return Utils.toUTF16(res);
-                    } else {
-                        return null;
-                    }
-                }
-                private native «$itype» _get«$name»();
-
-                public void set«$name»(«$type» value) {
-                    if (value != null) {
-                        _set«$name»(Utils.toUTF8(value));
-                    } else {
-                        _set«$name»(null);
-                    }
-                }
-                private native void _set«$name»(«$itype» value);
-
-
-                ||
-            }
-
             when "../enum[@name=$ctype]" {
                 ||
                 public «$itype» get«$name»() {
