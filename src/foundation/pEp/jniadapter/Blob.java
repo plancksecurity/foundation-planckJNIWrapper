@@ -11,10 +11,18 @@ public class Blob implements BlobInterface, Serializable {
         mime_type = "application/octet-stream";
     }
 
-    /** Human readable string representation of Blob.
+    Blob(_Blob b) {
+        data = b.data;
+        mime_type = Utils.toUTF16(b.mime_type);
+        filename = Utils.toUTF16(b.filename);
+    }
+
+    /**
+     * Human readable string representation of Blob.
      * The data field is ASN.1 XER decoded for mime_types:
      * "application/pEp.sync"
      * "application/pEp.keyreset"
+     *
      * @return String Blob as String
      */
     public String toString() {
@@ -27,10 +35,5 @@ public class Blob implements BlobInterface, Serializable {
         return ret;
     }
 
-    Blob(_Blob b) {
-        data = b.data;
-        mime_type = Utils.toUTF16(b.mime_type);
-        filename = Utils.toUTF16(b.filename);
-    }
 }
 

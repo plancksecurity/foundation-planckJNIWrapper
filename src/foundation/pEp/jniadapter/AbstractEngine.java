@@ -37,48 +37,52 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
         }
     }
 
-    private native String _getVersion();
-
     public String getVersion() {
         return _getVersion();
     }
 
-    private native String _getProtocolVersion();
+    private native String _getVersion();
+
 
     public String getProtocolVersion() {
         return _getProtocolVersion();
     }
 
-    private native void _startKeyserverLookup();
+    private native String _getProtocolVersion();
+
 
     public void startKeyserverLookup() {
         _startKeyserverLookup();
     }
 
-    private native void _stopKeyserverLookup();
+    private native void _startKeyserverLookup();
 
     public void stopKeyserverLookup() {
         _startKeyserverLookup();
     }
 
-    private native void _startSync();
+    private native void _stopKeyserverLookup();
+
 
     public void startSync() {
         _startSync();
     }
 
-    private native void _stopSync();
+    private native void _startSync();
 
     public void stopSync() {
         _stopSync();
     }
 
-    private native boolean _isSyncRunning();
+    private native void _stopSync();
 
     public boolean isSyncRunning() {
         return _isSyncRunning();
     }
 
+    private native boolean _isSyncRunning();
+
+    // Callbacks
     public void setMessageToSendCallback(Sync.MessageToSendCallback messageToSendCallback) {
         this.messageToSendCallback = messageToSendCallback;
     }

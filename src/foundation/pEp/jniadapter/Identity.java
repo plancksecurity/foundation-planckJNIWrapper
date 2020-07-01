@@ -33,17 +33,16 @@ public class Identity implements IdentityInterface, Serializable {
         flags = i.flags;
     }
 
+    public Rating getRating() {
+        return Rating.getByInt(_getRating(comm_type.value));
+    }
+
+    private native int _getRating(int commType);
+
     @Override
     public String toString() {
         return address + "::" + username + "\n" +
                 user_id + "::" + fpr;
-    }
-
-    // Native
-    private native int _getRating(int commType);
-
-    public Rating getRating() {
-        return Rating.getByInt(_getRating(comm_type.value));
     }
 
 }
