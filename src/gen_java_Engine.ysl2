@@ -159,13 +159,6 @@ tstylesheet {
             }
 
             ||
-
-            ||
-            public class «@name»_Return {
-            `` apply "parm[creates|returns|inout[../int]]", 1, mode=java with "public", 1;
-            }
-
-            ||
         }
 
         if "$convert"

@@ -2,7 +2,7 @@ package foundation.pEp.jniadapter.test.templateAliceBob;
 
 import static foundation.pEp.pitytest.TestLogger.*;
 
-import foundation.pEp.jniadapter.Engine;
+import foundation.pEp.jniadapter.*;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.FsMQMessage;
 import foundation.pEp.pitytest.*;
@@ -59,7 +59,7 @@ class TestAlice {
                     Message msgRx = Utils.deserializepEpMessage(ctx, msgRxSerialized, Message.EncFormat.PEPEncInlineEA);
                     log("ENCRYPTED IN: \n" + AdapterTestUtils.msgToString(msgRx, false));
 
-                    Engine.decrypt_message_Return result = ctx.engine.decrypt_message(msgRx, null, 0);
+                    decrypt_message_Return result = ctx.engine.decrypt_message(msgRx, null, 0);
                     log("DECRYPTED msg: \n" + AdapterTestUtils.msgToString(result.dst, false));
                     log("DECRYPTED rating:" + result.rating.toString());
                     log("DECRYPTED flags:" + result.flags);
