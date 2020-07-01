@@ -17,8 +17,7 @@ tstylesheet {
 
             final public class «$cname» extends AbstractEngine implements EngineInterface {
                 public «$cname»() throws pEpException { }
-
-                `` apply "method", mode=plain
+                `` apply "method"
                 `` apply "basic"
             }
 
@@ -42,8 +41,8 @@ tstylesheet {
         const "jtype" call "toJava" with "type", "@type";
 
         ||
-        private native «$itype» _«@name»(`apply "parm/*", mode=basic_iparm`);
 
+        // CodeGen "basic"
         public «$jtype» «@name»(`apply "parm/*", mode=basic_parm`) {
         ||
         apply "parm/*", mode=basic_parm_set;
@@ -71,13 +70,12 @@ tstylesheet {
         ||
         }
 
+        private native «$itype» _«@name»(`apply "parm/*", mode=basic_iparm`);
         ||
     }
 
     template "basic" mode=java_interface {
-        const "itype" call "toIntermediate" with "type", "@type";
         const "jtype" call "toJava" with "type", "@type";
-
         ||
         public «$jtype» «@name»(`apply "parm/*", mode=basic_parm`);
         ||
@@ -173,12 +171,18 @@ tstylesheet {
         }
     }
 
-    template "method", mode=plain {
+    template "method" {
         const "singlereturn", "count(parm/creates|parm/returns|parm/inout[../int]) = 1";
         const "multireturn", "count(parm/creates|parm/returns|parm/inout[../int]) > 1";
 
+        ||
+
+        //CodeGen "method"
+        ||
+
         if "$multireturn" {
             ||
+            //CodeGen "mutlireturn" - class for return type
             private class _«@name»_Return {
             `` apply "parm[creates|returns|inout[../int]]", 1, mode=intermediate with "public", 1;
             }
@@ -187,81 +191,81 @@ tstylesheet {
         }
 
         ||
-        private native `call "returnInter"` _«@name»(
-        `` apply "parm[in|inout]", 2, mode=intermediate
-            ) throws pEpException;
-
         public `call "returnJava"` «@name»(
         `` apply "parm[in|inout]", 2, mode=java
-            ) throws pEpException
+        ) throws pEpException
         {
         ||
 
         apply "parm", mode=convertIn;
 
-        if "$singlereturn" choose {
+        if "$singlereturn" {
+            choose {
+                when "count(parm[returns][stringlist|string|sstring]) > 0"
+                    |> return Utils.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
 
-            // TODO factorize type conversion with multireturn and gen_java_message.java
-
-            when "count(parm[returns][stringlist|string|sstring]) > 0"
-                |> return Utils.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
-            when "count(parm[returns]/stringpairlist) > 0"
-                ||
-                    ArrayList<Pair<byte[], byte[]>> glist = _«@name»(`apply "parm[in]", mode=call;`);
-                    if(glist != null){
-                        ArrayList<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
-                        for (Pair<byte[],byte[]> i : glist) {
-                            list.add(new Pair<String, String>(Utils.toUTF16(i.first), Utils.toUTF16(i.second)));
+                when "count(parm[returns]/stringpairlist) > 0"
+                    ||
+                        ArrayList<Pair<byte[], byte[]>> glist = _«@name»(`apply "parm[in]", mode=call;`);
+                        if(glist != null){
+                            ArrayList<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
+                            for (Pair<byte[],byte[]> i : glist) {
+                                list.add(new Pair<String, String>(Utils.toUTF16(i.first), Utils.toUTF16(i.second)));
+                            }
+                            return list;
                         }
-                        return list;
-                    }
-                    return null;
-                ||
+                        return null;
+                    ||
 
-            when "count(parm[returns]/identity) > 0"
-                |> return new Identity(_«@name»(`apply "parm[in]", mode=call;`));
-            when "count(parm[returns]/identitylist) > 0"
-                ||
-                    Vector<_Identity> glist = _«@name»(`apply "parm[in]", mode=call;`);
-                    if(glist != null){
-                        Vector<Identity> list = new Vector<Identity>();
-                        for (_Identity i : glist) {
-                            list.add(new Identity(i));
+                when "count(parm[returns]/identity) > 0"
+                    |> return new Identity(_«@name»(`apply "parm[in]", mode=call;`));
+
+                when "count(parm[returns]/identitylist) > 0"
+                    ||
+                        Vector<_Identity> glist = _«@name»(`apply "parm[in]", mode=call;`);
+                        if(glist != null){
+                            Vector<Identity> list = new Vector<Identity>();
+                            for (_Identity i : glist) {
+                                list.add(new Identity(i));
+                            }
+                            return list;
                         }
-                        return list;
-                    }
-                    return null;
-                ||
-            otherwise
-                |> return _«@name»(`apply "parm[in]", mode=call;`);
+                        return null;
+                    ||
+
+                otherwise
+                    |> return _«@name»(`apply "parm[in]", mode=call;`);
+            }
         }
 
-        if "$multireturn"
-        ||
-            _«@name»_Return _result = _«@name»(`apply "parm[in|inout]", mode=call;`);
-            «@name»_Return result = new «@name»_Return();
-            `` apply "parm[creates|returns|inout[../int]]", mode=convertOut;
-            return result;
-        ||
+        if "$multireturn" {
+            ||
+                _«@name»_Return _result = _«@name»(`apply "parm[in|inout]", mode=call;`);
+                «@name»_Return result = new «@name»_Return();
+                `` apply "parm[creates|returns|inout[../int]]", mode=convertOut;
+                return result;
+            ||
+        }
 
-        if "not($singlereturn) and not($multireturn)"
-        ||
-            _«@name»(`apply "parm[in]", mode=call;`);
-        ||
-
+        if "not($singlereturn) and not($multireturn)" {
+            ||
+                _«@name»(`apply "parm[in]", mode=call;`);
+            ||
+        }
         ||
         }
+
+        private native `call "returnInter"` _«@name»(
+        `` apply "parm[in|inout]", 2, mode=intermediate
+        ) throws pEpException;
         ||
     }
 
     template "method", mode=java_interface {
-        const "singlereturn", "count(parm/creates|parm/returns|parm/inout[../int]) = 1";
-        const "multireturn", "count(parm/creates|parm/returns|parm/inout[../int]) > 1";
-
         ||
         public `call "returnJava"` «@name»(
         `` apply "parm[in|inout]", 2, mode=java
-            ) throws pEpException;
+        ) throws pEpException;
 
         ||
     }
