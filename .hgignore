@@ -9,37 +9,48 @@ syntax: glob
 *.a
 *.dylib
 *.so
-*.orig
-*~
-.DS_Store
-*.db
 *.log
+.DS_Store
+
+# ignore config files
+local.conf
+local.conf
 
 # ignore generated files
+status_list.yml2
+foundation_pEp_jniadapter__Blob.h
+foundation_pEp_jniadapter_AbstractEngine.h
+foundation_pEp_jniadapter_Engine.*
+foundation_pEp_jniadapter_Identity.h
+foundation_pEp_jniadapter_Message.cc
+foundation_pEp_jniadapter_Message.h
+throw_pEp_exception.cc
+throw_pEp_exception.hh
 
-org_pEp_*.h
-org_pEp_*.cc
-pEp_*.h
-pEp_*.cc
-org/pEp/jniadapter/pEp*.java
-foundation_pEp_*.h
-foundation_pEp_*.cc
-foundation/pEp/jniadapter/pEp*.java
-
-pEp/jniadapter/pEp*.java
-throw_pEp_exception.*
+CipherSuite.java
 Color.java
-Engine.java
-Message.java
 DecryptFlags.java
+Engine.java
+EngineInterface.java
+IdentityFlags.java
+Message.java
+MessageInterface.java
+pEp*.java
 Rating.java
 Status.java
 SyncHandshakeResult.java
-IdentityFlags.java
 SyncHandshakeSignal.java
-CipherSuite.java
 
-status_list.yml2
+# ignore pep-homes
+test/resources/per-user-dirs/alice/.pEp
+test/resources/per-user-dirs/bob/.pEp
+test/resources/per-user-dirs/carol/.pEp
+
+# FsMsgQueue data
+test/resources/fsmsgqueue-test/Alice
+test/resources/fsmsgqueue-test/Bob
+test/resources/fsmsgqueue-test/Carol
+
 
 ndk*/
 # ignore vim workspace
@@ -77,15 +88,12 @@ android/gradlew.bat
 androidTests/gradle/wrapper/gradle-wrapper.properties
 androidTests/gradlew
 androidTests/gradlew.bat
-src/org.tar.gz
-src/local.conf
+org.tar.gz
 
 *.iml
 
 syntax: regexp
 android/external/[^.]*
 
-local.conf
-src/local.conf
 # Default ignored files
 .idea/
