@@ -22,6 +22,9 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
     private native void init();
     private native void release();
 
+    private long keyserverThread;
+    private long keyserverQueue;
+
     public AbstractEngine() throws pEpException {
         synchronized (AbstractEngine.class) {
             init();
@@ -45,9 +48,6 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
     public String getProtocolVersion() {
         return _getProtocolVersion();
     }
-
-    private long keyserverThread;
-    private long keyserverQueue;
 
     private native void _startKeyserverLookup();
 
@@ -79,7 +79,6 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
         return _isSyncRunning();
     }
 
-
     public void setMessageToSendCallback(Sync.MessageToSendCallback messageToSendCallback) {
         this.messageToSendCallback = messageToSendCallback;
     }
@@ -92,7 +91,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
         this.needsFastPollCallback = needsFastPollCallback;
     }
 
-    public int needsFastPollCallFromC(boolean fast_poll_needed) {
+    private int needsFastPollCallFromC(boolean fast_poll_needed) {
         if (needsFastPollCallback != null) {
             needsFastPollCallback.needsFastPollCallFromC(fast_poll_needed);
         } else {
@@ -101,7 +100,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
         return 0;
     }
 
-    public int notifyHandshakeCallFromC(_Identity _myself, _Identity _partner, SyncHandshakeSignal _signal) {
+    private int notifyHandshakeCallFromC(_Identity _myself, _Identity _partner, SyncHandshakeSignal _signal) {
         Identity myself = new Identity(_myself);
         Identity partner = new Identity(_partner);
         System.out.println("pEpSync" + "notifyHandshakeCallFromC: " + notifyHandshakeCallback);
@@ -113,7 +112,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
         return 0;
     }
 
-    public int messageToSendCallFromC(Message message) {
+    private int messageToSendCallFromC(Message message) {
         System.out.println("pEpSync" + "messageToSendCallFromC: " + messageToSendCallback);
         if (messageToSendCallback != null) {
             messageToSendCallback.messageToSend(message);

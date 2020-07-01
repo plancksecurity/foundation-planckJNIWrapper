@@ -21,11 +21,5 @@ public interface AbstractEngineInterface {
 
     public void setNeedsFastPollCallback(Sync.NeedsFastPollCallback needsFastPollCallback);
 
-    public int needsFastPollCallFromC(boolean fast_poll_needed);
-
-    public int notifyHandshakeCallFromC(_Identity _myself, _Identity _partner, SyncHandshakeSignal _signal);
-
-    public int messageToSendCallFromC(Message message);
-
     public Message incomingMessageFromPGPText(String pgpText, Message.EncFormat encFormat);
 }
