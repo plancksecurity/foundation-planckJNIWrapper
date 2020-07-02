@@ -6,12 +6,12 @@ tstylesheet {
 
     template "/namespace[@name='pEp']" {
         apply "struct|enum|exception", 0;
-        document("gen_java_Message.marker", "text") > ""
+        document("../../build/marker/gen_java_Message.marker", "text") > ""
     }
 
     template "struct" {
         const "cname" call "toJava" with "type", "@name";
-        document("foundation/pEp/jniadapter/{$cname}.java", "text")
+        document("../foundation/pEp/jniadapter/{$cname}.java", "text")
             ||
             package foundation.pEp.jniadapter;
 
@@ -64,7 +64,7 @@ tstylesheet {
                 `` apply "*[name(.)!='enum']", mode=entry
             }
             ||
-        document("foundation/pEp/jniadapter/{$cname}Interface.java", "text")
+        document("../foundation/pEp/jniadapter/{$cname}Interface.java", "text")
             ||
             package foundation.pEp.jniadapter;
 
@@ -83,7 +83,7 @@ tstylesheet {
 
     template "enum" {
         const "jname" call "toJava" with "type", "@name";
-        document("foundation/pEp/jniadapter/{$jname}.java", "text")
+        document("../foundation/pEp/jniadapter/{$jname}.java", "text")
             ||
             // CodeGen template enum
             package foundation.pEp.jniadapter;
@@ -131,7 +131,7 @@ tstylesheet {
     function "exception" {
         param "name";
 
-        document "foundation/pEp/jniadapter/exceptions/{$name}.java", "text" {
+        document "../foundation/pEp/jniadapter/exceptions/{$name}.java", "text" {
             | package foundation.pEp.jniadapter.exceptions;
             |
             | public class «$name» extends pEpException {

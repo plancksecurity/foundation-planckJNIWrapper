@@ -45,26 +45,6 @@ JAVA_BUILD_ROOT=../build/java/
 OBJ_DIR=.
 DIST_DIR=../dist/
 
-PEP_HEADER:=$(shell $(CXX) $(CXXFLAGS) -E -M get_header.cc | grep -oe '[^[:space:]]*pEpEngine\.h' | head -1)
-
-# Every ysl2 file that need to be "compiled" separately, needs to generate a "marker" file
-# The marker serves as the make target.
-# If the marker file is older than its corresponding ysl2 file, or not exsiting the ysl2 file will be "compiled"
-# Naming:
-# For a ysl2 file called "gen_example_stuff.ysl2", a marker file called "gen_example_stuff.marker" is expected.
-YML2_MARKERS= \
-	gen_java_Engine.marker \
-	gen_java_Message.marker \
-	gen_cpp_Engine.marker \
-	gen_cpp_Message.marker \
-	gen_throw_pEp_exception.marker
-
-# All code genration will be done upon change of these files
-YML2_INCLUDES= \
-	textutils.ysl2 \
-    types_c.ysl2 \
-    types_java.ysl2
-
 # for "make clean" only
 GENERATED_JAVA=\
 	$(JAVA_PKG_ROOT)/Engine.java \
@@ -79,7 +59,7 @@ GENERATED_JAVA=\
 	$(JAVA_PKG_ROOT)/SyncHandshakeResult.java \
 	$(JAVA_PKG_ROOT)/SyncHandshakeSignal.java
 
-# Used to determine files to compile which are being generated
+# files to compile which will be be generated
 GENERATED_CC=\
 	foundation_pEp_jniadapter_Engine.cc \
 	foundation_pEp_jniadapter_Message.cc \
@@ -109,7 +89,11 @@ SOURCES+=$(GENERATED_CC)
 OBJECTS=$(SOURCES:.cc=.o)
 DEPENDS=$(OBJECTS:.o=.d)
 
-.PHONY: all lib-java lib-cxx compile-java compile-cxx gen-jni-headers codegen gen-status-codes clean create-dirs remove-dirs
+.PHONY: all lib-java lib-cxx compile-java compile-cxx gen-jni-headers codegen clean create-dirs remove-dirs
+
+$(info SOURCES: $(SOURCES))
+$(info OBJECTS: $(OBJECTS))
+$(info DEPENDS: $(DEPENDS))
 
 all: lib-java lib-cxx
 
@@ -124,10 +108,10 @@ $(LIB_JAVA): compile-java
 	$(JAVA_BIN_DIR)/jar cf $(DIST_DIR)/$@ -C $(JAVA_BUILD_ROOT) foundation
 
 $(LIB_CXX_DYN): compile-cxx
-	$(CXX) $(OBJ_DIR)/*.o $(LDFLAGS) $(LDLIBS) -o $(DIST_DIR)/$@
+	$(CXX) *.o $(LDFLAGS) $(LDLIBS) -o $(DIST_DIR)/$@
 
 $(LIB_CXX_STATIC): compile-cxx
-	$(AR) -r $(DIST_DIR)/$@ $(OBJ_DIR)/*.o
+	$(AR) -r $(DIST_DIR)/$@ *.o
 
 
 # -------------- Compile -----------------
@@ -135,8 +119,8 @@ compile-java: create-dirs codegen
 	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/*.java
 	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/exceptions/*.java
 
-
 # Compile C++ using implicit rules
+compile-cxx: create-dirs gen-jni-headers $(OBJECTS)
 -include $(DEPENDS)
 
 
@@ -153,32 +137,28 @@ endif
 
 
 # ------------- YML2 CodeGen --------------
-codegen: gen-status-codes $(YML2_MARKERS)
-
-$(YML2_MARKERS): %.marker : %.ysl2 pEp.yml2 $(YML2_INCLUDES)
-	$(YML2_PROC) -y $< pEp.yml2
-
-gen-status-codes: status_list.yml2
-status_list.yml2: pEp.yml2
-	bash ../utils/extract_pEp_status_codes_from_engine.sh "$(PEP_HEADER)" $@
-
+codegen:
+	$(MAKE) -C codegen
 
 # ------------- Housekeeping ---------------
 create-dirs:
+	$(MAKE) -C codegen create-dirs
 	mkdir -p $(JAVA_BUILD_ROOT)/$(JAVA_PKG_ROOT)
 	mkdir -p $(JAVA_BUILD_ROOT)/$(JAVA_PKG_ROOT)/exceptions
-	mkdir -p $(OBJ_DIR)
 	mkdir -p $(DIST_DIR)
 
+#rm -rf is too dangerous for vars
 remove-dirs:
+	$(MAKE) -C codegen remove-dirs
 	rm -rf ../build
 	rm -rf ../dist
 
 clean: remove-dirs
+	$(MAKE) -C codegen clean
 	rm -f $(GENERATED_JAVA)
 	rm -f $(GENERATED_CC)
 	rm -f $(GENERATED_HH)
 	rm -f $(JNI_GENERATED_HH)
-	rm -f $(YML2_MARKERS)
-	rm -f status_list.yml2
+	rm -f $(DEPENDS)
+	rm -f $(OBJECTS)
 

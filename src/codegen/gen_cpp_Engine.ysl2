@@ -7,10 +7,10 @@ tstylesheet {
 
     template "/namespace[@name='pEp']" {
         apply "interface", 0;
-        document("gen_cpp_Engine.marker", "text") > ""
+        document("../../build/marker/gen_cpp_Engine.marker", "text") > ""
     }
 
-    template "interface" document("foundation_pEp_jniadapter_{@name}.cc", "text")
+    template "interface" document("../foundation_pEp_jniadapter_{@name}.cc", "text")
         ||
         #include <pEp/blacklist.h>
         #include <pEp/openpgp_compat.h>

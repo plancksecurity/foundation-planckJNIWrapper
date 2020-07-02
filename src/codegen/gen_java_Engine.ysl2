@@ -6,12 +6,12 @@ tstylesheet {
 
     template "/namespace[@name='pEp']" {
         apply "interface", 0;
-        document("gen_java_Engine.marker", "text") > ""
+        document("../../build/marker/gen_java_Engine.marker", "text") > ""
     }
 
     template "interface" {
         const "cname" call "toJava" with "type", "@name";
-        document("foundation/pEp/jniadapter/{$cname}.java", "text")
+        document("../foundation/pEp/jniadapter/{$cname}.java", "text")
             ||
             package foundation.pEp.jniadapter;
 
@@ -26,7 +26,7 @@ tstylesheet {
             }
 
             ||
-        document("foundation/pEp/jniadapter/{$cname}Interface.java", "text")
+        document("../foundation/pEp/jniadapter/{$cname}Interface.java", "text")
             ||
             package foundation.pEp.jniadapter;
 
