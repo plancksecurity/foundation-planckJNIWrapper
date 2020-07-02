@@ -18,127 +18,163 @@ $(info CXXFLAGS:        $(CXXFLAGS))
 $(info LDFLAGS:         $(LDFLAGS))
 $(info LDLIBS:          $(LDLIBS))
 
-ifndef JAVA_HOME
-    $(error JAVA_HOME is not set!)
-endif
-
-JP=$(JAVA_HOME)/bin
-
-# Old versions of a Java distribution have a `javah` binary, new versions do not. This checks whether or not `javah` can be found in the Java distribution found in the directory `$JAVA_HOME`.
-NOT_USED:=$(shell which $(JAVA_HOME)/bin/javah)
-ifeq ($(.SHELLSTATUS),0)
-    OLD_JAVA=placeholder
-endif
-
-LIBRARY=libpEpJNI.a
-JAR=pEp.jar
-
+# Names of the java and c++ libs to be built
+LIB_JAVA=pEp.jar
+LIB_CXX_STATIC=libpEpJNI.a
 ifeq ($(PLATFORM),linux)
-    SHARED=libpEpJNI.so
+    LIB_CXX_DYN=libpEpJNI.so
 else ifeq ($(PLATFORM),darwin)
-    SHARED=libpEpJNI.dylib
+    LIB_CXX_DYN=libpEpJNI.dylib
 else
     $(error I dont know how to build for $(PLATFORM).)
 endif
 
-JAVA_SOURCES=foundation/pEp/jniadapter/AbstractEngine.java \
-    foundation/pEp/jniadapter/Blob.java \
-    foundation/pEp/jniadapter/CommType.java \
-    foundation/pEp/jniadapter/Identity.java \
-    foundation/pEp/jniadapter/Pair.java \
-    foundation/pEp/jniadapter/Sync.java \
-    foundation/pEp/jniadapter/_Blob.java \
-    foundation/pEp/jniadapter/_Identity.java \
-    foundation/pEp/jniadapter/pEpException.java \
-    foundation/pEp/jniadapter/Message.java \
-    foundation/pEp/jniadapter/Engine.java \
-
-C_SOURCES=foundation_pEp_jniadapter_Engine.cc \
-    foundation_pEp_jniadapter_Engine.h \
-    foundation_pEp_jniadapter_Message.cc \
-    foundation_pEp_jniadapter_Message.h \
-    throw_pEp_exception.cc \
-    throw_pEp_exception.hh \
-    foundation_pEp_jniadapter_AbstractEngine.h \
-    foundation_pEp_jniadapter__Blob.cc \
-    foundation_pEp_jniadapter__Blob.h
+# Dirs
+# relative to "src/"
+JAVA_PKG_ROOT=foundation/pEp/jniadapter/
+JAVA_BUILD_ROOT=../build/java/
+# Separate dir for derived objects DOES NOT WORK YET :/ (has to be .)
+OBJ_DIR=.
+DIST_DIR=../dist/
 
 PEP_HEADER:=$(shell $(CXX) $(CXXFLAGS) -E -M get_header.cc | grep -oe '[^[:space:]]*pEpEngine\.h' | head -1)
 
+# Every ysl2 file that need to be "compiled" separately, needs to generate a "marker" file
+# The marker serves as the make target.
+# If the marker file is older than its corresponding ysl2 file, or not exsiting the ysl2 file will be "compiled"
+# Naming:
+# For a ysl2 file called "gen_example_stuff.ysl2", a marker file called "gen_example_stuff.marker" is expected.
+YML2_MARKERS= \
+	gen_java_Engine.marker \
+	gen_java_Message.marker \
+	gen_cpp_Engine.marker \
+	gen_cpp_Message.marker \
+	gen_throw_pEp_exception.marker
 
-.PHONY: all
-all: $(JAR) $(SHARED)
+# All code genration will be done upon change of these files
+YML2_INCLUDES= \
+	textutils.ysl2 \
+    types_c.ysl2 \
+    types_java.ysl2
 
-$(JAR): status_list.yml2 $(JAVA_SOURCES) $(C_SOURCES)
-	$(JP)/javac foundation/pEp/jniadapter/*.java
-	$(JP)/jar cf $@ foundation/pEp/jniadapter/*.class
+# for "make clean" only
+GENERATED_JAVA=\
+	$(JAVA_PKG_ROOT)/Engine.java \
+	$(JAVA_PKG_ROOT)/Message.java \
+	$(JAVA_PKG_ROOT)/CipherSuite.java \
+	$(JAVA_PKG_ROOT)/Color.java \
+	$(JAVA_PKG_ROOT)/DecryptFlags.java \
+	$(JAVA_PKG_ROOT)/EngineInterface.java \
+	$(JAVA_PKG_ROOT)/IdentityFlags.java \
+ 	$(JAVA_PKG_ROOT)/MessageInterface.java \
+	$(JAVA_PKG_ROOT)/Rating.java \
+	$(JAVA_PKG_ROOT)/SyncHandshakeResult.java \
+	$(JAVA_PKG_ROOT)/SyncHandshakeSignal.java
 
-BLUBB=foundation_pEp_jniadapter_AbstractEngine.h foundation_pEp_jniadapter_Engine.h foundation_pEp_jniadapter_Message.h foundation_pEp_jniadapter__Blob.h
-$(BLUBB): foundation_pEp_jniadapter_%.h: foundation/pEp/jniadapter/%.java
+# Used to determine files to compile which are being generated
+GENERATED_CC=\
+	foundation_pEp_jniadapter_Engine.cc \
+	foundation_pEp_jniadapter_Message.cc \
+	throw_pEp_exception.cc
+
+# for "make clean" only
+GENERATED_HH=\
+	throw_pEp_exception.hh
+
+# Generated JNI headers (javac -h)
+JNI_GENERATED_HH=\
+	foundation_pEp_jniadapter_AbstractEngine.h \
+    foundation_pEp_jniadapter__Blob.h \
+    foundation_pEp_jniadapter_Engine.h \
+    foundation_pEp_jniadapter_Identity.h \
+    foundation_pEp_jniadapter_Message.h
+
+# Derive Java sources that will cause generated headers (for incremental build)
+helper=$(subst _,/,$(JNI_GENERATED_HH))
+JNI_GENERATING_JAVA=$(subst .h,.java,$(helper))
+$(info JNI_GENERATING_JAVA: $(JNI_GENERATING_JAVA))
+
+# Auto dependencies using gcc/clang
+CXXFLAGS+= -MMD -MP
+
+SOURCES=$(wildcard *.cc)
+SOURCES+=$(GENERATED_CC)
+OBJECTS=$(SOURCES:.cc=.o)
+DEPENDS=$(OBJECTS:.o=.d)
+
+.PHONY: all lib-java lib-cxx compile-java compile-cxx gen-jni-headers codegen gen-status-codes clean out-dirs clean-out-dirs
+
+all: lib-java lib-cxx
+
+# Build only java lib
+lib-java: $(LIB_JAVA)
+
+# Build only c++ static/shared lib
+lib-cxx: $(LIB_CXX_DYN) $(LIB_CXX_STATIC)
+
+# ---------------- Link -----------------
+$(LIB_JAVA): compile-java
+	$(JAVA_BIN_DIR)/jar cf $(DIST_DIR)/$@ -C $(JAVA_BUILD_ROOT) foundation
+
+$(LIB_CXX_DYN): compile-cxx
+	$(CXX) $(OBJ_DIR)/*.o $(LDFLAGS) $(LDLIBS) -o $(DIST_DIR)/$@
+
+$(LIB_CXX_STATIC): compile-cxx
+	$(AR) -r $(DIST_DIR)/$@ $(OBJ_DIR)/*.o
+
+
+# -------------- Compile -----------------
+compile-java: out-dirs codegen
+	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/*.java
+	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/exceptions/*.java
+
+
+# Compile C++ using implicit rules
+-include $(DEPENDS)
+compile-cxx: out-dirs gen-jni-headers $(OBJECTS)
+
+
+# --------- Generate JNI headers ----------
+gen-jni-headers: codegen $(JNI_GENERATED_HH)
+
+$(JNI_GENERATED_HH): $(JNI_GENERATING_JAVA)
 ifdef OLD_JAVA
-	$(JP)/javah $(subst /,.,$(subst .java,,$<))
+	$(JAVA_BIN_DIR)/javah $(subst /,.,$(subst .java,,$<))
 else
-	$(JP)/javac -h . $<
+	$(JAVA_BIN_DIR)/javac -h . $(JAVA_PKG_ROOT)/*.java
 endif
+	mv $(JAVA_PKG_ROOT)/*.class $(JAVA_BUILD_ROOT)/$(JAVA_PKG_ROOT)/
 
-foundation_pEp_jniadapter_AbstractEngine.o: %.o: %.cc %.h throw_pEp_exception.hh jniutils.hh
-	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-foundation_pEp_jniadapter_Engine.o foundation_pEp_jniadapter_Message.o foundation_pEp_jniadapter__Blob.o : %.o: %.cc %.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# ------------- YML2 CodeGen --------------
+codegen: gen-status-codes $(YML2_MARKERS)
 
-$(LIBRARY): foundation_pEp_jniadapter_AbstractEngine.o foundation_pEp_jniadapter_Engine.o foundation_pEp_jniadapter_Message.o throw_pEp_exception.o jniutils.o basic_api.o foundation_pEp_jniadapter__Blob.o
-	ar -r $@ *.o
+# CodeGen
+$(YML2_MARKERS): %.marker : %.ysl2 pEp.yml2 $(YML2_INCLUDES)
+	$(YML2_PROC) -y $< pEp.yml2
 
-$(SHARED): $(LIBRARY)
-	$(CXX) *.o $(LDFLAGS) $(LDLIBS) -o $@
+gen-status-codes: status_list.yml2
 
 status_list.yml2: pEp.yml2
 	bash ../utils/extract_pEp_status_codes_from_engine.sh "$(PEP_HEADER)" $@
 
-foundation/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2 pEp.yml2
-	$(YML2_PROC) -y gen_java_exceptions.ysl2 $< -o $@
 
-foundation/pEp/jniadapter/Message.java: pEp.yml2 gen_java_Message.ysl2 types_java.ysl2
-	$(YML2_PROC) -y gen_java_Message.ysl2 $<
+# ------------- Housekeeping ---------------
+out-dirs:
+	mkdir -p $(JAVA_BUILD_ROOT)/$(JAVA_PKG_ROOT)
+	mkdir -p $(JAVA_BUILD_ROOT)/$(JAVA_PKG_ROOT)/exceptions
+	mkdir -p $(OBJ_DIR)
+	mkdir -p $(DIST_DIR)
 
-foundation/pEp/jniadapter/Engine.java: pEp.yml2 gen_java_Engine.ysl2 types_java.ysl2
-	$(YML2_PROC) -y gen_java_Engine.ysl2 $<
+clean-out-dirs:
+	rm -rf ../build
+	rm -rf ../dist
 
-foundation_pEp_jniadapter_Message.cc: pEp.yml2 gen_cpp_Message.ysl2 types_c.ysl2
-	$(YML2_PROC) -y gen_cpp_Message.ysl2 $<
-
-foundation_pEp_jniadapter_Engine.cc: pEp.yml2 gen_cpp_Engine.ysl2 types_c.ysl2
-	$(YML2_PROC) -y gen_cpp_Engine.ysl2 $<
-
-throw_pEp_exception.cc throw_pEp_exception.hh: pEp.yml2 gen_throw_pEp_exception.ysl2 textutils.ysl2
-	$(YML2_PROC) -y gen_throw_pEp_exception.ysl2 $< -o throw_pEp_exception.cc
-
-throw_pEp_exception.o: throw_pEp_exception.cc throw_pEp_exception.hh
-
-basic_api.o: basic_api.cc jniutils.hh throw_pEp_exception.hh
-
-.PHONY: clean
-clean:
-	rm -f $(JAR) $(LIBRARY) $(SHARED)
-	rm -f *.so
-	rm -f *.dylib
-	rm -f *.o
-	rm -f *.class
-	rm -f *.xml *.xsl
-	rm -f foundation_pEp_jniadapter_*.h
-	rm -f foundation/pEp/jniadapter/*.class
-	rm -f foundation/pEp/jniadapter/pEp*.java
-	rm -f foundation/pEp/jniadapter/Engine.java
-	rm -f foundation/pEp/jniadapter/Message.java
-	rm -f foundation/pEp/jniadapter/Color.java
-	rm -f foundation/pEp/jniadapter/DecryptFlags.java
-	rm -f foundation/pEp/jniadapter/IdentityFlags.java
-	rm -f foundation/pEp/jniadapter/Rating.java
-	rm -f foundation/pEp/jniadapter/Status.java
-	rm -f foundation/pEp/jniadapter/SyncHandshakeResult.java
-	rm -f foundation/pEp/jniadapter/SyncHandshakeSignal.java
-	rm -f foundation/pEp/jniadapter/CipherSuite.java
-	rm -f throw_pEp_exception.*
-	rm -f foundation_pEp_jniadapter_Message.cc foundation_pEp_jniadapter_Engine.cc
+clean: clean-out-dirs
+	rm -f $(GENERATED_JAVA)
+	rm -f $(GENERATED_CC)
+	rm -f $(GENERATED_HH)
+	rm -f $(JNI_GENERATED_HH)
+	rm -f $(YML2_MARKERS)
 	rm -f status_list.yml2
+
