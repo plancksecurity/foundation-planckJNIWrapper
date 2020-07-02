@@ -5,7 +5,10 @@ tstylesheet {
     include ./types_c.ysl2
     include ./types_java.ysl2
 
-    template "/namespace[@name='pEp']" apply "interface", 0;
+    template "/namespace[@name='pEp']" {
+        apply "interface", 0;
+        document("gen_cpp_Engine.marker", "text") > ""
+    }
 
     template "interface" document("foundation_pEp_jniadapter_{@name}.cc", "text")
         ||

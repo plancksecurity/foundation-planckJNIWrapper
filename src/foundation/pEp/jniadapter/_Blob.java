@@ -1,5 +1,7 @@
 package foundation.pEp.jniadapter;
 
+import foundation.pEp.jniadapter.exceptions.*;
+
 public class _Blob {
     public byte[] data;
     public byte[] mime_type;

@@ -24,8 +24,8 @@ foundation_pEp_jniadapter_Engine.*
 foundation_pEp_jniadapter_Identity.h
 foundation_pEp_jniadapter_Message.cc
 foundation_pEp_jniadapter_Message.h
-throw_pEp_exception.cc
-throw_pEp_exception.hh
+#throw_pEp_exception.cc
+#throw_pEp_exception.hh
 
 CipherSuite.java
 Color.java

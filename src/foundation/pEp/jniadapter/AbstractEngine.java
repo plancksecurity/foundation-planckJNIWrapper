@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import foundation.pEp.jniadapter.Sync.DefaultCallback;
+import foundation.pEp.jniadapter.exceptions.*;
 
-import java.io.UnsupportedEncodingException;
-import java.text.Normalizer;
 
 abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEngineInterface, AutoCloseable {
     static {

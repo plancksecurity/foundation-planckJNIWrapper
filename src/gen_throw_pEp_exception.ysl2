@@ -18,42 +18,43 @@ tstylesheet {
             };
 
             ||
-
+        document("gen_throw_pEp_exception.marker", "text") > ""
     }
 
     template "namespace"
-        ||
-        #include <assert.h>
-        #include <pEp/pEpEngine.h>
-        #include "throw_pEp_exception.hh"
+        document("throw_pEp_exception.cc", "text")
+            ||
+            #include <assert.h>
+            #include <pEp/pEpEngine.h>
+            #include "throw_pEp_exception.hh"
 
-        namespace pEp {
-            namespace JNIAdapter {
-                jint throw_pEp_Exception(JNIEnv *env, PEP_STATUS status)
-                {
-                    jclass ex;
-                    const char *ex_name;
-        
-                    switch (status) {
-                        `` apply "exception/*[text()!=0]", 4, mode=case
-                        default:
-                            assert(0);
-                            ex_name = "Exception";
-                    }
-        
-                    ex = env->FindClass(ex_name);
-                    assert(ex);
-        
-                    if (ex == NULL) {
-                        ex = env->FindClass("java/lang/NoClassDefFoundError");
+            namespace pEp {
+                namespace JNIAdapter {
+                    jint throw_pEp_Exception(JNIEnv *env, PEP_STATUS status)
+                    {
+                        jclass ex;
+                        const char *ex_name;
+
+                        switch (status) {
+                            `` apply "exception/*[text()!=0]", 4, mode=case
+                            default:
+                                assert(0);
+                                ex_name = "Exception";
+                        }
+
+                        ex = env->FindClass(ex_name);
                         assert(ex);
+
+                        if (ex == NULL) {
+                            ex = env->FindClass("java/lang/NoClassDefFoundError");
+                            assert(ex);
+                        }
+
+                        return env->ThrowNew(ex, ex_name);
                     }
-        
-                    return env->ThrowNew(ex, ex_name);
-                }
+                };
             };
-        };
-        ||
+            ||
 
     template "*", mode=case {
         | case `call "UCASE" with "text", "name(.)"`:

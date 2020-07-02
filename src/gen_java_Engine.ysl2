@@ -4,7 +4,10 @@ tstylesheet {
     include ./textutils.ysl2
     include ./types_java.ysl2
 
-    template "/namespace[@name='pEp']" apply "interface", 0;
+    template "/namespace[@name='pEp']" {
+        apply "interface", 0;
+        document("gen_java_Engine.marker", "text") > ""
+    }
 
     template "interface" {
         const "cname" call "toJava" with "type", "@name";
@@ -12,6 +15,7 @@ tstylesheet {
             ||
             package foundation.pEp.jniadapter;
 
+            import foundation.pEp.jniadapter.exceptions.*;
             import java.util.ArrayList;
             import java.util.Vector;
 
@@ -265,7 +269,7 @@ tstylesheet {
         ||
         public `call "returnJava"` «@name»(
         `` apply "parm[in|inout]", 2, mode=java
-        ) throws pEpException;
+        );
 
         ||
     }
