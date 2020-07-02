@@ -5,6 +5,24 @@
 
 include ../Makefile.conf
 
+# Names of the java and c++ libs to be built
+LIB_JAVA=pEp.jar
+LIB_CXX_NAME=libpEpJNI
+LIB_CXX_STATIC=$(addsuffix .a,$(LIB_CXX_NAME))
+
+ifeq ($(PLATFORM),linux)
+    LIB_CXX_DYN=$(addsuffix .so,$(LIB_CXX_NAME))
+else ifeq ($(PLATFORM),darwin)
+    LIB_CXX_DYN=$(addsuffix .dylib,$(LIB_CXX_NAME))
+else
+    $(error I dont know how to build for $(PLATFORM).)
+endif
+
+$(info ------------------ DIST FILES ---------------------)
+$(info LIB_JAVA:        $(LIB_JAVA))
+$(info LIB_CXX_STATIC:  $(LIB_CXX_STATIC))
+$(info LIB_CXX_DYN:     $(LIB_CXX_DYN))
+$(info ------------------ BUILD INFO ---------------------)
 $(info PLATFORM:        $(PLATFORM))
 $(info DEBUG:           $(DEBUG))
 $(info CXX:             $(CXX))
@@ -17,17 +35,7 @@ $(info YML2_PATH:       $(YML2_PATH))
 $(info CXXFLAGS:        $(CXXFLAGS))
 $(info LDFLAGS:         $(LDFLAGS))
 $(info LDLIBS:          $(LDLIBS))
-
-# Names of the java and c++ libs to be built
-LIB_JAVA=pEp.jar
-LIB_CXX_STATIC=libpEpJNI.a
-ifeq ($(PLATFORM),linux)
-    LIB_CXX_DYN=libpEpJNI.so
-else ifeq ($(PLATFORM),darwin)
-    LIB_CXX_DYN=libpEpJNI.dylib
-else
-    $(error I dont know how to build for $(PLATFORM).)
-endif
+$(info ---------------------------------------------------)
 
 # Dirs
 # relative to "src/"
@@ -92,7 +100,6 @@ JNI_GENERATED_HH=\
 # Derive Java sources that will cause generated headers (for incremental build)
 helper=$(subst _,/,$(JNI_GENERATED_HH))
 JNI_GENERATING_JAVA=$(subst .h,.java,$(helper))
-$(info JNI_GENERATING_JAVA: $(JNI_GENERATING_JAVA))
 
 # Auto dependencies using gcc/clang
 CXXFLAGS+= -MMD -MP
@@ -102,7 +109,7 @@ SOURCES+=$(GENERATED_CC)
 OBJECTS=$(SOURCES:.cc=.o)
 DEPENDS=$(OBJECTS:.o=.d)
 
-.PHONY: all lib-java lib-cxx compile-java compile-cxx gen-jni-headers codegen gen-status-codes clean out-dirs clean-out-dirs
+.PHONY: all lib-java lib-cxx compile-java compile-cxx gen-jni-headers codegen gen-status-codes clean create-dirs remove-dirs
 
 all: lib-java lib-cxx
 
@@ -124,14 +131,13 @@ $(LIB_CXX_STATIC): compile-cxx
 
 
 # -------------- Compile -----------------
-compile-java: out-dirs codegen
+compile-java: create-dirs codegen
 	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/*.java
 	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/exceptions/*.java
 
 
 # Compile C++ using implicit rules
 -include $(DEPENDS)
-compile-cxx: out-dirs gen-jni-headers $(OBJECTS)
 
 
 # --------- Generate JNI headers ----------
@@ -149,28 +155,26 @@ endif
 # ------------- YML2 CodeGen --------------
 codegen: gen-status-codes $(YML2_MARKERS)
 
-# CodeGen
 $(YML2_MARKERS): %.marker : %.ysl2 pEp.yml2 $(YML2_INCLUDES)
 	$(YML2_PROC) -y $< pEp.yml2
 
 gen-status-codes: status_list.yml2
-
 status_list.yml2: pEp.yml2
 	bash ../utils/extract_pEp_status_codes_from_engine.sh "$(PEP_HEADER)" $@
 
 
 # ------------- Housekeeping ---------------
-out-dirs:
+create-dirs:
 	mkdir -p $(JAVA_BUILD_ROOT)/$(JAVA_PKG_ROOT)
 	mkdir -p $(JAVA_BUILD_ROOT)/$(JAVA_PKG_ROOT)/exceptions
 	mkdir -p $(OBJ_DIR)
 	mkdir -p $(DIST_DIR)
 
-clean-out-dirs:
+remove-dirs:
 	rm -rf ../build
 	rm -rf ../dist
 
-clean: clean-out-dirs
+clean: remove-dirs
 	rm -f $(GENERATED_JAVA)
 	rm -f $(GENERATED_CC)
 	rm -f $(GENERATED_HH)
