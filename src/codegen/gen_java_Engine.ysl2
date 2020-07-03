@@ -11,7 +11,7 @@ tstylesheet {
 
     template "interface" {
         const "cname" call "toJava" with "type", "@name";
-        document("../foundation/pEp/jniadapter/{$cname}.java", "text")
+        document("../java/foundation/pEp/jniadapter/{$cname}.java", "text")
             ||
             package foundation.pEp.jniadapter;
 
@@ -27,7 +27,7 @@ tstylesheet {
             }
 
             ||
-        document("../foundation/pEp/jniadapter/interfaces/{$cname}Interface.java", "text")
+        document("../java/foundation/pEp/jniadapter/interfaces/{$cname}Interface.java", "text")
             ||
             package foundation.pEp.jniadapter.interfaces;
 

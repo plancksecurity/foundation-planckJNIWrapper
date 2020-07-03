@@ -47,9 +47,11 @@ $(info ---------------------------------------------------)
 # relative to "src/"
 BUILD_ROOT=../build/
 CXX_DIR=cxx/
+JAVA_DIR=java/
+JAVA_PKG_BASENAME=foundation/pEp/jniadapter/
 
-JAVA_PKG_ROOT=foundation/pEp/jniadapter/
-JAVA_BUILD_ROOT=$(BUILD_ROOT)/java/
+JAVA_PKG_ROOT=$(JAVA_DIR)/$(JAVA_PKG_BASENAME)
+JAVA_BUILD_ROOT=$(BUILD_ROOT)/$(JAVA_DIR)
 OBJ_DIR=$(BUILD_ROOT)/$(CXX_DIR)
 
 
@@ -124,9 +126,9 @@ $(LIB_CXX_STATIC): compile-cxx
 
 # -------------- Compile -----------------
 compile-java: create-dirs codegen
-	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/*.java
-	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/exceptions/*.java
-	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/interfaces/*.java
+	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/javac -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/*.java
+	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/javac -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/exceptions/*.java
+	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/javac -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/interfaces/*.java
 
 
 compile-cxx: create-dirs gen-jni-headers $(OBJECTS)
@@ -140,9 +142,9 @@ gen-jni-headers: codegen $(JNI_GENERATED_HH)
 
 $(JNI_GENERATED_HH):
 ifdef OLD_JAVA
-	$(JAVA_BIN_DIR)/javah -d $(JAVA_BUILD_ROOT) $(subst /,.,$(subst .java,,$<))
+	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/javah -d ../$(JAVA_BUILD_ROOT) $(subst /,.,$(subst .java,,$<))
 else
-	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) -h $(CXX_DIR)/ $(JAVA_PKG_ROOT)/*.java
+	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/javac -d ../$(JAVA_BUILD_ROOT) -h ../$(CXX_DIR)/ $(JAVA_PKG_BASENAME)/*.java
 endif
 
 
@@ -153,8 +155,8 @@ codegen:
 # ------------- Housekeeping ---------------
 create-dirs:
 	$(MAKE) -C codegen create-dirs
-	mkdir -p $(JAVA_BUILD_ROOT)/$(JAVA_PKG_ROOT)
-	mkdir -p $(JAVA_BUILD_ROOT)/$(JAVA_PKG_ROOT)/exceptions
+	mkdir -p $(JAVA_BUILD_ROOT)/$(JAVA_PKG_BASENAME)
+	mkdir -p $(JAVA_BUILD_ROOT)/$(JAVA_PKG_BASENAME)/exceptions
 	mkdir -p $(OBJ_DIR)
 	mkdir -p $(DIST_DIR)
 
