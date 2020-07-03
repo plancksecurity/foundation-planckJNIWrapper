@@ -13,7 +13,7 @@ tstylesheet {
     template "struct" {
         const "jname" call "CamelCase" with "text", "@name";
 
-        document("../foundation_pEp_jniadapter_{$jname}.cc", "text") {
+        document("../cxx/foundation_pEp_jniadapter_{$jname}.cc", "text") {
             ||
             #include <cassert>
             #include <pEp/mime.h>

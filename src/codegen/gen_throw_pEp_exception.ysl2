@@ -5,7 +5,7 @@ tstylesheet {
 
     template "/" {
         apply "namespace", 0;
-        document "../throw_pEp_exception.hh", "text"
+        document "../cxx/throw_pEp_exception.hh", "text"
             ||
             #pragma once
 
@@ -22,7 +22,7 @@ tstylesheet {
     }
 
     template "namespace"
-        document("../throw_pEp_exception.cc", "text")
+        document("../cxx/throw_pEp_exception.cc", "text")
             ||
             #include <assert.h>
             #include <pEp/pEpEngine.h>

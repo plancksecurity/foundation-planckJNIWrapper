@@ -7,7 +7,7 @@ include ../../Makefile.conf
 
 MARKER_DIR=../../build/marker/
 
-PEP_HEADER:=$(shell $(CXX) $(CXXFLAGS) -E -M ../get_header.cc | grep -oe '[^[:space:]]*pEpEngine\.h' | head -1)
+PEP_HEADER:=$(shell $(CXX) $(CXXFLAGS) -E -M ../cxx/get_header.cc | grep -oe '[^[:space:]]*pEpEngine\.h' | head -1)
 
 # Every ysl2 file that need to be "compiled" separately, needs to generate a "marker" file
 # The marker serves as the make target.

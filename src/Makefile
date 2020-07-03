@@ -6,17 +6,23 @@
 include ../Makefile.conf
 
 # Names of the java and c++ libs to be built
-LIB_JAVA=pEp.jar
+LIB_JAVA_NAME=pEp.jar
 LIB_CXX_NAME=libpEpJNI
-LIB_CXX_STATIC=$(addsuffix .a,$(LIB_CXX_NAME))
+DIST_DIR=../dist/
 
+
+LIB_CXX_STATIC_NAME=$(addsuffix .a,$(LIB_CXX_NAME))
 ifeq ($(PLATFORM),linux)
-    LIB_CXX_DYN=$(addsuffix .so,$(LIB_CXX_NAME))
+    LIB_CXX_DYN_NAME=$(addsuffix .so,$(LIB_CXX_NAME))
 else ifeq ($(PLATFORM),darwin)
-    LIB_CXX_DYN=$(addsuffix .dylib,$(LIB_CXX_NAME))
+    LIB_CXX_DYN_NAME=$(addsuffix .dylib,$(LIB_CXX_NAME))
 else
     $(error I dont know how to build for $(PLATFORM).)
 endif
+
+LIB_JAVA=$(DIST_DIR)/$(LIB_JAVA_NAME)
+LIB_CXX_STATIC=$(DIST_DIR)/$(LIB_CXX_STATIC_NAME)
+LIB_CXX_DYN=$(DIST_DIR)/$(LIB_CXX_DYN_NAME)
 
 $(info ------------------ DIST FILES ---------------------)
 $(info LIB_JAVA:        $(LIB_JAVA))
@@ -39,10 +45,13 @@ $(info ---------------------------------------------------)
 
 # Dirs
 # relative to "src/"
+BUILD_ROOT=../build/
+CXX_DIR=cxx/
+
 JAVA_PKG_ROOT=foundation/pEp/jniadapter/
-JAVA_BUILD_ROOT=../build/java/
-OBJ_DIR=../build/cxx/
-DIST_DIR=../dist/
+JAVA_BUILD_ROOT=$(BUILD_ROOT)/java/
+OBJ_DIR=$(BUILD_ROOT)/$(CXX_DIR)
+
 
 # for "make clean" only
 GENERATED_JAVA=\
@@ -60,34 +69,33 @@ GENERATED_JAVA=\
 
 # files to compile which will be be generated
 GENERATED_CC=\
-	foundation_pEp_jniadapter_Engine.cc \
-	foundation_pEp_jniadapter_Message.cc \
-	throw_pEp_exception.cc
+	$(CXX_DIR)/foundation_pEp_jniadapter_Engine.cc \
+	$(CXX_DIR)/foundation_pEp_jniadapter_Message.cc \
+	$(CXX_DIR)/throw_pEp_exception.cc
 
 # for "make clean" only
 GENERATED_HH=\
-	throw_pEp_exception.hh
+	$(CXX_DIR)/throw_pEp_exception.hh
 
 # Generated JNI headers (javac -h)
 JNI_GENERATED_HH=\
-	foundation_pEp_jniadapter_AbstractEngine.h \
-    foundation_pEp_jniadapter__Blob.h \
-    foundation_pEp_jniadapter_Engine.h \
-    foundation_pEp_jniadapter_Identity.h \
-    foundation_pEp_jniadapter_Message.h
-
-# Derive Java sources that will cause generated headers (for incremental build)
-helper=$(subst _,/,$(JNI_GENERATED_HH))
-JNI_GENERATING_JAVA=$(subst .h,.java,$(helper))
+	$(CXX_DIR)/foundation_pEp_jniadapter_AbstractEngine.h \
+    $(CXX_DIR)/foundation_pEp_jniadapter__Blob.h \
+    $(CXX_DIR)/foundation_pEp_jniadapter_Engine.h \
+    $(CXX_DIR)/foundation_pEp_jniadapter_Identity.h \
+    $(CXX_DIR)/foundation_pEp_jniadapter_Message.h
 
 # Auto dependencies using gcc/clang
 CXXFLAGS+= -MMD -MP
 
-SOURCES=$(wildcard *.cc)
+SOURCES=$(wildcard $(CXX_DIR)/*.cc)
 SOURCES+=$(GENERATED_CC)
 tmp=$(SOURCES:.cc=.o)
-OBJECTS=$(addprefix $(OBJ_DIR), $(tmp))
+OBJECTS=$(addprefix $(BUILD_ROOT), $(tmp))
 DEPENDS=$(OBJECTS:.o=.d)
+
+-include $(DEPENDS)
+VPATH = $(CXX_DIR)/
 
 .PHONY: all lib-java lib-cxx compile-java compile-cxx gen-jni-headers codegen clean create-dirs remove-dirs install uninstall
 
@@ -105,13 +113,13 @@ lib-cxx: $(LIB_CXX_DYN) $(LIB_CXX_STATIC)
 
 # ---------------- Link -----------------
 $(LIB_JAVA): compile-java
-	$(JAVA_BIN_DIR)/jar cf $(DIST_DIR)/$@ -C $(JAVA_BUILD_ROOT) foundation
+	$(JAVA_BIN_DIR)/jar cf $@ -C $(JAVA_BUILD_ROOT) foundation
 
 $(LIB_CXX_DYN): compile-cxx
-	$(CXX) $(OBJ_DIR)*.o $(LDFLAGS) $(LDLIBS) -o $(DIST_DIR)/$@
+	$(CXX) $(OBJ_DIR)*.o $(LDFLAGS) $(LDLIBS) -o $@
 
 $(LIB_CXX_STATIC): compile-cxx
-	$(AR) -r $(DIST_DIR)/$@ $(OBJ_DIR)*.o
+	$(AR) -r $@ $(OBJ_DIR)*.o
 
 
 # -------------- Compile -----------------
@@ -123,20 +131,18 @@ compile-java: create-dirs codegen
 
 compile-cxx: create-dirs gen-jni-headers $(OBJECTS)
 
-$(OBJECTS): $(OBJ_DIR)%.o: %.cc
+$(OBJECTS): $(BUILD_ROOT)%.o: %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-
--include $(DEPENDS)
 
 
 # --------- Generate JNI headers ----------
 gen-jni-headers: codegen $(JNI_GENERATED_HH)
 
-$(JNI_GENERATED_HH): $(JNI_GENERATING_JAVA)
+$(JNI_GENERATED_HH):
 ifdef OLD_JAVA
 	$(JAVA_BIN_DIR)/javah -d $(JAVA_BUILD_ROOT) $(subst /,.,$(subst .java,,$<))
 else
-	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) -h . $(JAVA_PKG_ROOT)/*.java
+	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) -h $(CXX_DIR)/ $(JAVA_PKG_ROOT)/*.java
 endif
 
 
@@ -169,12 +175,12 @@ clean: remove-dirs
 
 install: $(LIB_JAVA) $(LIB_CXX_STATIC) $(LIB_CXX_DYN)
 	mkdir -p $(PREFIX)/lib
-	cp -v $(DIST_DIR)/$(LIB_JAVA) 		$(PREFIX)/lib/
-	cp -v $(DIST_DIR)/$(LIB_CXX_STATIC) $(PREFIX)/lib/
-	cp -v $(DIST_DIR)/$(LIB_CXX_DYN) 	$(PREFIX)/lib/
+	cp -v $(LIB_JAVA) 		$(PREFIX)/lib/
+	cp -v $(LIB_CXX_STATIC) $(PREFIX)/lib/
+	cp -v $(LIB_CXX_DYN) 	$(PREFIX)/lib/
 
 uninstall:
-	cd $(PREFIX)/lib && rm -vf $(LIB_JAVA)
-	cd $(PREFIX)/lib && rm -vf $(LIB_CXX_STATIC)
-	cd $(PREFIX)/lib && rm -vf $(LIB_CXX_DYN)
+	cd $(PREFIX)/lib && rm -vf $(LIB_JAVA_NAME)
+	cd $(PREFIX)/lib && rm -vf $(LIB_CXX_STATIC_NAME)
+	cd $(PREFIX)/lib && rm -vf $(LIB_CXX_DYN_NAME)
 
