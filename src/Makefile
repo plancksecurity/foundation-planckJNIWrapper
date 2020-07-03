@@ -51,12 +51,12 @@ GENERATED_JAVA=\
 	$(JAVA_PKG_ROOT)/CipherSuite.java \
 	$(JAVA_PKG_ROOT)/Color.java \
 	$(JAVA_PKG_ROOT)/DecryptFlags.java \
-	$(JAVA_PKG_ROOT)/EngineInterface.java \
 	$(JAVA_PKG_ROOT)/IdentityFlags.java \
- 	$(JAVA_PKG_ROOT)/MessageInterface.java \
 	$(JAVA_PKG_ROOT)/Rating.java \
 	$(JAVA_PKG_ROOT)/SyncHandshakeResult.java \
-	$(JAVA_PKG_ROOT)/SyncHandshakeSignal.java
+	$(JAVA_PKG_ROOT)/SyncHandshakeSignal.java \
+	$(JAVA_PKG_ROOT)/interfaces/EngineInterface.java \
+ 	$(JAVA_PKG_ROOT)/interfaces/MessageInterface.java
 
 # files to compile which will be be generated
 GENERATED_CC=\
@@ -118,6 +118,7 @@ $(LIB_CXX_STATIC): compile-cxx
 compile-java: create-dirs codegen
 	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/*.java
 	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/exceptions/*.java
+	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/interfaces/*.java
 
 
 compile-cxx: create-dirs gen-jni-headers $(OBJECTS)
@@ -133,11 +134,10 @@ gen-jni-headers: codegen $(JNI_GENERATED_HH)
 
 $(JNI_GENERATED_HH): $(JNI_GENERATING_JAVA)
 ifdef OLD_JAVA
-	$(JAVA_BIN_DIR)/javah $(subst /,.,$(subst .java,,$<))
+	$(JAVA_BIN_DIR)/javah -d $(JAVA_BUILD_ROOT) $(subst /,.,$(subst .java,,$<))
 else
-	$(JAVA_BIN_DIR)/javac -h . $(JAVA_PKG_ROOT)/*.java
+	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) -h . $(JAVA_PKG_ROOT)/*.java
 endif
-	mv $(JAVA_PKG_ROOT)/*.class $(JAVA_BUILD_ROOT)/$(JAVA_PKG_ROOT)/
 
 
 # ------------- YML2 CodeGen --------------

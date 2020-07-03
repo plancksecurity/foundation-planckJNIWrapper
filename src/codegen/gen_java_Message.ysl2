@@ -15,6 +15,7 @@ tstylesheet {
             ||
             package foundation.pEp.jniadapter;
 
+            import foundation.pEp.jniadapter.interfaces.*;
             import foundation.pEp.jniadapter.exceptions.*;
             import java.util.ArrayList;
             import java.util.Vector;
@@ -64,11 +65,12 @@ tstylesheet {
                 `` apply "*[name(.)!='enum']", mode=entry
             }
             ||
-        document("../foundation/pEp/jniadapter/{$cname}Interface.java", "text")
+        document("../foundation/pEp/jniadapter/interfaces/{$cname}Interface.java", "text")
             ||
-            package foundation.pEp.jniadapter;
+            package foundation.pEp.jniadapter.interfaces;
 
-            import foundation.pEp.jniadapter.Message.Direction;
+            import foundation.pEp.jniadapter.*;
+            import foundation.pEp.jniadapter.Message.*;
             import java.util.Date;
             import java.util.Vector;
             import java.util.ArrayList;

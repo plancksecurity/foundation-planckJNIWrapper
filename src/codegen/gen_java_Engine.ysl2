@@ -15,6 +15,7 @@ tstylesheet {
             ||
             package foundation.pEp.jniadapter;
 
+            import foundation.pEp.jniadapter.interfaces.*;
             import foundation.pEp.jniadapter.exceptions.*;
             import java.util.ArrayList;
             import java.util.Vector;
@@ -26,10 +27,11 @@ tstylesheet {
             }
 
             ||
-        document("../foundation/pEp/jniadapter/{$cname}Interface.java", "text")
+        document("../foundation/pEp/jniadapter/interfaces/{$cname}Interface.java", "text")
             ||
-            package foundation.pEp.jniadapter;
+            package foundation.pEp.jniadapter.interfaces;
 
+            import foundation.pEp.jniadapter.*;
             import java.util.ArrayList;
             import java.util.Vector;
 

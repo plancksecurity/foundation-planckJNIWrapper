@@ -1,5 +1,6 @@
 package foundation.pEp.jniadapter;
 
+import foundation.pEp.jniadapter.interfaces.*;
 import java.io.Serializable;
 
 public class Blob implements BlobInterface, Serializable {

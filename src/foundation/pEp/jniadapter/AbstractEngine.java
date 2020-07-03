@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import foundation.pEp.jniadapter.Sync.DefaultCallback;
+import foundation.pEp.jniadapter.interfaces.*;
 import foundation.pEp.jniadapter.exceptions.*;
 
 

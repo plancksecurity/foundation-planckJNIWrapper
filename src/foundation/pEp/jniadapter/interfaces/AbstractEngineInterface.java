@@ -1,4 +1,7 @@
-package foundation.pEp.jniadapter;
+package foundation.pEp.jniadapter.interfaces;
+
+import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.Sync;
 
 public interface AbstractEngineInterface {
     public String getVersion();
