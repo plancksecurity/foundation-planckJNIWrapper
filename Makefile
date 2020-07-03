@@ -3,7 +3,7 @@
 # This file may be used under the terms of the GNU General Public License version 3
 # see LICENSE.txt
 
-.PHONY: all src test clean doxy-all doxy-cxx doxy-java doxy-clean
+.PHONY: all src test clean doxy-all doxy-cxx doxy-java doxy-clean install uninstall
 
 all: src
 
@@ -29,3 +29,10 @@ doxy-java: src
 doxy-clean:
 	rm -rf doc/doxygen/cxx
 	rm -rf doc/doxygen/java
+
+install:
+	$(MAKE) -C src install
+
+uninstall:
+	$(MAKE) -C src uninstall
+

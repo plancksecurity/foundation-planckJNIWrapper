@@ -2,23 +2,28 @@
 # you might not need this file, but if the defaults dont work for you
 # You can override them here.
 # Tweak the values to your needs and rename it to local.conf
+# These example values here reflect the defaults
+
+############ Install ###########
+# PREFIX=$(HOME)/local
 
 ######### C++ Compiler #########
 # Should work with clang and g++
 # CXX=g++
-# DEBUG=1       # DEBUG Build (Default)
-# DEBUG=0       # RELEASE Build
+# DEBUG=0       # RELEASE Build / set to 1 for DEBUG build
 
-######### JAVA #########
+############ JAVA ##############
 # JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_231.jdk/Contents/Home
 
-######### YML2 #########
+############ YML2 ##############
 # YML2_PATH=$(HOME)/code/yml2
 
-######### Engine #########
-# ENGINE_LIB_PATH=$(HOME)/local/lib
-# ENGINE_INC_PATH=$(HOME)/local/include
+########### Engine #############
+# ENGINE_LIB_PATH=$(PREFIX)/lib
+# ENGINE_INC_PATH=$(PREFIX)/include
 
-######### libAdapter #########
-# AD_LIB_PATH=$(HOME)/local/lib
-# AD_INC_PATH=$(HOME)/local/include
+########## libAdapter ##########
+# AD_LIB_PATH=$(PREFIX)/lib
+# AD_INC_PATH=$(PREFIX)/include
+
+

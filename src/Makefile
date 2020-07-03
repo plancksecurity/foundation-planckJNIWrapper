@@ -89,7 +89,7 @@ tmp=$(SOURCES:.cc=.o)
 OBJECTS=$(addprefix $(OBJ_DIR), $(tmp))
 DEPENDS=$(OBJECTS:.o=.d)
 
-.PHONY: all lib-java lib-cxx compile-java compile-cxx gen-jni-headers codegen clean create-dirs remove-dirs
+.PHONY: all lib-java lib-cxx compile-java compile-cxx gen-jni-headers codegen clean create-dirs remove-dirs install uninstall
 
 $(info SOURCES: $(SOURCES))
 $(info OBJECTS: $(OBJECTS))
@@ -166,4 +166,15 @@ clean: remove-dirs
 	rm -f $(JNI_GENERATED_HH)
 	rm -f $(DEPENDS)
 	rm -f $(OBJECTS)
+
+install: $(LIB_JAVA) $(LIB_CXX_STATIC) $(LIB_CXX_DYN)
+	mkdir -p $(PREFIX)/lib
+	cp -v $(DIST_DIR)/$(LIB_JAVA) 		$(PREFIX)/lib/
+	cp -v $(DIST_DIR)/$(LIB_CXX_STATIC) $(PREFIX)/lib/
+	cp -v $(DIST_DIR)/$(LIB_CXX_DYN) 	$(PREFIX)/lib/
+
+uninstall:
+	cd $(PREFIX)/lib && rm -vf $(LIB_JAVA)
+	cd $(PREFIX)/lib && rm -vf $(LIB_CXX_STATIC)
+	cd $(PREFIX)/lib && rm -vf $(LIB_CXX_DYN)
 
