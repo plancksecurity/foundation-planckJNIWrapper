@@ -3,30 +3,24 @@ syntax: glob
 # ignore all of them
 
 *.class
-*.jar
-*.swp
-*.d
-*.o
-*.a
-*.dylib
-*.so
 *.log
 .DS_Store
 
 # ignore config files
 local.conf
-local.conf
+
+# ignore build and dist dirs
+build/*
+dist/*
 
 # ignore generated files
 status_list.yml2
 foundation_pEp_jniadapter__Blob.h
 foundation_pEp_jniadapter_AbstractEngine.h
 foundation_pEp_jniadapter_Engine.*
+foundation_pEp_jniadapter_Message.*
 foundation_pEp_jniadapter_Identity.h
-foundation_pEp_jniadapter_Message.cc
-foundation_pEp_jniadapter_Message.h
-throw_pEp_exception.cc
-throw_pEp_exception.hh
+throw_pEp_exception.*
 
 CipherSuite.java
 Color.java
