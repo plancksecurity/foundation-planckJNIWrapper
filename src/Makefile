@@ -41,8 +41,7 @@ $(info ---------------------------------------------------)
 # relative to "src/"
 JAVA_PKG_ROOT=foundation/pEp/jniadapter/
 JAVA_BUILD_ROOT=../build/java/
-# Separate dir for derived objects DOES NOT WORK YET :/ (has to be .)
-OBJ_DIR=.
+OBJ_DIR=../build/cxx/
 DIST_DIR=../dist/
 
 # for "make clean" only
@@ -86,7 +85,8 @@ CXXFLAGS+= -MMD -MP
 
 SOURCES=$(wildcard *.cc)
 SOURCES+=$(GENERATED_CC)
-OBJECTS=$(SOURCES:.cc=.o)
+tmp=$(SOURCES:.cc=.o)
+OBJECTS=$(addprefix $(OBJ_DIR), $(tmp))
 DEPENDS=$(OBJECTS:.o=.d)
 
 .PHONY: all lib-java lib-cxx compile-java compile-cxx gen-jni-headers codegen clean create-dirs remove-dirs
@@ -108,10 +108,10 @@ $(LIB_JAVA): compile-java
 	$(JAVA_BIN_DIR)/jar cf $(DIST_DIR)/$@ -C $(JAVA_BUILD_ROOT) foundation
 
 $(LIB_CXX_DYN): compile-cxx
-	$(CXX) *.o $(LDFLAGS) $(LDLIBS) -o $(DIST_DIR)/$@
+	$(CXX) $(OBJ_DIR)*.o $(LDFLAGS) $(LDLIBS) -o $(DIST_DIR)/$@
 
 $(LIB_CXX_STATIC): compile-cxx
-	$(AR) -r $(DIST_DIR)/$@ *.o
+	$(AR) -r $(DIST_DIR)/$@ $(OBJ_DIR)*.o
 
 
 # -------------- Compile -----------------
@@ -119,8 +119,12 @@ compile-java: create-dirs codegen
 	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/*.java
 	$(JAVA_BIN_DIR)/javac -d $(JAVA_BUILD_ROOT) $(JAVA_PKG_ROOT)/exceptions/*.java
 
-# Compile C++ using implicit rules
+
 compile-cxx: create-dirs gen-jni-headers $(OBJECTS)
+
+$(OBJECTS): $(OBJ_DIR)%.o: %.cc
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 -include $(DEPENDS)
 
 
@@ -145,6 +149,7 @@ create-dirs:
 	$(MAKE) -C codegen create-dirs
 	mkdir -p $(JAVA_BUILD_ROOT)/$(JAVA_PKG_ROOT)
 	mkdir -p $(JAVA_BUILD_ROOT)/$(JAVA_PKG_ROOT)/exceptions
+	mkdir -p $(OBJ_DIR)
 	mkdir -p $(DIST_DIR)
 
 #rm -rf is too dangerous for vars
