@@ -101,9 +101,12 @@ PEP_STATUS messageToSend(message *msg)
     // When a protocol implementation of the p≡p engine using messageToSend() cannot sign or encrypt with an
     // empty passphrase and not with the configured passphrase it is calling messageToSend() with a NULL instead
     // of a struct _message object.
-    if (Adapter::on_sync_thread() && !msg) {
-        return pEp::PassphraseCache::messageToSend(cache, Adapter::session());
-    }
+    if (Adapter::on_sync_thread() && !msg)
+        return pEp::PassphraseCache::config_next_passphrase();
+
+    // reset passphrase iterator
+    if (Adapter::on_sync_thread())
+        return pEp::PassphraseCache::config_next_passphrase(true);
 
     jobject msg_ = nullptr;
     assert(messageClass && messageConstructorMethodID && objj && messageToSendMethodID);
