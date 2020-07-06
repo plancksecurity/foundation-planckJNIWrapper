@@ -241,10 +241,6 @@ namespace pEp {
                 in CipherSuite suite
             );
 
-        method config_passphrase_for_new_keys(
-                in bool enable,
-                in string passphrase
-            );
 
         // "basic" methods are generated on the java side, but
         // on the C++ side, manually implemented in basic_api.cc
@@ -267,6 +263,7 @@ namespace pEp {
         basic string getUserDirectory();
         basic string getMachineDirectory();
         basic void config_passphrase(string passphrase);
+        basic void config_passphrase_for_new_keys(bool enable, string passphrase);
     };
 
     struct message {

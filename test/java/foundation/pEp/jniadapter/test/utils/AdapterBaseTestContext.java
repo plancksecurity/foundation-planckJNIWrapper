@@ -37,17 +37,23 @@ public class AdapterBaseTestContext extends AbstractTestContext {
     public Identity carol;
 
     // Keys
-    public byte[] keyBobSec;
-    private String filenameBobSec = "../resources/test_keys/bob-sec.asc";
+    public byte[] keyAlicePub;
+    private String filenameAlicePub = "../resources/test_keys/alice-pub-DE5DF92A358DCE5F.asc";
+
+    public byte[] keyAliceSec;
+    private String filenameAliceSec = "../resources/test_keys/alice-sec-DE5DF92A358DCE5F.asc";
+
+    public byte[] keyAlicePubPassphrase;
+    private String filenameAlicePubPassphrase = "../resources/test_keys/alice-passphrase-pub-BCBAC48800026D6F.asc";
+
+    public byte[] keyAliceSecPassphrase;
+    private String filenameAliceSecPassphrase = "../resources/test_keys/alice-passphrase-sec-BCBAC48800026D6F.asc";
 
     public byte[] keyBobPub;
     private String filenameBobPub = "../resources/test_keys/bob-pub.asc";
 
-    public byte[] keyAlicePub;
-    private String filenameAlicePub = "../resources/test_keys/alicenew-pub.asc";
-
-    public byte[] keyAliceSec;
-    private String filenameAliceSec = "../resources/test_keys/alicenew-sec.asc";
+    public byte[] keyBobSec;
+    private String filenameBobSec = "../resources/test_keys/bob-sec.asc";
 
     // Messages
     public Message msgToSelf;
@@ -65,6 +71,12 @@ public class AdapterBaseTestContext extends AbstractTestContext {
         engine = new Engine();
         engine.setMessageToSendCallback(callbacks);
         engine.setNotifyHandshakeCallback(callbacks);
+
+        TestLogger.logH2("Machine directory: ");
+        TestLogger.log(engine.getMachineDirectory());
+        TestLogger.logH2("User directory:" );
+        TestLogger.log(engine.getUserDirectory());
+
 
         alice = new Identity();
         alice.user_id = "23";
@@ -94,6 +106,12 @@ public class AdapterBaseTestContext extends AbstractTestContext {
 
         path = Paths.get(filenameAliceSec);
         keyAliceSec = Files.readAllBytes(path);
+
+        path = Paths.get(filenameAlicePubPassphrase);
+        keyAlicePubPassphrase = Files.readAllBytes(path);
+
+        path = Paths.get(filenameAliceSecPassphrase);
+        keyAliceSecPassphrase = Files.readAllBytes(path);
     }
 
 }

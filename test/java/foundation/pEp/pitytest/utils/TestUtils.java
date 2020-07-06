@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 
 public class TestUtils {
     // Pure static class
-    private TestUtils() { }
+    private TestUtils() {
+    }
 
     /*
     System
@@ -79,13 +80,18 @@ public class TestUtils {
 
     public static boolean envVarExists(String var) {
         boolean ret = false;
-        if(System.getenv(var) != null) {
+        if (System.getenv(var) != null) {
             ret = true;
         }
         return ret;
     }
 
 
+    public static String readKey() {
+        String ret = null;
+        ret = System.console().readLine();
+        return ret;
+    }
 
     /*
     Time Utils
@@ -157,8 +163,8 @@ public class TestUtils {
     public static int stringLenMinusEscSeq(String str) {
         int ret;
         int escSeqCount = substringOccurencesCount(str, "\u001B[");
-        ret = str.length() -  (escSeqCount * 3);
-        if(ret < 0) ret = 0;
+        ret = str.length() - (escSeqCount * 3);
+        if (ret < 0) ret = 0;
         return ret;
     }
 

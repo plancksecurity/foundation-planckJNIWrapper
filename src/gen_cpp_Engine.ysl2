@@ -20,6 +20,7 @@ tstylesheet {
         #include <pEp/passphrase_cache.hh>
 
         using pEp::Adapter::session;
+        using pEp::passphrase_cache;
         using namespace pEp::JNIAdapter;
 
         extern "C" {
@@ -68,7 +69,7 @@ tstylesheet {
             when "@cached = 'true'" {
             ||
                 pEpLog("cached passphrase");
-                PEP_STATUS status = cache.api(::«@name»,session()`apply "parm", mode=call`);
+                PEP_STATUS status = passphrase_cache.api(::«@name»,session()`apply "parm", mode=call`);
             ||
             } otherwise {
             ||
