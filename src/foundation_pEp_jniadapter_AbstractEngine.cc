@@ -105,7 +105,7 @@ PEP_STATUS messageToSend(message *msg)
 
     // reset passphrase iterator
     if (Adapter::on_sync_thread())
-        return pEp::PassphraseCache::config_next_passphrase(true);
+        pEp::PassphraseCache::config_next_passphrase(true);
 
     jobject msg_ = nullptr;
     assert(messageClass && messageConstructorMethodID && objj && messageToSendMethodID);
