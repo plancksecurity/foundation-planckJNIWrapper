@@ -497,5 +497,34 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
     }
 }
 
+
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphrase_1for_1new_1keys(
+        JNIEnv *env,
+        jobject obj,
+        jboolean enable,
+        jbyteArray passphrase
+    )
+{
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
+
+    bool _enable = (bool) enable;
+    const char *_passphrase = to_string(env, passphrase);
+
+    PEP_STATUS status = ::config_passphrase_for_new_keys(session(),_enable,cache.add_stored(_passphrase));
+    if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) ||
+            status < PEP_STATUS_OK ||
+            status >= PEP_TRUSTWORD_NOT_FOUND) {
+        throw_pEp_Exception(env, status);
+        return ;
+    }
+
+}
+
 } // extern "C"
 
