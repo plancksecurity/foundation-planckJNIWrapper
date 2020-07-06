@@ -13,6 +13,7 @@
 extern "C" {
     using namespace pEp::JNIAdapter;
     using pEp::Adapter::session;
+    using pEp::passphrase_cache;
 
 JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1trustwords(
         JNIEnv *env,
@@ -488,9 +489,9 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    char *_passphrase = to_string(env, passphrase);
+    char* _passphrase = to_string(env, passphrase);
 
-    PEP_STATUS status = ::config_passphrase(session(),cache.add(_passphrase));
+    PEP_STATUS status = ::config_passphrase(session(),passphrase_cache.add(_passphrase));
     if (status != 0) {
         throw_pEp_Exception(env, status);
         return;
@@ -516,7 +517,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
     bool _enable = (bool) enable;
     const char *_passphrase = to_string(env, passphrase);
 
-    PEP_STATUS status = ::config_passphrase_for_new_keys(session(),_enable,cache.add_stored(_passphrase));
+    PEP_STATUS status = ::config_passphrase_for_new_keys(session(),_enable,passphrase_cache.add_stored(_passphrase));
     if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) ||
             status < PEP_STATUS_OK ||
             status >= PEP_TRUSTWORD_NOT_FOUND) {
