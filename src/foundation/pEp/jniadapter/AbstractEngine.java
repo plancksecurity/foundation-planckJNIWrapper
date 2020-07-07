@@ -175,7 +175,8 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
 
     public int notifyHandshakeCallFromC(_Identity _myself, _Identity _partner, SyncHandshakeSignal _signal) {
         Identity myself = new Identity(_myself);
-        Identity partner = new Identity(_partner);
+        Identity partner = (_partner != null) ? new Identity(_partner) : null;
+
         System.out.println("pEpSync" +"notifyHandshakeCallFromC: " + notifyHandshakeCallback);
         if (notifyHandshakeCallback != null) {
             notifyHandshakeCallback.notifyHandshake(myself, partner, _signal);
