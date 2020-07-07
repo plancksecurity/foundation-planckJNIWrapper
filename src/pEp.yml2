@@ -68,6 +68,7 @@ namespace pEp {
         sync_notify_accepted_device_accepted > 8
         // sync_notify_overtaken > 9
         // sync_notify_forming_group > 10
+        sync_passphrase_required > 128
         sync_notify_sole > 254
         sync_notify_in_group > 255
     };
