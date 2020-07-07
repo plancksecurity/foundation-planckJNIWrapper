@@ -141,7 +141,7 @@ tstylesheet {
 
         if "not(position() mod 2)" choose {
             when "$ptype = 'string'"
-            | «$pitype» _«$pname» = «$pname».getBytes();
+            | «$pitype» _«$pname» = Utils.toUTF8(«$pname»);
             when "$ptype = 'bool'"
             | «$pitype» _«$pname» = «$pname».booleanValue();
             when "$ptype = 'bytearray'"

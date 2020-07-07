@@ -6,6 +6,7 @@
 #include <pEp/Adapter.hh>
 #include <pEp/pEpLog.hh>
 #include <pEp/passphrase_cache.hh>
+#include <pEp/callback_dispatcher.hh>
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
 
@@ -33,10 +34,8 @@ jclass identityClass = nullptr;;
 jclass signalClass = nullptr;
 jclass engineClass = nullptr;
 
-class JNISync {
-public:
-    JNIEnv * env()
-    {
+namespace JNISync {
+    JNIEnv* env() {
         JNIEnv *thread_env = nullptr;
         int status = jvm->GetEnv((void**)&thread_env, JNI_VERSION_1_6);
         if (status < 0) {
@@ -50,19 +49,20 @@ public:
         return thread_env;
     }
 
-    void onSyncStartup()
-    {
+    void onSyncStartup() {
+        pEpLog("called");
         env();
     }
 
-    void onSyncShutdown()
-    {
+    void onSyncShutdown() {
+        pEpLog("called");
         jvm->DetachCurrentThread();
     }
-} o;
+};
+
 
 void jni_init() {
-    JNIEnv *_env = o.env();
+    JNIEnv *_env = JNISync::env();
 
     messageClass = reinterpret_cast<jclass>(
             _env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/Message")));
@@ -86,35 +86,37 @@ void jni_init() {
         "notifyHandshakeCallFromC",
         "(Lfoundation/pEp/jniadapter/_Identity;Lfoundation/pEp/jniadapter/_Identity;Lfoundation/pEp/jniadapter/SyncHandshakeSignal;)I");
 
-    method_values = o.env()->GetStaticMethodID(signalClass, "values",
+    method_values = JNISync::env()->GetStaticMethodID(signalClass, "values",
                 "()[Lfoundation/pEp/jniadapter/SyncHandshakeSignal;");
-    field_value = o.env()->GetFieldID(signalClass, "value", "I");
+    field_value = JNISync::env()->GetFieldID(signalClass, "value", "I");
 }
 
 PEP_STATUS messageToSend(message *msg)
 {
     std::lock_guard<std::mutex> l(mutex_obj);
-
-    pEpLog("############### messageToSend() called");
+    pEpLog("called");
 
     // Passphrase
     // When a protocol implementation of the p≡p engine using messageToSend() cannot sign or encrypt with an
     // empty passphrase and not with the configured passphrase it is calling messageToSend() with a NULL instead
     // of a struct _message object.
-    if (Adapter::on_sync_thread() && !msg) {
-        return pEp::PassphraseCache::messageToSend(cache, Adapter::session());
-    }
+    if (Adapter::on_sync_thread() && !msg)
+        return pEp::PassphraseCache::config_next_passphrase();
+
+    // reset passphrase iterator
+    if (Adapter::on_sync_thread())
+        pEp::PassphraseCache::config_next_passphrase(true);
 
     jobject msg_ = nullptr;
     assert(messageClass && messageConstructorMethodID && objj && messageToSendMethodID);
 
-    msg_ = o.env()->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
+    msg_ = JNISync::env()->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
 
-    PEP_STATUS status = (PEP_STATUS) o.env()->CallIntMethod(objj, messageToSendMethodID, msg_);
-    if (o.env()->ExceptionCheck()) {
-        o.env()->ExceptionDescribe();
+    PEP_STATUS status = (PEP_STATUS) JNISync::env()->CallIntMethod(objj, messageToSendMethodID, msg_);
+    if (JNISync::env()->ExceptionCheck()) {
+        JNISync::env()->ExceptionDescribe();
         status = PEP_UNKNOWN_ERROR;
-        o.env()->ExceptionClear();
+        JNISync::env()->ExceptionClear();
     }
 
 
@@ -124,13 +126,13 @@ PEP_STATUS messageToSend(message *msg)
 PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handshake_signal signal)
 {
     std::lock_guard<std::mutex> l(mutex_obj);
+    pEpLog("called");
 
-    pEpLog("############### notifyHandshake() called");
     jobject me_ = nullptr;
     jobject partner_ = nullptr;
 
-    me_ = from_identity(o.env(), me, identityClass);
-    partner_ = from_identity(o.env(), partner, identityClass);
+    me_ = from_identity(JNISync::env(), me, identityClass);
+    partner_ = from_identity(JNISync::env(), partner, identityClass);
 
     jobject signal_ = nullptr;
     {
@@ -138,31 +140,31 @@ PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handsha
         assert(method_values);
         assert(field_value);
 
-        jobjectArray values = (jobjectArray) o.env()->CallStaticObjectMethod(signalClass,
+        jobjectArray values = (jobjectArray) JNISync::env()->CallStaticObjectMethod(signalClass,
                 method_values);
-        if (o.env()->ExceptionCheck()) {
-            o.env()->ExceptionClear();
+        if (JNISync::env()->ExceptionCheck()) {
+            JNISync::env()->ExceptionClear();
             return PEP_UNKNOWN_ERROR;
         }
 
-        jsize values_size = o.env()->GetArrayLength(values);
+        jsize values_size = JNISync::env()->GetArrayLength(values);
         for (jsize i = 0; i < values_size; i++) {
-            jobject element = o.env()->GetObjectArrayElement(values, i);
+            jobject element = JNISync::env()->GetObjectArrayElement(values, i);
             assert(element);
-            jint value = o.env()->GetIntField(element, field_value);
+            jint value = JNISync::env()->GetIntField(element, field_value);
             if (value == (jint) signal) {
                 signal_ = element;
                 break;
             }
-            o.env() -> DeleteLocalRef(element);
+            JNISync::env() -> DeleteLocalRef(element);
         }
     }
 
     assert(objj && notifyHandShakeMethodID);
 
-    PEP_STATUS status = (PEP_STATUS) o.env()->CallIntMethod(objj, notifyHandShakeMethodID, me_, partner_, signal_);
-    if (o.env()->ExceptionCheck()) {
-        o.env()->ExceptionClear();
+    PEP_STATUS status = (PEP_STATUS) JNISync::env()->CallIntMethod(objj, notifyHandShakeMethodID, me_, partner_, signal_);
+    if (JNISync::env()->ExceptionCheck()) {
+        JNISync::env()->ExceptionClear();
         return PEP_UNKNOWN_ERROR;
     }
 
@@ -187,7 +189,8 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_init(
         env->GetJavaVM(&jvm);
         jni_init();
         objj = env->NewGlobalRef(obj);
-        Adapter::_messageToSend = messageToSend;
+        callback_dispatcher.add(messageToSend, notifyHandshake, JNISync::onSyncStartup, JNISync::onSyncShutdown);
+        Adapter::_messageToSend = CallbackDispatcher::messageToSend;
     }
 
     create_engine_java_object_mutex(env, obj);  // Create a mutex per java object
@@ -373,11 +376,10 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1startSync
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    pEpLog("######## starting sync");
     try {
-        Adapter::startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::onSyncStartup, &JNISync::onSyncShutdown);
-    }
-    catch (RuntimeError& ex) {
+        CallbackDispatcher::start_sync();
+//        Adapter::startup<JNISync>(messageToSend, notifyHandshake, &o, &JNISync::onSyncStartup, &JNISync::onSyncShutdown);
+    } catch (RuntimeError& ex) {
         throw_pEp_Exception(env, ex.status);
         return;
     }
@@ -396,7 +398,8 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1stopSync(
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    Adapter::shutdown();
+    CallbackDispatcher::stop_sync();
+//    Adapter::shutdown();
 }
 
 JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1isSyncRunning(
