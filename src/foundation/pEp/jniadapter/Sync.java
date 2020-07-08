@@ -19,6 +19,9 @@ public interface Sync {
         void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal);
     }
 
+    interface PassphraseRequiredCallback {
+        String passphraseRequired();
+    }
 
     public class DefaultCallback 
             implements Sync.MessageToSendCallback, Sync.NotifyHandshakeCallback,  Sync.NeedsFastPollCallback {

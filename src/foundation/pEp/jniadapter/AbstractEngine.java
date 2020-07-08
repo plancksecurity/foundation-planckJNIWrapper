@@ -16,6 +16,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
     private Sync.MessageToSendCallback messageToSendCallback;
     private Sync.NotifyHandshakeCallback notifyHandshakeCallback;
     private Sync.NeedsFastPollCallback needsFastPollCallback;
+    private Sync.PassphraseRequiredCallback passphraseRequiredCallback;
 
     private final static DefaultCallback defaultCallback = new DefaultCallback();
 
@@ -164,6 +165,12 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         this.needsFastPollCallback = needsFastPollCallback;
     }
 
+    public void setPassphraseRequiredCallback(Sync.PassphraseRequiredCallback passphraseRequiredCallback) {
+        System.out.println("passphraseRequiredCallback has been registered to:" + passphraseRequiredCallback.toString() + " on engine ObjID: " + getId());
+
+        this.passphraseRequiredCallback = passphraseRequiredCallback;
+    }
+
     public int needsFastPollCallFromC(boolean fast_poll_needed) {
         if (needsFastPollCallback != null) {
             needsFastPollCallback.needsFastPollCallFromC(fast_poll_needed);
@@ -184,6 +191,22 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
             defaultCallback.notifyHandshake(myself, partner, _signal);
         }
         return 0;
+    }
+
+    public byte[] passphraseRequiredFromC() {
+        String ret = "";
+        if (passphraseRequiredCallback != null) {
+            System.out.println("calling passphraseRequiredCallback on engine ObjID:" + getId());
+            ret = passphraseRequiredCallback.passphraseRequired();
+        } else {
+            System.out.println("no callback registered on engine ObjID:" + getId());
+            // if this happens (no callback registered
+            // we simply return ""
+            // it will fail
+            // this repeats MaxRetries times (currentluy hardcoded to 3)
+            // Then the orig call will return with the PEP_STATUS (most likely PEP_PASSPHRASE_REQUIRED)
+        }
+        return toUTF8(ret);
     }
 
     public int messageToSendCallFromC (Message message) {
