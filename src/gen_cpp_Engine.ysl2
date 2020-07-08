@@ -68,31 +68,8 @@ tstylesheet {
         choose {
             when "@cached = 'true'" {
             ||
-                pEpLog("cached passphrase mode");
-                bool retryAfterCallback = false;
-                int maxRetries = 3;
-                int retryCount = 0;
-                PEP_STATUS status;
-                do {
-                    // the actual target function
-                    status = passphrase_cache.api(::«@name»,session()`apply "parm", mode=call`);
-
-                    if(status == PEP_PASSPHRASE_REQUIRED || PEP_WRONG_PASSPHRASE ) {
-                        pEpLog("PassReq OR Wrong");
-                        // call the app
-                        const char * _passphrase = "passphrase_alice";
-                        PEP_STATUS status = ::config_passphrase(session(),passphrase_cache.add(_passphrase));
-                        retryCount++;
-                        if(retryCount > maxRetries) {
-                            retryAfterCallback = false;
-                        } else {
-                            retryAfterCallback = true;
-                        }
-                    } else {
-                        retryAfterCallback = false;
-                    }
-                } while (retryAfterCallback);
-
+                pEpLog("cached passphrase");
+                PEP_STATUS status = passphrase_cache.api(::«@name»,session()`apply "parm", mode=call`);
             ||
             } otherwise {
             ||
