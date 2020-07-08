@@ -16,6 +16,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
     private Sync.MessageToSendCallback messageToSendCallback;
     private Sync.NotifyHandshakeCallback notifyHandshakeCallback;
     private Sync.NeedsFastPollCallback needsFastPollCallback;
+    private Sync.PassphraseRequiredCallback passphraseRequiredCallback;
 
     private final static DefaultCallback defaultCallback = new DefaultCallback();
 
@@ -32,7 +33,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
     }
 
     final public void close() {
-        synchronized (AbstractEngine.class) {
+        synchronized (AbstractEngine.class){
             release();
         }
     }
@@ -95,6 +96,12 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
         this.needsFastPollCallback = needsFastPollCallback;
     }
 
+    public void setPassphraseRequiredCallback(Sync.PassphraseRequiredCallback passphraseRequiredCallback) {
+        System.out.println("passphraseRequiredCallback has been registered to:" + passphraseRequiredCallback.toString() + " on engine ObjID: " + getId());
+
+        this.passphraseRequiredCallback = passphraseRequiredCallback;
+    }
+
     private int needsFastPollCallFromC(boolean fast_poll_needed) {
         if (needsFastPollCallback != null) {
             needsFastPollCallback.needsFastPollCallFromC(fast_poll_needed);
@@ -107,7 +114,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
     private int notifyHandshakeCallFromC(_Identity _myself, _Identity _partner, SyncHandshakeSignal _signal) {
         Identity myself = new Identity(_myself);
         Identity partner = new Identity(_partner);
-        System.out.println("pEpSync" + "notifyHandshakeCallFromC: " + notifyHandshakeCallback);
+        System.out.println("pEpSync" +"notifyHandshakeCallFromC: " + notifyHandshakeCallback);
         if (notifyHandshakeCallback != null) {
             notifyHandshakeCallback.notifyHandshake(myself, partner, _signal);
         } else {
@@ -116,8 +123,24 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
         return 0;
     }
 
-    private int messageToSendCallFromC(Message message) {
-        System.out.println("pEpSync" + "messageToSendCallFromC: " + messageToSendCallback);
+    private byte[] passphraseRequiredFromC() {
+        String ret = "";
+        if (passphraseRequiredCallback != null) {
+            System.out.println("calling passphraseRequiredCallback on engine ObjID:" + getId());
+            ret = passphraseRequiredCallback.passphraseRequired();
+        } else {
+            System.out.println("no callback registered on engine ObjID:" + getId());
+            // if this happens (no callback registered
+            // we simply return ""
+            // it will fail
+            // this repeats MaxRetries times (currentluy hardcoded to 3)
+            // Then the orig call will return with the PEP_STATUS (most likely PEP_PASSPHRASE_REQUIRED)
+        }
+        return Utils.toUTF8(ret);
+    }
+
+    private int messageToSendCallFromC (Message message) {
+        System.out.println("pEpSync" + "messageToSendCallFromC: " + messageToSendCallback );
         if (messageToSendCallback != null) {
             messageToSendCallback.messageToSend(message);
         } else {
