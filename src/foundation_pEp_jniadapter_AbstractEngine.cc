@@ -9,6 +9,7 @@
 #include <pEp/callback_dispatcher.hh>
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
+#include "passphrase_callback.hh"
 
 namespace pEp {
 using namespace pEp::JNIAdapter;
@@ -89,6 +90,11 @@ void jni_init() {
     method_values = JNISync::env()->GetStaticMethodID(signalClass, "values",
                 "()[Lfoundation/pEp/jniadapter/SyncHandshakeSignal;");
     field_value = JNISync::env()->GetFieldID(signalClass, "value", "I");
+}
+
+char* JNIAdapter::passphraseRequiredCallback() {
+    pEpLog("called");
+    return "passphrase_alice";
 }
 
 PEP_STATUS messageToSend(message *msg)
