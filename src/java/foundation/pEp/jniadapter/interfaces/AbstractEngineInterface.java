@@ -24,5 +24,7 @@ public interface AbstractEngineInterface {
 
     public void setNeedsFastPollCallback(Sync.NeedsFastPollCallback needsFastPollCallback);
 
+    public void setPassphraseRequiredCallback(Sync.PassphraseRequiredCallback passphraseRequiredCallback);
+
     public Message incomingMessageFromPGPText(String pgpText, Message.EncFormat encFormat);
 }
