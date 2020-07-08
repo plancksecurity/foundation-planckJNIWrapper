@@ -19,7 +19,10 @@ class JNI114TestContext extends AdapterBaseTestContext {
         super.init();
         alice = null;
         bob = null;
+
+
     }
+
 }
 
 class TestAlice {
@@ -31,15 +34,26 @@ class TestAlice {
         AdapterBaseTestContext jni111Ctx = new JNI114TestContext();
 
         new TestUnit<AdapterBaseTestContext>("importKey()", jni111Ctx, ctx -> {
+            // Register callback passphraseRequired()
+            ctx.engine.setPassphraseRequiredCallback(new Sync.PassphraseRequiredCallback() {
+                @Override
+                public String passphraseRequired() {
+                    log("passphraseRequired() called");
+                    return "passphrase_alice";
+                }
+            });
+
+            // ImportKey and setOwnKey (with passphrase, of course)
             ctx.alice = ctx.engine.importKey(ctx.keyAliceSecPassphrase).get(0);
             log(AdapterTestUtils.identityToString(ctx.alice, true));
             ctx.alice.user_id = "23";
             ctx.alice = ctx.engine.setOwnKey(ctx.alice, ctx.alice.fpr);
             log(AdapterTestUtils.identityToString(ctx.alice, true));
 
+            // Encrypt
             Message enc = ctx.engine.encrypt_message(ctx.msgToSelf, new Vector<>(), Message.EncFormat.PEP);
             log(AdapterTestUtils.msgToString(enc, false));
-//            ctx.engine.startSync();
+
 
         });
 
