@@ -26,6 +26,7 @@ jmethodID messageConstructorMethodID = nullptr;
 jmethodID messageToSendMethodID = nullptr;
 jmethodID notifyHandShakeMethodID = nullptr;
 jmethodID needsFastPollMethodID = nullptr;
+jmethodID passphraseRequiredMethodID = nullptr;
 jmethodID method_values = nullptr;
 
 jobject objj = nullptr;
@@ -86,6 +87,10 @@ void jni_init() {
         engineClass,
         "notifyHandshakeCallFromC",
         "(Lfoundation/pEp/jniadapter/_Identity;Lfoundation/pEp/jniadapter/_Identity;Lfoundation/pEp/jniadapter/SyncHandshakeSignal;)I");
+    passphraseRequiredMethodID = _env->GetMethodID(
+        engineClass,
+        "passphraseRequiredFromC",
+        "()[B");
 
     method_values = JNISync::env()->GetStaticMethodID(signalClass, "values",
                 "()[Lfoundation/pEp/jniadapter/SyncHandshakeSignal;");
@@ -94,7 +99,22 @@ void jni_init() {
 
 char* JNIAdapter::passphraseRequiredCallback() {
     pEpLog("called");
-    return "passphrase_alice";
+
+    assert(objj && passphraseRequiredMethodID);
+
+    jobject ppJO = JNISync::env()->CallObjectMethod(objj, passphraseRequiredMethodID);
+    if (JNISync::env()->ExceptionCheck()) {
+        JNISync::env()->ExceptionDescribe();
+        JNISync::env()->ExceptionClear();
+    }
+
+    jbyteArray ppJBA = reinterpret_cast<jbyteArray>(ppJO);
+    char* passphrase_ = to_string( JNISync::env(), ppJBA);
+
+    pEpLog("fromJava: " << passphrase_);
+    JNISync::env()->DeleteLocalRef(ppJO);
+
+    return passphrase_;
 }
 
 PEP_STATUS messageToSend(message *msg)

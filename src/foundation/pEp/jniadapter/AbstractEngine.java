@@ -186,6 +186,10 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         return 0;
     }
 
+    public byte[] passphraseRequiredFromC() {
+        return toUTF8("passphrase_alice");
+    }
+
     public int messageToSendCallFromC (Message message) {
         System.out.println("pEpSync" + "messageToSendCallFromC: " + messageToSendCallback );
         if (messageToSendCallback != null) {
