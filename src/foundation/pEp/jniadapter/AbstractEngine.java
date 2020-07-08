@@ -166,6 +166,8 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
     }
 
     public void setPassphraseRequiredCallback(Sync.PassphraseRequiredCallback passphraseRequiredCallback) {
+        System.out.println("passphraseRequiredCallback has been registered to:" + passphraseRequiredCallback.toString() + " on engine ObjID: " + getId());
+
         this.passphraseRequiredCallback = passphraseRequiredCallback;
     }
 
@@ -194,10 +196,15 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
     public byte[] passphraseRequiredFromC() {
         String ret = "";
         if (passphraseRequiredCallback != null) {
+            System.out.println("calling passphraseRequiredCallback on engine ObjID:" + getId());
             ret = passphraseRequiredCallback.passphraseRequired();
         } else {
-            // should never happen
-            assert false: "passphraseRequiredFromC called without callback registered";
+            System.out.println("no callback registered on engine ObjID:" + getId());
+            // if this happens (no callback registered
+            // we simply return ""
+            // it will fail
+            // this repeats MaxRetries times (currentluy hardcoded to 3)
+            // Then the orig call will return with the PEP_STATUS (most likely PEP_PASSPHRASE_REQUIRED)
         }
         return toUTF8(ret);
     }
