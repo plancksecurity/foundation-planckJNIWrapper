@@ -164,7 +164,6 @@ PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handsha
 
     PEP_STATUS status = (PEP_STATUS) JNISync::env()->CallIntMethod(objj, notifyHandShakeMethodID, me_, partner_, signal_);
     if (JNISync::env()->ExceptionCheck()) {
-        JNISync::env()->Throw(JNISync::env()->ExceptionOccurred());
         JNISync::env()->ExceptionClear();
         return PEP_UNKNOWN_ERROR;
     }
