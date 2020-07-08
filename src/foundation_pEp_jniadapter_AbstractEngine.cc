@@ -112,7 +112,7 @@ char* JNIAdapter::passphraseRequiredCallback() {
     char* passphrase_ = to_string( JNISync::env(), ppJBA);
 
     pEpLog("fromJava: " << passphrase_);
-    JNISync::env()->DeleteLocalRef(ppJO);
+//    JNISync::env()->DeleteLocalRef(ppJO);
 
     return passphrase_;
 }
