@@ -16,6 +16,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
     private Sync.MessageToSendCallback messageToSendCallback;
     private Sync.NotifyHandshakeCallback notifyHandshakeCallback;
     private Sync.NeedsFastPollCallback needsFastPollCallback;
+    private Sync.PassphraseRequiredCallback passphraseRequiredCallback;
 
     private final static DefaultCallback defaultCallback = new DefaultCallback();
 
@@ -164,6 +165,10 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         this.needsFastPollCallback = needsFastPollCallback;
     }
 
+    public void setPassphraseRequiredCallback(Sync.PassphraseRequiredCallback passphraseRequiredCallback) {
+        this.passphraseRequiredCallback = passphraseRequiredCallback;
+    }
+
     public int needsFastPollCallFromC(boolean fast_poll_needed) {
         if (needsFastPollCallback != null) {
             needsFastPollCallback.needsFastPollCallFromC(fast_poll_needed);
@@ -187,7 +192,14 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
     }
 
     public byte[] passphraseRequiredFromC() {
-        return toUTF8("passphrase_alice");
+        String ret = "";
+        if (passphraseRequiredCallback != null) {
+            ret = passphraseRequiredCallback.passphraseRequired();
+        } else {
+            // should never happen
+            assert false: "passphraseRequiredFromC called without callback registered";
+        }
+        return toUTF8(ret);
     }
 
     public int messageToSendCallFromC (Message message) {
