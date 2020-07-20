@@ -2,7 +2,8 @@
 
 def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
-def threadsToUse = hasProperty('threadsToUse') ? threadsToUse : 1
+def threadsToUse = hasProperty('threadsToUse') ?
+        threadsToUse : Runtime.getRuntime().availableProcessors()
 
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 
@@ -77,7 +78,7 @@ android {
             jniDebuggable true
             externalNativeBuild {
                 ndkBuild {
-                    arguments "-j${threadsToUse}", 'NDK_LOG=1'
+                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null'
                    // arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1'
                 }
             }
