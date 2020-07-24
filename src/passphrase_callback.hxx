@@ -1,6 +1,6 @@
 #pragma once
 
-#import "passphrase_callback.hh"
+#include "passphrase_callback.hh"
 
 namespace pEp {
     namespace JNIAdapter {
