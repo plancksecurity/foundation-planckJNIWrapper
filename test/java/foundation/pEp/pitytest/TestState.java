@@ -7,6 +7,6 @@ public enum TestState {
     FAILED,
     STARTING,
     CTX_INIT,
-    CTX_INIT_FAILED,
+    CTX_FAIL,
     RUNNING;
 }

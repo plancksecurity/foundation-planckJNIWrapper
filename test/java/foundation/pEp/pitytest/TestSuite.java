@@ -98,9 +98,9 @@ public class TestSuite {
         int failedCount = 0;
         int successCount = 0;
         for (TestUnit t : tests) {
-            if (t.getResult() == TestResult.SKIPPED) skippedCount++;
-            if (t.getResult() == TestResult.FAILED) failedCount++;
-            if (t.getResult() == TestResult.SUCCESS) successCount++;
+            if (t.getResult() == TestState.SKIPPED) skippedCount++;
+            if (t.getResult() == TestState.FAILED) failedCount++;
+            if (t.getResult() == TestState.SUCCESS) successCount++;
         }
 
         failedCount = failedCount + skippedCount;

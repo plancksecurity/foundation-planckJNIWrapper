@@ -140,7 +140,7 @@ public class TestUtils {
     public static String padOrClipString(String str, String padChar, int len, Alignment alignment, String clipMsg) {
         String ret = "";
         int strLen = str.length();
-        len += (substringOccurencesCount(str, "\u001B") * 4);
+        len += (substringOccurencesCount(str, "\u001B") * 4.5);
         if (strLen <= len) {
             if (alignment == Alignment.Left) {
                 ret = str + repeatString(padChar, len - strLen);
