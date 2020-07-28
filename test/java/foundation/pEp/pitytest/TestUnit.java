@@ -78,6 +78,10 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
         return this;
     }
 
+    public T getContext() {
+        return ctx;
+    }
+
     public void run() {
         TestUtils.standardOutErrEnabled(verboseMode);
         if (ctx.isUninitializable()) {

@@ -12,25 +12,53 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Jni115TestContext extends AdapterBaseTestContext {
-    public int messagesToBobCount = 1000;
-    public List<Message> messagesToBob = new ArrayList<>();
+    public int messagesToBobCount = 10;
+    public List<Message> messagesToBobSmall;
+    public List<Message> messagesToBobBig;
+    public List<Message> messagesToBobHuge;
+    public List<Message> messagesToBob;
 
     @Override
     public void init() throws Throwable {
         super.init();
+        messagesToBobSmall = new ArrayList<>();
+        messagesToBobBig = new ArrayList<>();
+        messagesToBobHuge = new ArrayList<>();
 
+        log("Preparing " + messagesToBobCount + " messagesToBob small");
         for (int i = 0; i < messagesToBobCount; i++) {
+            logRaw(".");
             Message tmp = AdapterTestUtils.makeNewTestMessage(alice, bob, Message.Direction.Outgoing);
             tmp.setLongmsg(tmp.getLongmsg() + " nr: " + String.valueOf(i));
-            messagesToBob.add(tmp);
+            messagesToBobSmall.add(tmp);
         }
+        logRaw("\n");
+
+
+        log("Preparing " + messagesToBobCount + " messagesToBob big");
+        for (int i = 0; i < messagesToBobCount; i++) {
+            logRaw(".");
+            Message tmp = AdapterTestUtils.makeNewTestMessage(alice, bob, Message.Direction.Outgoing);
+            tmp.setLongmsg(TestUtils.repeatString(tmp.getLongmsg() + " nr: " + String.valueOf(i), 100));
+            messagesToBobBig.add(tmp);
+        }
+        logRaw("\n");
+
+        log("Preparing " + messagesToBobCount + " messagesToBob huge");
+        for (int i = 0; i < messagesToBobCount; i++) {
+            logRaw(".");
+            Message tmp = AdapterTestUtils.makeNewTestMessage(alice, bob, Message.Direction.Outgoing);
+            tmp.setLongmsg(TestUtils.repeatString(tmp.getLongmsg() + " nr: " + String.valueOf(i), 10000));
+            messagesToBobHuge.add(tmp);
+        }
+        logRaw("\n");
     }
 
 }
 
 class TestAlice {
     public static void main(String[] args) throws Exception {
-        TestSuite.getDefault().setVerbose(true);
+        TestSuite.getDefault().setVerbose(false);
         TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
 
         Jni115TestContext ctx1 = new Jni115TestContext();
@@ -40,25 +68,54 @@ class TestAlice {
             if (ctx.alice.fpr == null) {
                 throw new RuntimeException();
             }
+        }).run();
+
+
+        TestUnit perfTest = new TestUnit<Jni115TestContext>("EncPerf mini message", ctx1, ctx -> {
+//            TestUtils.readKey();
+            log("encrypting " + ctx.messagesToBobCount + " messages");
+            Message encrypted = null;
+            for (Message msg : ctx.messagesToBob) {
+                encrypted = ctx.engine.encrypt_message(msg, null, Message.EncFormat.PEP);
+                logRaw(".");
+                if (encrypted == null) {
+//                        log(msg.getEncFormat().toString());
+                } else {
+//                        log(encrypted.getEncFormat().toString());
+                }
+            }
+            logRaw("\n");
+//            log(AdapterTestUtils.msgToString(encrypted,false));
+
         });
+
+        // Perf test for UNENCRTYPTED (no pubkey)
+        ctx1.messagesToBob = ctx1.messagesToBobSmall;
+        perfTest.run();
+
+        ctx1.messagesToBob = ctx1.messagesToBobBig;
+        perfTest.run();
+
+        ctx1.messagesToBob = ctx1.messagesToBobHuge;
+        perfTest.run();
+
+
+        // Key import
         new TestUnit<Jni115TestContext>("importKey()", ctx1, ctx -> {
             ctx.engine.importKey(ctx.keyBobPub);
-        });
+        }).run();
 
-        new TestUnit<Jni115TestContext>("#MassEncryption", ctx1, ctx -> {
-            TestUtils.readKey();
-            log("Encrypting " + ctx.messagesToBobCount + " messages");
-            Duration total = new StopWatch(() -> {
-                for (Message msg : ctx.messagesToBob) {
-                    Message encrypted = ctx.engine.encrypt_message(msg, null, Message.EncFormat.PEP);
-                    logRaw(".");
-                }
-            }).getDuration();
-            logRaw("\n");
-            log("Total time [ms]: " + total.toMillis());
-        });
+        // Perf test for ENCRTYPTED (with pubkey)
+        ctx1.messagesToBob = ctx1.messagesToBobSmall;
+        perfTest.run();
 
-        TestSuite.getDefault().run();
+        ctx1.messagesToBob = ctx1.messagesToBobBig;
+        perfTest.run();
+
+        ctx1.messagesToBob = ctx1.messagesToBobHuge;
+        perfTest.run();
+
+//        TestSuite.getDefault().run();
     }
 }
 
