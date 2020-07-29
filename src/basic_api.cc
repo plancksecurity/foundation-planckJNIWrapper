@@ -9,6 +9,7 @@
 
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
+#include "passphrase_callback.hh"
 
 extern "C" {
     using namespace pEp::JNIAdapter;
@@ -33,11 +34,18 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1trustwords(
     char *words;
     size_t wsize;
 
+    PEP_STATUS status = PEP_STATUS_OK;
+
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
         if (_ident->me)
-            ::myself(session(), _ident);
+            status = passphraseWrap(::myself, session(), _ident);
         else
-            ::update_identity(session(), _ident);
+            status = passphraseWrap(::update_identity, session(), _ident);
+    }
+
+    if (status != PEP_STATUS_OK) {
+        throw_pEp_Exception(env, status);
+        return NULL;
     }
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -51,7 +59,9 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1trustwords(
     else
         lang = "en";
 
-    PEP_STATUS status = ::trustwords(session(), _ident->fpr, lang, &words, &wsize, 10);
+    status = passphraseWrap(::trustwords,
+            session(), (const char *) _ident->fpr, lang, &words, &wsize, 10);
+
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
         return NULL;
@@ -76,7 +86,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1myself(
 
     pEp_identity *_ident = to_identity(env, ident);
 
-    PEP_STATUS status = ::myself(session(), _ident);
+    PEP_STATUS status = passphraseWrap(::myself, session(), _ident);
 
     if (status != PEP_STATUS_OK) {
         LOGD("Failed Myself: 0x%04x\\n", status);
@@ -102,7 +112,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1updateIdentity
 
     pEp_identity *_ident = to_identity(env, ident);
 
-    ::update_identity(session(), _ident);
+    passphraseWrap(::update_identity, session(), _ident);
 
     return from_identity(env, _ident);
 }
@@ -123,9 +133,9 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1setOwnKey(
     std::lock_guard<std::mutex> l(*mutex_local);
 
     pEp_identity *_ident = to_identity(env, ident);
-    char *_fpr = to_string(env, fpr);
+    const char *_fpr = to_string(env, fpr);
 
-    PEP_STATUS status = ::set_own_key(session(), _ident, _fpr);
+    PEP_STATUS status = passphraseWrap(::set_own_key, session(), _ident, _fpr);
 
     if (status != PEP_STATUS_OK) {
         LOGD("Failed setOwnKey: 0x%04x\\n", status);
@@ -152,11 +162,18 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1keyMistrusted(
 
     pEp_identity *_ident = to_identity(env, ident);
 
+    PEP_STATUS status = PEP_STATUS_OK;
+
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
         if (_ident->me)
-            ::myself(session(), _ident);
+            status = passphraseWrap(::myself, session(), _ident);
         else
-            ::update_identity(session(), _ident);
+            status = passphraseWrap(::update_identity, session(), _ident);
+    }
+
+    if (status != PEP_STATUS_OK) {
+        throw_pEp_Exception(env, status);
+        return;
     }
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -164,7 +181,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1keyMistrusted(
         return;
     }
 
-    ::key_mistrusted(session(), _ident);
+    passphraseWrap(::key_mistrusted, session(), _ident);
 }
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1keyResetTrust(
@@ -183,11 +200,18 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1keyResetTrust(
 
     pEp_identity *_ident = to_identity(env, ident);
 
+    PEP_STATUS status = PEP_STATUS_OK;
+
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
         if (_ident->me)
-            ::myself(session(), _ident);
+            status = passphraseWrap(::myself, session(), _ident);
         else
-            ::update_identity(session(), _ident);
+            status = passphraseWrap(::update_identity, session(), _ident);
+    }
+
+    if (status != PEP_STATUS_OK) {
+        throw_pEp_Exception(env, status);
+        return;
     }
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -195,7 +219,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1keyResetTrust(
         return;
     }
 
-    ::key_reset_trust(session(), _ident);
+    passphraseWrap(::key_reset_trust, session(), _ident);
 }
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1trustPersonalKey(
@@ -214,11 +238,18 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1trustPersonalKey(
 
     pEp_identity *_ident = to_identity(env, ident);
 
+    PEP_STATUS status = PEP_STATUS_OK;
+
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
         if (_ident->me)
-            ::myself(session(), _ident);
+            status = passphraseWrap(::myself, session(), _ident);
         else
-            ::update_identity(session(), _ident);
+            status = passphraseWrap(::update_identity, session(), _ident);
+    }
+
+    if (status != PEP_STATUS_OK) {
+        throw_pEp_Exception(env, status);
+        return;
     }
 
     if (_ident->fpr == NULL || _ident->fpr[0] == 0) {
@@ -226,7 +257,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1trustPersonalKey(
         return;
     }
 
-    ::trust_personal_key(session(), _ident);
+    passphraseWrap(::trust_personal_key, session(), _ident);
 }
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1trustOwnKey(
@@ -250,7 +281,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1trustOwnKey(
         return;
     }
 
-    ::trust_own_key(session(), _ident);
+    passphraseWrap(::trust_own_key, session(), _ident);
 }
 
 JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1importKey(
@@ -268,7 +299,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1importKey(
     std::lock_guard<std::mutex> l(*mutex_local);
 
     size_t _size = (size_t) env->GetArrayLength(key);
-    char *_key = (char *) env->GetByteArrayElements(key, NULL);
+    const char *_key = (char *) env->GetByteArrayElements(key, NULL);
 
     if(_key == NULL){
         throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
@@ -277,7 +308,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1importKey(
 
     identity_list *_identities;
 
-    PEP_STATUS status = ::import_key(session(), _key, _size, &_identities);
+    PEP_STATUS status =  passphraseWrap(::import_key, session(), _key, _size, &_identities);
     if (status != PEP_STATUS_OK && status != PEP_KEY_IMPORTED) {
         throw_pEp_Exception(env, status);
         return NULL;
@@ -342,14 +373,14 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1blacklist_1add(
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    char *_fpr = to_string(env, fpr);
+    const char *_fpr = to_string(env, fpr);
 
     if(_fpr == NULL){
         throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
         return;
     }
 
-    PEP_STATUS status = ::blacklist_add(session(), _fpr);
+    PEP_STATUS status = passphraseWrap(::blacklist_add, session(), _fpr);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
         return;
@@ -371,14 +402,14 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1blacklist_1delete
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    char *_fpr = to_string(env, fpr);
+    const char *_fpr = to_string(env, fpr);
 
     if(_fpr == NULL){
         throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
         return;
     }
 
-    PEP_STATUS status = ::blacklist_delete(session(), _fpr);
+    PEP_STATUS status = passphraseWrap(::blacklist_delete, session(), _fpr);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
         return;
@@ -400,7 +431,7 @@ JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_Engine__1blacklist_1is
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    char *_fpr = to_string(env, fpr);
+    const char *_fpr = to_string(env, fpr);
     bool _listed = 0;
 
     if(_fpr == NULL){
@@ -408,7 +439,7 @@ JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_Engine__1blacklist_1is
         return 0;
     }
 
-    PEP_STATUS status = ::blacklist_is_listed(session(), _fpr, &_listed);
+    PEP_STATUS status = passphraseWrap(::blacklist_is_listed, session(), _fpr, &_listed);
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
         return 0;
@@ -435,7 +466,7 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1getCrashdum
     int _maxlines = (int) maxlines;
     char *_logdata;
 
-    PEP_STATUS status = ::get_crashdump_log(session(), _maxlines, &_logdata);
+    PEP_STATUS status = passphraseWrap(::get_crashdump_log, session(), _maxlines, &_logdata);
     if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) ||
             status < PEP_STATUS_OK ||
             status >= PEP_TRUSTWORD_NOT_FOUND) {
@@ -524,6 +555,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
         throw_pEp_Exception(env, status);
         return ;
     }
+
 
 }
 

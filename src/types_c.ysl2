@@ -17,6 +17,7 @@ function "toC" {
         when "$type='Rating'" > PEP_rating
         when "$type='SyncHandshakeResult'" > sync_handshake_result
         when "$type='CipherSuite'" > PEP_CIPHER_SUITE
+        when "$type='uint'" > uint
 
         otherwise value "$type";
     }
@@ -31,6 +32,7 @@ function "jni_type" {
         when "$type = 'string' or $type = 'sstring'" > jbyteArray
         when "$type='bool'" > jboolean
         when "$type='int'" > jint
+        when "$type='uint'" > jint
         otherwise > jobject
     }
 }

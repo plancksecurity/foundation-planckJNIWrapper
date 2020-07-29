@@ -119,14 +119,14 @@ namespace pEp {
                 inout int flags
             );
 
-        method re_evaluate_message_rating(
+        method cached=true re_evaluate_message_rating(
                 in message src,
-                Cconst stringlist x_keylist "NULL",
+                Cconst stringlist x_keylist "static_cast<stringlist_t*>(nullptr)",
                 Cconst Rating x_enc_status "PEP_rating_undefined",
                 returns Rating rating
             );
 
-        method outgoing_message_rating(
+        method cached=true outgoing_message_rating(
                 in message msg,
                 returns Rating rating
             );
@@ -136,18 +136,18 @@ namespace pEp {
                 returns Rating rating
             );
 
-        method get_identity(
+        method cached=true get_identity(
                 in string address,
                 in string userid,
                 returns identity ident
             );
 
-        method identity_rating(
+        method cached=true identity_rating(
                 in identity ident,
                 returns Rating rating
             );
 
-        method blacklist_retrieve(
+        method cached=true blacklist_retrieve(
                 returns stringlist blacklist
             );
 
@@ -157,34 +157,36 @@ namespace pEp {
                 returns identity ident 
             );
 
-        method OpenPGP_list_keyinfo(
+        method cached=true OpenPGP_list_keyinfo(
                 in string pattern,
                 returns stringpairlist keyinfoList
             );
 
-        method set_identity_flags(
+        //TODO Move to use IdentityFlag instead of ints
+        method cached=true set_identity_flags(
                 in identity ident,
-                in int flags
+                in uint flags
             );
 
-        method unset_identity_flags(
+        method cached=true unset_identity_flags(
                 in identity ident,
-                in int flags
+                in uint flags
             );
 
-        method own_identities_retrieve(
+        method cached=true own_identities_retrieve(
                 returns identitylist identities
             );
 
-        method get_trustwords(
-                in identity id1,
-                in identity id2,
+
+        method cached=true get_trustwords(
+                in identity id1 const,
+                in identity id2 const,
                 in string lang,
                 returns sstring words,
                 in bool full
             );
 
-        method get_trustwords_for_fprs(
+        method cached=true get_trustwords_for_fprs(
                 in string fpr1,
                 in string fpr2,
                 in string lang,
@@ -201,13 +203,13 @@ namespace pEp {
                 in bool full
             );
 
-        method get_languagelist(
+        method cached=true get_languagelist(
                 returns string languagelist
             );
 
         // this function is not related to key reset
 
-        method key_reset_trust(
+        method cached=true key_reset_trust(
                 in identity ident
             );
 
@@ -223,14 +225,14 @@ namespace pEp {
 
         method cached=true key_reset_all_own_keys();
                 
-        method deliverHandshakeResult(
+        method cached=true deliverHandshakeResult(
                 in SyncHandshakeResult shr,
-                in identitylist identities
+                in identitylist identities const
             );
 
-        method leave_device_group();
+        method cached=true leave_device_group();
 
-        method enable_identity_for_sync(
+        method cached=true enable_identity_for_sync(
                 in identity ident
             );
 

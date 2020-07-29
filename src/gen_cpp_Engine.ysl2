@@ -270,6 +270,7 @@ tstylesheet {
         const "dir", "name(*[1])";
         const "type", "name(*[2])";
         const "name", "name(*[3])";
+        const "const", "name(*[4])";
 
         choose {
             when "$type = 'message'"
@@ -280,10 +281,18 @@ tstylesheet {
                 | bool _«$name» = (bool) «$name»;
             when "$type='int'"
                 | int _«$name» = (int) «$name»;
+            when "$type='uint'"
+                | auto _«$name» = (unsigned int) «$name»;
             when "$type='string'"
                 | const char *_«$name» = to_string(env, «$name»);
-            otherwise
-                | √$type *_«$name» = to_«$type»(env, «$name»);
+            otherwise {
+                choose {
+                    when "$const"
+                        | const √$type *_«$name» = to_«$type»(env, «$name»);
+                    otherwise
+                        | √$type *_«$name» = to_«$type»(env, «$name»);
+                }
+            }
         }
     }
 
