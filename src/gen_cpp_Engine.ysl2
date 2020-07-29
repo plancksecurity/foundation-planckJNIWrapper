@@ -282,7 +282,7 @@ tstylesheet {
             when "$type='int'"
                 | int _«$name» = (int) «$name»;
             when "$type='uint'"
-                | auto _«$name» = (uint) «$name»;
+                | auto _«$name» = (unsigned int) «$name»;
             when "$type='string'"
                 | const char *_«$name» = to_string(env, «$name»);
             otherwise {
