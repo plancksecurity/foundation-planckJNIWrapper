@@ -21,6 +21,7 @@ foundation_pEp_jniadapter_Engine.*
 foundation_pEp_jniadapter_Message.*
 foundation_pEp_jniadapter_Identity.h
 throw_pEp_exception.*
+src/java/foundation/pEp/jniadapter/exceptions/*.java
 
 CipherSuite.java
 Color.java
@@ -30,7 +31,6 @@ EngineInterface.java
 IdentityFlags.java
 Message.java
 MessageInterface.java
-pEp*.java
 Rating.java
 Status.java
 SyncHandshakeResult.java

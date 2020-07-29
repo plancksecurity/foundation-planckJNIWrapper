@@ -6,6 +6,17 @@ tstylesheet {
 
     template "/namespace[@name='pEp']" {
         apply "struct|enum|exception", 0;
+        document "../java/foundation/pEp/jniadapter/exceptions/pEpException.java", "text" {
+            ||
+            package foundation.pEp.jniadapter.exceptions;
+
+            public class pEpException extends RuntimeException {
+              public pEpException(String message) {
+                super(message);
+              }
+            }
+            ||
+        }
         document("../../build/marker/gen_java_Message.marker", "text") > ""
     }
 

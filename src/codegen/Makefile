@@ -9,9 +9,9 @@ MARKER_DIR=../../build/marker/
 
 PEP_HEADER:=$(shell $(CXX) $(CXXFLAGS) -E -M ../cxx/get_header.cc | grep -oe '[^[:space:]]*pEpEngine\.h' | head -1)
 
-# Every ysl2 file that need to be "compiled" separately, needs to generate a "marker" file
+# Every ysl2 file that needs to be "compiled" separately, needs to generate a "marker" file
 # The marker serves as the make target.
-# If the marker file is older than its corresponding ysl2 file, or not exsiting the ysl2 file will be "compiled"
+# If the marker file is older than its corresponding ysl2 file, or not exsiting, the ysl2 file will be "compiled"
 # Naming:
 # For a ysl2 file called "gen_example_stuff.ysl2", a marker file called "gen_example_stuff.marker" is expected.
 YML2_MARKERS= \

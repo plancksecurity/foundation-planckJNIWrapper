@@ -67,7 +67,8 @@ GENERATED_JAVA=\
 	$(JAVA_PKG_ROOT)/SyncHandshakeResult.java \
 	$(JAVA_PKG_ROOT)/SyncHandshakeSignal.java \
 	$(JAVA_PKG_ROOT)/interfaces/EngineInterface.java \
- 	$(JAVA_PKG_ROOT)/interfaces/MessageInterface.java
+ 	$(JAVA_PKG_ROOT)/interfaces/MessageInterface.java \
+ 	$(JAVA_PKG_ROOT)/exceptions/*.java
 
 # files to compile which will be be generated
 GENERATED_CC=\
@@ -159,6 +160,7 @@ create-dirs:
 	mkdir -p $(JAVA_BUILD_ROOT)/$(JAVA_PKG_BASENAME)/exceptions
 	mkdir -p $(OBJ_DIR)
 	mkdir -p $(DIST_DIR)
+	mkdir -p $(JAVA_PKG_ROOT)/exceptions
 
 #rm -rf is too dangerous for vars
 remove-dirs:
