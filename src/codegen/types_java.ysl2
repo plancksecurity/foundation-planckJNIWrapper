@@ -4,6 +4,7 @@ function "toJava" {
     choose {
         when "$type='bool'" > Boolean
         when "$type='int'" > int
+        when "$type='uint'" > int
         when "$type='string' or $type='sstring'" > String
         when "$type='timestamp'" > Date
         when "$type='void'" > void

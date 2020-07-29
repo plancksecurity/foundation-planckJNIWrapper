@@ -3,30 +3,38 @@ package foundation.pEp.pitytest;
 import foundation.pEp.pitytest.utils.TestUtils;
 
 import static foundation.pEp.pitytest.TestLogger.*;
-import static foundation.pEp.pitytest.utils.TestUtils.TermColor;
-import static foundation.pEp.pitytest.utils.TestUtils.colorString;
+import static foundation.pEp.pitytest.utils.TestUtils.*;
 
+import java.text.DecimalFormat;
+import java.time.Duration;
 import java.util.function.Consumer;
 
-//Automatically get added to the default TestSuite always
-//Can be added to any nr of TestSuites
+// Automatically gets added to the default TestSuite always
+// Can be added to any nr of TestSuites
 
 public class TestUnit<T extends TestContextInterface> implements Runnable {
     private String testUnitName = "default test unit";
     private T ctx;
     private Consumer<T> lambda;
 
-    private TestResult result = TestResult.UNEVALUATED;
+    private TestState result = TestState.UNEVALUATED;
     private TestState state = TestState.UNEVALUATED;
     private Throwable lastException;
+    private Duration testDuration = null;
 
     private boolean verboseMode = true;
     private TermColor testColor = TermColor.CYAN;
 
     // Defaults (line width 80)
-    private int logFmtTestNameLen = 35;
-    private int logFmtCtxNameLen = 25;
+    // fixed width
+    private int logFmtPadding = 4;
     private int logFmtMsgLen = 12;
+    private int logFmtTestDuration = 14;
+    private int lineWidthMin = logFmtPadding + logFmtMsgLen + logFmtTestDuration + 20;
+
+    // dynamic
+    private int logFmtTestNameLen = 32;
+    private int logFmtCtxNameLen = 20;
 
     public TestUnit(String name, T context, Consumer<T> lambda) {
         this.testUnitName = name;
@@ -52,7 +60,7 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
         this.testColor = testColor;
     }
 
-    public TestResult getResult() {
+    public TestState getResult() {
         return result;
     }
 
@@ -70,96 +78,87 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
         return this;
     }
 
+    public T getContext() {
+        return ctx;
+    }
+
     public void run() {
         TestUtils.standardOutErrEnabled(verboseMode);
         if (ctx.isUninitializable()) {
-            setTestState(TestState.CTX_INIT_FAILED);
+            setTestState(TestState.CTX_FAIL);
             TestUtils.standardOutErrEnabled(true);
-            return;
-        }
-        try {
-            setTestState(TestState.STARTING);
-            // Init the Context if not already done
-            if (!ctx.isInitialized()) {
-                //Context init problems need to throw to fail
-                try {
-                    setTestState(TestState.CTX_INIT);
-                    setTermColor(testColor);
-                    ctx.init();
-                    setTermColor(TermColor.RESET);
-                } catch (Throwable t) {
-                    lastException = t;
-                    setTermColor(TermColor.RESET);
-                    setTestState(TestState.CTX_INIT_FAILED);
-                    TestUtils.standardOutErrEnabled(true);
-                    return;
+        } else {
+            try {
+                setTestState(TestState.STARTING);
+                // Init the Context if not already done
+                if (!ctx.isInitialized()) {
+                    //Context init problems need to throw to fail
+                    try {
+                        setTestState(TestState.CTX_INIT);
+                        setTermColor(testColor);
+                        ctx.init();
+                        setTermColor(TermColor.RESET);
+                    } catch (Throwable t) {
+                        lastException = t;
+                        setTermColor(TermColor.RESET);
+                        ctx.setUninitializable(true);
+                        setTestState(TestState.CTX_FAIL);
+                        TestUtils.standardOutErrEnabled(true);
+                        return;
+                    }
+                    ctx.setInitialized(true);
                 }
-                ctx.setInitialized(true);
+                //tests need to throw to fail
+                setTestState(TestState.RUNNING);
+                setTermColor(testColor);
+                testDuration = new StopWatch(() -> {
+                    lambda.accept(ctx);
+                }).getDuration();
+                setTermColor(TermColor.RESET);
+                setTestState(TestState.SUCCESS);
+            } catch (Throwable t) {
+                lastException = t;
+                setTermColor(TermColor.RESET);
+                setTestState(TestState.FAILED);
+                TestUtils.standardOutErrEnabled(true);
+                return;
             }
-            //tests need to throw to fail
-            setTestState(TestState.RUNNING);
-            setTermColor(testColor);
-            lambda.accept(ctx);
             setTermColor(TermColor.RESET);
-            setTestState(TestState.SUCCESS);
-        } catch (Throwable t) {
-            lastException = t;
-            setTermColor(TermColor.RESET);
-            setTestState(TestState.FAILED);
             TestUtils.standardOutErrEnabled(true);
-            return;
         }
-        setTermColor(TermColor.RESET);
-        TestUtils.standardOutErrEnabled(true);
     }
 
     private void setTestState(TestState s) {
         state = s;
 
         switch (state) {
-            case UNEVALUATED: {
-                setTestResult(TestResult.UNEVALUATED);
-                break;
-            }
-            case SKIPPED: {
-                setTestResult(TestResult.SKIPPED);
-                break;
-            }
-            case SUCCESS: {
-                setTestResult(TestResult.SUCCESS);
-                break;
-            }
+            case UNEVALUATED:
+            case SKIPPED:
+            case SUCCESS:
             case FAILED: {
-                setTestResult(TestResult.FAILED);
+                setTestResult(s);
                 break;
             }
-            case STARTING:
             case CTX_INIT:
+            case STARTING:
             case RUNNING: {
-                logH1(makeLogString(state.toString()));
+                logH1(makeLogString());
                 break;
             }
-            case CTX_INIT_FAILED: {
-                logH1(makeLogString(state.toString()));
-                setTestResult(TestResult.SKIPPED);
+            case CTX_FAIL: {
+                setTestResult(TestState.SKIPPED);
+//                logH1(makeLogString());
                 break;
             }
         }
     }
 
-    private void setTestResult(TestResult r) {
+    private void setTestResult(TestState r) {
+        assert (r == TestState.SKIPPED || r == TestState.FAILED || r == TestState.SUCCESS || r == TestState.UNEVALUATED ): "PityTest Internal: illegal result value '" + r +"'";
         result = r;
-        String resultStr = r.toString();
-
-        if(r != TestResult.SUCCESS) {
-            resultStr = colorString(resultStr, TermColor.RED);
-        } else {
-            resultStr = colorString(resultStr, TermColor.GREEN);
-        }
-
         TestUtils.standardOutErrEnabled(true);
-        logH1(makeLogString(resultStr));
-        if( r != TestResult.SUCCESS) {
+        logH1(makeLogString());
+        if (result == TestState.FAILED || result == TestState.CTX_FAIL) {
             log("ERROR: " + getLastException().toString());
         }
         if (verboseMode) logRaw("\n\n");
@@ -167,16 +166,39 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
     }
 
     private void logLayout() {
-        logFmtTestNameLen = (int) Math.floor(TestLogger.getMsgWidth() * 0.39);
-        logFmtCtxNameLen = (int) Math.floor(TestLogger.getMsgWidth() * 0.28);
-        logFmtMsgLen = (int) Math.floor(TestLogger.getMsgWidth() * 0.25);
+        int lineWidth = TestLogger.getMsgWidth();
+        // Fixed sizes
+        lineWidth -= logFmtPadding;
+        lineWidth -= logFmtMsgLen;
+        lineWidth -= logFmtTestDuration;
+        lineWidth = clip(lineWidth, lineWidthMin, Integer.MAX_VALUE);
+
+        // Proportional (dynamic sizes)
+        logFmtTestNameLen = (int) Math.floor(lineWidth * 0.45);
+        logFmtCtxNameLen = (int) Math.floor(lineWidth * 0.45);
     }
 
-    private String makeLogString(String str) {
+    private String makeLogString() {
+        String resultStr = state.toString();
+        if (state == TestState.FAILED) {
+            resultStr = colorString(resultStr, TermColor.RED);
+        } else if (state == TestState.SUCCESS) {
+            resultStr = colorString(resultStr, TermColor.GREEN);
+        }
+
         String testUnitNameFmtd = TestUtils.padOrClipString(" TEST: '" + testUnitName + "' ", "=", logFmtTestNameLen, TestUtils.Alignment.Left, ".. ");
         String testCtxNameFmtd = TestUtils.padOrClipString(" CTX: '" + ctx.getTestContextName() + "' ", "=", logFmtCtxNameLen, TestUtils.Alignment.Center, ".. ");
-        String strFmtd = TestUtils.padOrClipString(" " + str + " ", "=", logFmtMsgLen, TestUtils.Alignment.Right, ".. ");
-        return testUnitNameFmtd + testCtxNameFmtd + strFmtd;
+        String strTestDuration = "";
+        if (state == TestState.SUCCESS) {
+            DecimalFormat f = new DecimalFormat("0.000");
+            String durationFmtd = f.format(testDuration.toMillis() / 1000.0);
+            strTestDuration = TestUtils.padOrClipString(" [" + durationFmtd + " sec] ", "=", logFmtTestDuration, TestUtils.Alignment.Right, ".. ");
+        } else  {
+            strTestDuration = TestUtils.padOrClipString("", "=", logFmtTestDuration, TestUtils.Alignment.Right, ".. ");
+        }
+
+        String strFmtd = TestUtils.padOrClipString(" " + resultStr + " ", "=", logFmtMsgLen, TestUtils.Alignment.Right, ".. ");
+        return testUnitNameFmtd + testCtxNameFmtd + strTestDuration + strFmtd;
     }
 }
 

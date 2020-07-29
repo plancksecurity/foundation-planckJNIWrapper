@@ -286,4 +286,21 @@ public class AdapterTestUtils {
         msg.setLongmsg("Hi i am the longMessage");
         return msg;
     }
+
+    public static Message generateSourceMessage(Identity from, Identity to, long id, long longMsgLen) {
+        Message msg = new Message();
+        Vector<Identity> vID = new Vector<Identity>();
+        if (to != null) {
+            vID.add(to);
+        }
+
+        msg.setFrom(from);
+        msg.setTo(vID);
+        msg.setDir(Message.Direction.Outgoing);
+        msg.setShortmsg(String.valueOf(id));
+
+//        String
+        msg.setLongmsg("Hi i am the longMessage");
+        return msg;
+    }
 }
