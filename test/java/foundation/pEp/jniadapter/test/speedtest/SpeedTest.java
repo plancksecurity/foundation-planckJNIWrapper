@@ -83,6 +83,9 @@ public class SpeedTest {
         int deth = 1;
         int enth = 1;
 
+        int cores = Runtime.getRuntime().availableProcessors();
+        System.out.println(String.format("Number of cores: %d", cores));
+
         MT999 testMessage = new MT999("232323232323", "424242424242", "O", "23", "", "Hello, world");
         String testData = testMessage.toString();
 
