@@ -15,6 +15,14 @@ public class SpeedTest {
     private static Identity me = new Identity(true);
     private static Identity you = new Identity();
 
+    private static long decodingCount = 0;
+    private static long encodingCount = 0;
+    private static int deth = 0;
+    private static int enth = 0;
+
+    private static String testData = null;
+
+
     protected static void decodingTest(Engine eng, long n, String testDataEnc) {
         for (long i = 0; i < n; ++i) {
             try {
@@ -79,24 +87,13 @@ public class SpeedTest {
         }
     }
 
-    public static void main(String[] args) {
-        long decodingCount = 0;
-        long encodingCount = 0;
-        int deth = 1;
-        int enth = 1;
-
-        int cores = Runtime.getRuntime().availableProcessors();
-        System.out.println(String.format("Number of cores: %d", cores));
-
-        MT999 testMessage = new MT999("232323232323", "424242424242", "O", "23", "", "Hello, world");
-        String testData = testMessage.toString();
-
+    private static void parseOpts(String[] args) {
         for (int i = 0; i < args.length; ++i) {
             if (args[i].compareTo("-h") == 0 || args[i].compareTo("--help") == 0) {
                 System.out.println("SpeedTest [-e |--encode NUMBER] [-d | --decode NUMBER] [-f | --file TESTDATA] [-jd | --decoding-threads DT] [-je | --encoding-threads]  [-h | --help]\n"
                         + "\nEncodes and/or decodes messages to measure the speed.\n\n"
-                        + " -d, --decode NUMBER         decode NUMBER messages\n"
-                        + " -e, --encode NUMBER         encode NUMBER messages\n"
+                        + " -d, --decode NUMBER         decode NUMBER messages per thread\n"
+                        + " -e, --encode NUMBER         encode NUMBER messages per thread\n"
                         + " -f, --file TESTDATA         file with test data as UTF-8 encoded text\n"
                         + " -jd, --decoding-threads DT  starting DT threads for decoding\n"
                         + " -je, --encoding-threads ET  starting ET threads for encoding\n"
@@ -177,6 +174,22 @@ public class SpeedTest {
                 System.exit(1);
             }
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Initializing...");
+        int cores = Runtime.getRuntime().availableProcessors();
+        System.out.println(String.format("Number of cores: %d", cores));
+
+        encodingCount = 10;
+        decodingCount = 10;
+        enth = cores;
+        deth = cores;
+
+        MT999 testMessage = new MT999("232323232323", "424242424242", "O", "23", "", "Hello, world");
+        testData = testMessage.toString();
+
+        parseOpts(args);
 
         if (decodingCount < 0 || encodingCount < 0 || !(encodingCount > 0 || decodingCount > 0)) {
             System.err.println("arguments error: -d or -e (or both) must be used with a positive number");
@@ -204,8 +217,7 @@ public class SpeedTest {
         Thread[] dts = new Thread[deth];
         Thread[] ets = new Thread[enth];
 
-        System.out.println("Initializing...");
-        System.out.println("Creating "+ deth + " decoding threads");
+        System.out.println("Creating " + deth + " decoding threads");
 
         // create threads
         if (deth > 1) {
@@ -215,7 +227,7 @@ public class SpeedTest {
             }
         }
 
-        System.out.println("Creating "+ enth + " encoding threads");
+        System.out.println("Creating " + enth + " encoding threads");
         if (enth > 1) {
             SpeedTest st = new SpeedTest();
             for (int i = 0; i < enth; ++i) {
@@ -226,7 +238,7 @@ public class SpeedTest {
 
         // Benchmark starting
         System.out.println("Starting benchmark...");
-        System.out.println("decoding...");
+        System.out.println("decoding " + decodingCount + " msgs per thread");
         long startTime = System.nanoTime();
 
         if (deth == 1) {
@@ -248,7 +260,7 @@ public class SpeedTest {
         long decodingTime = System.nanoTime();
         long decodingDelta = decodingTime - startTime;
 
-        System.out.println("encoding...");
+        System.out.println("encoding " + decodingCount + " msgs per thread");
         if (enth == 1) {
             encodingTest(pEp, decodingCount, testData);
         } else {
@@ -269,12 +281,15 @@ public class SpeedTest {
         double encTimeSecs = (double) encodingDelta / 1000000000;
         double decTimeSecs = (double) decodingDelta / 1000000000;
 
-        double enr = (double) encodingCount * enth / encTimeSecs;
-        double der = (double) decodingCount * deth / decTimeSecs;
+        long encTotal = encodingCount * enth;
+        long decTotal = decodingCount * deth;
+
+        double enr = (double) encTotal / encTimeSecs;
+        double der = (double) decTotal / decTimeSecs;
 
         System.out.println(String.format(
-                "encrypted and encoded %d messages in %.3f sec. (%.1f msg./sec. per core)\n"
-                        + "decrypted and decoded %d messages in %.3f sec. (%.1f msg./sec. per core)",
-                encodingCount, encTimeSecs, enr, decodingCount, decTimeSecs, der));
+                "encrypted and encoded %d messages in %.3f sec. (%.1f msgs/sec) using %d threads\n"
+                        + "decrypted and decoded %d messages in %.3f sec. (%.1f msgs/sec) using %d threads",
+                encTotal, encTimeSecs, enr, enth, decTotal, decTimeSecs, der, deth));
     }
 }
