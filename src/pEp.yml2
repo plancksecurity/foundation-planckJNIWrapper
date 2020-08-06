@@ -10,7 +10,11 @@ namespace pEp {
     exception Status {
        include ./status_list.yml2
     };
- 
+
+    enum PassphraseType {
+        include ./passphrase_status_list.yml2
+    };
+
     enum Color {
         PEP_color_no_color > 0
         PEP_color_yellow > 1

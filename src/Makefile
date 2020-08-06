@@ -69,7 +69,7 @@ PEP_HEADER:=$(shell $(CXX) $(CXXFLAGS) -E -M get_header.cc | grep -oe '[^[:space
 .PHONY: all
 all: $(JAR) $(SHARED)
 
-$(JAR): status_list.yml2 $(JAVA_SOURCES) $(C_SOURCES)
+$(JAR): status_list.yml2 passphrase_status_list.yml2 $(JAVA_SOURCES) $(C_SOURCES)
 	$(JP)/javac foundation/pEp/jniadapter/*.java
 	$(JP)/jar cf $@ foundation/pEp/jniadapter/*.class
 
@@ -95,6 +95,9 @@ $(SHARED): $(LIBRARY)
 
 status_list.yml2: pEp.yml2
 	bash ../utils/extract_pEp_status_codes_from_engine.sh "$(PEP_HEADER)" $@
+
+passphrase_status_list.yml2: status_list.yml2
+	grep passphrase $< > $@
 
 foundation/pEp/jniadapter/pEpException.java: pEp.yml2 gen_java_exceptions.ysl2 pEp.yml2
 	$(YML2_PROC) -y gen_java_exceptions.ysl2 $< -o $@
@@ -139,6 +142,8 @@ clean:
 	rm -f foundation/pEp/jniadapter/SyncHandshakeResult.java
 	rm -f foundation/pEp/jniadapter/SyncHandshakeSignal.java
 	rm -f foundation/pEp/jniadapter/CipherSuite.java
+	rm -f foundation/pEp/jniadapter/PassphraseType.java
 	rm -f throw_pEp_exception.*
 	rm -f foundation_pEp_jniadapter_Message.cc foundation_pEp_jniadapter_Engine.cc
 	rm -f status_list.yml2
+	rm -f passphrase_status_list.yml2
