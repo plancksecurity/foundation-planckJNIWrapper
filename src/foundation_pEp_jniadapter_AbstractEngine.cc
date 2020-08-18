@@ -3,7 +3,6 @@
 #include <pEp/keymanagement.h>
 #include <pEp/message_api.h>
 #include <pEp/sync_api.h>
-#include <pEp/Adapter.hh>
 #include <pEp/pEpLog.hh>
 #include <pEp/passphrase_cache.hh>
 #include <pEp/callback_dispatcher.hh>
