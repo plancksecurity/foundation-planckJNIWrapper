@@ -193,11 +193,11 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         return 0;
     }
 
-    public byte[] passphraseRequiredFromC() {
+    public byte[] passphraseRequiredFromC(final PassphraseType passphraseType) {
         String ret = "";
         if (passphraseRequiredCallback != null) {
             System.out.println("calling passphraseRequiredCallback on engine ObjID:" + getId());
-            ret = passphraseRequiredCallback.passphraseRequired();
+            ret = passphraseRequiredCallback.passphraseRequired(passphraseType);
         } else {
             System.out.println("no callback registered on engine ObjID:" + getId());
             // if this happens (no callback registered

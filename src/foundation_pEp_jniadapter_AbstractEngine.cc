@@ -21,20 +21,24 @@ JavaVM *jvm= nullptr;
 
 std::mutex mutex_obj;
 
-jfieldID field_value = nullptr;
+jfieldID signal_field_value = nullptr;
+jfieldID passphrase_type_field_value = nullptr;
 jmethodID messageConstructorMethodID = nullptr;
 jmethodID messageToSendMethodID = nullptr;
 jmethodID notifyHandShakeMethodID = nullptr;
 jmethodID needsFastPollMethodID = nullptr;
 jmethodID passphraseRequiredMethodID = nullptr;
-jmethodID method_values = nullptr;
+jmethodID sync_handshake_signal_values = nullptr;
+jmethodID passphrase_status_values = nullptr;
+jmethodID passphrase_callback_values = nullptr;
 
 jobject objj = nullptr;
 
 jclass messageClass = nullptr;
-jclass identityClass = nullptr;;
+jclass identityClass = nullptr;
 jclass signalClass = nullptr;
 jclass engineClass = nullptr;
+jclass passphraseTypeClass = nullptr;
 
 namespace JNISync {
     JNIEnv* env() {
@@ -72,6 +76,8 @@ void jni_init() {
         _env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/_Identity")));
     signalClass = reinterpret_cast<jclass>(
             _env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/SyncHandshakeSignal")));
+    passphraseTypeClass = reinterpret_cast<jclass>(
+            _env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/PassphraseType")));
     engineClass = reinterpret_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/Engine")));
 
     messageConstructorMethodID = _env->GetMethodID(messageClass, "<init>", "(J)V");
@@ -90,19 +96,47 @@ void jni_init() {
     passphraseRequiredMethodID = _env->GetMethodID(
         engineClass,
         "passphraseRequiredFromC",
-        "()[B");
+        "(Lfoundation/pEp/jniadapter/PassphraseType;)[B");
 
-    method_values = JNISync::env()->GetStaticMethodID(signalClass, "values",
+    sync_handshake_signal_values = JNISync::env()->GetStaticMethodID(signalClass, "values",
                 "()[Lfoundation/pEp/jniadapter/SyncHandshakeSignal;");
-    field_value = JNISync::env()->GetFieldID(signalClass, "value", "I");
+    passphrase_status_values = JNISync::env()->GetStaticMethodID(passphraseTypeClass, "values",
+                "()[Lfoundation/pEp/jniadapter/PassphraseType;");
+    signal_field_value = JNISync::env()->GetFieldID(signalClass, "value", "I");
+    passphrase_type_field_value = JNISync::env()->GetFieldID(passphraseTypeClass, "value", "I");
 }
 
-char* JNIAdapter::passphraseRequiredCallback() {
+char* JNIAdapter::passphraseRequiredCallback(const PEP_STATUS status) {
     pEpLog("called");
+    jobject status_ = nullptr;
+    {
+        assert(passphraseTypeClass);
+        assert(passphrase_status_values);
+        assert(passphrase_type_field_value);
 
+        jobjectArray values = (jobjectArray) JNISync::env()->CallStaticObjectMethod(passphraseTypeClass,
+                passphrase_status_values);
+
+        if (JNISync::env()->ExceptionCheck()) {
+            JNISync::env()->ExceptionClear();
+            throw_pEp_Exception(JNISync::env(), PEP_UNKNOWN_ERROR);
+        }
+
+        jsize values_size = JNISync::env()->GetArrayLength(values);
+        for (jsize i = 0; i < values_size; i++) {
+            jobject element = JNISync::env()->GetObjectArrayElement(values, i);
+            assert(element);
+            jint value = JNISync::env()->GetIntField(element, passphrase_type_field_value);
+            if (value == (jint) status) {
+                status_ = element;
+                break;
+            }
+            JNISync::env()->DeleteLocalRef(element);
+        }
+    }
     assert(objj && passphraseRequiredMethodID);
 
-    jobject ppJO = JNISync::env()->CallObjectMethod(objj, passphraseRequiredMethodID);
+    jobject ppJO = JNISync::env()->CallObjectMethod(objj, passphraseRequiredMethodID, status_);
     if (JNISync::env()->ExceptionCheck()) {
         JNISync::env()->ExceptionDescribe();
         JNISync::env()->ExceptionClear();
@@ -160,11 +194,11 @@ PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handsha
     jobject signal_ = nullptr;
     {
         assert(signalClass);
-        assert(method_values);
-        assert(field_value);
+        assert(sync_handshake_signal_values);
+        assert(signal_field_value);
 
         jobjectArray values = (jobjectArray) JNISync::env()->CallStaticObjectMethod(signalClass,
-                method_values);
+                sync_handshake_signal_values);
         if (JNISync::env()->ExceptionCheck()) {
             JNISync::env()->ExceptionClear();
             return PEP_UNKNOWN_ERROR;
@@ -174,7 +208,7 @@ PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handsha
         for (jsize i = 0; i < values_size; i++) {
             jobject element = JNISync::env()->GetObjectArrayElement(values, i);
             assert(element);
-            jint value = JNISync::env()->GetIntField(element, field_value);
+            jint value = JNISync::env()->GetIntField(element, signal_field_value);
             if (value == (jint) signal) {
                 signal_ = element;
                 break;

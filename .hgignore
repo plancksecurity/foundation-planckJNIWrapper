@@ -39,6 +39,7 @@ IdentityFlags.java
 SyncHandshakeSignal.java
 CipherSuite.java
 
+passphrase_status_list.yml2
 status_list.yml2
 
 ndk*/
