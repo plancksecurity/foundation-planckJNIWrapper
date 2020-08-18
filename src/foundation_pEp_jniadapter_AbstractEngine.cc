@@ -131,7 +131,7 @@ char* JNIAdapter::passphraseRequiredCallback(const PEP_STATUS status) {
                 status_ = element;
                 break;
             }
-            JNISync::env() -> DeleteLocalRef(element);
+            JNISync::env()->DeleteLocalRef(element);
         }
     }
     assert(objj && passphraseRequiredMethodID);
