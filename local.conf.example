@@ -5,7 +5,7 @@
 # These example values here reflect the defaults
 
 ############ Install ###########
-# PREFIX=$(HOME)/local
+# PREFIX=$(HOME)
 
 ######### C++ Compiler #########
 # Should work with clang and g++
@@ -16,7 +16,7 @@
 # JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_231.jdk/Contents/Home
 
 ############ YML2 ##############
-# YML2_PATH=$(HOME)/code/yml2
+# YML2_PATH=$(HOME)/src/yml2
 
 ########### Engine #############
 # ENGINE_LIB_PATH=$(PREFIX)/lib
