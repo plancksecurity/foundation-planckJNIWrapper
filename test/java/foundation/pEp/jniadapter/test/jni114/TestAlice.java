@@ -51,10 +51,11 @@ class TestAlice {
             // Register callback passphraseRequired()
             ctx.engine.setPassphraseRequiredCallback(new Sync.PassphraseRequiredCallback() {
                 @Override
-                public String passphraseRequired() {
+                public String passphraseRequired(PassphraseType type) {
                     log("passphraseRequired() called");
                     log("Please Enter Passphrase...");
                     sleep(2000);
+                    assert type == PassphraseType.pEpPassphraseRequired;
                     return "passphrase_alice";
                 }
             });

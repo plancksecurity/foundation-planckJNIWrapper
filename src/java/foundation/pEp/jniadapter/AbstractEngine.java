@@ -113,7 +113,8 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
 
     private int notifyHandshakeCallFromC(_Identity _myself, _Identity _partner, SyncHandshakeSignal _signal) {
         Identity myself = new Identity(_myself);
-        Identity partner = new Identity(_partner);
+        Identity partner = (_partner != null) ? new Identity(_partner) : null;
+
         System.out.println("pEpSync" +"notifyHandshakeCallFromC: " + notifyHandshakeCallback);
         if (notifyHandshakeCallback != null) {
             notifyHandshakeCallback.notifyHandshake(myself, partner, _signal);
@@ -123,11 +124,11 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
         return 0;
     }
 
-    private byte[] passphraseRequiredFromC() {
+    private byte[] passphraseRequiredFromC(final PassphraseType passphraseType) {
         String ret = "";
         if (passphraseRequiredCallback != null) {
             System.out.println("calling passphraseRequiredCallback on engine ObjID:" + getId());
-            ret = passphraseRequiredCallback.passphraseRequired();
+            ret = passphraseRequiredCallback.passphraseRequired(passphraseType);
         } else {
             System.out.println("no callback registered on engine ObjID:" + getId());
             // if this happens (no callback registered

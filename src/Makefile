@@ -66,6 +66,7 @@ GENERATED_JAVA=\
 	$(JAVA_PKG_ROOT)/Rating.java \
 	$(JAVA_PKG_ROOT)/SyncHandshakeResult.java \
 	$(JAVA_PKG_ROOT)/SyncHandshakeSignal.java \
+	$(JAVA_PKG_ROOT)/PassphraseType.java \
 	$(JAVA_PKG_ROOT)/interfaces/EngineInterface.java \
  	$(JAVA_PKG_ROOT)/interfaces/MessageInterface.java \
  	$(JAVA_PKG_ROOT)/exceptions/*.java
