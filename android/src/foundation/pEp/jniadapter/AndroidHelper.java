@@ -10,6 +10,8 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.util.Scanner;
 
+import foundation.pEp.jniadapter.exceptions.pEpException;
+
 public class AndroidHelper {
     static {
         System.loadLibrary("pEpJNIAndroidHelper");

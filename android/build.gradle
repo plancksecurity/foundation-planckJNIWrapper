@@ -94,7 +94,7 @@ android {
     // call source generation makefile target
     task genSources(type:Exec, dependsOn: 'genpEpEngineAsn1Sources') {
         workingDir '../src'
-        commandLine 'make', "-j${threadsToUse}", 'pEp.jar'
+        commandLine 'make', "-j${threadsToUse}", 'lib-java'
     }
 
     task genpEpEngineSyncSources(type:Exec) {
