@@ -8,7 +8,7 @@ import foundation.pEp.jniadapter.interfaces.*;
 import foundation.pEp.jniadapter.exceptions.*;
 
 
-abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEngineInterface, AutoCloseable {
+abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEngineInterface {
     static {
         System.loadLibrary("pEpJNI");
     }

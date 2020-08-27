@@ -3,7 +3,7 @@ package foundation.pEp.jniadapter.interfaces;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Sync;
 
-public interface AbstractEngineInterface {
+public interface AbstractEngineInterface extends AutoCloseable {
     public String getVersion();
 
     public String getProtocolVersion();
