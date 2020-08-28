@@ -19,12 +19,12 @@ public class _Identity {
     }
 
     public _Identity(Identity i) {
-        address = AbstractEngine.toUTF8(i.address);
-        fpr = AbstractEngine.toUTF8(i.fpr);
-        user_id = AbstractEngine.toUTF8(i.user_id);
-        username = AbstractEngine.toUTF8(i.username);
+        address = Utils.toUTF8(i.address);
+        fpr = Utils.toUTF8(i.fpr);
+        user_id = Utils.toUTF8(i.user_id);
+        username = Utils.toUTF8(i.username);
         comm_type = i.comm_type.value;
-        lang = AbstractEngine.toUTF8(i.lang);
+        lang = Utils.toUTF8(i.lang);
         me = i.me;
         flags = i.flags;
     }

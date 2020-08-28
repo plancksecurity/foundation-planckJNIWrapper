@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import foundation.pEp.jniadapter.Sync.DefaultCallback;
+import foundation.pEp.jniadapter.interfaces.*;
+import foundation.pEp.jniadapter.exceptions.*;
 
-import java.io.UnsupportedEncodingException;
-import java.text.Normalizer;
 
-abstract class AbstractEngine extends UniquelyIdentifiable implements AutoCloseable {
+abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEngineInterface {
     static {
         System.loadLibrary("pEpJNI");
     }
@@ -23,6 +23,9 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
     private native void init();
     private native void release();
 
+    private long keyserverThread;
+    private long keyserverQueue;
+
     public AbstractEngine() throws pEpException {
         synchronized (AbstractEngine.class) {
             init();
@@ -35,124 +38,52 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         }
     }
 
-    public native String getVersion();
-    public native String getProtocolVersion();
-
-    private long keyserverThread;
-    private long keyserverQueue;
-
-    public native void startKeyserverLookup();
-    public native void stopKeyserverLookup();
-
-    public native void startSync();
-    public native void stopSync();
-    public native boolean isSyncRunning();
-
-    public static byte[] toUTF8(String str) {
-        if (str == null)
-            return null;
-
-        try {
-            String _str = Normalizer.normalize(str, Normalizer.Form.NFC);
-            byte _buf[] = _str.getBytes("UTF-8");
-            byte _cpy[] = new byte[_buf.length];
-            System.arraycopy(_buf,0,_cpy,0,_buf.length);
-            return _cpy;
-        }
-        catch (UnsupportedEncodingException e) {
-            assert false;
-            return new byte[0];
-        }
+    public String getVersion() {
+        return _getVersion();
     }
 
-    public static Vector<byte[]> toUTF8(Vector<String> list) {
-        if (list == null)
-            return null;
+    private native String _getVersion();
 
-        Vector<byte[]> result = new Vector<byte[]>(list.size());
 
-        for (int i=0; i<list.size(); i++)
-            result.add(toUTF8(list.get(i)));
-
-        return result;
+    public String getProtocolVersion() {
+        return _getProtocolVersion();
     }
 
-    public static Pair<byte[], byte[]> toUTF8(Pair<String, String> pair) {
-        if (pair == null)
-            return null;
+    private native String _getProtocolVersion();
 
-        Pair<byte[], byte[]> result = new Pair<byte[], byte[]>();
 
-        result.first = toUTF8(pair.first);
-        result.second = toUTF8(pair.second);
-
-        return result;
+    public void startKeyserverLookup() {
+        _startKeyserverLookup();
     }
 
-    public static ArrayList<Pair<byte[], byte[]>> toUTF8(ArrayList<Pair<String, String>> list) {
-        if (list == null)
-            return null;
+    private native void _startKeyserverLookup();
 
-        ArrayList<Pair<byte[], byte[]>> result = new ArrayList<Pair<byte[], byte[]>>(list.size());
-
-        for (int i=0; i<list.size(); i++)
-            result.set(i, toUTF8(list.get(i)));
-
-        return result;
+    public void stopKeyserverLookup() {
+        _startKeyserverLookup();
     }
 
-    public static String toUTF16(byte[] utf8) {
-        if (utf8 == null)
-            return null;
+    private native void _stopKeyserverLookup();
 
-        try {
-            byte newUtf8[] = new byte[utf8.length];
-            System.arraycopy(utf8,0,newUtf8,0,utf8.length);
 
-            return new String(newUtf8, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e) {
-            assert false;
-            return new String();
-        }
+    public void startSync() {
+        _startSync();
     }
 
-    public static Vector<String> toUTF16(Vector<byte[]> list) {
-        if (list == null)
-            return null;
+    private native void _startSync();
 
-        Vector<String> result = new Vector<String>(list.size());
-
-        for (int i=0; i<list.size(); i++)
-            result.add(toUTF16(list.get(i)));
-
-        return result;
+    public void stopSync() {
+        _stopSync();
     }
 
-    public static Pair<String, String> toUTF16(Pair<byte[], byte[]> pair) {
-        if (pair == null)
-            return null;
+    private native void _stopSync();
 
-        Pair<String, String> result = new Pair<String,String>();
-
-        result.first = toUTF16(pair.first);
-        result.second = toUTF16(pair.second);
-
-        return result;
+    public boolean isSyncRunning() {
+        return _isSyncRunning();
     }
 
-    public static ArrayList<Pair<String, String>> toUTF16(ArrayList<Pair<byte[], byte[]>> list) {
-        if (list == null)
-            return null;
+    private native boolean _isSyncRunning();
 
-        ArrayList<Pair<String, String>> result = new ArrayList<Pair<String, String>>(list.size());
-
-        for (int i=0; i<list.size(); i++)
-            result.set(i, toUTF16(list.get(i)));
-
-        return result;
-    }
-
+    // Callbacks
     public void setMessageToSendCallback(Sync.MessageToSendCallback messageToSendCallback) {
         this.messageToSendCallback = messageToSendCallback;
     }
@@ -171,7 +102,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         this.passphraseRequiredCallback = passphraseRequiredCallback;
     }
 
-    public int needsFastPollCallFromC(boolean fast_poll_needed) {
+    private int needsFastPollCallFromC(boolean fast_poll_needed) {
         if (needsFastPollCallback != null) {
             needsFastPollCallback.needsFastPollCallFromC(fast_poll_needed);
         } else {
@@ -180,7 +111,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         return 0;
     }
 
-    public int notifyHandshakeCallFromC(_Identity _myself, _Identity _partner, SyncHandshakeSignal _signal) {
+    private int notifyHandshakeCallFromC(_Identity _myself, _Identity _partner, SyncHandshakeSignal _signal) {
         Identity myself = new Identity(_myself);
         Identity partner = (_partner != null) ? new Identity(_partner) : null;
 
@@ -193,7 +124,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         return 0;
     }
 
-    public byte[] passphraseRequiredFromC(final PassphraseType passphraseType) {
+    private byte[] passphraseRequiredFromC(final PassphraseType passphraseType) {
         String ret = "";
         if (passphraseRequiredCallback != null) {
             System.out.println("calling passphraseRequiredCallback on engine ObjID:" + getId());
@@ -206,10 +137,10 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
             // this repeats MaxRetries times (currentluy hardcoded to 3)
             // Then the orig call will return with the PEP_STATUS (most likely PEP_PASSPHRASE_REQUIRED)
         }
-        return toUTF8(ret);
+        return Utils.toUTF8(ret);
     }
 
-    public int messageToSendCallFromC (Message message) {
+    private int messageToSendCallFromC (Message message) {
         System.out.println("pEpSync" + "messageToSendCallFromC: " + messageToSendCallback );
         if (messageToSendCallback != null) {
             messageToSendCallback.messageToSend(message);
@@ -228,11 +159,11 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         ArrayList<Pair<String, String>> opts = new ArrayList<>();
         Pair<String, String> xpEp = new Pair<>();
         xpEp.first = "X-pEp-Version";
-        xpEp.second = this.getProtocolVersion();;
+        xpEp.second = this.getProtocolVersion();
         opts.add(xpEp);
         msg.setOptFields(opts);
 
-        if(encFormat == Message.EncFormat.PEP) {
+        if (encFormat == Message.EncFormat.PEP) {
             // For EncFormat.PEP
             // The pgpText goes into the attachment index 1
             msg.setShortmsg("p≡p");
@@ -253,14 +184,12 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
             attachments.add(att0);
             attachments.add(att1);
             msg.setAttachments(attachments);
-        }
-        else if (encFormat == Message.EncFormat.PEPEncInlineEA) {
+        } else if (encFormat == Message.EncFormat.PEPEncInlineEA) {
             // For EncFormat.PEPEncInlineEA
             // The pgpText goes into the longMessage
             msg.setShortmsg("");
             msg.setLongmsg(pgpText);
-        }
-        else {
+        } else {
             throw new pEpCannotEncode("Message.Encformat not supported: " + encFormat.toString());
         }
 

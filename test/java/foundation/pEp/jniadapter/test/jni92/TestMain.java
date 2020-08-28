@@ -1,4 +1,5 @@
 package foundation.pEp.jniadapter.test.jni92;
+import foundation.pEp.jniadapter.exceptions.*;
 import foundation.pEp.jniadapter.test.utils.*;
 import foundation.pEp.pitytest.*;
 import foundation.pEp.jniadapter.*;
@@ -38,7 +39,7 @@ class TestMain {
         Engine e;
         TestLogger.logH2("Creating new Engine");
         e = new Engine();
-        TestLogger.log("Engine created with java object ID: " + e.getId());
+//        TestLogger.log("Engine created with java object ID: " + e.getId());
         return e;
     }
 
@@ -52,7 +53,7 @@ class TestMain {
 
     public static void engineConsumer(Vector<Engine> ev, Consumer<Engine> ec) {
         ev.forEach(e -> {
-            TestLogger.logH2("engineConsumer: on engine java object ID: " + e.getId());
+//            TestLogger.logH2("engineConsumer: on engine java object ID: " + e.getId());
             ec.accept(e);
         });
     }

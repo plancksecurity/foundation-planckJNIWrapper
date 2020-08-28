@@ -1,9 +1,6 @@
 package foundation.pEp.jniadapter.test.basic;
 
-import foundation.pEp.jniadapter.Blob;
-import foundation.pEp.jniadapter.Engine;
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.*;
 import foundation.pEp.pitytest.TestSuite;
 import foundation.pEp.pitytest.TestUnit;
 import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
@@ -15,7 +12,7 @@ import static foundation.pEp.pitytest.TestLogger.log;
 
 class BasicTestContext extends AdapterBaseTestContext {
     Message enc;
-    Engine.decrypt_message_Return result;
+    decrypt_message_Return result;
 
     public BasicTestContext() {
         setTestContextName("BasicTestContext");

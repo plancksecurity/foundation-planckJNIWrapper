@@ -1,6 +1,6 @@
 package foundation.pEp.jniadapter.test.jni98;
 
-import foundation.pEp.jniadapter.Engine;
+import foundation.pEp.jniadapter.*;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.pitytest.TestUnit;
 import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
@@ -34,7 +34,7 @@ class TestMain {
             log("\n" + msgToString(msg1, false));
 
             // Lets get the pgpText of the msg1, and the EncFormat
-            String pgpText = Engine.toUTF16(msg1.getAttachments().elementAt(1).data);
+            String pgpText = Utils.toUTF16(msg1.getAttachments().elementAt(1).data);
             Message.EncFormat ef = msg1.getEncFormat();
             //TODO: setting encformat to 4 (PEP) but getting back 3 (PGPMIME)
 
@@ -44,7 +44,7 @@ class TestMain {
             log("\n" + msgToString(msg2, false));
 
             logH2("Verify msg2");
-            Engine.decrypt_message_Return result = null;
+            decrypt_message_Return result = null;
             result = ctx.engine.decrypt_message(msg2, ctx.vStr, 0);
             log("\n" + msgToString(result.dst, false));
         }).run();

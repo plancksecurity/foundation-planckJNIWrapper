@@ -264,7 +264,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_release(
     Adapter::session(pEp::Adapter::release);
 }
 
-JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_getVersion(
+JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1getVersion(
         JNIEnv *env,
         jobject obj
     )
@@ -280,7 +280,7 @@ JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_getVersi
     return env->NewStringUTF(::get_engine_version());
 }
 
-JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_getProtocolVersion(
+JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1getProtocolVersion(
         JNIEnv *env,
         jobject obj
     )
@@ -331,7 +331,7 @@ static void *keyserver_thread_routine(void *arg)
     return (void *) status;
 }
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_startKeyserverLookup(
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1startKeyserverLookup(
         JNIEnv *env,
         jobject obj
     )
@@ -375,7 +375,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_startKeyser
     pthread_create(thread, nullptr, keyserver_thread_routine, (void *) queue);
 }
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_stopKeyserverLookup(
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1stopKeyserverLookup(
         JNIEnv *env,
         jobject obj
     )
@@ -419,7 +419,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_stopKeyserv
     free(thread);
 }
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_startSync(
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1startSync(
         JNIEnv *env,
         jobject obj
     )
@@ -441,7 +441,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_startSync(
     }
 }
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_stopSync(
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1stopSync(
         JNIEnv *env,
         jobject obj
     )
@@ -458,7 +458,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_stopSync(
 //    Adapter::shutdown();
 }
 
-JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_isSyncRunning(
+JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1isSyncRunning(
         JNIEnv *env,
         jobject obj
     )

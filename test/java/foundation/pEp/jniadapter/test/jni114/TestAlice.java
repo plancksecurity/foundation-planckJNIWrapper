@@ -5,6 +5,7 @@ import static foundation.pEp.pitytest.utils.TestUtils.readKey;
 import static foundation.pEp.pitytest.utils.TestUtils.sleep;
 
 import foundation.pEp.jniadapter.*;
+import foundation.pEp.jniadapter.exceptions.*;
 import foundation.pEp.pitytest.*;
 import foundation.pEp.pitytest.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.*;

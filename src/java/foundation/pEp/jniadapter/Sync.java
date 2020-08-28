@@ -1,12 +1,8 @@
 package foundation.pEp.jniadapter;
 
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.Message;
-import foundation.pEp.jniadapter.pEpException;
-
 public interface Sync {
 
-     
+
     interface NeedsFastPollCallback {
         void needsFastPollCallFromC(Boolean fast_poll_needed);
     }
@@ -23,8 +19,7 @@ public interface Sync {
         String passphraseRequired(final PassphraseType pEpStatus);
     }
 
-    public class DefaultCallback 
-            implements Sync.MessageToSendCallback, Sync.NotifyHandshakeCallback,  Sync.NeedsFastPollCallback {
+    public class DefaultCallback implements Sync.MessageToSendCallback, Sync.NotifyHandshakeCallback, Sync.NeedsFastPollCallback {
         @Override
         public void needsFastPollCallFromC(Boolean fast_poll_needed) {
             System.out.println("Need fast Poll");
@@ -34,7 +29,7 @@ public interface Sync {
         public void messageToSend(Message message) {
             System.out.println("messageToSend Defualt Callback");
         }
-        
+
         @Override
         public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
             System.out.println("notifyHandshake Default Callback");

@@ -4,24 +4,41 @@ tstylesheet {
     include ./textutils.ysl2
     include ./types_java.ysl2
 
-    template "/namespace[@name='pEp']" apply "interface", 0;
+    template "/namespace[@name='pEp']" {
+        apply "interface", 0;
+        document("../../build/marker/gen_java_Engine.marker", "text") > ""
+    }
 
     template "interface" {
         const "cname" call "toJava" with "type", "@name";
-        document("foundation/pEp/jniadapter/{$cname}.java", "text")
+        document("../java/foundation/pEp/jniadapter/{$cname}.java", "text")
             ||
             package foundation.pEp.jniadapter;
 
+            import foundation.pEp.jniadapter.interfaces.*;
+            import foundation.pEp.jniadapter.exceptions.*;
             import java.util.ArrayList;
             import java.util.Vector;
 
-            final public class «$cname» extends AbstractEngine {
+            final public class «$cname» extends AbstractEngine implements EngineInterface {
                 public «$cname»() throws pEpException { }
-
-                `` apply "method", mode=plain
+                `` apply "method"
                 `` apply "basic"
             }
 
+            ||
+        document("../java/foundation/pEp/jniadapter/interfaces/{$cname}Interface.java", "text")
+            ||
+            package foundation.pEp.jniadapter.interfaces;
+
+            import foundation.pEp.jniadapter.*;
+            import java.util.ArrayList;
+            import java.util.Vector;
+
+            public interface «$cname»Interface extends AbstractEngineInterface {
+                `` apply "method", mode=java_interface
+                `` apply "basic", mode=java_interface
+            }
             ||
     }
 
@@ -29,48 +46,47 @@ tstylesheet {
         const "itype" call "toIntermediate" with "type", "@type";
         const "jtype" call "toJava" with "type", "@type";
 
+        ||
+
+        // CodeGen "basic"
+        public «$jtype» «@name»(`apply "parm/*", mode=basic_parm`) {
+        ||
+        apply "parm/*", mode=basic_parm_set;
         choose {
-            when "name(parm/*[1])='bytearray|identitylist'"
+            when "@type = 'void'"
+                |> _«@name»(`apply "parm/*", mode=basic_parm_name`);
+            when "@type = 'identity'"
+                |> return new Identity(_«@name»(`apply "parm/*", mode=basic_parm_name`));
+            when "@type = 'bool'"
+                |> return new Boolean(_«@name»(`apply "parm/*", mode=basic_parm_name`));
+            when "@type = 'identitylist'" {
             ||
-            public native «$itype» «@name»(`apply "parm/*", mode=basic_iparm`);
-
-            ||
-            otherwise {
-            ||
-            private native «$itype» _«@name»(`apply "parm/*", mode=basic_iparm`);
-
-            public «$jtype» «@name»(`apply "parm/*", mode=basic_parm`) {
-            ||
-            apply "parm/*", mode=basic_parm_set;
-            choose {
-                when "@type = 'void'"
-                    |> _«@name»(`apply "parm/*", mode=basic_parm_name`);
-                when "@type = 'identity'"
-                    |> return new Identity(_«@name»(`apply "parm/*", mode=basic_parm_name`));
-                when "@type = 'bool'"
-                    |> return new Boolean(_«@name»(`apply "parm/*", mode=basic_parm_name`));
-                when "@type = 'identitylist'" {
-                ||
-                    Vector<_Identity> glist = _«@name»(`apply "parm/*", mode=basic_parm_name`);
-                    Vector<Identity> ret = new Vector<Identity>();
-                    if(glist != null) {
-                        for (_Identity i : glist) {
-                            ret.add(new Identity(i));
-                        }
+                Vector<_Identity> glist = _«@name»(`apply "parm/*", mode=basic_parm_name`);
+                Vector<Identity> ret = new Vector<Identity>();
+                if(glist != null) {
+                    for (_Identity i : glist) {
+                        ret.add(new Identity(i));
                     }
-                    return ret;
-                ||
-                } otherwise
-                    |> return AbstractEngine.toUTF16(_«@name»(`apply "parm/*", mode=basic_parm_name`));
-            }
+                }
+                return ret;
             ||
-            }
-
-            ||
-            }
+            } otherwise
+                |> return Utils.toUTF16(_«@name»(`apply "parm/*", mode=basic_parm_name`));
         }
+        ||
+        }
+
+        private native «$itype» _«@name»(`apply "parm/*", mode=basic_iparm`);
+        ||
     }
-    
+
+    template "basic" mode=java_interface {
+        const "jtype" call "toJava" with "type", "@type";
+        ||
+        public «$jtype» «@name»(`apply "parm/*", mode=basic_parm`);
+        ||
+    }
+
     template "*", mode=basic_parm_name choose {
         when "position() mod 2" {
             if "position() = 1 and name(.)='int'"
@@ -125,7 +141,7 @@ tstylesheet {
 
         if "not(position() mod 2)" choose {
             when "$ptype = 'string'"
-            | «$pitype» _«$pname» = AbstractEngine.toUTF8(«$pname»);
+            | «$pitype» _«$pname» = Utils.toUTF8(«$pname»);
             when "$ptype = 'bool'"
             | «$pitype» _«$pname» = «$pname».booleanValue();
             when "$ptype = 'bytearray'"
@@ -161,59 +177,47 @@ tstylesheet {
         }
     }
 
-    template "method", mode=plain {
-        const "convert", "count(parm/stringlist|parm/stringpairlist|parm/string|parm/identity|parm/identitylist) > 0";
+    template "method" {
         const "singlereturn", "count(parm/creates|parm/returns|parm/inout[../int]) = 1";
         const "multireturn", "count(parm/creates|parm/returns|parm/inout[../int]) > 1";
 
+        ||
+
+        //CodeGen "method"
+        ||
+
         if "$multireturn" {
-            if "$convert"
             ||
+            //CodeGen "mutlireturn" - class for return type
             private class _«@name»_Return {
             `` apply "parm[creates|returns|inout[../int]]", 1, mode=intermediate with "public", 1;
             }
 
             ||
-
-            ||
-            public class «@name»_Return {
-            `` apply "parm[creates|returns|inout[../int]]", 1, mode=java with "public", 1;
-            }
-
-            ||
         }
 
-        if "$convert"
         ||
-        private native `call "returnInter"` _«@name»(
-        `` apply "parm[in|inout]", 2, mode=intermediate
-            ) throws pEpException;
-
-        ||
-
-        ||
-        public `if "not($convert)" > native ``call "returnJava"` «@name»(
+        public `call "returnJava"` «@name»(
         `` apply "parm[in|inout]", 2, mode=java
-            ) throws pEpException`if "not($convert)" > ;`
+        ) throws pEpException
+        {
         ||
 
-        if "$convert" {
-            | {
-            apply "parm", mode=convertIn;
+        apply "parm", mode=convertIn;
 
-            if "$singlereturn" choose {
-
-                // TODO factorize type conversion with multireturn and gen_java_message.java
-
+        if "$singlereturn" {
+            choose {
                 when "count(parm[returns][stringlist|string|sstring]) > 0"
-                    |> return AbstractEngine.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
+                    |> return Utils.toUTF16(_«@name»(`apply "parm[in]", mode=call;`));
+
                 when "count(parm[returns]/stringpairlist) > 0"
                     ||
                         ArrayList<Pair<byte[], byte[]>> glist = _«@name»(`apply "parm[in]", mode=call;`);
                         if(glist != null){
                             ArrayList<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
-                            for (Pair<byte[],byte[]> i : glist)
-                                list.add(new Pair<String, String>(AbstractEngine.toUTF16(i.first), AbstractEngine.toUTF16(i.second)));
+                            for (Pair<byte[],byte[]> i : glist) {
+                                list.add(new Pair<String, String>(Utils.toUTF16(i.first), Utils.toUTF16(i.second)));
+                            }
                             return list;
                         }
                         return null;
@@ -221,40 +225,53 @@ tstylesheet {
 
                 when "count(parm[returns]/identity) > 0"
                     |> return new Identity(_«@name»(`apply "parm[in]", mode=call;`));
+
                 when "count(parm[returns]/identitylist) > 0"
                     ||
                         Vector<_Identity> glist = _«@name»(`apply "parm[in]", mode=call;`);
                         if(glist != null){
                             Vector<Identity> list = new Vector<Identity>();
-                            for (_Identity i : glist)
+                            for (_Identity i : glist) {
                                 list.add(new Identity(i));
+                            }
                             return list;
                         }
                         return null;
                     ||
+
                 otherwise
                     |> return _«@name»(`apply "parm[in]", mode=call;`);
             }
+        }
 
-            if "$multireturn"
+        if "$multireturn" {
             ||
                 _«@name»_Return _result = _«@name»(`apply "parm[in|inout]", mode=call;`);
                 «@name»_Return result = new «@name»_Return();
                 `` apply "parm[creates|returns|inout[../int]]", mode=convertOut;
                 return result;
             ||
+        }
 
-            if "not($singlereturn) and not($multireturn)"
+        if "not($singlereturn) and not($multireturn)" {
             ||
                 _«@name»(`apply "parm[in]", mode=call;`);
-                return;
-            ||
-                
-            ||
-            }
             ||
         }
         ||
+        }
+
+        private native `call "returnInter"` _«@name»(
+        `` apply "parm[in|inout]", 2, mode=intermediate
+        ) throws pEpException;
+        ||
+    }
+
+    template "method", mode=java_interface {
+        ||
+        public `call "returnJava"` «@name»(
+        `` apply "parm[in|inout]", 2, mode=java
+        );
 
         ||
     }
@@ -302,7 +319,7 @@ tstylesheet {
 
         if "$dir = 'in' or $dir = 'inout'" choose {
             when "$type = 'string' or $type = 'stringlist'"
-                | ¡$type _«$name» = AbstractEngine.toUTF8(«$name»);
+                | ¡$type _«$name» = Utils.toUTF8(«$name»);
             when "$type = 'identity'"
                 ||
                 _Identity _«$name» = null; 
@@ -313,8 +330,9 @@ tstylesheet {
             when "$type = 'identitylist'"
                 ||
                 Vector<_Identity> _«$name» = new Vector<_Identity>();
-                for (Identity i : «$name»)
+                for (Identity i : «$name») {
                     _«$name».add(new _Identity(i));
+                }
                 ||
         }
     }
@@ -326,7 +344,7 @@ tstylesheet {
 
         if "$dir != 'in'" choose {
             when "$type = 'string' or $type = 'stringlist'"
-                | result.«$name» = AbstractEngine.toUTF16(_result.«$name»);
+                | result.«$name» = Utils.toUTF16(_result.«$name»);
             when "$type = 'identity'"
                 | result.«$name» = Identity(«$name»);
             otherwise

@@ -1,5 +1,7 @@
 package foundation.pEp.jniadapter.test.jni88;
 import foundation.pEp.jniadapter.*;
+import foundation.pEp.jniadapter.exceptions.*;
+
 import java.util.Vector;
 import java.lang.Thread;
 

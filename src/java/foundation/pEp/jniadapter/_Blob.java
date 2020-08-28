@@ -1,5 +1,7 @@
 package foundation.pEp.jniadapter;
 
+import foundation.pEp.jniadapter.exceptions.*;
+
 public class _Blob {
     public byte[] data;
     public byte[] mime_type;
@@ -9,13 +11,13 @@ public class _Blob {
 
     private native byte[] _dataToXER() throws pEpException;;
     public String dataToXER() {
-        return AbstractEngine.toUTF16(_dataToXER());
+        return Utils.toUTF16(_dataToXER());
     }
 
     _Blob(Blob b) {
         data = b.data;
-        mime_type = AbstractEngine.toUTF8(b.mime_type);
-        filename = AbstractEngine.toUTF8(b.filename);
+        mime_type = Utils.toUTF8(b.mime_type);
+        filename = Utils.toUTF8(b.filename);
     }
 }
 

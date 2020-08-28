@@ -1,8 +1,9 @@
 package foundation.pEp.jniadapter;
 
+import foundation.pEp.jniadapter.interfaces.*;
 import java.io.Serializable;
 
-public class Identity implements Serializable{
+public class Identity implements IdentityInterface, Serializable {
     public String address;
     public String fpr;
     public String user_id;
@@ -23,27 +24,26 @@ public class Identity implements Serializable{
     }
 
     public Identity(_Identity i) {
-        address = AbstractEngine.toUTF16(i.address);
-        fpr = AbstractEngine.toUTF16(i.fpr);
-        user_id = AbstractEngine.toUTF16(i.user_id);
-        username = AbstractEngine.toUTF16(i.username);
+        address = Utils.toUTF16(i.address);
+        fpr = Utils.toUTF16(i.fpr);
+        user_id = Utils.toUTF16(i.user_id);
+        username = Utils.toUTF16(i.username);
         comm_type = CommType.Management.tag.get(i.comm_type);
-        lang = AbstractEngine.toUTF16(i.lang);
+        lang = Utils.toUTF16(i.lang);
         me = i.me;
         flags = i.flags;
     }
+
+    public Rating getRating() {
+        return Rating.getByInt(_getRating(comm_type.value));
+    }
+
+    private native int _getRating(int commType);
 
     @Override
     public String toString() {
         return address + "::" + username + "\n" +
                 user_id + "::" + fpr;
-    }
-
-    // Native
-    private native int _getRating(int commType);
-
-    public Rating getRating() {
-        return Rating.getByInt(_getRating(comm_type.value));
     }
 
 }

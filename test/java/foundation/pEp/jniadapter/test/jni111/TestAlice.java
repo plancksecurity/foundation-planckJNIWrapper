@@ -4,6 +4,7 @@ import static foundation.pEp.pitytest.TestLogger.*;
 import static foundation.pEp.pitytest.utils.TestUtils.readKey;
 
 import foundation.pEp.jniadapter.*;
+import foundation.pEp.jniadapter.exceptions.*;
 import foundation.pEp.pitytest.*;
 import foundation.pEp.pitytest.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.*;
