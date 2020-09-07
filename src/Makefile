@@ -70,7 +70,7 @@ PEP_HEADER:=$(shell $(CXX) $(CXXFLAGS) -E -M get_header.cc | grep -oe '[^[:space
 all: $(JAR) $(SHARED)
 
 $(JAR): status_list.yml2 passphrase_status_list.yml2 $(JAVA_SOURCES) $(C_SOURCES)
-	$(JP)/javac foundation/pEp/jniadapter/*.java
+	$(JP)/$(JAVAC_CMD) foundation/pEp/jniadapter/*.java
 	$(JP)/jar cf $@ foundation/pEp/jniadapter/*.class
 
 BLUBB=foundation_pEp_jniadapter_AbstractEngine.h foundation_pEp_jniadapter_Engine.h foundation_pEp_jniadapter_Message.h foundation_pEp_jniadapter__Blob.h
@@ -78,7 +78,7 @@ $(BLUBB): foundation_pEp_jniadapter_%.h: foundation/pEp/jniadapter/%.java
 ifdef OLD_JAVA
 	$(JP)/javah $(subst /,.,$(subst .java,,$<))
 else
-	$(JP)/javac -h . $<
+	$(JP)/$(JAVAC_CMD) -h . $<
 endif
 
 foundation_pEp_jniadapter_AbstractEngine.o: %.o: %.cc %.h throw_pEp_exception.hh jniutils.hh
