@@ -20,7 +20,7 @@ run: compile clean-pep-home
 compile: $(JAVA_CLASSES) pitytest
 
 %.class: %.java
-	cd $(JAVA_CWD);javac -cp $(CLASSPATH) $(JAVA_PKG_BASEPATH)/$(TEST_UNIT_NAME)/$<
+	cd $(JAVA_CWD);$(JAVAC_CMD) -cp $(CLASSPATH) $(JAVA_PKG_BASEPATH)/$(TEST_UNIT_NAME)/$<
 
 clean:
 	rm -f $(JAVA_CLASSES)

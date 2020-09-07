@@ -81,7 +81,7 @@ GENERATED_CC=\
 GENERATED_HH=\
 	$(CXX_DIR)/throw_pEp_exception.hh
 
-# Generated JNI headers (javac -h)
+# Generated JNI headers
 JNI_GENERATED_HH=\
 	$(CXX_DIR)/foundation_pEp_jniadapter_AbstractEngine.h \
     $(CXX_DIR)/foundation_pEp_jniadapter__Blob.h \
@@ -128,9 +128,9 @@ $(LIB_CXX_STATIC): compile-cxx
 
 # -------------- Compile -----------------
 compile-java: create-dirs codegen
-	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/javac -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/*.java
-	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/javac -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/exceptions/*.java
-	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/javac -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/interfaces/*.java
+	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/$(JAVAC_CMD) -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/*.java
+	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/$(JAVAC_CMD) -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/exceptions/*.java
+	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/$(JAVAC_CMD) -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/interfaces/*.java
 
 
 compile-cxx: create-dirs gen-jni-headers $(OBJECTS)
@@ -146,7 +146,7 @@ $(JNI_GENERATED_HH):
 ifdef OLD_JAVA
 	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/javah -d ../$(JAVA_BUILD_ROOT) $(subst /,.,$(subst .java,,$<))
 else
-	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/javac -d ../$(JAVA_BUILD_ROOT) -h ../$(CXX_DIR)/ $(JAVA_PKG_BASENAME)/*.java
+	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/$(JAVAC_CMD) -d ../$(JAVA_BUILD_ROOT) -h ../$(CXX_DIR)/ $(JAVA_PKG_BASENAME)/*.java
 endif
 
 
