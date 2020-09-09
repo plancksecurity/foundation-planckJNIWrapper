@@ -28,7 +28,7 @@ public class SpeedTest {
             try {
                 Message[] msgs = codec.decode(testDataEnc);
                 Vector<String> keys = new Vector<String>();
-                Engine.decrypt_message_Return ret = eng.decrypt_message(msgs[0], keys, 0);
+                decrypt_message_Return ret = eng.decrypt_message(msgs[0], keys, 0);
                 String txt = ret.dst.getLongmsg();
             } catch (ParseException ex) {
                 System.err.println("error: parsing test data");
