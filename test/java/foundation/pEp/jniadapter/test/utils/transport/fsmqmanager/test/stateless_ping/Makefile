@@ -25,7 +25,7 @@ bob: compile
 compile: $(JAVA_CLASSES) pitytest
 
 %.class: %.java
-	cd $(JAVA_CWD);pwd;javac $(JAVA_PKG_BASEPATH)/$(TEST_UNIT_NAME)/$<
+	cd $(JAVA_CWD);pwd;$(JAVAC_CMD) $(JAVA_PKG_BASEPATH)/$(TEST_UNIT_NAME)/$<
 
 clean:
 	rm -f $(JAVA_CLASSES)
