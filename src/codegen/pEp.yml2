@@ -1,5 +1,6 @@
 decl namespace @name;
 decl enum @name;
+decl enumitem @name;
 decl interface @name;
 decl exception @name;
 decl method @name;
@@ -16,77 +17,74 @@ namespace pEp {
     };
 
     enum Color {
-        PEP_color_no_color > 0
-        PEP_color_yellow > 1
-        PEP_color_green > 2
-        PEP_color_red > -1
+        enumitem PEP_color_no_color toString="None"     > 0
+        enumitem PEP_color_yellow   toString="Yellow"   > 1
+        enumitem PEP_color_green    toString="Green"    > 2
+        enumitem PEP_color_red      toString="Red"      > -1
     };
 
-    enum Rating {
-        pEp_rating_undefined > 0
-        pEp_rating_cannot_decrypt > 1
-        pEp_rating_have_no_key > 2
-        pEp_rating_unencrypted > 3
-        pEp_rating_unencrypted_for_some > 4
-        pEp_rating_unreliable > 5
-        pEp_rating_reliable > 6
-        pEp_rating_trusted > 7
-        pEp_rating_trusted_and_anonymized > 8
-        pEp_rating_fully_anonymous > 9
 
-        pEp_rating_mistrust > -1
-        pEp_rating_b0rken > -2
-        pEp_rating_under_attack > -3
+    enum Rating {
+       enumitem pEp_rating_undefined              int_str_val=undefined                toString="undefined"               > 0
+       enumitem pEp_rating_cannot_decrypt         int_str_val=cannot_decrypt           toString="cannot decrypt"          > 1
+       enumitem pEp_rating_have_no_key            int_str_val=have_no_key              toString="have no key"             > 2
+       enumitem pEp_rating_unencrypted            int_str_val=unencrypted              toString="unencrypted"             > 3
+       enumitem pEp_rating_unencrypted_for_some   int_str_val=unencrypted_for_some     toString="unencrypted for some"    > 4
+       enumitem pEp_rating_unreliable             int_str_val=unreliable               toString="unreliable"              > 5
+       enumitem pEp_rating_reliable               int_str_val=reliable                 toString="reliable"                > 6
+       enumitem pEp_rating_trusted                int_str_val=trusted                  toString="trusted"                 > 7
+       enumitem pEp_rating_trusted_and_anonymized int_str_val=trusted_and_anonymized   toString="trusted and anonymized"  > 8
+       enumitem pEp_rating_fully_anonymous        int_str_val=fully_anonymous          toString="fully anonymous"         > 9
+       enumitem pEp_rating_mistrust               int_str_val=mistrust                 toString="mistrust"                > -1
+       enumitem pEp_rating_b0rken                 int_str_val=b0rken                   toString="b0rken"                  > -2
+       enumitem pEp_rating_under_attack           int_str_val=under_attack             toString="under attack"            > -3
     };
 
     enum DecryptFlags {
-        pEp_decrypt_flag_own_private_key > 1
-        pEp_decrypt_flag_consumed > 2
-        pEp_decrypt_flag_ignored > 4
-        pEp_decrypt_flag_src_modified > 8
-        pEp_decrypt_flag_untrusted_server > 0x100
-        pEp_decrypt_flag_dont_trigger_sync > 0x200
+        enumitem pEp_decrypt_flag_own_private_key       > 1
+        enumitem pEp_decrypt_flag_consumed              > 2
+        enumitem pEp_decrypt_flag_ignored               > 4
+        enumitem pEp_decrypt_flag_src_modified          > 8
+        enumitem pEp_decrypt_flag_untrusted_server      > 0x100
+        enumitem pEp_decrypt_flag_dont_trigger_sync     > 0x200
     };
 
     enum IdentityFlags {
-        pEp_idf_not_for_sync > 1
-        pEp_idf_list > 2
-        pEp_idf_devicegroup > 256
+        enumitem pEp_idf_not_for_sync                   > 1
+        enumitem pEp_idf_list                           > 2
+        enumitem pEp_idf_devicegroup                    > 256
     };
 
     enum SyncHandshakeResult {
-        sync_handshake_cancel   > -1
-        sync_handshake_accepted > 0
-        sync_handshake_rejected > 1
+        enumitem sync_handshake_cancel                  > -1
+        enumitem sync_handshake_accepted                > 0
+        enumitem sync_handshake_rejected                > 1
     };
 
     enum SyncHandshakeSignal {
-        sync_notify_undefined > 0
-        sync_notify_init_add_our_device > 1
-        sync_notify_init_add_other_device > 2
-        sync_notify_init_form_group > 3
-        // sync_notify_init_move_our_device > 4
-        sync_notify_timeout > 5
-        sync_notify_accepted_device_added > 6
-        sync_notify_accepted_group_created > 7
-        sync_notify_accepted_device_accepted > 8
-        // sync_notify_overtaken > 9
-        // sync_notify_forming_group > 10
-        sync_passphrase_required > 128
-        sync_notify_sole > 254
-        sync_notify_in_group > 255
+        enumitem sync_notify_undefined                  > 0
+        enumitem sync_notify_init_add_our_device        > 1
+        enumitem sync_notify_init_add_other_device      > 2
+        enumitem sync_notify_init_form_group            > 3
+        enumitem sync_notify_timeout                    > 5
+        enumitem sync_notify_accepted_device_added      > 6
+        enumitem sync_notify_accepted_group_created     > 7
+        enumitem sync_notify_accepted_device_accepted   > 8
+        enumitem sync_passphrase_required               > 128
+        enumitem sync_notify_sole                       > 254
+        enumitem sync_notify_in_group                   > 255
     };
 
     enum CipherSuite {
-        pEp_cipher_suite_default > 0
-        pEp_cipher_suite_cv25519 > 1
-        pEp_cipher_suite_p256 > 2
-        pEp_cipher_suite_p384 > 3
-        pEp_cipher_suite_p521 > 4
-        pEp_cipher_suite_rsa2k > 5
-        pEp_cipher_suite_rsa3k > 6
-        pEp_cipher_suite_rsa4k > 7
-        pEp_cipher_suite_rsa8k > 8
+        enumitem pEp_cipher_suite_default               > 0
+        enumitem pEp_cipher_suite_cv25519               > 1
+        enumitem pEp_cipher_suite_p256                  > 2
+        enumitem pEp_cipher_suite_p384                  > 3
+        enumitem pEp_cipher_suite_p521                  > 4
+        enumitem pEp_cipher_suite_rsa2k                 > 5
+        enumitem pEp_cipher_suite_rsa3k                 > 6
+        enumitem pEp_cipher_suite_rsa4k                 > 7
+        enumitem pEp_cipher_suite_rsa8k                 > 8
     };
 
     interface Engine {
@@ -275,23 +273,23 @@ namespace pEp {
 
     struct message {
         enum TextFormat {
-            plain       > 0
-            html        > 1
-            other       > 255
+            enumitem plain              > 0
+            enumitem html               > 1
+            enumitem other              > 255
         }
 
         enum direction {
-            incoming    > 0
-            outgoing    > 1
+            enumitem incoming           > 0
+            enumitem outgoing           > 1
         }
 
         enum EncFormat {
-            none               > 0
-            inline             > 1
-            SMIME              > 2
-            PGPMIME            > 3
-            PEP                > 4
-            PEP_enc_inline_EA  > 6
+            enumitem none               > 0
+            enumitem inline             > 1
+            enumitem SMIME              > 2
+            enumitem PGPMIME            > 3
+            enumitem PEP                > 4
+            enumitem PEP_enc_inline_EA  > 6
         }
 
          direction dir;

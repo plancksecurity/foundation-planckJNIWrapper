@@ -38,13 +38,8 @@ codegen: create-dirs gen-status-codes $(YML2_MARKERS)
 $(YML2_MARKERS): $(MARKER_DIR)/%.marker : %.ysl2 pEp.yml2 $(YML2_INCLUDES)
 	$(YML2_PROC) -y $< pEp.yml2
 
-gen-status-codes: status_list.yml2 passphrase_status_list.yml2
-
-status_list.yml2: pEp.yml2
-	bash ../../utils/extract_pEp_status_codes_from_engine.sh "$(PEP_HEADER)" $@
-
-passphrase_status_list.yml2: status_list.yml2
-	grep passphrase $< > $@
+gen-status-codes: pEp.yml2
+	bash ../../utils/gen_status_codes.sh "$(PEP_HEADER)"
 
 # ------------- Housekeeping ---------------
 create-dirs:
