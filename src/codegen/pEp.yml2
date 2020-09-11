@@ -24,7 +24,7 @@ namespace pEp {
     };
 
 
-    enum Rating {
+    enum has_int_str_val=true Rating {
        enumitem pEp_rating_undefined              int_str_val=undefined                toString="undefined"               > 0
        enumitem pEp_rating_cannot_decrypt         int_str_val=cannot_decrypt           toString="cannot decrypt"          > 1
        enumitem pEp_rating_have_no_key            int_str_val=have_no_key              toString="have no key"             > 2

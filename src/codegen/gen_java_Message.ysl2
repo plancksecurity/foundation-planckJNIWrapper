@@ -136,8 +136,19 @@ tstylesheet {
                 }
                 return null;
             }
-        }
 
+        ||
+        choose {
+            when "@has_int_str_val = 'true'" {
+            ||
+                public String getInternalStringValue() {
+                    return "Unimplemented";
+                }
+            ||
+            }
+        }
+        ||
+        }
         ||
     }
 
