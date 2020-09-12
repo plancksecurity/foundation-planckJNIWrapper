@@ -19,7 +19,7 @@ class Jni115TestContext extends AdapterBaseTestContext {
     public List<Message> messagesToBob;
 
     @Override
-    public void init() throws Throwable {
+    public void init() throws RuntimeException {
         super.init();
         messagesToBobSmall = new ArrayList<>();
         messagesToBobBig = new ArrayList<>();

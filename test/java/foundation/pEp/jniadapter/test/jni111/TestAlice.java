@@ -16,7 +16,7 @@ import java.util.Vector;
 
 class JNI111TestContext extends AdapterBaseTestContext {
     @Override
-    public void init() throws Throwable {
+    public void init() throws RuntimeException {
         super.init();
         alice = null;
         bob = null;

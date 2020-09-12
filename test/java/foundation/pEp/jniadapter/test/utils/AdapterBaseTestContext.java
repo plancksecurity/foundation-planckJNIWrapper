@@ -63,7 +63,7 @@ public class AdapterBaseTestContext extends AbstractTestContext {
     public Vector<Identity> vID;
     public Vector<String> vStr;
 
-    public void init() throws Throwable {
+    public void init() throws RuntimeException {
         vID = new Vector<Identity>();
         vStr = new Vector<String>();
 
@@ -74,7 +74,7 @@ public class AdapterBaseTestContext extends AbstractTestContext {
 
         TestLogger.logH2("Machine directory: ");
         TestLogger.log(engine.getMachineDirectory());
-        TestLogger.logH2("User directory:" );
+        TestLogger.logH2("User directory:");
         TestLogger.log(engine.getUserDirectory());
 
 
@@ -96,22 +96,27 @@ public class AdapterBaseTestContext extends AbstractTestContext {
 
         Path path;
         path = Paths.get(filenameBobPub);
-        keyBobPub = Files.readAllBytes(path);
+        try {
+            keyBobPub = Files.readAllBytes(path);
 
-        path = Paths.get(filenameBobSec);
-        keyBobSec = Files.readAllBytes(path);
+            path = Paths.get(filenameBobSec);
+            keyBobSec = Files.readAllBytes(path);
 
-        path = Paths.get(filenameAlicePub);
-        keyAlicePub = Files.readAllBytes(path);
+            path = Paths.get(filenameAlicePub);
+            keyAlicePub = Files.readAllBytes(path);
 
-        path = Paths.get(filenameAliceSec);
-        keyAliceSec = Files.readAllBytes(path);
+            path = Paths.get(filenameAliceSec);
+            keyAliceSec = Files.readAllBytes(path);
 
-        path = Paths.get(filenameAlicePubPassphrase);
-        keyAlicePubPassphrase = Files.readAllBytes(path);
+            path = Paths.get(filenameAlicePubPassphrase);
+            keyAlicePubPassphrase = Files.readAllBytes(path);
 
-        path = Paths.get(filenameAliceSecPassphrase);
-        keyAliceSecPassphrase = Files.readAllBytes(path);
+            path = Paths.get(filenameAliceSecPassphrase);
+            keyAliceSecPassphrase = Files.readAllBytes(path);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 }
