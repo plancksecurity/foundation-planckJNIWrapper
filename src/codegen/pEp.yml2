@@ -246,6 +246,9 @@ namespace pEp {
                 in CipherSuite suite
             );
 
+        method enter_device_group(
+                in identitylist identities const
+            );
 
         // "basic" methods are generated on the java side, but
         // on the C++ side, manually implemented in basic_api.cc
