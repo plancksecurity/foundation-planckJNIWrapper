@@ -10,9 +10,13 @@ class CtxInitFailContext extends AbstractTestContext {
     int result;
 
     @Override
-    public void init() throws Throwable {
+    public CtxInitFailContext init() throws RuntimeException {
         name = "PityTest";
+        log("Hello World from: " + name);
+//        throw  new RuntimeException("regddjkl");
         result = 50 / 0;
+
+        return this;
     }
 }
 

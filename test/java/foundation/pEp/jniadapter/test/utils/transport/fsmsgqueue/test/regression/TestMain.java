@@ -20,9 +20,10 @@ class FsMsgQueueTestContext extends AbstractTestContext {
     FsMsgQueue queue;
 
     @Override
-    public void init() throws Throwable {
+    public FsMsgQueueTestContext init() throws Throwable {
         deleteQDir();
         messages = createTestMessages(msgCount);
+        return this;
     }
 
     public void deleteQDir() {
@@ -32,6 +33,7 @@ class FsMsgQueueTestContext extends AbstractTestContext {
             deleteRecursively(qDir);
             if (qDir.exists()) throw new RuntimeException("Cant delete Dir:" + qDirPath);
         }
+
     }
 
     public ArrayList<String> createTestMessages(int count) {

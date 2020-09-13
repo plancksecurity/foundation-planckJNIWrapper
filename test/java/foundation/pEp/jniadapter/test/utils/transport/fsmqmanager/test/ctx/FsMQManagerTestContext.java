@@ -10,10 +10,11 @@ public class FsMQManagerTestContext extends FsMQManagerBaseTestContext {
     }
 
     @Override
-    public void init() throws Throwable {
+    public FsMQManagerTestContext init() throws Throwable {
         super.init();
         qm = new FsMQManager(self);
         qm.identities.addAll(peerList);
+        return this;
     }
 
 }

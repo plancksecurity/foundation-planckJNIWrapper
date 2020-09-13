@@ -51,7 +51,7 @@ class MultiPeerCTX extends FsMQManagerTestContext {
         super(selfAddress);
     }
 
-    public void init() throws Throwable {
+    public MultiPeerCTX init() throws Throwable {
         super.init();
         vID = new Vector<Identity>();
         vStr = new Vector<String>();
@@ -97,5 +97,6 @@ class MultiPeerCTX extends FsMQManagerTestContext {
         log("pEp PER_USER_DIR   : " + engine.getUserDirectory());
         log("pEp ProtocolVersion: " + engine.getProtocolVersion());
         log("pEp Version        : " + engine.getVersion());
+        return this;
     }
 }

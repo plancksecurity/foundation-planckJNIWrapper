@@ -18,12 +18,13 @@ class CtxMembersTestContext extends AbstractTestContext {
     ExampleCtxMember incorrect = new ExampleCtxMember(false); // WRONG
 
     @Override
-    public void init() throws Throwable {
+    public CtxMembersTestContext init() throws Throwable {
         log("=== OUTPUT FROM TEST CONTEXT INIT BEGIN ===");
         log(getTestContextName()+ " - init() called");
         correct = new ExampleCtxMember(true);
         name = "PityTest";
         log("=== OUTPUT FROM TEST CONTEXT INIT END   ===");
+        return this;
     }
 }
 

@@ -59,7 +59,7 @@ public class AdapterBaseTestContext extends AbstractTestContext {
     public Message msgToSelf;
     public Message msgToBob;
 
-    public void init() throws RuntimeException {
+    public AdapterBaseTestContext init() throws Throwable {
         callbacks = new TestCallbacks();
         engine = new Engine();
         engine.setMessageToSendCallback(callbacks);
@@ -106,7 +106,7 @@ public class AdapterBaseTestContext extends AbstractTestContext {
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-
+        return this;
     }
 
 }

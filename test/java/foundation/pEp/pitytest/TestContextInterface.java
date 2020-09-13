@@ -1,7 +1,7 @@
 package foundation.pEp.pitytest;
 
 public interface TestContextInterface {
-    void init() throws Throwable;
+    TestContextInterface init() throws Throwable;
 
     boolean isInitialized();
 

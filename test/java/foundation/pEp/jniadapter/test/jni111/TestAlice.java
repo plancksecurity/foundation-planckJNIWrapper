@@ -16,10 +16,11 @@ import java.util.Vector;
 
 class JNI111TestContext extends AdapterBaseTestContext {
     @Override
-    public void init() throws RuntimeException {
+    public JNI111TestContext init() throws Throwable {
         super.init();
         alice = null;
         bob = null;
+        return this;
     }
 }
 

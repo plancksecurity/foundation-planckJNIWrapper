@@ -7,8 +7,9 @@ class HelloWorldTestContext extends AbstractTestContext {
     String name;
 
     @Override
-    public void init() throws Throwable {
+    public HelloWorldTestContext init() throws Throwable {
         name = "PityTest";
+        return this;
     }
 }
 

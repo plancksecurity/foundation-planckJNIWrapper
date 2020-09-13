@@ -19,7 +19,7 @@ class Jni115TestContext extends AdapterBaseTestContext {
     public List<Message> messagesToBob;
 
     @Override
-    public void init() throws RuntimeException {
+    public Jni115TestContext init() throws Throwable {
         super.init();
         messagesToBobSmall = new ArrayList<>();
         messagesToBobBig = new ArrayList<>();
@@ -52,6 +52,7 @@ class Jni115TestContext extends AdapterBaseTestContext {
             messagesToBobHuge.add(tmp);
         }
         logRaw("\n");
+        return this;
     }
 
 }
