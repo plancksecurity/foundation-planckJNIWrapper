@@ -59,14 +59,7 @@ public class AdapterBaseTestContext extends AbstractTestContext {
     public Message msgToSelf;
     public Message msgToBob;
 
-    // Misc
-    public Vector<Identity> vID;
-    public Vector<String> vStr;
-
     public void init() throws RuntimeException {
-        vID = new Vector<Identity>();
-        vStr = new Vector<String>();
-
         callbacks = new TestCallbacks();
         engine = new Engine();
         engine.setMessageToSendCallback(callbacks);
@@ -90,9 +83,6 @@ public class AdapterBaseTestContext extends AbstractTestContext {
 
         msgToSelf = AdapterTestUtils.makeNewTestMessage(alice, alice, Message.Direction.Outgoing);
         msgToBob = AdapterTestUtils.makeNewTestMessage(alice, bob, Message.Direction.Outgoing);
-
-        vID.add(bob);
-        vStr.add("StringItem");
 
         Path path;
         path = Paths.get(filenameBobPub);
