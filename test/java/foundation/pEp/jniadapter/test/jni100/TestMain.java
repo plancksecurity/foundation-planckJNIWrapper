@@ -3,6 +3,8 @@ import foundation.pEp.pitytest.*;
 import foundation.pEp.jniadapter.*;
 import foundation.pEp.jniadapter.test.utils.*;
 
+import java.util.Vector;
+
 
 class TestMain {
     public static void main(String[] args) throws Exception {
@@ -15,7 +17,7 @@ class TestMain {
             ctx.alice = ctx.engine.myself(ctx.alice);
             TestLogger.log(AdapterTestUtils.identityToString(ctx.alice, true));
 
-            Message msg1 = ctx.engine.encrypt_message(ctx.msgToBob, ctx.vStr, Message.EncFormat.PEP);
+            Message msg1 = ctx.engine.encrypt_message(ctx.msgToBob, new Vector<String>(), Message.EncFormat.PEP);
 
             ctx.engine.key_reset_all_own_keys();
 

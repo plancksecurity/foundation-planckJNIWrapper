@@ -24,5 +24,11 @@ public class Pair<K, V> {
         key = f;
         value = s;
     }
+
+    public String toString() {
+        String ret="";
+        ret += "'" + key.toString() + "' : '" + value.toString() + "'";
+        return ret;
+    }
 }
 

@@ -1,25 +1,30 @@
 package foundation.pEp.jniadapter.test.jni111;
 
-import static foundation.pEp.pitytest.TestLogger.*;
-import static foundation.pEp.pitytest.utils.TestUtils.readKey;
-
-import foundation.pEp.jniadapter.*;
-import foundation.pEp.jniadapter.exceptions.*;
-import foundation.pEp.pitytest.*;
+import foundation.pEp.jniadapter.CommType;
+import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.exceptions.pEpException;
+import foundation.pEp.jniadapter.exceptions.pEpPassphraseRequired;
+import foundation.pEp.jniadapter.exceptions.pEpWrongPassphrase;
+import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
+import foundation.pEp.jniadapter.test.utils.AdapterTestUtils;
+import foundation.pEp.pitytest.TestSuite;
+import foundation.pEp.pitytest.TestUnit;
 import foundation.pEp.pitytest.utils.TestUtils;
-import foundation.pEp.jniadapter.test.utils.*;
 
 import java.util.Vector;
+
+import static foundation.pEp.pitytest.TestLogger.log;
 
 
 // https://pep.foundation/jira/browse/JNI-111
 
 class JNI111TestContext extends AdapterBaseTestContext {
     @Override
-    public void init() throws Throwable {
+    public JNI111TestContext init() throws Throwable {
         super.init();
         alice = null;
         bob = null;
+        return this;
     }
 }
 

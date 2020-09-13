@@ -10,5 +10,11 @@ public class Pair<F, S> {
         first = f;
         second = s;
     }
+
+    public String toString() {
+        String ret="";
+        ret += "'" + first.toString() + "' : '" + second.toString() + "'";
+        return ret;
+    }
 }
 

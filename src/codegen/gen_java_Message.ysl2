@@ -113,7 +113,7 @@ tstylesheet {
         ||
         // CodeGen template enum, mode=inner
         public enum «$jname» {
-            `` apply "*", mode=value
+            `` apply "enumitem"
             ;
 
             public final int value;
@@ -136,8 +136,19 @@ tstylesheet {
                 }
                 return null;
             }
-        }
 
+        ||
+        choose {
+            when "@has_int_str_val = 'true'" {
+            ||
+                public String getInternalStringValue() {
+                    return "Unimplemented";
+                }
+            ||
+            }
+        }
+        ||
+        }
         ||
     }
 
@@ -319,9 +330,39 @@ tstylesheet {
         ||
     }
 
-    template "*", mode=value {
-        const "name" call "toJava" with "type", "name(.)";
-        | «$name» («.»)`if "position()!=last()" > , `
+
+    template "enumitem" {
+        const "name_hyphenized" call "hyphenize" with "text", "@name";
+        const "javaname" call "toJava" with "type", "$name_hyphenized";
+        const "enum_index", ".";
+        ||
+        «$javaname» («$enum_index») {
+            public String toString() {
+        ||
+        choose {
+            when "@toString" {
+            ||
+                    return "«@toString»";
+            ||
+            } otherwise {
+            ||
+                    return "«$javaname»";
+            ||
+            }
+        }
+        ||
+            }
+        ||
+        choose {
+            when "@int_str_val" {
+            ||
+                public String getInternalStringValue() {
+                    return "«@int_str_val»";
+                }
+            ||
+            }
+        }
+        | }`if "position()!=last()" > , `
     }
 }
 

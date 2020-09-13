@@ -44,20 +44,45 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
         add(TestSuite.getDefault());
     }
 
+    //Shallow Copy
+    public TestUnit(TestUnit<T> orig) {
+        testUnitName = orig.testUnitName;
+        ctx = orig.ctx;
+        lambda = orig.lambda;
+        result = orig.result;
+        state = orig.state;
+        lastException = orig.lastException;
+        verboseMode = orig.verboseMode;
+        testColor = orig.testColor;
+        logFmtPadding = orig.logFmtPadding;
+        logFmtMsgLen = orig.logFmtMsgLen;
+        logFmtTestDuration = orig.logFmtTestDuration;
+        lineWidthMin = orig.lineWidthMin;
+        logFmtTestNameLen = orig.logFmtTestNameLen;
+        logFmtCtxNameLen = orig.logFmtCtxNameLen;
+    }
+
+    //Shallow Copy
+    public TestUnit<T> copy() {
+        return new TestUnit<>(this);
+    }
+
     public boolean isVerboseMode() {
         return verboseMode;
     }
 
-    public void setVerboseMode(boolean verboseMode) {
+    public TestUnit<T> setVerboseMode(boolean verboseMode) {
         this.verboseMode = verboseMode;
+        return this;
     }
 
     public TermColor getTestColor() {
         return testColor;
     }
 
-    public void setTestColor(TermColor testColor) {
+    public TestUnit<T> setTestColor(TermColor testColor) {
         this.testColor = testColor;
+        return this;
     }
 
     public TestState getResult() {
@@ -65,7 +90,11 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
     }
 
     public Throwable getLastException() {
-        return lastException;
+        Throwable ret = new Throwable("No Exception caught");
+        if(lastException != null) {
+            ret = lastException;
+        }
+        return ret;
     }
 
     public TestUnit<T> add(TestSuite suite) {
@@ -82,10 +111,15 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
         return ctx;
     }
 
+    public TestUnit<T> setContext(T ctx) {
+        this.ctx = ctx;
+        return this;
+    }
+
     public void run() {
         TestUtils.standardOutErrEnabled(verboseMode);
         if (ctx.isUninitializable()) {
-            setTestState(TestState.CTX_FAIL);
+            setTestState(TestState.SKIPPED);
             TestUtils.standardOutErrEnabled(true);
         } else {
             try {
@@ -147,18 +181,17 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
             }
             case CTX_FAIL: {
                 setTestResult(TestState.SKIPPED);
-//                logH1(makeLogString());
                 break;
             }
         }
     }
 
     private void setTestResult(TestState r) {
-        assert (r == TestState.SKIPPED || r == TestState.FAILED || r == TestState.SUCCESS || r == TestState.UNEVALUATED ): "PityTest Internal: illegal result value '" + r +"'";
+        assert (r == TestState.SKIPPED || r == TestState.FAILED || r == TestState.SUCCESS || r == TestState.UNEVALUATED) : "PityTest Internal: illegal result value '" + r + "'";
         result = r;
         TestUtils.standardOutErrEnabled(true);
         logH1(makeLogString());
-        if (result == TestState.FAILED || result == TestState.CTX_FAIL) {
+        if (result == TestState.FAILED || state == TestState.CTX_FAIL) {
             log("ERROR: " + getLastException().toString());
         }
         if (verboseMode) logRaw("\n\n");
@@ -193,7 +226,7 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
             DecimalFormat f = new DecimalFormat("0.000");
             String durationFmtd = f.format(testDuration.toMillis() / 1000.0);
             strTestDuration = TestUtils.padOrClipString(" [" + durationFmtd + " sec] ", "=", logFmtTestDuration, TestUtils.Alignment.Right, ".. ");
-        } else  {
+        } else {
             strTestDuration = TestUtils.padOrClipString("", "=", logFmtTestDuration, TestUtils.Alignment.Right, ".. ");
         }
 

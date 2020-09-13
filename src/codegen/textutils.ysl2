@@ -10,6 +10,12 @@ function "lcase" {
     value "translate($text, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ-', 'abcdefghijklmnopqrstuvwxyz_')";
 }
 
+function "hyphenize" {
+    param "text";
+
+    value "translate($text, '_', '-')";
+}
+
 function "CamelCase" {
     param "text";
     const "tokens", "str:tokenize($text, '-')";

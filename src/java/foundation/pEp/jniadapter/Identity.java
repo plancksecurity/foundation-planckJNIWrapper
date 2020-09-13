@@ -2,6 +2,7 @@ package foundation.pEp.jniadapter;
 
 import foundation.pEp.jniadapter.interfaces.*;
 import java.io.Serializable;
+import java.util.List;
 
 public class Identity implements IdentityInterface, Serializable {
     public String address;
@@ -40,11 +41,22 @@ public class Identity implements IdentityInterface, Serializable {
 
     private native int _getRating(int commType);
 
+    public static String toXKeyList(List<Identity> ids) {
+        String ret = "";
+        if(ids.size() > 0) {
+            for (Identity id : ids) {
+                ret += id.fpr;
+                ret += ",";
+            }
+            ret = ret.substring(0, ret.length() - 1);
+        }
+        return ret;
+    }
+
     @Override
     public String toString() {
         return address + "::" + username + "\n" +
                 user_id + "::" + fpr;
     }
-
 }
 

@@ -75,7 +75,7 @@ public class TestSuite {
     }
 
     public void add(TestUnit t) {
-        tests.add(t);
+        tests.add(t.copy());
     }
 
     public void run() {

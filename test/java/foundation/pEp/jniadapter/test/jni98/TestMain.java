@@ -5,6 +5,8 @@ import foundation.pEp.jniadapter.Message;
 import foundation.pEp.pitytest.TestUnit;
 import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
 
+import java.util.Vector;
+
 import static foundation.pEp.pitytest.TestLogger.log;
 import static foundation.pEp.pitytest.TestLogger.logH2;
 import static foundation.pEp.jniadapter.test.utils.AdapterTestUtils.msgToString;
@@ -45,7 +47,7 @@ class TestMain {
 
             logH2("Verify msg2");
             decrypt_message_Return result = null;
-            result = ctx.engine.decrypt_message(msg2, ctx.vStr, 0);
+            result = ctx.engine.decrypt_message(msg2, new Vector<String>(), 0);
             log("\n" + msgToString(result.dst, false));
         }).run();
 

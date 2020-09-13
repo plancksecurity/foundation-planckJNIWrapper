@@ -17,6 +17,11 @@ class BasicTestContext extends AdapterBaseTestContext {
     public BasicTestContext() {
         setTestContextName("BasicTestContext");
     }
+
+    public BasicTestContext init() throws Throwable{
+        super.init();
+        return this;
+    }
 }
 
 class TestMain {

@@ -6,8 +6,9 @@ class TestSuiteContext extends AbstractTestContext {
     String name;
 
     @Override
-    public void init() throws Throwable {
+    public TestSuiteContext init() throws Throwable {
         name = "PityTest";
+        return this;
     }
 }
 
