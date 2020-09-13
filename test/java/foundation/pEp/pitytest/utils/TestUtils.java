@@ -7,10 +7,7 @@ import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -330,5 +327,102 @@ public class TestUtils {
         return Math.max(min, Math.min(max, val));
     }
 
+    /*
+    Random data generators
+     */
+
+    public static int randomInt(int min, int max) {
+        int ret = 0;
+        int range = max - min;
+        if (range <= 0) {
+            range = 1;
+        }
+        Random rand = new Random();
+        ret = rand.nextInt(range) + min;
+        return ret;
+    }
+
+    public static String randomASCIIString(CharClass charClass, int len) {
+        byte[] array = new byte[len]; // length is bounded by 7
+        int rangeMin = 0;
+        int rangeMax = 0;
+
+        switch (charClass) {
+            case Unbounded: {
+                rangeMin = 0;
+                rangeMax = 255;
+                break;
+            }
+            case Alpha: {
+                rangeMin = 65;
+                rangeMax = 122;
+                break;
+            }
+            case Numeric: {
+                rangeMin = 48;
+                rangeMax = 57;
+                break;
+            }
+            case Alphanumeric: {
+                rangeMin = 48;
+                rangeMax = 122;
+                break;
+            }
+        }
+        new Random().nextBytes(array);
+        for (int i = 0; i < array.length; i++) {
+            array[i] = (byte)clip(randomInt(rangeMin, rangeMax),0,255);
+        }
+        String generatedString = new String(array, Charset.forName("UTF-8"));
+        return generatedString;
+    }
+
+    public enum CharClass {
+        Unbounded(0) {
+            @Override
+            public String toString() {
+                return "Unbounded";
+            }
+        },
+        Alpha(1) {
+            @Override
+            public String toString() {
+                return "Alpha";
+            }
+        },
+        Numeric(2) {
+            @Override
+            public String toString() {
+                return "Numeric";
+            }
+        },
+        Alphanumeric(3) {
+            @Override
+            public String toString() {
+                return "Alphanumeric";
+            }
+        };
+
+        public final int value;
+
+        private static HashMap<Integer, CharClass> intMap;
+
+        private CharClass(int value) {
+            this.value = value;
+        }
+
+        public static CharClass getByInt(int value) {
+            if (intMap == null) {
+                intMap = new HashMap<Integer, CharClass>();
+                for (CharClass s : CharClass.values()) {
+                    intMap.put(s.value, s);
+                }
+            }
+            if (intMap.containsKey(value)) {
+                return intMap.get(value);
+            }
+            return null;
+        }
+    }
 }
 
