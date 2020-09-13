@@ -90,7 +90,11 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
     }
 
     public Throwable getLastException() {
-        return lastException;
+        Throwable ret = new Throwable("No Exception caught");
+        if(lastException != null) {
+            ret = lastException;
+        }
+        return ret;
     }
 
     public TestUnit<T> add(TestSuite suite) {
@@ -115,7 +119,7 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
     public void run() {
         TestUtils.standardOutErrEnabled(verboseMode);
         if (ctx.isUninitializable()) {
-            setTestState(TestState.CTX_FAIL);
+            setTestState(TestState.SKIPPED);
             TestUtils.standardOutErrEnabled(true);
         } else {
             try {
@@ -177,7 +181,6 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
             }
             case CTX_FAIL: {
                 setTestResult(TestState.SKIPPED);
-//                logH1(makeLogString());
                 break;
             }
         }
@@ -188,7 +191,7 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
         result = r;
         TestUtils.standardOutErrEnabled(true);
         logH1(makeLogString());
-        if (result == TestState.FAILED || result == TestState.CTX_FAIL) {
+        if (result == TestState.FAILED || state == TestState.CTX_FAIL) {
             log("ERROR: " + getLastException().toString());
         }
         if (verboseMode) logRaw("\n\n");
