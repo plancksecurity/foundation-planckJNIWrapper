@@ -50,9 +50,9 @@ CXX_DIR=cxx/
 JAVA_DIR=java/
 JAVA_PKG_BASENAME=foundation/pEp/jniadapter/
 
-JAVA_PKG_ROOT=$(JAVA_DIR)/$(JAVA_PKG_BASENAME)
-JAVA_BUILD_ROOT=$(BUILD_ROOT)/$(JAVA_DIR)
-OBJ_DIR=$(BUILD_ROOT)/$(CXX_DIR)
+JAVA_PKG_ROOT=$(JAVA_DIR)$(JAVA_PKG_BASENAME)
+JAVA_BUILD_ROOT=$(BUILD_ROOT)$(JAVA_DIR)
+OBJ_DIR=$(BUILD_ROOT)$(CXX_DIR)
 
 
 # for "make clean" only
@@ -142,9 +142,11 @@ $(OBJECTS): $(BUILD_ROOT)%.o: %.cc
 # --------- Generate JNI headers ----------
 gen-jni-headers: codegen $(JNI_GENERATED_HH)
 
+# "new" javac -h accepts list of java files
+# While "old" (Java 8) javah needs a list of java classes (e.g. foundation.pEp.jniadapter.Message)
 $(JNI_GENERATED_HH):
 ifdef OLD_JAVA
-	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/javah -d ../$(JAVA_BUILD_ROOT) $(subst /,.,$(subst .java,,$<))
+	cd $(JAVA_BUILD_ROOT)/;$(JAVA_BIN_DIR)/$(JAVAH_CMD) -d ../../src/$(CXX_DIR) $(subst ${ },${space}\${\n}, $(subst /,.,$(subst $(JAVA_BUILD_ROOT),,$(basename $(sort $(wildcard $(JAVA_BUILD_ROOT)$(JAVA_PKG_BASENAME)*.class/))))))
 else
 	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/$(JAVAC_CMD) -d ../$(JAVA_BUILD_ROOT) -h ../$(CXX_DIR)/ $(JAVA_PKG_BASENAME)/*.java
 endif
