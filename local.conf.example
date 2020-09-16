@@ -14,6 +14,7 @@
 
 ############ JAVA ##############
 # JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_231.jdk/Contents/Home
+# USE_JAVAH=0   # keep the build from using javah
 
 ############ YML2 ##############
 # YML2_PATH=$(HOME)/src/yml2

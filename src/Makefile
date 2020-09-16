@@ -33,6 +33,7 @@ $(info PLATFORM:        $(PLATFORM))
 $(info DEBUG:           $(DEBUG))
 $(info CXX:             $(CXX))
 $(info JAVA_HOME:       $(JAVA_HOME))
+$(info USE_JAVAH:       $(USE_JAVAH))
 $(info ENGINE_LIB_PATH: $(ENGINE_LIB_PATH))
 $(info ENGINE_INC_PATH: $(ENGINE_INC_PATH))
 $(info AD_LIB_PATH:     $(AD_LIB_PATH))
@@ -145,7 +146,7 @@ gen-jni-headers: codegen $(JNI_GENERATED_HH)
 # "new" javac -h accepts list of java files
 # While "old" (Java 8) javah needs a list of java classes (e.g. foundation.pEp.jniadapter.Message)
 $(JNI_GENERATED_HH):
-ifdef OLD_JAVA
+ifeq ($(USE_JAVAH),1)
 	cd $(JAVA_BUILD_ROOT)/;$(JAVA_BIN_DIR)/$(JAVAH_CMD) -d ../../src/$(CXX_DIR) $(subst ${ },${space}\${\n}, $(subst /,.,$(subst $(JAVA_BUILD_ROOT),,$(basename $(sort $(wildcard $(JAVA_BUILD_ROOT)$(JAVA_PKG_BASENAME)*.class/))))))
 else
 	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/$(JAVAC_CMD) -d ../$(JAVA_BUILD_ROOT) -h ../$(CXX_DIR)/ $(JAVA_PKG_BASENAME)/*.java
