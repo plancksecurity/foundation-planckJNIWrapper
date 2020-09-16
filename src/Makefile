@@ -147,7 +147,7 @@ gen-jni-headers: codegen $(JNI_GENERATED_HH)
 # While "old" (Java 8) javah needs a list of java classes (e.g. foundation.pEp.jniadapter.Message)
 $(JNI_GENERATED_HH):
 ifeq ($(USE_JAVAH),1)
-	cd $(JAVA_BUILD_ROOT)/;$(JAVA_BIN_DIR)/$(JAVAH_CMD) -d ../../src/$(CXX_DIR) $(subst ${ },${space}\${\n}, $(subst /,.,$(subst $(JAVA_BUILD_ROOT),,$(basename $(sort $(wildcard $(JAVA_BUILD_ROOT)$(JAVA_PKG_BASENAME)*.class/))))))
+	cd $(JAVA_DIR)/;$(JAVA_BIN_DIR)/$(JAVAH_CMD) -d ../../src/$(CXX_DIR) $(subst ${ },${space}\${\n},$(subst /,.,$(patsubst %.java,%, $(subst java/,,$(sort $(wildcard java/foundation/pEp/jniadapter/*.java))))))
 else
 	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/$(JAVAC_CMD) -d ../$(JAVA_BUILD_ROOT) -h ../$(CXX_DIR)/ $(JAVA_PKG_BASENAME)/*.java
 endif
