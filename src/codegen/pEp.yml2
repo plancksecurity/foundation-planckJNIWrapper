@@ -25,19 +25,19 @@ namespace pEp {
 
 
     enum has_int_str_val=true Rating {
-       enumitem pEp_rating_undefined              int_str_val=undefined                toString="undefined"               > 0
-       enumitem pEp_rating_cannot_decrypt         int_str_val=cannot_decrypt           toString="cannot decrypt"          > 1
-       enumitem pEp_rating_have_no_key            int_str_val=have_no_key              toString="have no key"             > 2
-       enumitem pEp_rating_unencrypted            int_str_val=unencrypted              toString="unencrypted"             > 3
-       enumitem pEp_rating_unencrypted_for_some   int_str_val=unencrypted_for_some     toString="unencrypted for some"    > 4
-       enumitem pEp_rating_unreliable             int_str_val=unreliable               toString="unreliable"              > 5
-       enumitem pEp_rating_reliable               int_str_val=reliable                 toString="reliable"                > 6
-       enumitem pEp_rating_trusted                int_str_val=trusted                  toString="trusted"                 > 7
-       enumitem pEp_rating_trusted_and_anonymized int_str_val=trusted_and_anonymized   toString="trusted and anonymized"  > 8
-       enumitem pEp_rating_fully_anonymous        int_str_val=fully_anonymous          toString="fully anonymous"         > 9
-       enumitem pEp_rating_mistrust               int_str_val=mistrust                 toString="mistrust"                > -1
-       enumitem pEp_rating_b0rken                 int_str_val=b0rken                   toString="b0rken"                  > -2
-       enumitem pEp_rating_under_attack           int_str_val=under_attack             toString="under attack"            > -3
+       enumitem pEp_rating_undefined              int_str_val=undefined                 > 0
+       enumitem pEp_rating_cannot_decrypt         int_str_val=cannot_decrypt            > 1
+       enumitem pEp_rating_have_no_key            int_str_val=have_no_key               > 2
+       enumitem pEp_rating_unencrypted            int_str_val=unencrypted               > 3
+       enumitem pEp_rating_unencrypted_for_some   int_str_val=unencrypted_for_some      > 4
+       enumitem pEp_rating_unreliable             int_str_val=unreliable                > 5
+       enumitem pEp_rating_reliable               int_str_val=reliable                  > 6
+       enumitem pEp_rating_trusted                int_str_val=trusted                   > 7
+       enumitem pEp_rating_trusted_and_anonymized int_str_val=trusted_and_anonymized    > 8
+       enumitem pEp_rating_fully_anonymous        int_str_val=fully_anonymous           > 9
+       enumitem pEp_rating_mistrust               int_str_val=mistrust                  > -1
+       enumitem pEp_rating_b0rken                 int_str_val=b0rken                    > -2
+       enumitem pEp_rating_under_attack           int_str_val=under_attack              > -3
     };
 
     enum DecryptFlags {
