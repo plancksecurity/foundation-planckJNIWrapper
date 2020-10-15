@@ -194,9 +194,6 @@ uuid/jni/Android.mk: uuid.src.stamp
 
 #------------------------------------------------------------------------------#
 # Sequoia
-OPENSSL_VERSION=1.1.1b
-GMP_VERSION=6.1.2
-NETTLE_VERSION=3.4.1
 
 sequoia-deps-build: openssl-install nettle-install
 
