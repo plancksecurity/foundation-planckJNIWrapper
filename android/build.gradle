@@ -13,7 +13,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath 'com.android.tools.build:gradle:4.0.2'
     }
 }
 
@@ -32,8 +32,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 2
-        versionName "2.1.0-RC5"
+        versionCode 3
+        versionName "2.1.4"
 
         externalNativeBuild {
             ndkBuild {
@@ -94,7 +94,7 @@ android {
     // call source generation makefile target
     task genSources(type:Exec, dependsOn: 'genpEpEngineAsn1Sources') {
         workingDir '../src'
-        commandLine 'make', "-j${threadsToUse}", 'pEp.jar'
+        commandLine 'make', 'pEp.jar'
     }
 
     task genpEpEngineSyncSources(type:Exec) {

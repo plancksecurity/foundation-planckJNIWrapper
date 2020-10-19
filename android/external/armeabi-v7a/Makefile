@@ -194,9 +194,6 @@ uuid/jni/Android.mk: uuid.src.stamp
 
 #------------------------------------------------------------------------------#
 # Sequoia
-OPENSSL_VERSION=1.1.1b
-GMP_VERSION=6.1.2
-NETTLE_VERSION=3.4.1
 
 sequoia-deps-build: openssl-install nettle-install
 
@@ -330,7 +327,7 @@ $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so:  
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_LIB_DIR="$(LOCAL)/lib" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_INCLUDE_DIR="$(LOCAL)/include" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR="$(LOCAL)/bin" \
-	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target armv7-linux-androideabi -p sequoia-openpgp-ffi --release
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) rustup run nightly cargo build --target armv7-linux-androideabi -p sequoia-openpgp-ffi --release -Z build-std=core,alloc,std
 
 
 $(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so

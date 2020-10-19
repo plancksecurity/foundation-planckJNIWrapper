@@ -327,7 +327,7 @@ $(CARGO_TARGET_DIR)/x86_64-linux-android/release/libsequoia_openpgp_ffi.so:  seq
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_LIB_DIR="$(LOCAL)/lib" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_INCLUDE_DIR="$(LOCAL)/include" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR="$(LOCAL)/bin" \
-	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target x86_64-linux-android -p sequoia-openpgp-ffi --release
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) rustup run nightly cargo build --target x86_64-linux-android -p sequoia-openpgp-ffi --release -Z build-std=core,alloc,std
 
 
 $(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/x86_64-linux-android/release/libsequoia_openpgp_ffi.so
