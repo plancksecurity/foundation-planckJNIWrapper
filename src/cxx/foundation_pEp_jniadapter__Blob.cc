@@ -20,7 +20,7 @@ namespace pEp {
                 return NULL;
             }
 
-            return (::bloblist_t *) (intptr_t) (int64_t) env->GetLongField(me, handle);
+            return reinterpret_cast<::bloblist_t*>(env->GetLongField(me, handle));
         }
     };
 };
@@ -38,7 +38,7 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter__1Blob__1dataToXER(J
 
     // RFC 1049 / RFC 2045 : The type, subtype, and parameter names are not case sensitive.
     if(strcasecmp(b->mime_type, "application/pEp.sync") == 0) {
-        PEP_STATUS status = ::PER_to_XER_Sync_msg(b->value, (size_t) b->size, &out);
+        PEP_STATUS status = ::PER_to_XER_Sync_msg(b->value, static_cast<size_t>(b->size), &out);
         if (status)
             throw_pEp_Exception(env, status);
 
@@ -49,7 +49,7 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter__1Blob__1dataToXER(J
 
     // RFC 1049 / RFC 2045 : The type, subtype, and parameter names are not case sensitive.
     if(strcasecmp(b->mime_type, "application/pEp.keyreset") == 0) {
-        PEP_STATUS status = ::PER_to_XER_Distribution_msg(b->value, (size_t) b->size, &out);
+        PEP_STATUS status = ::PER_to_XER_Distribution_msg(b->value, static_cast<size_t>(b->size), &out);
         if (status)
             throw_pEp_Exception(env, status);
 

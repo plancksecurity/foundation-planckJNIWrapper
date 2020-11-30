@@ -206,8 +206,8 @@ tstylesheet {
                     jfieldID field_value = env->GetFieldID(clazz_«$ljtype», "value", "I");
                     assert(field_value);
 
-                    jobjectArray values = (jobjectArray) env->CallStaticObjectMethod(clazz_«$ljtype»,
-                            method_values);
+                    jobjectArray values = static_cast<jobjectArray>(env->CallStaticObjectMethod(clazz_«$ljtype»,
+                            method_values));
                     assert(values);
                     if (env->ExceptionCheck()) {
                         return nullptr; // handle exception in Java
@@ -218,7 +218,7 @@ tstylesheet {
                         jobject element = env->GetObjectArrayElement(values, i);
                         assert(element);
                         jint value = env->GetIntField(element, field_value);
-                        if (value == (jint) _«$name») {
+                        if (value == static_cast<jint>(_«$name»)) {
                             «$name»_ = element;
                             break;
                         }
@@ -235,7 +235,7 @@ tstylesheet {
                     assert(clazz_«$name»_);
                     jmethodID constructor_«$name»_ = env->GetMethodID(clazz_«$name»_, "<init>", "(J)V");
                     assert(constructor_«$name»_);
-                    «$name»_ = env->NewObject(clazz_«$name»_, constructor_«$name»_, (jlong) _«$name»);
+                    «$name»_ = env->NewObject(clazz_«$name»_, constructor_«$name»_, reinterpret_cast<jlong>(_«$name»));
                 }
 
                 ||
@@ -251,15 +251,15 @@ tstylesheet {
 
         choose {
             when "$type = 'message'"
-                | message *_«$name» = (message *) callLongMethod(env, «$name», "getHandle");
+                | message *_«$name» = reinterpret_cast<message *>(callLongMethod(env, «$name», "getHandle"));
             when "$type='EncFormat' or $type='SyncHandshakeResult' or $type='CipherSuite'"
                 | √$type _«$name» = to_«$type»(env, «$name»);
             when "$type='bool'"
-                | bool _«$name» = (bool) «$name»;
+                | bool _«$name» = «$name»;
             when "$type='int'"
-                | int _«$name» = (int) «$name»;
+                | int _«$name» = «$name»;
             when "$type='uint'"
-                | auto _«$name» = (unsigned int) «$name»;
+                | unsigned int _«$name» = «$name»;
             when "$type='string'"
                 | const char *_«$name» = to_string(env, «$name»);
             otherwise {

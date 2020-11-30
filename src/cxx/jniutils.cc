@@ -20,7 +20,7 @@ namespace pEp {
                 jobject obj
             )
         {
-            long engine_obj_id = (long)callLongMethod(env, obj, "getId");
+            long engine_obj_id = static_cast<long>(callLongMethod(env, obj, "getId"));
             assert(engine_obj_id);
             pEpLog("for java object id: " << engine_obj_id);
             std::mutex *engine_obj_mutex = engine_objid_mutex.at(engine_obj_id);
@@ -34,7 +34,7 @@ namespace pEp {
                 jobject obj
             )
         {
-            long engine_obj_id = (long)callLongMethod(env, obj, "getId");
+            long engine_obj_id = static_cast<long>(callLongMethod(env, obj, "getId"));
             assert(engine_obj_id);
             std::mutex *engine_obj_mutex = new std::mutex();
             pEpLog(engine_obj_mutex << " with native_handle: " << engine_obj_mutex->native_handle() << " for java object id: " << engine_obj_id);
@@ -51,7 +51,7 @@ namespace pEp {
                 jobject obj
             )
         {
-            long engine_obj_id = (long)callLongMethod(env, obj, "getId");
+            long engine_obj_id = static_cast<long>(callLongMethod(env, obj, "getId"));
             assert(engine_obj_id);
             std::mutex *engine_obj_mutex = engine_objid_mutex.at(engine_obj_id);
             pEpLog(engine_obj_mutex << " with native_handle: " << engine_obj_mutex->native_handle() << " for java object id: " << engine_obj_id);
@@ -278,7 +278,7 @@ namespace pEp {
                 return NULL;
 
             size_t l = env->GetArrayLength(str);
-            char *_str = (char *) calloc(1,l+1);
+            char *_str = static_cast<char*>(calloc(1,l+1));
             assert(_str);
             env->GetByteArrayRegion(str, 0, l, (jbyte*)_str);
             return _str;
@@ -320,7 +320,7 @@ namespace pEp {
             jint i;
             for (_sl = sl, i = 0; i < (int) size; i++) {
                 jobject o = callObjectMethod(env, obj, "get", i);
-                jbyteArray a = reinterpret_cast<jbyteArray>(o);
+                jbyteArray a = static_cast<jbyteArray>(o);
                 char * str = to_string(env, a);
                 _sl = stringlist_add(_sl, str);
                 env->DeleteLocalRef(o);
@@ -391,10 +391,10 @@ namespace pEp {
             for (_sl = sl, i = 0; i < (int) size; i++) {
                 jobject pair = callObjectMethod(env, obj, "get", i);
                 jbyteArray first =
-                    reinterpret_cast<jbyteArray>(env->GetObjectField(pair,
+                    static_cast<jbyteArray>(env->GetObjectField(pair,
                                 first_id));
                 jbyteArray second =
-                    reinterpret_cast<jbyteArray>(env->GetObjectField(pair,
+                    static_cast<jbyteArray>(env->GetObjectField(pair,
                                 second_id));
 
                 char *first_str = to_string(env, first);
@@ -413,7 +413,7 @@ namespace pEp {
         jobject from_timestamp(JNIEnv *env, timestamp *ts)
         {
             if (!ts)
-                return (jobject) NULL;
+                return NULL;
 
             //LOGD("/* Seconds (0-60) */  FROM   :%d", ts->tm_sec);
             //LOGD("/* Minutes (0-59) */         :%d", ts->tm_min);    
@@ -443,7 +443,7 @@ namespace pEp {
 
             jlong t = callLongMethod(env, date, "getTime");
             //LOGD( "Set Time to : %lld", t);
-            timestamp *ts = (timestamp*)calloc(1, sizeof(timestamp));
+            timestamp *ts = static_cast<timestamp*>(calloc(1, sizeof(timestamp)));
             assert(ts);
             if (ts == NULL)
                 return NULL;
@@ -468,8 +468,7 @@ namespace pEp {
         {
             if (value) {
                 jfieldID fieldID = getFieldID(env, classname, name, "[B");
-                env->SetObjectField(obj, fieldID,
-                        reinterpret_cast<jobject>(from_string(env, value)));
+                env->SetObjectField(obj, fieldID, static_cast<jobject>(from_string(env, value)));
 
             }
         }
@@ -480,8 +479,7 @@ namespace pEp {
         {
             if (value) {
                 jfieldID fieldID = getFieldID(env, classname, name, "[B", clazz);
-                env->SetObjectField(obj, fieldID,
-                        reinterpret_cast<jobject>(from_string(env, value)));
+                env->SetObjectField(obj, fieldID, static_cast<jobject>(from_string(env, value)));
 
             }
         }
@@ -506,15 +504,15 @@ namespace pEp {
                 _setStringField(env, classname, obj, "username", ident->username);
 
                 jfieldID comm_type_id = getFieldID(env, classname, "comm_type", "I");
-                env->SetIntField(obj, comm_type_id, (jint) (int) ident->comm_type);
+                env->SetIntField(obj, comm_type_id, static_cast<jint>(ident->comm_type));
 
                 _setStringField(env, classname, obj, "lang", ident->lang);
 
                 jfieldID me_id = getFieldID(env, classname, "me", "Z");
-                env->SetBooleanField(obj, me_id, (jboolean) ident->me);
+                env->SetBooleanField(obj, me_id, static_cast<jboolean>(ident->me));
 
                 jfieldID flags_id = getFieldID(env, classname, "flags", "I");
-                env->SetIntField(obj, flags_id, (jint) (int) ident->flags);
+                env->SetIntField(obj, flags_id, static_cast<jint>(ident->flags));
             }
 
             return obj;
@@ -538,15 +536,15 @@ namespace pEp {
                 _setStringField(env, classname, obj, "username", ident->username, identityClass);
 
                 jfieldID comm_type_id = getFieldID(env, classname, "comm_type", "I", identityClass);
-                env->SetIntField(obj, comm_type_id, (jint) (int) ident->comm_type);
+                env->SetIntField(obj, comm_type_id, static_cast<jint>(ident->comm_type));
 
                 _setStringField(env, classname, obj, "lang", ident->lang, identityClass);
 
                 jfieldID me_id = getFieldID(env, classname, "me", "Z", identityClass);
-                env->SetBooleanField(obj, me_id, (jboolean) ident->me);
+                env->SetBooleanField(obj, me_id, static_cast<jboolean>(ident->me));
 
                 jfieldID flags_id = getFieldID(env, classname, "flags", "I", identityClass);
-                env->SetIntField(obj, flags_id, (jint) (int) ident->flags);
+                env->SetIntField(obj, flags_id, static_cast<jint>(ident->flags));
             }
 
             return obj;
@@ -558,7 +556,7 @@ namespace pEp {
             jfieldID fieldID = getFieldID(env, classname, name, "[B");
             jobject fobj = env->GetObjectField(obj, fieldID);
 
-            char *res =  to_string(env, reinterpret_cast<jbyteArray>(fobj));
+            char *res =  to_string(env, static_cast<jbyteArray>(fobj));
 
             env->DeleteLocalRef(fobj);
             return res;
@@ -578,7 +576,7 @@ namespace pEp {
             ident->username = _getStringField(env, classname, obj, "username");
 
             jfieldID comm_type_id = getFieldID(env, classname, "comm_type", "I");
-            ident->comm_type = (PEP_comm_type) (int) env->GetIntField(obj, comm_type_id);
+            ident->comm_type = static_cast<PEP_comm_type>(env->GetIntField(obj, comm_type_id));
 
             char *lang = _getStringField(env, classname, obj, "lang");
             if (lang && lang[0]) {
@@ -588,10 +586,10 @@ namespace pEp {
             free(lang);
 
             jfieldID me_id = getFieldID(env, classname, "me", "Z");
-            ident->me = (bool) env->GetBooleanField(obj, me_id);
+            ident->me = static_cast<bool>(env->GetBooleanField(obj, me_id));
             
             jfieldID flags_id = getFieldID(env, classname, "flags", "I");
-            ident->flags = (identity_flags_t) (int) env->GetIntField(obj, flags_id);
+            ident->flags = static_cast<identity_flags_t>(env->GetIntField(obj, flags_id));
 
             return ident;
         }
@@ -654,9 +652,9 @@ namespace pEp {
             env->DeleteLocalRef(clazz);
 
             jfieldID fieldID = getFieldID(env, classname, "data", "[B");
-            jbyteArray _data = env->NewByteArray((jsize) b->size);
-            env->SetByteArrayRegion(_data, 0, b->size, (jbyte*)b->value);
-            env->SetObjectField(obj, fieldID, reinterpret_cast<jobject>(_data));
+            jbyteArray _data = env->NewByteArray(static_cast<jsize>(b->size));
+            env->SetByteArrayRegion(_data, 0, b->size, reinterpret_cast<jbyte*>(b->value));
+            env->SetObjectField(obj, fieldID, static_cast<jobject>(_data));
             _setStringField(env, classname, obj, "mime_type", b->mime_type);
             _setStringField(env, classname, obj, "filename", b->filename);
 
@@ -698,12 +696,12 @@ namespace pEp {
             char *filename = _getStringField(env, classname, obj, "filename");
 
             jfieldID data_id = getFieldID(env, classname, "data", "[B");
-            jbyteArray _data = reinterpret_cast<jbyteArray>(env->GetObjectField(obj, data_id));
-            size_t size = (size_t) env->GetArrayLength(_data);
-            char *b = (char *) malloc(size);
+            jbyteArray _data = static_cast<jbyteArray>(env->GetObjectField(obj, data_id));
+            size_t size = static_cast<size_t>(env->GetArrayLength(_data));
+            char *b = static_cast<char *>(malloc(size));
             assert(b);
 
-            env->GetByteArrayRegion(_data, 0, size, (jbyte*)b);
+            env->GetByteArrayRegion(_data, 0, size, reinterpret_cast<jbyte*>(b));
             bloblist_t *bl = new_bloblist( b, size, mime_type, filename);
 
             free(mime_type);
@@ -743,7 +741,7 @@ namespace pEp {
             assert(field_value);
 
             env->DeleteLocalRef(clazz_enc_format);
-            return (PEP_enc_format) env->GetIntField(obj, field_value);
+            return static_cast<PEP_enc_format>(env->GetIntField(obj, field_value));
         }
 
         PEP_CIPHER_SUITE to_CipherSuite(JNIEnv *env, jobject obj)
@@ -754,7 +752,7 @@ namespace pEp {
             assert(field_value);
 
             env->DeleteLocalRef(clazz_enc_format);
-            return (PEP_CIPHER_SUITE) env->GetIntField(obj, field_value);
+            return static_cast<PEP_CIPHER_SUITE>(env->GetIntField(obj, field_value));
         }
 
         sync_handshake_result to_SyncHandshakeResult(JNIEnv *env, jobject obj)
@@ -765,7 +763,7 @@ namespace pEp {
             assert(field_value);
 
             env->DeleteLocalRef(clazz_enc_format);
-            return (sync_handshake_result) env->GetIntField(obj, field_value);
+            return static_cast<sync_handshake_result>(env->GetIntField(obj, field_value));
         }
     };
 };

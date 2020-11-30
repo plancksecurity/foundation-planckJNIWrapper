@@ -42,12 +42,12 @@ jclass passphraseTypeClass = nullptr;
 namespace JNISync {
     JNIEnv* env() {
         JNIEnv *thread_env = nullptr;
-        int status = jvm->GetEnv((void**)&thread_env, JNI_VERSION_1_6);
+        int status = jvm->GetEnv(reinterpret_cast<void**>(&thread_env), JNI_VERSION_1_6);
         if (status < 0) {
 #ifdef ANDROID
             status = jvm->AttachCurrentThread(&thread_env, nullptr);
 #else
-            status = jvm->AttachCurrentThread((void **) &thread_env, nullptr);
+            status = jvm->AttachCurrentThread(reinterpret_cast<void**>(&thread_env), nullptr);
 #endif
         }
         assert(status >= 0);
@@ -69,15 +69,15 @@ namespace JNISync {
 void jni_init() {
     JNIEnv *_env = JNISync::env();
 
-    messageClass = reinterpret_cast<jclass>(
+    messageClass = static_cast<jclass>(
             _env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/Message")));
-    identityClass = reinterpret_cast<jclass>(
+    identityClass = static_cast<jclass>(
         _env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/_Identity")));
-    signalClass = reinterpret_cast<jclass>(
+    signalClass = static_cast<jclass>(
             _env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/SyncHandshakeSignal")));
-    passphraseTypeClass = reinterpret_cast<jclass>(
+    passphraseTypeClass = static_cast<jclass>(
             _env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/PassphraseType")));
-    engineClass = reinterpret_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/Engine")));
+    engineClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/Engine")));
 
     messageConstructorMethodID = _env->GetMethodID(messageClass, "<init>", "(J)V");
     messageToSendMethodID = _env->GetMethodID(
@@ -113,8 +113,8 @@ char* JNIAdapter::passphraseRequiredCallback(const PEP_STATUS status) {
         assert(passphrase_status_values);
         assert(passphrase_type_field_value);
 
-        jobjectArray values = (jobjectArray) JNISync::env()->CallStaticObjectMethod(passphraseTypeClass,
-                passphrase_status_values);
+        jobjectArray values = static_cast<jobjectArray>(JNISync::env()->CallStaticObjectMethod(passphraseTypeClass,
+                passphrase_status_values));
 
         if (JNISync::env()->ExceptionCheck()) {
             JNISync::env()->ExceptionClear();
@@ -126,7 +126,7 @@ char* JNIAdapter::passphraseRequiredCallback(const PEP_STATUS status) {
             jobject element = JNISync::env()->GetObjectArrayElement(values, i);
             assert(element);
             jint value = JNISync::env()->GetIntField(element, passphrase_type_field_value);
-            if (value == (jint) status) {
+            if (value == static_cast<jint>(status)) {
                 status_ = element;
                 break;
             }
@@ -141,7 +141,7 @@ char* JNIAdapter::passphraseRequiredCallback(const PEP_STATUS status) {
         JNISync::env()->ExceptionClear();
     }
 
-    jbyteArray ppJBA = reinterpret_cast<jbyteArray>(ppJO);
+    jbyteArray ppJBA = static_cast<jbyteArray>(ppJO);
     char* passphrase_ = to_string( JNISync::env(), ppJBA);
 
     return passphrase_;
@@ -166,7 +166,7 @@ PEP_STATUS messageToSend(message *msg)
     jobject msg_ = nullptr;
     assert(messageClass && messageConstructorMethodID && objj && messageToSendMethodID);
 
-    msg_ = JNISync::env()->NewObject(messageClass, messageConstructorMethodID, (jlong) msg);
+    msg_ = JNISync::env()->NewObject(messageClass, messageConstructorMethodID, reinterpret_cast<jlong>(msg));
 
     PEP_STATUS status = (PEP_STATUS) JNISync::env()->CallIntMethod(objj, messageToSendMethodID, msg_);
     if (JNISync::env()->ExceptionCheck()) {
@@ -196,8 +196,8 @@ PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handsha
         assert(sync_handshake_signal_values);
         assert(signal_field_value);
 
-        jobjectArray values = (jobjectArray) JNISync::env()->CallStaticObjectMethod(signalClass,
-                sync_handshake_signal_values);
+        jobjectArray values = static_cast<jobjectArray>(JNISync::env()->CallStaticObjectMethod(signalClass,
+                sync_handshake_signal_values));
         if (JNISync::env()->ExceptionCheck()) {
             JNISync::env()->ExceptionClear();
             return PEP_UNKNOWN_ERROR;
@@ -208,7 +208,7 @@ PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handsha
             jobject element = JNISync::env()->GetObjectArrayElement(values, i);
             assert(element);
             jint value = JNISync::env()->GetIntField(element, signal_field_value);
-            if (value == (jint) signal) {
+            if (value == static_cast<jint>(signal)) {
                 signal_ = element;
                 break;
             }
@@ -298,7 +298,7 @@ JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1getPro
 
 int examine_identity(pEp_identity *ident, void *arg)
 {
-    locked_queue< pEp_identity * > *queue = (locked_queue< pEp_identity * > *) arg;
+    locked_queue< pEp_identity * > *queue = static_cast<locked_queue<pEp_identity*>*>(arg);
     queue->push_back(identity_dup(ident));
     return 0;
 }
@@ -306,7 +306,7 @@ int examine_identity(pEp_identity *ident, void *arg)
 pEp_identity *retrieve_next_identity(void *arg)
 {
     pEpLog("called");
-    locked_queue< pEp_identity * > *queue = (locked_queue< pEp_identity * > *) arg;
+    locked_queue< pEp_identity * > *queue = static_cast<locked_queue<pEp_identity*>*>(arg);
 
     while (!queue->size())
         usleep(100000);
@@ -319,7 +319,7 @@ pEp_identity *retrieve_next_identity(void *arg)
 static void *keyserver_thread_routine(void *arg)
 {
     PEP_STATUS status = do_keymanagement(retrieve_next_identity, arg);
-    locked_queue< pEp_identity * > *queue = (locked_queue< pEp_identity * > *) arg;
+    locked_queue< pEp_identity * > *queue = static_cast<locked_queue<pEp_identity*>*>(arg);
 
     while (queue->size()) {
         pEp_identity *ident = queue->front();
@@ -328,7 +328,7 @@ static void *keyserver_thread_routine(void *arg)
     }
 
     delete queue;
-    return (void *) status;
+    return reinterpret_cast<void*>(status);
 }
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1startKeyserverLookup(
@@ -359,20 +359,20 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1startKeys
         return;
     }
 
-    thread = (pthread_t *) env->GetLongField(obj, thread_handle);
+    thread = reinterpret_cast<pthread_t*>(env->GetLongField(obj, thread_handle));
     if (thread)
         return;
 
-    thread = (pthread_t *) calloc(1, sizeof(pthread_t));
+    thread = static_cast<pthread_t*>(calloc(1, sizeof(pthread_t)));
     assert(thread);
-    env->SetLongField(obj, thread_handle, (jlong) thread);
+    env->SetLongField(obj, thread_handle, reinterpret_cast<jlong>(thread));
 
     queue = new locked_queue< pEp_identity * >();
-    env->SetLongField(obj, queue_handle, (jlong) queue);
+    env->SetLongField(obj, queue_handle, reinterpret_cast<jlong>(queue));
 
-    register_examine_function(Adapter::session(), examine_identity, (void *) queue);
+    register_examine_function(Adapter::session(), examine_identity,static_cast<void*>(queue));
 
-    pthread_create(thread, nullptr, keyserver_thread_routine, (void *) queue);
+    pthread_create(thread, nullptr, keyserver_thread_routine, static_cast<void*>(queue));
 }
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1stopKeyserverLookup(
@@ -403,14 +403,14 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1stopKeyse
         return;
     }
 
-    thread = (pthread_t *) env->GetLongField(obj, thread_handle);
+    thread = reinterpret_cast<pthread_t*>(env->GetLongField(obj, thread_handle));
     if (!thread)
         return;
 
-    queue = (locked_queue< pEp_identity * > *) env->GetLongField(obj, queue_handle);
+    queue = reinterpret_cast<locked_queue<pEp_identity*>*>(env->GetLongField(obj, queue_handle));
 
-    env->SetLongField(obj, queue_handle, (jlong) 0);
-    env->SetLongField(obj, thread_handle, (jlong) 0);
+    env->SetLongField(obj, queue_handle, 0);
+    env->SetLongField(obj, thread_handle, 0);
 
     register_examine_function(Adapter::session(), nullptr, nullptr);
 
@@ -471,7 +471,7 @@ JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1isSyn
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    return (jboolean) Adapter::is_sync_running();
+    return static_cast<jboolean>(Adapter::is_sync_running());
 }
 
 } // extern "C"

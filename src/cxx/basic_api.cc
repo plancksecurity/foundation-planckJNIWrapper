@@ -60,7 +60,7 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1trustwords(
         lang = "en";
 
     status = passphraseWrap(::trustwords,
-            session(), (const char *) _ident->fpr, lang, &words, &wsize, 10);
+            session(), static_cast<const char*>(_ident->fpr), lang, &words, &wsize, 10);
 
     if (status != PEP_STATUS_OK) {
         throw_pEp_Exception(env, status);
@@ -298,8 +298,8 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1importKey(
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    size_t _size = (size_t) env->GetArrayLength(key);
-    const char *_key = (char *) env->GetByteArrayElements(key, NULL);
+    size_t _size = static_cast<size_t>(env->GetArrayLength(key));
+    jbyte* _key = env->GetByteArrayElements(key, NULL);
 
     if(_key == NULL){
         throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
@@ -308,7 +308,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1importKey(
 
     identity_list *_identities;
 
-    PEP_STATUS status =  passphraseWrap(::import_key, session(), _key, _size, &_identities);
+    PEP_STATUS status =  passphraseWrap(::import_key, session(), reinterpret_cast<const char*>(_key), _size, &_identities);
     if (status != PEP_STATUS_OK && status != PEP_KEY_IMPORTED) {
         throw_pEp_Exception(env, status);
         return NULL;
@@ -319,7 +319,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1importKey(
         identities_ = from_identitylist(env, _identities);
     }
 
-    env->ReleaseByteArrayElements(key, (jbyte *) _key, JNI_ABORT);
+    env->ReleaseByteArrayElements(key, _key, JNI_ABORT);
     return identities_;
 }
 
@@ -338,7 +338,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passive_1
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    ::config_passive_mode(session(), (bool)enable);
+    ::config_passive_mode(session(), static_cast<bool>(enable));
 }
 
 
@@ -356,7 +356,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1unencrypt
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    ::config_unencrypted_subject(session(), (bool)enable);
+    ::config_unencrypted_subject(session(), static_cast<bool>(enable));
 }
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1blacklist_1add(
@@ -463,7 +463,7 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1getCrashdum
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    int _maxlines = (int) maxlines;
+    int _maxlines = static_cast<int>(maxlines);
     char *_logdata;
 
     PEP_STATUS status = passphraseWrap(::get_crashdump_log, session(), _maxlines, &_logdata);
@@ -545,7 +545,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    bool _enable = (bool) enable;
+    bool _enable = static_cast<bool>(enable);
     const char *_passphrase = to_string(env, passphrase);
 
     PEP_STATUS status = ::config_passphrase_for_new_keys(session(),_enable,passphrase_cache.add_stored(_passphrase));

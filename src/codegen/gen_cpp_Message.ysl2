@@ -37,7 +37,7 @@ tstylesheet {
                             return NULL;
                         }
 
-                        return (::«@name» *) (intptr_t) (int64_t) env->GetLongField(me, handle);
+                        return reinterpret_cast<::«@name» *>(env->GetLongField(me, handle));
                     }
                 };
             };
@@ -52,16 +52,16 @@ tstylesheet {
                 ::«@name» * _obj = ::new_«@name»(PEP_dir_incoming);
                 if (!_obj) {
                     outOfMemory(env);
-                    return (jlong) 0;
+                    return 0;
                 }
-                return (jlong) (int64_t) (intptr_t) _obj;
+                return reinterpret_cast<jlong>(_obj);
             }
 
             JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_«$jname»_release(JNIEnv *env, jobject obj, jlong value)
             {
                 pEpLog("called");
                 if (value) {
-                    ::«@name» *_obj = (::«@name» *) (intptr_t) (int64_t) value;
+                    ::«@name» *_obj = reinterpret_cast<::«@name» *>(value);
                     ::free_«@name»(_obj);
                 }
             }
@@ -70,13 +70,13 @@ tstylesheet {
             {
                 pEpLog("called");
                 char *_mime_text = to_string(env, mime_text);
-                size_t _size = (size_t) env->GetArrayLength(mime_text);
+                size_t _size = env->GetArrayLength(mime_text);
 
                 ::«@name» *_msg = nullptr;
                 PEP_STATUS status = mime_decode_«@name»(_mime_text, _size, &_msg, NULL);
                 if (status)
                     throw_pEp_Exception(env, status);
-                return (jlong) (int64_t) (intptr_t) _msg;
+                return reinterpret_cast<jlong>(_msg);
             }
 
             JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_«$jname»__1encodeMIME(JNIEnv *env, jobject msg)
@@ -141,7 +141,7 @@ tstylesheet {
         ||
         choose {
             when "../enum[@name=$type]"
-                |> return (jint) _obj->«$cname»;
+                |> return _obj->«$cname»;
             otherwise
                 |> return from_«$type»(env, _obj->«$cname»);
         }
@@ -155,7 +155,7 @@ tstylesheet {
         ||
         choose {
             when "../enum[@name=$type]"
-                |> _obj->«$cname» = («$ctype») (int) value;
+                |> _obj->«$cname» = static_cast<«$ctype»>(value);
             otherwise {
                 choose {
                     when "$type = 'string'" {
