@@ -25,28 +25,28 @@ tstylesheet {
             using namespace std;
 
             namespace pEp {
-                namespace JNIAdapter {
-                    static ::«@name» *«@name»_ptr(JNIEnv *env, jobject me) {
-                        jfieldID handle;
+            namespace JNIAdapter {
+            static ::«@name» *«@name»_ptr(JNIEnv *env, jobject me) {
+                jfieldID handle;
 
-                        try {
-                            handle = getFieldID(env, "foundation/pEp/jniadapter/«$jname»", "handle", "J");
-                        }
-                        catch (std::exception& ex) {
-                            assert(0);
-                            return NULL;
-                        }
+                try {
+                    handle = getFieldID(env, "foundation/pEp/jniadapter/«$jname»", "handle", "J");
+                } catch (std::exception& ex) {
+                    assert(0);
+                    return NULL;
+                }
+                return reinterpret_cast<::«@name» *>(env->GetLongField(me, handle));
+            }
 
-                        return reinterpret_cast<::«@name» *>(env->GetLongField(me, handle));
-                    }
-                };
+            };
             };
 
             extern "C" {
 
             using namespace pEp::JNIAdapter;
 
-            JNIEXPORT jlong JNICALL Java_foundation_pEp_jniadapter_«$jname»_init(JNIEnv *env, jobject obj)
+            JNIEXPORT jlong JNICALL Java_foundation_pEp_jniadapter_«$jname»_init(JNIEnv *env,
+                    jobject obj)
             {
                 pEpLog("called");
                 ::«@name» * _obj = ::new_«@name»(PEP_dir_incoming);
@@ -57,7 +57,9 @@ tstylesheet {
                 return reinterpret_cast<jlong>(_obj);
             }
 
-            JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_«$jname»_release(JNIEnv *env, jobject obj, jlong value)
+            JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_«$jname»_release(JNIEnv *env,
+                    jobject obj,
+                    jlong value)
             {
                 pEpLog("called");
                 if (value) {
@@ -66,7 +68,9 @@ tstylesheet {
                 }
             }
 
-            JNIEXPORT jlong JNICALL Java_foundation_pEp_jniadapter_«$jname»__1«$jname»(JNIEnv *env, jobject msg, jbyteArray mime_text)
+            JNIEXPORT jlong JNICALL Java_foundation_pEp_jniadapter_«$jname»__1«$jname»(JNIEnv *env,
+                    jobject msg,
+                    jbyteArray mime_text)
             {
                 pEpLog("called");
                 char *_mime_text = to_string(env, mime_text);
@@ -74,21 +78,26 @@ tstylesheet {
 
                 ::«@name» *_msg = nullptr;
                 PEP_STATUS status = mime_decode_«@name»(_mime_text, _size, &_msg, NULL);
-                if (status)
+                if (status) {
                     throw_pEp_Exception(env, status);
+                }
+
                 return reinterpret_cast<jlong>(_msg);
             }
 
-            JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_«$jname»__1encodeMIME(JNIEnv *env, jobject msg)
+            JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_«$jname»__1encodeMIME(JNIEnv *env,
+                    jobject msg)
             {
                 pEpLog("called");
                 «@name» *_obj = «@name»_ptr(env, msg);
                 char *mime_text = nullptr;
                 PEP_STATUS status = ::mime_encode_«@name»(_obj, false, &mime_text, false);
-                if (status)
+                if (status) {
                     throw_pEp_Exception(env, status);
+                }
                 jbyteArray result = from_string(env, mime_text);
                 free(mime_text);
+
                 return result;
             }
 
@@ -134,7 +143,8 @@ tstylesheet {
             with "name", "concat('set', $jname)";
         }
         ||
-        JNIEXPORT `call "jni_type" with "type", "name(.)"` JNICALL «$getname»(JNIEnv *env, jobject obj)
+        JNIEXPORT `call "jni_type" with "type", "name(.)"` JNICALL «$getname»(JNIEnv *env,
+                jobject obj)
         {
             pEpLog("called");
             «$name» *_obj = «$name»_ptr(env, obj);
@@ -148,7 +158,10 @@ tstylesheet {
         ||
         }
 
-        JNIEXPORT void JNICALL «$setname»(JNIEnv *env, jobject obj, `call "jni_type" with "type", "name(.)"` value)
+        JNIEXPORT void JNICALL «$setname»(JNIEnv *env,
+                jobject obj,
+                `call "jni_type" with "type", "name(.)"`
+                value)
         {
             pEpLog("called");
             «$name» *_obj = «$name»_ptr(env, obj);
@@ -171,7 +184,7 @@ tstylesheet {
                         |> free_«$free»(_obj->«$cname»);
                     }
                 }
-                |> if(value){
+                |> if(value) {
                 choose {
                     when "$type = 'string'" {
                         |>> _obj->«$cname» = to_«$type»(env, value);
@@ -180,9 +193,9 @@ tstylesheet {
                         |>> _obj->«$cname» = to_«$type»(env, value);
                     }
                 }
-                |> }else{
+                |> } else {
                 |>     _obj->«$cname» = NULL;
-                |> }
+                |> }
             }
         }
         ||

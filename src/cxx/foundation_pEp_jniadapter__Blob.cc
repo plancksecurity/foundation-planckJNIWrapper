@@ -8,39 +8,43 @@
 #include "foundation_pEp_jniadapter__Blob.h"
 
 namespace pEp {
-    namespace JNIAdapter {
-        static ::bloblist_t *bloblist_ptr(JNIEnv *env, jobject me) {
-            jfieldID handle;
+namespace JNIAdapter {
 
-            try {
-                handle = getFieldID(env, "foundation/pEp/jniadapter/Blob", "mime_type", "Ljava/lang/String");
-            }
-            catch (std::exception& ex) {
-                assert(0);
-                return NULL;
-            }
+static ::bloblist_t *bloblist_ptr(JNIEnv *env, jobject me) {
+    jfieldID handle;
 
-            return reinterpret_cast<::bloblist_t*>(env->GetLongField(me, handle));
-        }
-    };
-};
+    try {
+        handle = getFieldID(env, "foundation/pEp/jniadapter/Blob", "mime_type", "Ljava/lang/String");
+    } catch (std::exception &ex) {
+        assert(0);
+        return NULL;
+    }
+
+    return reinterpret_cast<::bloblist_t *>(env->GetLongField(me, handle));
+}
+
+}; //namespace JNIAdapter
+}; //namespace pEp
 
 extern "C" {
 
 
 using namespace std;
 using namespace pEp::JNIAdapter;
-JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter__1Blob__1dataToXER(JNIEnv *env, jobject obj)
+
+JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter__1Blob__1dataToXER(JNIEnv *env,
+        jobject obj)
 {
     pEpLog("called");
     bloblist_t *b = to_blob(env, obj);
     char *out = nullptr;
 
     // RFC 1049 / RFC 2045 : The type, subtype, and parameter names are not case sensitive.
-    if(strcasecmp(b->mime_type, "application/pEp.sync") == 0) {
+    if (strcasecmp(b->mime_type, "application/pEp.sync") == 0) {
         PEP_STATUS status = ::PER_to_XER_Sync_msg(b->value, static_cast<size_t>(b->size), &out);
-        if (status)
+        if (status) {
             throw_pEp_Exception(env, status);
+        }
 
         jbyteArray result = from_string(env, out);
         free(out);
@@ -48,17 +52,18 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter__1Blob__1dataToXER(J
     }
 
     // RFC 1049 / RFC 2045 : The type, subtype, and parameter names are not case sensitive.
-    if(strcasecmp(b->mime_type, "application/pEp.keyreset") == 0) {
+    if (strcasecmp(b->mime_type, "application/pEp.keyreset") == 0) {
         PEP_STATUS status = ::PER_to_XER_Distribution_msg(b->value, static_cast<size_t>(b->size), &out);
-        if (status)
+        if (status) {
             throw_pEp_Exception(env, status);
+        }
 
         jbyteArray result = from_string(env, out);
         free(out);
         return result;
     }
 
-    return from_string(env,b->value);
+    return from_string(env, b->value);
 }
 
 }; // extern "C"
