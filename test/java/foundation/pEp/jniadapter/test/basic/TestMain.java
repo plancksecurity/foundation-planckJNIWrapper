@@ -5,6 +5,7 @@ import foundation.pEp.pitytest.TestSuite;
 import foundation.pEp.pitytest.TestUnit;
 import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
 import foundation.pEp.jniadapter.test.utils.AdapterTestUtils;
+import foundation.pEp.pitytest.utils.TestUtils;
 
 import java.util.Vector;
 
@@ -61,6 +62,9 @@ class TestMain {
         });
 
         new TestUnit<BasicTestContext>("Encrypt", btc, ctx -> {
+            ctx.msgToBob.setEncFormat(Message.EncFormat.PEP);
+            log(AdapterTestUtils.msgToString(ctx.msgToBob, false));
+            TestUtils.readKey();
             ctx.enc = ctx.engine.encrypt_message(ctx.msgToBob, null, Message.EncFormat.PEP);
             log(AdapterTestUtils.msgToString(ctx.enc, false));
         });
