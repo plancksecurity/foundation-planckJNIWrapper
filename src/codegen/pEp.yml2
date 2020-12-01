@@ -288,33 +288,36 @@ namespace pEp {
 
         enum EncFormat {
             enumitem none               > 0
+            enumitem pieces             > 1
             enumitem inline             > 1
             enumitem SMIME              > 2
             enumitem PGPMIME            > 3
             enumitem PEP                > 4
+            enumitem PGP_MIME_Outlook1  > 5
             enumitem PEP_enc_inline_EA  > 6
+            enumitem PEP_enc_auto       > 255
         }
 
-         direction dir;
-         string id;
-         string shortmsg;
-         string longmsg;
-         string longmsg_formatted;
-         bloblist attachments;
-         timestamp sent;
-         timestamp recv;
-         identity from;
-         identitylist to;
-         identity recv_by;
-         identitylist cc;
-         identitylist bcc;
-         identitylist reply_to;
-         stringlist in_reply_to;
-         stringlist references;
-         stringlist keywords;
-         string comments;
-         stringpairlist opt_fields;
-         EncFormat enc_format;
+        direction dir;
+        string id;
+        string shortmsg;
+        string longmsg;
+        string longmsg_formatted;
+        bloblist attachments;
+        timestamp sent;
+        timestamp recv;
+        identity from;
+        identitylist to;
+        identity recv_by;
+        identitylist cc;
+        identitylist bcc;
+        identitylist reply_to;
+        stringlist in_reply_to;
+        stringlist references;
+        stringlist keywords;
+        string comments;
+        stringpairlist opt_fields;
+        EncFormat enc_format;
     };
 };
 
