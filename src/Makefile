@@ -95,9 +95,9 @@ CXXFLAGS+= -MMD -MP
 
 SOURCES=$(wildcard $(CXX_DIR)/*.cc)
 SOURCES+=$(GENERATED_CC)
-tmp=$(SOURCES:.cc=.o)
+tmp=$(SOURCES:%.cc=%.o)
 OBJECTS=$(addprefix $(BUILD_ROOT), $(tmp))
-DEPENDS=$(OBJECTS:.o=.d)
+DEPENDS=$(OBJECTS:%.o=%.d)
 
 -include $(DEPENDS)
 VPATH = $(CXX_DIR)/
@@ -108,6 +108,7 @@ $(info SOURCES: $(SOURCES))
 $(info OBJECTS: $(OBJECTS))
 $(info DEPENDS: $(DEPENDS))
 
+.DEFAULT_GOAL := all
 all: lib-java lib-cxx
 
 # Build only java lib
@@ -126,19 +127,16 @@ $(LIB_CXX_DYN): compile-cxx
 $(LIB_CXX_STATIC): compile-cxx
 	$(AR) -r $@ $(OBJ_DIR)*.o
 
-
 # -------------- Compile -----------------
 compile-java: create-dirs codegen
 	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/$(JAVAC_CMD) -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/*.java
 	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/$(JAVAC_CMD) -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/exceptions/*.java
 	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/$(JAVAC_CMD) -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/interfaces/*.java
 
-
 compile-cxx: create-dirs gen-jni-headers $(OBJECTS)
 
-$(OBJECTS): $(BUILD_ROOT)%.o: %.cc
+$(OBJECTS) : $(BUILD_ROOT)%.o : %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-
 
 # --------- Generate JNI headers ----------
 gen-jni-headers: codegen $(JNI_GENERATED_HH)
