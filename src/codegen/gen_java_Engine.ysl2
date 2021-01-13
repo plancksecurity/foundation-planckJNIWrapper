@@ -70,7 +70,9 @@ tstylesheet {
                 }
                 return ret;
             ||
-            } otherwise
+            } when "@type = 'bytearray'"
+                |> return _«@name»(`apply "parm/*", mode=basic_parm_name`);
+            otherwise
                 |> return Utils.toUTF16(_«@name»(`apply "parm/*", mode=basic_parm_name`));
         }
         ||
