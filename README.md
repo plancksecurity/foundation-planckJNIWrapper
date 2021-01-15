@@ -46,7 +46,7 @@ The default make target is `compile`.
 * `make clean-all`   
   Equals `make clean` and `make clean-doc`
 
-### Generate API Documentation
+### Doc
 In order to generate the API doc you need to have doxygen installed on your system.
 
 * `make doc`   
