@@ -34,17 +34,12 @@ The default make target is `compile`.
 * `make test`   
   Builds the complete test-suite under `./test`.
 
-### Clean
-* `make clean`   
-  Deletes all the derived objects of the adapter build in `./build` and `./dist`.
-  Also invokes `make clean` which cleans the whole test-suite.
-  Does not remove the generated API doc.
+### Install
+* `make install`
+  Installs the files under `./dist` under $PREFIX (local.conf)
 
-* `make clean-doc`   
-  Removes all the generated API doc.
-
-* `make clean-all`   
-  Equals `make clean` and `make clean-doc`
+* `make uninstall`
+  Removes all the filenames under `./dist` from $PREFIX (local.conf)
 
 ### Doc
 In order to generate the API doc you need to have doxygen installed on your system.
@@ -58,9 +53,16 @@ In order to generate the API doc you need to have doxygen installed on your syst
 * `make doc-java`   
   Generates the API doc for the Java part of the adapter.
 
-### Install
-* `make install`
-  Installs the files under `./dist` under $PREFIX (local.conf)
+### Clean
+* `make clean`   
+  Deletes all the derived objects of the adapter build in `./build` and `./dist`.
+  Also invokes `make clean` which cleans the whole test-suite.
+  Does not remove the generated API doc.
 
-* `make uninstall`
-  Removes all the filenames under `./dist` from $PREFIX (local.conf)
+* `make clean-doc`   
+  Removes all the generated API doc.
+
+* `make clean-all`   
+  Equals `make clean` and `make clean-doc`
+
+
