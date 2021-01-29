@@ -1,4 +1,3 @@
-syntax: glob
 
 # ignore all of them
 
@@ -90,8 +89,7 @@ org.tar.gz
 
 *.iml
 
-syntax: regexp
-android/external/[^.]*
+android/external/[?]*
 
 # Default ignored files
-.idea/
+?idea/
