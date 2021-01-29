@@ -1,4 +1,3 @@
-syntax: glob
 
 # ignore all of them
 
@@ -83,10 +82,9 @@ src/local.conf
 
 *.iml
 
-syntax: regexp
-android/external/[^.]*
+android/external/[?]*
 
 local.conf
 src/local.conf
 # Default ignored files
-.idea/
+?idea/
