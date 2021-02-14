@@ -12,6 +12,8 @@ centos8:build:
   stage: build
   variables:
     CI_DISTRO_TARGET: "centos8"
+  rules:
+    - if: '$CI_COMMIT_TAG  !~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
 
 centos8:tagged-build:
   extends: .make_in_docker
@@ -20,7 +22,7 @@ centos8:tagged-build:
     CI_DISTRO_TARGET: "centos8"
     TAGGED_BUILD: "true"
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_TAG  =~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
 
 # Debian
 
@@ -30,6 +32,8 @@ debian10:build:
   variables:
     CI_DISTRO_TARGET: "debian10"
     DEBIAN_FRONTEND: "noninteractive"
+  rules:
+    - if: '$CI_COMMIT_TAG  !~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
 
 debian10:tagged-build:
   extends: .make_in_docker
@@ -39,5 +43,5 @@ debian10:tagged-build:
     DEBIAN_FRONTEND: "noninteractive"
     TAGGED_BUILD: "true"
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_TAG  =~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
 
