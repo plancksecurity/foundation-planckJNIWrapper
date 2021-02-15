@@ -1,6 +1,5 @@
 
 # ignore all of them
-
 *.class
 *.jar
 *.swp
@@ -15,17 +14,13 @@
 *.log
 
 # ignore generated files
-
-org_pEp_*.h
-org_pEp_*.cc
 pEp_*.h
 pEp_*.cc
-org/pEp/jniadapter/pEp*.java
 foundation_pEp_*.h
 foundation_pEp_*.cc
-foundation/pEp/jniadapter/pEp*.java
+src/foundation/pEp/jniadapter/pEp*.java
+src/foundation/pEp/jniadapter/PassphraseType.java
 
-pEp/jniadapter/pEp*.java
 throw_pEp_exception.*
 Color.java
 Engine.java
@@ -43,12 +38,10 @@ status_list.yml2
 
 ndk*/
 # ignore vim workspace
-
 ws
 tags
 
 # ignore android build
-
 android/build
 android/libs
 android/obj
