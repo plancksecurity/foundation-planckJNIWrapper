@@ -17,7 +17,6 @@ run: compile
 	$(MAKE) -C jni111 run
 	$(MAKE) -C jni114 run
 	$(MAKE) -C jni115 run
-	$(MAKE) -C jni118 run
 	$(MAKE) -C jni125 run
 
 compile:
@@ -35,7 +34,6 @@ compile:
 	$(MAKE) -C jni111 compile
 	$(MAKE) -C jni114 compile
 	$(MAKE) -C jni115 compile
-	$(MAKE) -C jni118 compile
 	$(MAKE) -C jni125 compile
 
 clean:
