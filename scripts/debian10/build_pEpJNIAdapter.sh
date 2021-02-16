@@ -4,13 +4,8 @@ set -exo
 export LC_ALL=en_US.UTF-8 && \
 
 # JAVA_HOME (only for the pEpJNIAdapter)
-if [ $(uname) == "Linux" ]; then {
-  export JAVA_HOME=$(dirname $(dirname $(readlink -f /usr/bin/javac)));
-} fi
-if [ $(uname) == "Darwin" ]; then {
-  export JAVA_HOME=$(dirname $(dirname $(readlink /usr/bin/javac)));
-} fi
-echo $JAVA_HOME
+export JAVA_HOME=$(dirname $(dirname $(readlink -f /usr/bin/javac)));
+echo "$JAVA_HOME"
 
 cat >local.conf <<__LOCAL__
 PREFIX=${INSTPREFIX}
