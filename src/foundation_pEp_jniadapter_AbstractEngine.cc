@@ -265,6 +265,22 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_release(
     Adapter::session(pEp::Adapter::release);
 }
 
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_setDebugLogEnabled(
+        JNIEnv *env,
+        jclass clazz,
+        jboolean enabled)
+{
+    Adapter::pEpLog::set_enabled(static_cast<bool>(enabled));
+}
+
+JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_getDebugLogEnabled(
+        JNIEnv *env,
+        jclass clazz
+    )
+{
+    return static_cast<jboolean>(Adapter::pEpLog::get_enabled());
+}
+
 JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_getVersion(
         JNIEnv *env,
         jobject obj

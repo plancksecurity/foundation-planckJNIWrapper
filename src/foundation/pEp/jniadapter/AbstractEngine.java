@@ -35,6 +35,10 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AutoClosea
         }
     }
 
+    // libpEpAdapter based logging using pEpEngine logging API
+    public native static void setDebugLogEnabled(boolean enabled);
+    public native static boolean getDebugLogEnabled();
+
     public native String getVersion();
     public native String getProtocolVersion();
 
