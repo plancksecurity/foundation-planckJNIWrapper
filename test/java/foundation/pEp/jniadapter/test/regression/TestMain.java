@@ -268,6 +268,14 @@ class TestMain {
             ctx.engine.config_passphrase_for_new_keys(true, "SUPERCOMPLICATEDPASSPHRASE");
         });
 
+        new TestUnit<RegTestContext>("Engine.setDebugLogEnabled", new RegTestContext(), ctx -> {
+            Engine.setDebugLogEnabled(true);
+        });
+
+        new TestUnit<RegTestContext>("Engine.setDebugLogEnabled", new RegTestContext(), ctx -> {
+            Engine.getDebugLogEnabled();
+        });
+
 
         TestSuite.getDefault().run();
     }
