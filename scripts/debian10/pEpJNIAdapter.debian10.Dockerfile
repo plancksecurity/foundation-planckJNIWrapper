@@ -8,6 +8,12 @@ ENV BUILDROOT /build
 ENV INSTPREFIX /install
 ENV OUTDIR /out
 
+### Install system dependencies
+USER root
+RUN apt-get update -yqq && \
+    apt-get install -yqq default-jdk-headless
+USER pep-builder
+
 ### Setup working directory
 RUN mkdir ${BUILDROOT}/pEpJNIAdapter
 COPY . ${BUILDROOT}/pEpJNIAdapter
