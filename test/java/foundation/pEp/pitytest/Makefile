@@ -14,7 +14,7 @@ all: compile
 compile: $(JAVA_CLASSES)
 
 %.class: %.java
-	cd $(JAVA_CWD);$(JAVAC_CMD) -cp $(CLASSPATH) $(JAVA_PKG_BASEPATH)/$(PKGNAME)/$<
+	cd $(JAVA_CWD);javac -cp $(CLASSPATH) $(JAVA_PKG_BASEPATH)/$(PKGNAME)/$<
 
 clean:
 	rm -f $(JAVA_CLASSES)
