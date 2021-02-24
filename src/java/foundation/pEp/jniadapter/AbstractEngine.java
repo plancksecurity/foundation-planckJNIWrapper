@@ -38,6 +38,21 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
         }
     }
 
+
+    public static void setDebugLogEnabled(boolean enabled) {
+        _setDebugLogEnabled(enabled);
+    }
+
+    private native static void _setDebugLogEnabled(boolean enabled);
+
+
+    public static boolean getDebugLogEnabled() {
+        return _getDebugLogEnabled();
+    }
+
+    private native static boolean _getDebugLogEnabled();
+
+
     public String getVersion() {
         return _getVersion();
     }
@@ -58,6 +73,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
 
     private native void _startKeyserverLookup();
 
+
     public void stopKeyserverLookup() {
         _startKeyserverLookup();
     }
@@ -71,17 +87,20 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
 
     private native void _startSync();
 
+
     public void stopSync() {
         _stopSync();
     }
 
     private native void _stopSync();
 
+
     public boolean isSyncRunning() {
         return _isSyncRunning();
     }
 
     private native boolean _isSyncRunning();
+
 
     // Callbacks
     public void setMessageToSendCallback(Sync.MessageToSendCallback messageToSendCallback) {
