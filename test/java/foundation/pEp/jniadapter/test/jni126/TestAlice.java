@@ -11,7 +11,7 @@ import static foundation.pEp.pitytest.utils.TestUtils.*;
 
 class Jni126TestContext extends AdapterBaseTestContext {
     @Override
-    public void init() throws Throwable {
+    public AdapterBaseTestContext init() throws Throwable {
         super.init();
 
         alice = engine.importKey(keyAliceSecPassphrase).get(0);
@@ -31,6 +31,7 @@ class Jni126TestContext extends AdapterBaseTestContext {
                 return "passphrase_alice";
             }
         });
+        return this;
     }
 
 }
