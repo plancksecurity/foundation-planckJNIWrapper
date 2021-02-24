@@ -47,14 +47,14 @@ LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid pEpAdapter libsequ
 LOCAL_CPP_FEATURES += exceptions
 LOCAL_CPPFLAGS += -std=c++11 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld
 LOCAL_SRC_FILES  := \
-		  ../../src/foundation_pEp_jniadapter_AbstractEngine.cc \
-		  ../../src/foundation_pEp_jniadapter_Engine.cc \
-		  ../../src/foundation_pEp_jniadapter_Message.cc \
-		  ../../src/foundation_pEp_jniadapter__Blob.cc \
-		  ../../src/throw_pEp_exception.cc \
-		  ../../src/basic_api.cc \
-		  ../../src/identity_api.cc \
-		  ../../src/jniutils.cc
+		  ../../src/cxx/foundation_pEp_jniadapter_AbstractEngine.cc \
+		  ../../src/cxx/foundation_pEp_jniadapter_Engine.cc \
+		  ../../src/cxx/foundation_pEp_jniadapter_Message.cc \
+		  ../../src/cxx/foundation_pEp_jniadapter__Blob.cc \
+		  ../../src/cxx/throw_pEp_exception.cc \
+		  ../../src/cxx/basic_api.cc \
+		  ../../src/cxx/identity_api.cc \
+		  ../../src/cxx/jniutils.cc
 
 LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include
 LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SRC_PATH)/libpEpAdapter

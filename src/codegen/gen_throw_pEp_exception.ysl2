@@ -1,0 +1,65 @@
+include yslt.yml2
+
+tstylesheet {
+    include ./textutils.ysl2
+
+    template "/" {
+        apply "namespace", 0;
+        document "../cxx/throw_pEp_exception.hh", "text"
+            ||
+            #pragma once
+
+            #include <jni.h>
+
+            namespace pEp {
+                namespace JNIAdapter {
+                    jint throw_pEp_Exception(JNIEnv *env, PEP_STATUS status);
+                };
+            };
+
+            ||
+        document("../../build/marker/gen_throw_pEp_exception.marker", "text") > ""
+    }
+
+    template "namespace"
+        document("../cxx/throw_pEp_exception.cc", "text")
+            ||
+            #include <assert.h>
+            #include <pEp/pEpEngine.h>
+            #include "throw_pEp_exception.hh"
+
+            namespace pEp {
+                namespace JNIAdapter {
+                    jint throw_pEp_Exception(JNIEnv *env, PEP_STATUS status)
+                    {
+                        jclass ex;
+                        const char *ex_name;
+
+                        switch (status) {
+                            `` apply "exception/*[text()!=0]", 4, mode=case
+                            default:
+                                assert(0);
+                                ex_name = "Exception";
+                        }
+
+                        ex = env->FindClass(ex_name);
+                        assert(ex);
+
+                        if (ex == NULL) {
+                            ex = env->FindClass("java/lang/NoClassDefFoundError");
+                            assert(ex);
+                        }
+
+                        return env->ThrowNew(ex, ex_name);
+                    }
+                };
+            };
+            ||
+
+    template "*", mode=case {
+        | case `call "UCASE" with "text", "name(.)"`:
+        |     ex_name = "foundation/pEp/jniadapter/exceptions/`call "CamelCase" with "text", "name(.)"`";
+        |     break;
+    }
+}
+

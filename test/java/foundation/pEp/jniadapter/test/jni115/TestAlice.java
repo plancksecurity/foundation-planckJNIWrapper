@@ -1,15 +1,17 @@
 package foundation.pEp.jniadapter.test.jni115;
 
-import static foundation.pEp.pitytest.TestLogger.*;
-
 import foundation.pEp.jniadapter.Message;
-import foundation.pEp.pitytest.*;
+import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
+import foundation.pEp.jniadapter.test.utils.AdapterTestUtils;
+import foundation.pEp.pitytest.TestSuite;
+import foundation.pEp.pitytest.TestUnit;
 import foundation.pEp.pitytest.utils.TestUtils;
-import foundation.pEp.jniadapter.test.utils.*;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+
+import static foundation.pEp.pitytest.TestLogger.log;
+import static foundation.pEp.pitytest.TestLogger.logRaw;
 
 class Jni115TestContext extends AdapterBaseTestContext {
     public int messagesToBobCount = 10;
@@ -19,7 +21,7 @@ class Jni115TestContext extends AdapterBaseTestContext {
     public List<Message> messagesToBob;
 
     @Override
-    public void init() throws Throwable {
+    public Jni115TestContext init() throws Throwable {
         super.init();
         messagesToBobSmall = new ArrayList<>();
         messagesToBobBig = new ArrayList<>();
@@ -52,6 +54,7 @@ class Jni115TestContext extends AdapterBaseTestContext {
             messagesToBobHuge.add(tmp);
         }
         logRaw("\n");
+        return this;
     }
 
 }

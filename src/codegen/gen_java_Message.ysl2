@@ -1,0 +1,368 @@
+include yslt.yml2
+
+tstylesheet {
+    include ./textutils.ysl2
+    include ./types_java.ysl2
+
+    template "/namespace[@name='pEp']" {
+        apply "struct|enum|exception", 0;
+        document "../java/foundation/pEp/jniadapter/exceptions/pEpException.java", "text" {
+            ||
+            package foundation.pEp.jniadapter.exceptions;
+
+            public class pEpException extends RuntimeException {
+              public pEpException(String message) {
+                super(message);
+              }
+            }
+            ||
+        }
+        document("../../build/marker/gen_java_Message.marker", "text") > ""
+    }
+
+    template "struct" {
+        const "cname" call "toJava" with "type", "@name";
+        document("../java/foundation/pEp/jniadapter/{$cname}.java", "text")
+            ||
+            package foundation.pEp.jniadapter;
+
+            import foundation.pEp.jniadapter.interfaces.*;
+            import foundation.pEp.jniadapter.exceptions.*;
+            import java.util.ArrayList;
+            import java.util.Vector;
+            import java.util.Date;
+            import java.util.HashMap;
+            import java.io.Serializable;
+
+            public class «$cname» implements MessageInterface, AutoCloseable, Serializable {
+                private static final long serialVersionUID = 2119420428331150924L;
+                private long handle;
+
+                native long init();
+                native void release(long handle);
+
+                public «$cname»() {
+                    handle = init();
+                }
+
+                private native long _«$cname»(
+                        byte[] mime_text
+                    ) throws pEpException;
+                
+                public «$cname»(String mime_text) {
+                    byte[] _mime_text = Utils.toUTF8(mime_text);
+                    handle = _«$cname»(_mime_text);
+                }
+
+                private native byte[] _encodeMIME() throws pEpException;
+
+                public String encodeMIME() {
+                    return Utils.toUTF16(_encodeMIME());
+                }
+
+                private «$cname»(long h) {
+                    handle = h;
+                }
+
+                public final void close() {
+                    release(handle);
+                }
+
+                final protected long getHandle() {
+                    return handle;
+                }
+
+                `` apply "enum", mode=inner
+                `` apply "*[name(.)!='enum']", mode=entry
+            }
+            ||
+        document("../java/foundation/pEp/jniadapter/interfaces/{$cname}Interface.java", "text")
+            ||
+            package foundation.pEp.jniadapter.interfaces;
+
+            import foundation.pEp.jniadapter.*;
+            import foundation.pEp.jniadapter.Message.*;
+            import java.util.Date;
+            import java.util.Vector;
+            import java.util.ArrayList;
+
+            public interface «$cname»Interface {
+                public String encodeMIME();
+
+                `` apply "*[name(.)!='enum']", mode=interface
+            }
+            ||
+    }
+
+    template "enum" {
+        const "jname" call "toJava" with "type", "@name";
+        document("../java/foundation/pEp/jniadapter/{$jname}.java", "text")
+            ||
+            // CodeGen template enum
+            package foundation.pEp.jniadapter;
+
+            import java.util.HashMap;
+
+            `` apply ".", 0, mode=inner
+            ||
+
+    }
+
+    template "enum", mode=inner {
+        const "jname" call "CamelCase" with "text", "@name";
+        ||
+        // CodeGen template enum, mode=inner
+        public enum «$jname» {
+            `` apply "enumitem"
+            ;
+
+            public final int value;
+
+            private static HashMap<Integer, «$jname»> intMap;
+
+            private «$jname»(int value) {
+                this.value = value;
+            }
+
+            public static «$jname» getByInt(int value){
+                if (intMap == null) {
+                    intMap = new HashMap<Integer, «$jname»>();
+                    for («$jname» s : «$jname».values()) {
+                        intMap.put(s.value, s);
+                    }
+                }
+                if (intMap.containsKey(value)) {
+                    return intMap.get(value);
+                }
+                return null;
+            }
+
+        ||
+        choose {
+            when "@has_int_str_val = 'true'" {
+            ||
+                public String getInternalStringValue() {
+                    return "Unimplemented";
+                }
+            ||
+            }
+        }
+        ||
+        }
+        ||
+    }
+
+    function "exception" {
+        param "name";
+
+        document "../java/foundation/pEp/jniadapter/exceptions/{$name}.java", "text" {
+            | package foundation.pEp.jniadapter.exceptions;
+            |
+            | public class «$name» extends pEpException {
+            |   public «$name»(String message) {
+            |     super(message);
+            |   }
+            | }
+        }
+    }
+
+    template "exception" for "*[text()!=0]" call "exception"
+        with "name" call "CamelCase" with "text", "name(.)";
+
+
+    template "*", mode=entry {
+        const "ctype", "name(.)";
+        const "type" call "toJava" with "type", "name(.)";
+        const "itype" call "toIntermediate" with "type", "name(.)";
+        const "name" call "toJava" with "type", "name(*[position()=1])";
+
+        ||
+        // CodeGen template * mode=entry
+        ||
+        choose {
+            when "$ctype = 'identity'" {
+                ||
+                // Property type: Identity. [java: «$type», intermediate: «$itype», ctype: «$ctype»]
+                public «$type» get«$name»() {
+                    «$itype» res = _get«$name»();
+                    if (res != null) {
+                        return new «$type»(_get«$name»());
+                    } else {
+                        return null;
+                    }
+                }
+                private native «$itype» _get«$name»();
+
+                public void set«$name»(«$type» value) {
+                    if (value != null) {
+                        _set«$name»(new «$itype»(value));
+                    } else {
+                        _set«$name»(null);
+                    }
+                }
+                private native void _set«$name»(«$itype» value);
+
+
+                ||
+            }
+
+            when "$ctype = 'identitylist' or $ctype = 'bloblist' or $ctype = 'stringlist' or $ctype = 'stringpairlist'" {
+                const "ename", "substring-after(substring($type,1,string-length($type)-1), '<')";
+                const "iename" choose {
+                    when "$ctype = 'stringlist'" > byte[]
+                    when "$ctype = 'stringpairlist'" > Pair<byte[],byte[]>
+                    otherwise > _«$ename»
+                }
+                const "convget" choose {
+                    when "$ctype = 'stringlist'" > Utils.toUTF16(i)
+                    when "$ctype = 'stringpairlist'" > new Pair<String, String>(Utils.toUTF16(i.first), Utils.toUTF16(i.second))
+                    otherwise > new «$ename»(i)
+                }
+                const "convset" choose {
+                    when "$ctype = 'stringlist'" > Utils.toUTF8(i)
+                    when "$ctype = 'stringpairlist'" > new Pair<byte[],byte[]>(Utils.toUTF8(i.first), Utils.toUTF8(i.second))
+                    otherwise > new _«$ename»(i)
+                }
+                ||
+                // Property type: list type. [java: «$type», intermediate: «$itype», ctype: «$ctype»]
+                public «$type» get«$name»() {
+                    «$itype» glist = _get«$name»();
+                    if (glist != null) {
+                        «$type» list = new «$type»();
+                        for («$iename» i : glist) {
+                            list.add(«$convget»);
+                        }
+                        return list;
+                    }
+                    return null;
+                }
+                private native «$itype» _get«$name»();
+
+                public void set«$name»(«$type» value) {
+                    if (value != null) {
+                        «$itype» list = new «$itype»();
+                        for («$ename» i : value) {
+                            list.add(«$convset»);
+                        }
+                        _set«$name»(list);
+                    } else {
+                        _set«$name»(null);
+                    }
+                }
+                private native void _set«$name»(«$itype» value);
+
+
+                ||
+            }
+            
+            when "$itype != $type" {
+                ||
+                // Property type: differs from intermediate. [java: «$type», intermediate: «$itype», ctype: «$ctype»]
+                public «$type» get«$name»() {
+                    «$itype» res = _get«$name»();
+                    if (res != null) {
+                        return Utils.toUTF16(res);
+                    } else {
+                        return null;
+                    }
+                }
+                private native «$itype» _get«$name»();
+
+                public void set«$name»(«$type» value) {
+                    if (value != null) {
+                        _set«$name»(Utils.toUTF8(value));
+                    } else {
+                        _set«$name»(new byte[0]);
+                    }
+                }
+                private native void _set«$name»(«$itype» value);
+
+
+                ||
+            }
+
+            when "../enum[@name=$ctype]" {
+                ||
+                // Property type: enum type. [java: «$type», intermediate: «$itype», ctype: «$ctype»]
+                public «$type» get«$name»() {
+                    return «$type».getByInt(_get«$name»());
+                }
+                private native int _get«$name»();
+                public void set«$name»(«$type» value) {
+                    if(value != null)
+                        _set«$name»(value.value);
+                    else
+                        _set«$name»(0);
+                }
+                private native void _set«$name»(int value);
+
+                ||
+            }
+
+            otherwise {
+                ||
+                // Property type: no intermediate type [java: «$type», intermediate: «$itype», ctype: «$ctype»]
+                public «$type» get«$name»() {
+                    return get«$name»();
+                }
+                private native «$type» _get«$name»();
+
+                public void set«$name»(«$type» value) {
+                    _set«$name»(value);
+                }
+                private native void _set«$name»(«$type» value);
+
+
+                ||
+            }
+        }
+    }
+
+    template "*", mode=interface {
+        const "type" call "toJava" with "type", "name(.)";
+        const "name" call "toJava" with "type", "name(*[position()=1])";
+
+        ||
+        public «$type» get«$name»();
+
+        public void set«$name»(«$type» value);
+
+        ||
+    }
+
+
+    template "enumitem" {
+        const "name_hyphenized" call "hyphenize" with "text", "@name";
+        const "javaname" call "toJava" with "type", "$name_hyphenized";
+        const "enum_index", ".";
+        ||
+        «$javaname» («$enum_index») {
+            public String toString() {
+        ||
+        choose {
+            when "@toString" {
+            ||
+                    return "«@toString»";
+            ||
+            } otherwise {
+            ||
+                    return "«$javaname»";
+            ||
+            }
+        }
+        ||
+            }
+        ||
+        choose {
+            when "@int_str_val" {
+            ||
+                public String getInternalStringValue() {
+                    return "«@int_str_val»";
+                }
+            ||
+            }
+        }
+        | }`if "position()!=last()" > , `
+    }
+}
+

@@ -23,7 +23,7 @@ public class FsMQManagerBaseTestContext extends AbstractTestContext {
     }
 
     @Override
-    public void init() throws Throwable {
+    public FsMQManagerBaseTestContext init() throws Throwable {
         peerNames = new ArrayList<>();
         peerNames.add("Alice");
         peerNames.add("Bob");
@@ -31,6 +31,7 @@ public class FsMQManagerBaseTestContext extends AbstractTestContext {
         createPeerMapAndPeerList();
         defineSelfAndUpdatePeers();
         messages = FsMQManagerTestUtils.createTestMessages(self.getAddress(), MSG_COUNT);
+        return this;
     }
 
     private void createPeerMapAndPeerList() {

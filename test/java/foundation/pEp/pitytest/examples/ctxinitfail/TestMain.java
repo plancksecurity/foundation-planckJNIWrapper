@@ -1,8 +1,10 @@
 package foundation.pEp.pitytest.examples.ctxinitfail;
 
-import static foundation.pEp.pitytest.TestLogger.*;
+import foundation.pEp.pitytest.AbstractTestContext;
+import foundation.pEp.pitytest.TestSuite;
+import foundation.pEp.pitytest.TestUnit;
 
-import foundation.pEp.pitytest.*;
+import static foundation.pEp.pitytest.TestLogger.log;
 
 
 class CtxInitFailContext extends AbstractTestContext {
@@ -10,9 +12,13 @@ class CtxInitFailContext extends AbstractTestContext {
     int result;
 
     @Override
-    public void init() throws Throwable {
+    public CtxInitFailContext init() throws RuntimeException {
         name = "PityTest";
+        log("Hello World from: " + name);
+//        throw  new RuntimeException("regddjkl");
         result = 50 / 0;
+
+        return this;
     }
 }
 

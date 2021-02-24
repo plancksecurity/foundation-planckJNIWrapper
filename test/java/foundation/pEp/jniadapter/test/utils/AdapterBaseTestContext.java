@@ -1,12 +1,14 @@
 package foundation.pEp.jniadapter.test.utils;
 
-import foundation.pEp.pitytest.*;
-import foundation.pEp.jniadapter.*;
+import foundation.pEp.jniadapter.Engine;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Message;
+import foundation.pEp.pitytest.AbstractTestContext;
+import foundation.pEp.pitytest.TestLogger;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 
 
 //public class ABAliceTestContext extends AdapterBaseTestContext {
@@ -59,14 +61,7 @@ public class AdapterBaseTestContext extends AbstractTestContext {
     public Message msgToSelf;
     public Message msgToBob;
 
-    // Misc
-    public Vector<Identity> vID;
-    public Vector<String> vStr;
-
-    public void init() throws Throwable {
-        vID = new Vector<Identity>();
-        vStr = new Vector<String>();
-
+    public AdapterBaseTestContext init() throws Throwable {
         callbacks = new TestCallbacks();
         engine = new Engine();
         engine.setMessageToSendCallback(callbacks);
@@ -74,7 +69,7 @@ public class AdapterBaseTestContext extends AbstractTestContext {
 
         TestLogger.logH2("Machine directory: ");
         TestLogger.log(engine.getMachineDirectory());
-        TestLogger.logH2("User directory:" );
+        TestLogger.logH2("User directory:");
         TestLogger.log(engine.getUserDirectory());
 
 
@@ -91,27 +86,29 @@ public class AdapterBaseTestContext extends AbstractTestContext {
         msgToSelf = AdapterTestUtils.makeNewTestMessage(alice, alice, Message.Direction.Outgoing);
         msgToBob = AdapterTestUtils.makeNewTestMessage(alice, bob, Message.Direction.Outgoing);
 
-        vID.add(bob);
-        vStr.add("StringItem");
-
         Path path;
         path = Paths.get(filenameBobPub);
-        keyBobPub = Files.readAllBytes(path);
+        try {
+            keyBobPub = Files.readAllBytes(path);
 
-        path = Paths.get(filenameBobSec);
-        keyBobSec = Files.readAllBytes(path);
+            path = Paths.get(filenameBobSec);
+            keyBobSec = Files.readAllBytes(path);
 
-        path = Paths.get(filenameAlicePub);
-        keyAlicePub = Files.readAllBytes(path);
+            path = Paths.get(filenameAlicePub);
+            keyAlicePub = Files.readAllBytes(path);
 
-        path = Paths.get(filenameAliceSec);
-        keyAliceSec = Files.readAllBytes(path);
+            path = Paths.get(filenameAliceSec);
+            keyAliceSec = Files.readAllBytes(path);
 
-        path = Paths.get(filenameAlicePubPassphrase);
-        keyAlicePubPassphrase = Files.readAllBytes(path);
+            path = Paths.get(filenameAlicePubPassphrase);
+            keyAlicePubPassphrase = Files.readAllBytes(path);
 
-        path = Paths.get(filenameAliceSecPassphrase);
-        keyAliceSecPassphrase = Files.readAllBytes(path);
+            path = Paths.get(filenameAliceSecPassphrase);
+            keyAliceSecPassphrase = Files.readAllBytes(path);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+        return this;
     }
 
 }

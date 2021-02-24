@@ -14,13 +14,13 @@ class FsMQManagerBaseTestContext extends AbstractTestContext {
     Entity carol;
 
     @Override
-    public void init() throws Throwable {
+    public FsMQManagerBaseTestContext init() throws Throwable {
         alice = new Entity("Alice");
         bob = new Entity("Bob");
         carol = new Entity("Carol");
         alice.add(bob);
         alice.add(carol);
-
+        return this;
     }
 
     class Entity {

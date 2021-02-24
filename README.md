@@ -1,67 +1,68 @@
 # p≡p JNI Adapter
-More complete developer instructions can be found here: [https://dev.pep.foundation/JNI%20Adapter/Tutorial]().
 
-## Prerequisites
+Please find the complete build instructions here:
+https://dev.pep.foundation/Common%20Adapter%20Documentation/Adapter_Build_Instructions
 
-### yml2
-To set up yml2 properly, consult the documentation of pEp Engine (linked below). yml2 is a build dependency of pEp Engine.
+## Build Result
+The binary package resulting from the build will be located under `./dist`.
+It merely contains:
+* pEp.jar           - The java library
+* libpEpJNI.dylib   - The dynamically linkable native library
+* libpEpJNI.a       - The statically linkable native library
 
-### C and C++ compiler
-Any gcc or clang distribution offered by your OS is fine.
+## Build Configuration
 
-### pEp Engine
-Instructions for obtaining the pEp Engine can be found on [https://pep.foundation/dev/repos/pEpEngine/file/]().
+The build configuration file is called `local.conf`.
+Use the file `local.conf.example` as a template.
 
-### libpEpAdapter
-Instructions for obtaining libpEpAdapter can be found on [https://pep.foundation/dev/repos/libpEpAdapter/file/]().
+```bash
+cp local.conf.example local.conf
+```
 
-### Java 8 (or newer) JDK
-Download Oracle Java from [https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html]().
+Then, tweak it to your needs.
 
-OpenJDK can be installed from macports on macOS with one of the following commands:
+## Make Targets
 
-~~~
-sudo port install openjdk8
-sudo port install openjdk11
-~~~
+The default make target is `compile`.
 
-## Building
+### Build
+* `make compile`   
+  Builds the whole adapter under `./build`.
+  The complete distribution ready adapter will be in `./dist`.
 
-Build configuration will be the result of including these files in the following order:
-* `Makefile.conf` - Defaults
-* `local.conf` - optional cfg (overwrites existing values)
-* `src/local.conf`- optional cfg for src dir (overwrites existing values)
+### Test
+* `make test`   
+  Builds the complete test-suite under `./test`.
 
-An example `local.conf` looks like this:
+### Install
+* `make install`
+  Installs the files under `./dist` under $PREFIX (local.conf)
 
-~~~
-JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk8/Contents/Home
+* `make uninstall`
+  Removes all the filenames under `./dist` from $PREFIX (local.conf)
 
-YML2_PATH=$(HOME)/code/yml2
+### Doc
+In order to generate the API doc you need to have doxygen installed on your system.
 
-ENGINE_INC_PATH=$(HOME)/code/engine/build/include
-ENGINE_LIB_PATH=$(HOME)/code/engine/build/lib
+* `make doc`   
+  Generates Java and C++ API doc.
 
-AD_INC_PATH=$(HOME)/code/libad/build/include
-AD_LIB_PATH=$(HOME)/code/libad/build/lib
-~~~
+* `make doc-cxx`   
+  Generates the API doc for the C++ part of the adapter.
 
-The the foo_PATH variables will be turned into compiler directives (-I / -L), which can be directly set by just omitting "\_PATH" (e.g. ENGINE_INC). They  will take priority.
+* `make doc-java`   
+  Generates the API doc for the Java part of the adapter.
 
-Depending on what is already set in your environment, or can be found in your default include/library paths, setting any of these variables may be optional on your platform.
+### Clean
+* `make clean`   
+  Deletes all the derived objects of the adapter build in `./build` and `./dist`.
+  Also invokes `make clean` which cleans the whole test-suite.
+  Does not remove the generated API doc.
 
-Now, build the Adapter with
+* `make clean-doc`   
+  Removes all the generated API doc.
 
-On Linux:
+* `make clean-all`   
+  Equals `make clean` and `make clean-doc`
 
-~~~
-make src
-~~~
 
-On macOS:
-
-~~~
-make src
-~~~
-
-(The GNU Make distributed with macOS might be too old, in this case install GNU Make "gmake" from macPorts).

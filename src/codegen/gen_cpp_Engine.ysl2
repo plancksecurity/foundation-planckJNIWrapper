@@ -1,0 +1,318 @@
+include yslt.yml2
+
+tstylesheet {
+    include ./textutils.ysl2
+    include ./types_c.ysl2
+    include ./types_java.ysl2
+
+    template "/namespace[@name='pEp']" {
+        apply "interface", 0;
+        document("../../build/marker/gen_cpp_Engine.marker", "text") > ""
+    }
+
+    template "interface" document("../cxx/foundation_pEp_jniadapter_{@name}.cc", "text")
+        ||
+        #include <cassert>
+        #include <pEp/blacklist.h>
+        #include <pEp/openpgp_compat.h>
+        #include <pEp/key_reset.h>
+        #include <pEp/Adapter.hh>
+        #include <pEp/pEpLog.hh>
+        #include <pEp/passphrase_cache.hh>
+
+        #include "foundation_pEp_jniadapter_«@name».h"
+        #include "throw_pEp_exception.hh"
+        #include "jniutils.hh"
+        #include "passphrase_callback.hh"
+
+        using pEp::Adapter::session;
+        using pEp::passphrase_cache;
+        using namespace pEp::JNIAdapter;
+
+        extern "C" {
+
+        `` apply "method", 0
+        } // extern "C"
+
+        ||
+
+    template "method" {
+        const "mangled" call "mangle";
+        const "returning", "count(parm/creates|parm/returns)";
+        const "CretType" choose {
+            when "$returning = 0" > void
+            when "$returning = 1"
+                call "jni_type" with "type", "name(parm[returns|creates]/*[2])";
+            when "$returning > 0" > jobject
+        }
+        const "CretDefault" choose {
+            when "$returning = 0" >
+            when "$returning > 0" > NULL
+        }
+
+        ||
+        JNIEXPORT «$CretType» JNICALL «$mangled»(JNIEnv *env,
+                jobject obj`apply "parm[in|inout]", mode=sig`)
+        {
+            std::mutex *mutex_local = nullptr;
+            {
+                std::lock_guard<std::mutex> l(global_mutex);
+                pEpLog("called with lock_guard");
+                mutex_local = get_engine_java_object_mutex(env, obj);
+            }
+            std::lock_guard<std::mutex> l(*mutex_local);
+
+        ||
+
+        apply "parm[in|inout]", mode=in;
+        apply "parm[creates|returns]", mode=out;
+        ||
+
+        ||
+        choose {
+            when "@cached = 'true'" {
+            ||
+                PEP_STATUS status = passphraseWrap(::«@name», session()`apply "parm", mode=call`);
+            ||
+            } otherwise {
+            ||
+                PEP_STATUS status = ::«@name»(session()`apply "parm", mode=call`);
+            ||
+            }
+        }
+        ||
+
+            if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) |`> |` status < PEP_STATUS_OK |`> |` status >= PEP_TRUSTWORD_NOT_FOUND) {
+                throw_pEp_Exception(env, status);
+                return «$CretDefault»;
+            }
+        ||
+
+        apply "parm[returns|creates]", mode=return;
+
+        choose {
+            when "$returning > 1" {
+
+                ||
+                    jobject result_ = NULL;
+                    jclass clazz_result_ = findClass(env, "foundation/pEp/jniadapter/Engine$_«@name»_Return");
+                    assert(clazz_result_);
+                    jmethodID constructor_result_ = env->GetMethodID(clazz_result_, "<init>", "(Lfoundation/pEp/jniadapter/Engine;)V");
+                    assert(constructor_result_);
+                    result_ = env->NewObject(clazz_result_, constructor_result_, obj);
+                ||
+
+                apply "parm[returns|creates|inout[../int]]", mode=setresult
+                    with "jtype" > foundation/pEp/jniadapter/Engine$_«@name»_Return
+
+                ||
+                    return result_;
+                ||
+            }
+
+            when "$returning = 1" {
+
+                ||
+                    return «name(parm[returns|creates|inout[../int]]/*[3])»_;
+                ||
+            }
+        }
+
+        ||
+        }
+
+        ||
+    }
+
+    template "parm", mode=setresult {
+        param "jtype";
+        const "dir", "name(*[1])";
+        const "type", "name(*[2])";
+        const "name", "name(*[3])";
+        const "sig" call "toSig" with "type", "$type";
+
+
+        choose {
+            when "$type='int'"
+                ||
+                jfieldID «$name»_field = env->GetFieldID(clazz_result_, "«$name»", "I");
+                ||
+            otherwise {
+                ||
+                jfieldID «$name»_field = getFieldID(env, "«$jtype»", "«$name»", "«$sig»");
+                ||
+
+            }
+        }
+
+        choose {
+            when "$type='int'"
+                | env->SetIntField(result_, «$name»_field, _«$name»);
+            otherwise {
+                ||
+                if («$name»_)
+                    env->SetObjectField(result_, «$name»_field, «$name»_);
+                ||
+                if "$name = 'dst'"
+                ||
+                else
+                    env->SetObjectField(result_, «$name»_field, src);
+                ||
+            }
+        }
+
+        ||
+
+        ||
+    }
+
+    template "parm", mode=return {
+        param "dir", "name(*[1])";
+        param "type", "name(*[2])";
+        param "jtype" call "toJava" with "type", "$type";
+        param "name", "name(*[3])";
+
+        choose {
+            when "$type = 'stringlist' or $type = 'string' or $type = 'sstring' or $type = 'stringpairlist' or $type = 'identity' or $type = 'identitylist'"
+            {
+                const "jnitype" call "jni_type" with "type", "$type";
+                const "from_type" choose {
+                    when "$type = 'sstring'"
+                        > from_string
+                    otherwise
+                        > from_«$type»
+                }
+                ||
+                «$jnitype» «$name»_ = NULL;
+                if (_«$name») {
+                    «$name»_ = «$from_type»(env, _«$name»);
+                }
+                ||
+            }
+            when "ancestor::namespace/child::enum[@name=$type]" {
+                const "ljtype" call "lcase" with "text","$jtype";
+                ||
+                jobject «$name»_ = NULL;
+                {
+                    jclass clazz_«$ljtype» = findClass(env, "foundation/pEp/jniadapter/«$jtype»");
+                    assert(clazz_«$ljtype»);
+                    jmethodID method_values = env->GetStaticMethodID(clazz_«$ljtype», "values", "()[Lfoundation/pEp/jniadapter/«$jtype»;");
+                    assert(method_values);
+                    jfieldID field_value = env->GetFieldID(clazz_«$ljtype», "value", "I");
+                    assert(field_value);
+
+                    jobjectArray values = static_cast<jobjectArray>(env->CallStaticObjectMethod(clazz_«$ljtype», method_values));
+                    assert(values);
+                    if (env->ExceptionCheck()) {
+                        return nullptr; // handle exception in Java
+                    }
+
+                    jsize values_size = env->GetArrayLength(values);
+                    for (jsize i = 0; i < values_size; i++) {
+                        jobject element = env->GetObjectArrayElement(values, i);
+                        assert(element);
+                        jint value = env->GetIntField(element, field_value);
+                        if (value == static_cast<jint>(_«$name»)) {
+                            «$name»_ = element;
+                            break;
+                        }
+                    }
+                }
+
+                ||
+            }
+            otherwise {
+                ||
+                jobject «$name»_ = NULL;
+                if (_«$name») {
+                    jclass clazz_«$name»_ = findClass(env, "foundation/pEp/jniadapter/«$jtype»");
+                    assert(clazz_«$name»_);
+                    jmethodID constructor_«$name»_ = env->GetMethodID(clazz_«$name»_, "<init>", "(J)V");
+                    assert(constructor_«$name»_);
+                    «$name»_ = env->NewObject(clazz_«$name»_, constructor_«$name»_, reinterpret_cast<jlong>(_«$name»));
+                }
+
+                ||
+            }
+        }
+    }
+
+    template "parm", mode=in {
+        const "dir", "name(*[1])";
+        const "type", "name(*[2])";
+        const "name", "name(*[3])";
+        const "const", "name(*[4])";
+
+        choose {
+            when "$type = 'message'"
+                | message *_«$name» = reinterpret_cast<message *>(callLongMethod(env, «$name», "getHandle"));
+            when "$type='EncFormat' or $type='SyncHandshakeResult' or $type='CipherSuite'"
+                | √$type _«$name» = to_«$type»(env, «$name»);
+            when "$type='bool'"
+                | bool _«$name» = «$name»;
+            when "$type='int'"
+                | int _«$name» = «$name»;
+            when "$type='uint'"
+                | unsigned int _«$name» = «$name»;
+            when "$type='string'"
+                | const char *_«$name» = to_string(env, «$name»);
+            otherwise {
+                choose {
+                    when "$const"
+                        | const √$type *_«$name» = to_«$type»(env, «$name»);
+                    otherwise
+                        | √$type *_«$name» = to_«$type»(env, «$name»);
+                }
+            }
+        }
+    }
+
+    template "parm", mode=out {
+        param "name", "name(*[3])";
+        const "type", "name(*[2])";
+
+        choose {
+            when "ancestor::namespace/child::enum[@name=$type]"
+                | √$type _«$name»;
+            when "$type='sstring'"{
+                | char * _«$name»;
+                | size_t _«$name»_size;
+            }
+            otherwise
+                | √$type *_«$name»;
+        }
+    }
+
+    template "parm", mode=call {
+        const "dir", "name(*[1])";
+        const "type", "name(*[2])";
+        const "name", "name(*[3])";
+
+        > ,
+
+        choose {
+            when "$dir = 'Cconst'"
+                value "*[3]";
+            when "($dir = 'creates' or $dir = 'returns') and $type='sstring'"
+                > &_«$name», &_«$name»_size
+            when "$dir = 'creates' or $dir = 'returns'"
+                > &_«$name»
+            when "$dir = 'inout' and $type='int'"
+                > (unsigned int *) &_«$name»
+            when "$dir = 'inout' and $type='stringlist'"
+                > &_«$name»
+            otherwise
+                > _«$name»
+        }
+    }
+
+    function "mangle" {
+        > «concat('Java_foundation_pEp_jniadapter_', ../@name, '__1', str:replace(@name, '_', '_1'))»
+    }
+
+    template "parm", mode=sig {
+        const "name", "name(*[3])";
+        > ,\n        `call "jni_type" with "type", "name(*[2])", with "dir", "name(*[1])"` «$name»
+    }
+}
+

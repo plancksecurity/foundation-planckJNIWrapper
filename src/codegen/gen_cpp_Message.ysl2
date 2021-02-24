@@ -1,0 +1,207 @@
+include yslt.yml2
+include yslt.yml2
+
+tstylesheet {
+    include ./textutils.ysl2
+    include ./types_c.ysl2
+
+    template "/namespace[@name='pEp']" {
+        apply "struct", 0;
+        document("../../build/marker/gen_cpp_Message.marker", "text") > ""
+    }
+
+    template "struct" {
+        const "jname" call "CamelCase" with "text", "@name";
+
+        document("../cxx/foundation_pEp_jniadapter_{$jname}.cc", "text") {
+            ||
+            #include <cassert>
+            #include <pEp/mime.h>
+            #include <pEp/pEpLog.hh>
+            #include "jniutils.hh"
+            #include "throw_pEp_exception.hh"
+            #include "foundation_pEp_jniadapter_«$jname».h"
+
+            using namespace std;
+
+            namespace pEp {
+            namespace JNIAdapter {
+            static ::«@name» *«@name»_ptr(JNIEnv *env, jobject me) {
+                jfieldID handle;
+
+                try {
+                    handle = getFieldID(env, "foundation/pEp/jniadapter/«$jname»", "handle", "J");
+                } catch (std::exception& ex) {
+                    assert(0);
+                    return NULL;
+                }
+                return reinterpret_cast<::«@name» *>(env->GetLongField(me, handle));
+            }
+
+            };
+            };
+
+            extern "C" {
+
+            using namespace pEp::JNIAdapter;
+
+            JNIEXPORT jlong JNICALL Java_foundation_pEp_jniadapter_«$jname»_init(JNIEnv *env,
+                    jobject obj)
+            {
+                pEpLog("called");
+                ::«@name» * _obj = ::new_«@name»(PEP_dir_incoming);
+                if (!_obj) {
+                    outOfMemory(env);
+                    return 0;
+                }
+                return reinterpret_cast<jlong>(_obj);
+            }
+
+            JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_«$jname»_release(JNIEnv *env,
+                    jobject obj,
+                    jlong value)
+            {
+                pEpLog("called");
+                if (value) {
+                    ::«@name» *_obj = reinterpret_cast<::«@name» *>(value);
+                    ::free_«@name»(_obj);
+                }
+            }
+
+            JNIEXPORT jlong JNICALL Java_foundation_pEp_jniadapter_«$jname»__1«$jname»(JNIEnv *env,
+                    jobject msg,
+                    jbyteArray mime_text)
+            {
+                pEpLog("called");
+                char *_mime_text = to_string(env, mime_text);
+                size_t _size = env->GetArrayLength(mime_text);
+
+                ::«@name» *_msg = nullptr;
+                PEP_STATUS status = mime_decode_«@name»(_mime_text, _size, &_msg, NULL);
+                if (status) {
+                    throw_pEp_Exception(env, status);
+                }
+
+                return reinterpret_cast<jlong>(_msg);
+            }
+
+            JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_«$jname»__1encodeMIME(JNIEnv *env,
+                    jobject msg)
+            {
+                pEpLog("called");
+                «@name» *_obj = «@name»_ptr(env, msg);
+                char *mime_text = nullptr;
+                PEP_STATUS status = ::mime_encode_«@name»(_obj, false, &mime_text, false);
+                if (status) {
+                    throw_pEp_Exception(env, status);
+                }
+                jbyteArray result = from_string(env, mime_text);
+                free(mime_text);
+
+                return result;
+            }
+
+            ||
+            apply "*[name(.)!='enum']", 0, mode=entry {
+                with "name", "@name";
+                with "class" call "CamelCase" with "text", "@name";
+            }
+            ||
+            } // extern "C"
+
+            ||
+        }
+    }
+
+    function "mangle" {
+        param "type";
+        param "name";
+        param "classname" call "CamelCase" with "text", "../@name";
+        const "convert", "$type != 'timestamp'";
+
+        choose {
+            when "$convert"
+                > «concat('Java_foundation_pEp_jniadapter_', $classname, '__1', str:replace($name, '_', '_1'))»
+            otherwise
+                > «concat('Java_foundation_pEp_jniadapter_', $classname, '_', str:replace($name, '_', '_1'))»
+        }
+    }
+
+    template "*", mode=entry {
+        param "name";
+        param "class";
+        const "ctype" call "toC" with "type", "name(.)";
+        const "jname" call "CamelCase" with "text", "name(*[1])";
+        const "cname" call "lcase" with "text", "name(*[1])";
+        const "type", "name(.)";
+        const "getname" call "mangle" {
+            with "type", "$type";
+            with "name", "concat('get', $jname)";
+        }
+        const "setname" call "mangle" {
+            with "type", "$type";
+            with "name", "concat('set', $jname)";
+        }
+        ||
+        JNIEXPORT `call "jni_type" with "type", "name(.)"` JNICALL «$getname»(JNIEnv *env,
+                jobject obj)
+        {
+            pEpLog("called");
+            «$name» *_obj = «$name»_ptr(env, obj);
+        ||
+        choose {
+            when "../enum[@name=$type]"
+                |> return _obj->«$cname»;
+            otherwise
+                |> return from_«$type»(env, _obj->«$cname»);
+        }
+        ||
+        }
+
+        JNIEXPORT void JNICALL «$setname»(JNIEnv *env,
+                jobject obj,
+                `call "jni_type" with "type", "name(.)"`
+                value)
+        {
+            pEpLog("called");
+            «$name» *_obj = «$name»_ptr(env, obj);
+        ||
+        choose {
+            when "../enum[@name=$type]"
+                |> _obj->«$cname» = static_cast<«$ctype»>(value);
+            otherwise {
+                choose {
+                    when "$type = 'string'" {
+                        |> free(_obj->«$cname»);
+                    }
+                    otherwise {
+                        const "free" choose {
+                            when "$ctype = 'pEp_identity'" > identity
+                            when "contains($ctype, '_t')" value "substring-before($ctype, '_t')";
+                            otherwise value "$ctype";
+                        }
+
+                        |> free_«$free»(_obj->«$cname»);
+                    }
+                }
+                |> if(value) {
+                choose {
+                    when "$type = 'string'" {
+                        |>> _obj->«$cname» = to_«$type»(env, value);
+                    }
+                    otherwise {
+                        |>> _obj->«$cname» = to_«$type»(env, value);
+                    }
+                }
+                |> } else {
+                |>     _obj->«$cname» = NULL;
+                |> }
+            }
+        }
+        ||
+        }
+
+        ||
+    }
+}
+

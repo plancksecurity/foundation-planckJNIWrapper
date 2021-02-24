@@ -31,8 +31,9 @@ class FsMQManagerIdentitiesTestContext extends AbstractTestContext {
     List<String> messages;
 
     @Override
-    public void init() throws Throwable {
+    public FsMQManagerIdentitiesTestContext init() throws Throwable {
         messages = FsMQManagerTestUtils.createTestMessages(ownAddress, MSG_COUNT);
+        return this;
     }
 }
 
