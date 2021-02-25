@@ -288,6 +288,7 @@ tstylesheet {
                     return «$type».getByInt(_get«$name»());
                 }
                 private native int _get«$name»();
+
                 public void set«$name»(«$type» value) {
                     if(value != null)
                         _set«$name»(value.value);
@@ -303,7 +304,7 @@ tstylesheet {
                 ||
                 // Property type: no intermediate type [java: «$type», intermediate: «$itype», ctype: «$ctype»]
                 public «$type» get«$name»() {
-                    return get«$name»();
+                    return _get«$name»();
                 }
                 private native «$type» _get«$name»();
 
