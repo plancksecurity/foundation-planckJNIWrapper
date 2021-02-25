@@ -1,14 +1,17 @@
 package foundation.pEp.jniadapter.test.utils;
 
+import foundation.pEp.jniadapter.Blob;
 import foundation.pEp.jniadapter.Engine;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.pitytest.AbstractTestContext;
 import foundation.pEp.pitytest.TestLogger;
+import foundation.pEp.pitytest.utils.TestUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Vector;
 
 
 //public class ABAliceTestContext extends AdapterBaseTestContext {
@@ -61,6 +64,13 @@ public class AdapterBaseTestContext extends AbstractTestContext {
     public Message msgToSelf;
     public Message msgToBob;
 
+    // Message types
+    public Message.Direction msgDirOutgoing = Message.Direction.Outgoing;
+    public Blob attachment1 = new Blob();
+    public int attachmentsLen = 3;
+    public Vector<Blob> attachments = new Vector<Blob>();
+
+
     public AdapterBaseTestContext init() throws Throwable {
         callbacks = new TestCallbacks();
         engine = new Engine();
@@ -72,6 +82,8 @@ public class AdapterBaseTestContext extends AbstractTestContext {
         TestLogger.logH2("User directory:");
         TestLogger.log(engine.getUserDirectory());
 
+        attachment1 = AdapterTestUtils.makeNewTestBlob("attachment1", "attachment1.txt", "text/plain");
+        attachments = AdapterTestUtils.makeNewTestBlobList(attachmentsLen);
 
         alice = new Identity();
         alice.user_id = "23";
