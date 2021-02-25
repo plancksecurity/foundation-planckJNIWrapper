@@ -1,6 +1,9 @@
 package foundation.pEp.jniadapter.test.utils;
 
-import foundation.pEp.jniadapter.*;
+import foundation.pEp.jniadapter.Blob;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.Pair;
 
 import java.util.ArrayList;
 import java.util.Vector;
@@ -270,6 +273,25 @@ public class AdapterTestUtils {
             }
         }
         return spv;
+    }
+
+    // Factory methods to create test objects
+    public static Vector<Blob> makeNewTestBlobList(int len) {
+        Vector<Blob> blbList = new Vector<>();
+
+        for (int i = 0; i < len; i++) {
+            Blob blb = makeNewTestBlob("Attachement nr: " + i + " [TEST DATA]", "testfilename"+i+".txt", "text/plain" );
+            blbList.add(blb);
+        }
+        return blbList;
+    }
+
+    public static Blob makeNewTestBlob(String data, String filename, String mime_type) {
+        Blob blb = new Blob();
+        blb.data = data.getBytes();
+        blb.filename = filename;
+        blb.mime_type = mime_type;
+        return blb;
     }
 
     public static Message makeNewTestMessage(Identity from, Identity to, Message.Direction dir) {
