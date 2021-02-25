@@ -49,18 +49,8 @@ class TestMain {
         });
 
         new TestUnit<BasicTestContext>("setAttachments", btc, ctx -> {
-            int nrAttachemnts = 3;
-            log("Adding " + nrAttachemnts + " attachments");
-            Vector<Blob> attachments = new Vector<>();
-
-            for (int i = 0; i < nrAttachemnts; i++) {
-                Blob blb = new Blob();
-                String dataString = "Attachement nr: " + i + " [TEST DATA]";
-                blb.data = dataString.getBytes();
-                blb.filename = "testfilename.txt";
-                attachments.add(blb);
-            }
-            ctx.msgToBob.setAttachments(attachments);
+            log("Adding " + ctx.attachmentsLen + " attachments");
+            ctx.msgToBob.setAttachments(ctx.attachments);
         });
 
         new TestUnit<BasicTestContext>("Encrypt", btc, ctx -> {
