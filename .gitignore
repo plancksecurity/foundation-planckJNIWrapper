@@ -63,6 +63,7 @@ android/assets
 android/local.properties
 android/gradle.properties
 android/pEpJNIAdapter.iml
+android/.cxx
 
 androidTests/.gradle
 androidTests/local.properties
@@ -87,6 +88,6 @@ org.tar.gz
 *.iml
 
 android/external/[?]*
-
+android/external/build
 # Default ignored files
 ?idea/
