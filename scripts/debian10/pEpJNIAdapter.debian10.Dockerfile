@@ -27,4 +27,7 @@ ARG CURRENT_DISTRO
 
 ### Build libpEpAdapter
 RUN sh ./scripts/${CURRENT_DISTRO}/build_pEpJNIAdapter.sh && \
+    install -m 644 -t ${INSTPREFIX}/lib dist/libpEpJNI.a && \
+    install -m 755 -t ${INSTPREFIX}/lib dist/libpEpJNI.so && \
+    install -m 644 -t ${INSTPREFIX}/lib dist/pEp.jar && \
     rm -rf ${BUILDROOT}/*
