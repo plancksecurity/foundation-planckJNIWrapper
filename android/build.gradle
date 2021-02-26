@@ -13,7 +13,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.2'
+        classpath 'com.android.tools.build:gradle:4.1.2'
     }
 }
 
@@ -32,8 +32,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 3
-        versionName "2.1.4"
+        versionCode 4
+        versionName "2.1.8"
 
         externalNativeBuild {
             ndkBuild {
@@ -50,7 +50,7 @@ android {
             manifest.srcFile 'AndroidManifest.xml'
 
             // where to find generated Java source
-            java.srcDirs = ['../src', 'src']
+            java.srcDirs = ['../src', 'src', '../src/java']
             jniLibs.srcDirs = ['libs',
             //                   'external/data/data/security.pEp/app_opt/lib'
                                ]
@@ -140,7 +140,7 @@ android {
         commandLine 'make', "-j${threadsToUse}", 'system.db'
     }
 
-    // copy pEpEnginge's system.db to asset
+    // copy pEpEngine's system.db to asset
     task cpDBAssets(type: Copy, dependsOn: 'buildpEpEngineSystemDB') {
         from file(new File(pEpEngineDB, 'system.db'))
         into 'assets'
