@@ -128,7 +128,7 @@ $(LIB_CXX_STATIC): compile-cxx
 	$(AR) -r $@ $(OBJ_DIR)*.o
 
 # -------------- Compile -----------------
-compile-java: create-dirs codegen
+compile-java: create-dirs codegen gen-jni-headers
 	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/$(JAVAC_CMD) -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/*.java
 	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/$(JAVAC_CMD) -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/exceptions/*.java
 	cd $(JAVA_DIR);$(JAVA_BIN_DIR)/$(JAVAC_CMD) -d ../$(JAVA_BUILD_ROOT) $(JAVA_PKG_BASENAME)/interfaces/*.java
