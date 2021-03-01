@@ -4,7 +4,7 @@ set -exo
 export LC_ALL=en_US.UTF-8 && \
 
 # JAVA_HOME (only for the pEpJNIAdapter)
-export JAVA_HOME=$(dirname $(dirname $(readlink -f /usr/bin/javac)));
+export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))));
 echo "$JAVA_HOME"
 
 cat >local.conf <<__LOCAL__
