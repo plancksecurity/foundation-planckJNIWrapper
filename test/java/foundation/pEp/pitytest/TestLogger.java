@@ -13,17 +13,23 @@ public class TestLogger {
     }
 
     // options
-    private static boolean logEnabled = true;
+    private static boolean logEnabled;
     private static int lineWidth;
 
     // constants
-    private static int threadStrLen = 10;
-    private static String threadSeparator = ": ";
-    private static boolean initialized = false;
+    private static int threadStrLen;
+    private static String threadSeparator;
+    private static boolean initialized;
 
     private static void init() {
         if (!initialized) {
+            logEnabled = true;
+            threadStrLen = 10;
+            lineWidth = 80;
+            threadSeparator = ": ";
+
             tryDetermineTermSize();
+            logRaw("ENVCOL:" + TestUtils.getEnvVar("COLUMNS"));
             initialized = true;
         }
     }
@@ -40,10 +46,9 @@ public class TestLogger {
                 cmdOutput += buf;
             }
 
-            log("TERMSIZE: " + cmdOutput);
-
             nrCols = Integer.valueOf(cmdOutput);
             setLineWidth(clip(nrCols, 40, 2000));
+
         } catch (Exception e) {
             // something went wrong
         }
