@@ -29,7 +29,6 @@ public class TestLogger {
             threadSeparator = ": ";
 
             tryDetermineTermSize();
-            logRaw("ENVCOL:" + TestUtils.getEnvVar("COLUMNS"));
             initialized = true;
         }
     }
