@@ -70,7 +70,7 @@ public class TestUtils {
         if (envVarExists(name)) {
             ret = System.getenv(name);
         } else {
-            throw new RuntimeException("ENV var does not exits");
+            throw new RuntimeException("ENV var does not exist");
         }
         return ret;
     }
