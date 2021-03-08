@@ -11,9 +11,7 @@ import foundation.pEp.pitytest.utils.TestUtils;
 
 import java.util.Arrays;
 import java.util.Vector;
-
-import static foundation.pEp.pitytest.TestLogger.log;
-import static foundation.pEp.pitytest.TestLogger.logH2;
+import static foundation.pEp.pitytest.TestLogger.*;
 
 class Jni143TestContext extends AdapterBaseTestContext {
     @Override
@@ -24,28 +22,7 @@ class Jni143TestContext extends AdapterBaseTestContext {
 }
 
 class TestAlice {
-    public static String diff(byte[] left, byte[] right, boolean verbose) {
-        String ret = "";
-        String diffString = "";
-        int diffCount = 0;
-        for (int i = 0; i < left.length; i++) {
-            byte bLeft = left[i];
-            byte bRight = right[i];
-            String diffIndicator = "";
-            if (bLeft != bRight) {
-                diffCount++;
-                diffString += "Byte[" + i + "]:\t\t " + bLeft + "\t" + bRight + "\t" + "\n";
-            }
-        }
-        if (verbose) {
-            ret = diffString + "\n";
-            ret += Integer.toString(diffCount) + "\t Different bytes";
-        } else {
-            ret = Integer.toString(diffCount);
-        }
 
-        return ret;
-    }
 
     public static void main(String[] args) throws Exception {
         TestSuite.getDefault().setVerbose(true);
@@ -77,7 +54,7 @@ class TestAlice {
                     if (attachmentsDiffer) {
 //                        log(new String(decBlobData));
                         log("attachments decrypted dont equal original");
-                        log(diff(origBlob.data, decBlobData, false) + "\t\tdiffing bytes");
+                        log(AdapterTestUtils.diff(origBlob.data, decBlobData, false) + "\t\tdiffing bytes");
                     }
                     assert !attachmentsDiffer : "attachments decrypted dont equal original";
                     assert decRet.dst.getLongmsg().equals(msg1Plain.getLongmsg()) : "LongMessage decrypted dont equal original";

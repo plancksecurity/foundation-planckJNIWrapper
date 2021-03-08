@@ -342,4 +342,27 @@ public class AdapterTestUtils {
         msg.setLongmsg("Hi i am the longMessage");
         return msg;
     }
+
+    public static String diff(byte[] left, byte[] right, boolean verbose) {
+        String ret = "";
+        String diffString = "";
+        int diffCount = 0;
+        for (int i = 0; i < left.length; i++) {
+            byte bLeft = left[i];
+            byte bRight = right[i];
+            String diffIndicator = "";
+            if (bLeft != bRight) {
+                diffCount++;
+                diffString += "Byte[" + i + "]:\t\t " + bLeft + "\t" + bRight + "\t" + "\n";
+            }
+        }
+        if (verbose) {
+            ret = diffString + "\n";
+            ret += Integer.toString(diffCount) + "\t Different bytes";
+        } else {
+            ret = Integer.toString(diffCount);
+        }
+
+        return ret;
+    }
 }
