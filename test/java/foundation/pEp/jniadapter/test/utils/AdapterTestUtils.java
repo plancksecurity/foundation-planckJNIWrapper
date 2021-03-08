@@ -4,6 +4,7 @@ import foundation.pEp.jniadapter.Blob;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Pair;
+import foundation.pEp.pitytest.utils.TestUtils;
 
 import java.util.ArrayList;
 import java.util.Vector;
@@ -290,7 +291,23 @@ public class AdapterTestUtils {
         Blob blb = new Blob();
         blb.data = data.getBytes();
         blb.filename = filename;
-        blb.mime_type = mime_type;
+        if (mime_type != null) {
+            blb.mime_type = mime_type;
+        }
+        return blb;
+    }
+
+    public static Blob makeNewTestBlob(int sizeBytes, String filename, String mime_type) {
+        byte bData[] = new byte[sizeBytes];
+        for (int i = 0; i < sizeBytes; i++) {
+            bData[i] = (byte) TestUtils.randomInt(65, 90); // All uppercase letters
+        }
+        Blob blb = new Blob();
+        blb.data = bData;
+        blb.filename = filename;
+        if (mime_type != null) {
+            blb.mime_type = mime_type;
+        }
         return blb;
     }
 
