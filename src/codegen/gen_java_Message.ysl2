@@ -68,6 +68,11 @@ tstylesheet {
                     release(handle);
                 }
 
+                @Override
+                public void finalize() {
+                    release(handle);
+                }
+
                 final protected long getHandle() {
                     return handle;
                 }
