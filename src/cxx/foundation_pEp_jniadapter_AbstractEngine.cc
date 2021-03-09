@@ -71,7 +71,7 @@ void jni_init() {
     identityClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/_Identity")));
     signalClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/SyncHandshakeSignal")));
     passphraseTypeClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/PassphraseType")));
-    engineClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/Engine")));
+    engineClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/AbstractEngine")));
 
     messageConstructorMethodID = _env->GetMethodID(
             messageClass,
