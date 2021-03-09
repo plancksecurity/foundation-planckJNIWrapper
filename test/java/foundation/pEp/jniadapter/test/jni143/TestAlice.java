@@ -13,6 +13,17 @@ import java.util.Arrays;
 import java.util.Vector;
 import static foundation.pEp.pitytest.TestLogger.*;
 
+
+/*
+Test: Add Attachments Enc/Dec Tests
+Verifies equality of attachments before encryption and after decryption.
+Generates attachment data from random A-Z letters.
+Starts with attachment size 1 byte.
+For each encrypt/decrypt cycle, doubles the size of the attachment data.
+assert dataIn == dataOut
+Logs the count of differing bytes.
+ */
+
 class Jni143TestContext extends AdapterBaseTestContext {
     @Override
     public AdapterBaseTestContext init() throws Throwable {
