@@ -343,26 +343,31 @@ public class AdapterTestUtils {
         return msg;
     }
 
-    public static String diff(byte[] left, byte[] right, boolean verbose) {
-        String ret = "";
+
+
+    public static DiffResult diff(byte[] left, byte[] right) {
+        DiffResult ret = new DiffResult();
         String diffString = "";
         int diffCount = 0;
+        int firstDiff = 0;
+        boolean firstDiffHappened = false;
         for (int i = 0; i < left.length; i++) {
             byte bLeft = left[i];
             byte bRight = right[i];
             String diffIndicator = "";
             if (bLeft != bRight) {
+                if(!firstDiffHappened) {
+                    firstDiff = i;
+                    firstDiffHappened = true;
+                }
                 diffCount++;
                 diffString += "Byte[" + i + "]:\t\t " + bLeft + "\t" + bRight + "\t" + "\n";
             }
         }
-        if (verbose) {
-            ret = diffString + "\n";
-            ret += Integer.toString(diffCount) + "\t Different bytes";
-        } else {
-            ret = Integer.toString(diffCount);
-        }
-
+        ret.setDiff(diffString);
+        ret.setCount(diffCount);
+        ret.setFirstDiffByte(firstDiff);
         return ret;
     }
 }
+
