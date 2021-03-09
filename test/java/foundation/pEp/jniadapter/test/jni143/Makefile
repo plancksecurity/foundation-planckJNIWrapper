@@ -1,4 +1,4 @@
-	include ../../../../../../../Makefile.conf
+include ../../../../../../../Makefile.conf
 include ../Makefile.conf
 
 TEST_UNIT_NAME=jni143
@@ -7,6 +7,7 @@ JAVA_CLASSES = \
  	TestAlice.class \
  	../utils/AdapterBaseTestContext.class \
  	../utils/AdapterTestUtils.class \
+ 	../utils/DiffREsult.class \
  	../utils/TestCallbacks.class
 
 .PHONY: pitytest compile alice test clean

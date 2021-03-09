@@ -11,7 +11,9 @@ import foundation.pEp.pitytest.utils.TestUtils;
 
 import java.util.Arrays;
 import java.util.Vector;
-import static foundation.pEp.pitytest.TestLogger.*;
+
+import static foundation.pEp.pitytest.TestLogger.log;
+import static foundation.pEp.pitytest.TestLogger.logH2;
 
 
 /*
@@ -65,7 +67,7 @@ class TestAlice {
                     if (attachmentsDiffer) {
 //                        log(new String(decBlobData));
                         log("attachments decrypted dont equal original");
-                        log(AdapterTestUtils.diff(origBlob.data, decBlobData, false) + "\t\tdiffing bytes");
+                        log(AdapterTestUtils.diff(origBlob.data, decBlobData).toString());
                     }
                     assert !attachmentsDiffer : "attachments decrypted dont equal original";
                     assert decRet.dst.getLongmsg().equals(msg1Plain.getLongmsg()) : "LongMessage decrypted dont equal original";
