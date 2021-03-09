@@ -34,7 +34,7 @@ jobject objj = nullptr;
 jclass messageClass = nullptr;
 jclass identityClass = nullptr;
 jclass signalClass = nullptr;
-jclass engineClass = nullptr;
+jclass abstractEngineClass = nullptr;
 jclass passphraseTypeClass = nullptr;
 
 namespace JNISync {
@@ -71,7 +71,7 @@ void jni_init() {
     identityClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/_Identity")));
     signalClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/SyncHandshakeSignal")));
     passphraseTypeClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/PassphraseType")));
-    engineClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/AbstractEngine")));
+    abstractEngineClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/AbstractEngine")));
 
     messageConstructorMethodID = _env->GetMethodID(
             messageClass,
@@ -79,22 +79,22 @@ void jni_init() {
             "(J)V");
 
     messageToSendMethodID = _env->GetMethodID(
-            engineClass,
+            abstractEngineClass,
             "messageToSendCallFromC",
             "(Lfoundation/pEp/jniadapter/Message;)I");
 
     needsFastPollMethodID = _env->GetMethodID(
-            engineClass,
+            abstractEngineClass,
             "needsFastPollCallFromC",
             "(Z)I");
 
     notifyHandShakeMethodID = _env->GetMethodID(
-            engineClass,
+            abstractEngineClass,
             "notifyHandshakeCallFromC",
             "(Lfoundation/pEp/jniadapter/_Identity;Lfoundation/pEp/jniadapter/_Identity;Lfoundation/pEp/jniadapter/SyncHandshakeSignal;)I");
 
     passphraseRequiredMethodID = _env->GetMethodID(
-            engineClass,
+            abstractEngineClass,
             "passphraseRequiredFromC",
             "(Lfoundation/pEp/jniadapter/PassphraseType;)[B");
 
