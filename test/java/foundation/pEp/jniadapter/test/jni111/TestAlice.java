@@ -53,7 +53,7 @@ class TestAlice {
 
         new TestUnit<AdapterBaseTestContext>("encrypt_message() -> pEpPassphraseRequired ", jni111Ctx, ctx -> {
             try {
-                Message enc = ctx.engine.encrypt_message(ctx.msgToSelf, new Vector<>(), Message.EncFormat.PEP);
+                Message enc = ctx.engine.encrypt_message(ctx.msgAliceToAlice, new Vector<>(), Message.EncFormat.PEP);
             } catch (pEpException e) {
                 assert e instanceof pEpPassphraseRequired: "wrong exception type";
                 return;
@@ -67,7 +67,7 @@ class TestAlice {
 
         new TestUnit<AdapterBaseTestContext>("encrypt_message() -> pEpWrongPassphrase ", jni111Ctx, ctx -> {
             try {
-                Message enc = ctx.engine.encrypt_message(ctx.msgToSelf, new Vector<>(), Message.EncFormat.PEP);
+                Message enc = ctx.engine.encrypt_message(ctx.msgAliceToAlice, new Vector<>(), Message.EncFormat.PEP);
             } catch (pEpException e) {
                 assert e instanceof pEpWrongPassphrase: "wrong exception type";
                 return;
@@ -80,10 +80,10 @@ class TestAlice {
         });
 
         new TestUnit<AdapterBaseTestContext>("encrypt_message() -> success", jni111Ctx, ctx -> {
-            assert ctx.msgToSelf.getEncFormat() == Message.EncFormat.None : "Orig msg not plain";
-            Message enc = ctx.engine.encrypt_message(ctx.msgToSelf, new Vector<>(), Message.EncFormat.PEP);
+            assert ctx.msgAliceToAlice.getEncFormat() == Message.EncFormat.None : "Orig msg not plain";
+            Message enc = ctx.engine.encrypt_message(ctx.msgAliceToAlice, new Vector<>(), Message.EncFormat.PEP);
             assert enc.getEncFormat() == Message.EncFormat.PGPMIME :"Message not encrypted";
-            assert !enc.getLongmsg().contains(ctx.msgToSelf.getLongmsg()): "Message not encrypted";
+            assert !enc.getLongmsg().contains(ctx.msgAliceToAlice.getLongmsg()): "Message not encrypted";
             log(AdapterTestUtils.msgToString(enc, false));
         });
 

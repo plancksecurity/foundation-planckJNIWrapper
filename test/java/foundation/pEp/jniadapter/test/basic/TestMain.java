@@ -1,6 +1,5 @@
 package foundation.pEp.jniadapter.test.basic;
 
-import foundation.pEp.jniadapter.Blob;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.decrypt_message_Return;
@@ -49,21 +48,21 @@ class TestMain {
         });
 
         new TestUnit<BasicTestContext>("setAttachments", btc, ctx -> {
-            log("Adding " + ctx.attachmentsLen + " attachments");
-            ctx.msgToBob.setAttachments(ctx.attachments);
+            log("Adding " + ctx.attachmentList.getCount() + " attachments");
+            ctx.msgAliceToBob.setAttachments(ctx.attachmentList.getAttachments());
         });
 
         new TestUnit<BasicTestContext>("Encrypt", btc, ctx -> {
-            ctx.enc = ctx.engine.encrypt_message(ctx.msgToBob, null, Message.EncFormat.PEP);
+            ctx.enc = ctx.engine.encrypt_message(ctx.msgAliceToBob, null, Message.EncFormat.PEP);
             log(AdapterTestUtils.msgToString(ctx.enc, false));
         });
 
         new TestUnit<BasicTestContext>("Rating Preview", btc, ctx -> {
-            log("Rating preview: " + ctx.engine.outgoing_message_rating_preview(ctx.msgToBob));
+            log("Rating preview: " + ctx.engine.outgoing_message_rating_preview(ctx.msgAliceToBob));
         });
 
         new TestUnit<BasicTestContext>("Rating", btc, ctx -> {
-            log("Rating" + ctx.engine.outgoing_message_rating(ctx.msgToBob));
+            log("Rating" + ctx.engine.outgoing_message_rating(ctx.msgAliceToBob));
         });
 
         new TestUnit<BasicTestContext>("Decrypt", btc, ctx -> {

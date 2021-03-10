@@ -7,7 +7,6 @@ import foundation.pEp.pitytest.*;
 import foundation.pEp.pitytest.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.*;
 
-import java.util.ArrayList;
 import java.util.Vector;
 
 // re_evaluate_message_rating(Message m)
@@ -50,9 +49,9 @@ class JNI1118Context extends AdapterBaseTestContext {
 
         Vector<Identity> msgToBobRcpts = new Vector<>();
         msgToBobRcpts.add(bob);
-        msgToBob.setTo(msgToBobRcpts);
+        msgAliceToBob.setTo(msgToBobRcpts);
 
-        msgToBobEncrypted = engine.encrypt_message(msgToBob, null, Message.EncFormat.PEP);
+        msgToBobEncrypted = engine.encrypt_message(msgAliceToBob, null, Message.EncFormat.PEP);
         msgToBobDecrypted = msgToBobEncrypted;
         msgToBobDecryptResult = engine.decrypt_message(msgToBobDecrypted, new Vector<String>(), 0);
         if (msgToBobEncrypted == null) {

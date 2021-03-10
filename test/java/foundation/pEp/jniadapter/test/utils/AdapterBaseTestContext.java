@@ -6,12 +6,10 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.pitytest.AbstractTestContext;
 import foundation.pEp.pitytest.TestLogger;
-import foundation.pEp.pitytest.utils.TestUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Vector;
 
 
 //public class ABAliceTestContext extends AdapterBaseTestContext {
@@ -29,6 +27,7 @@ import java.util.Vector;
 //    }
 //
 //}
+
 
 
 public class AdapterBaseTestContext extends AbstractTestContext {
@@ -61,14 +60,16 @@ public class AdapterBaseTestContext extends AbstractTestContext {
     private String filenameBobSec = "../resources/test_keys/bob-sec.asc";
 
     // Messages
-    public Message msgToSelf;
-    public Message msgToBob;
+    public Message msgAliceToAlice;
+    public Message msgAliceToBob;
 
     // Message types
     public Message.Direction msgDirOutgoing = Message.Direction.Outgoing;
-    public Blob attachment1 = new Blob();
-    public int attachmentsLen = 3;
-    public Vector<Blob> attachments = new Vector<Blob>();
+    public Blob attachmentTiny;
+    public Blob attachment1KB;
+    public Blob attachment1MB;
+    public Blob attachment10MB;
+    public AttachmentList attachmentList = new AttachmentList(3,10000);
 
 
     public AdapterBaseTestContext init() throws Throwable {
@@ -82,8 +83,10 @@ public class AdapterBaseTestContext extends AbstractTestContext {
         TestLogger.logH2("User directory:");
         TestLogger.log(engine.getUserDirectory());
 
-        attachment1 = AdapterTestUtils.makeNewTestBlob("attachment1", "attachment1.txt", "text/plain");
-        attachments = AdapterTestUtils.makeNewTestBlobList(attachmentsLen);
+        attachmentTiny = AdapterTestUtils.makeNewTestBlob("attachment1", "attachment1.txt", "text/plain");
+        attachment1KB = AdapterTestUtils.makeNewTestBlob(1000, "att with size 1KB", null);
+        attachment1MB = AdapterTestUtils.makeNewTestBlob(1000000, "att with size 1MB", null);
+        attachment10MB = AdapterTestUtils.makeNewTestBlob(10000000, "att with size 10MB", null);
 
         alice = new Identity();
         alice.user_id = "23";
@@ -95,8 +98,8 @@ public class AdapterBaseTestContext extends AbstractTestContext {
         bob.user_id = "42";
         bob.address = "bob@peptest.org";
 
-        msgToSelf = AdapterTestUtils.makeNewTestMessage(alice, alice, Message.Direction.Outgoing);
-        msgToBob = AdapterTestUtils.makeNewTestMessage(alice, bob, Message.Direction.Outgoing);
+        msgAliceToAlice = AdapterTestUtils.makeNewTestMessage(alice, alice, Message.Direction.Outgoing);
+        msgAliceToBob = AdapterTestUtils.makeNewTestMessage(alice, bob, Message.Direction.Outgoing);
 
         Path path;
         path = Paths.get(filenameBobPub);

@@ -1,7 +1,6 @@
 package foundation.pEp.jniadapter.test.jni114;
 
 import static foundation.pEp.pitytest.TestLogger.*;
-import static foundation.pEp.pitytest.utils.TestUtils.readKey;
 import static foundation.pEp.pitytest.utils.TestUtils.sleep;
 
 import foundation.pEp.jniadapter.*;
@@ -38,7 +37,7 @@ class TestAlice {
         new TestUnit<AdapterBaseTestContext>("no callback / encrypt fails nonblocking", jni114Ctx, ctx -> {
             ctx.alice = ctx.engine.myself(ctx.alice);
             try {
-                Message enc = ctx.engine.encrypt_message(ctx.msgToSelf, new Vector<>(), Message.EncFormat.PEP);
+                Message enc = ctx.engine.encrypt_message(ctx.msgAliceToAlice, new Vector<>(), Message.EncFormat.PEP);
             } catch (pEpException e) {
                 assert e instanceof pEpPassphraseRequired : "wrong exception type";
                 return;
@@ -65,10 +64,10 @@ class TestAlice {
             log(AdapterTestUtils.identityToString(ctx.alice, true));
 
             // Encrypt
-            assert ctx.msgToSelf.getEncFormat() == Message.EncFormat.None : "Orig msg not plain";
-            Message enc = ctx.engine.encrypt_message(ctx.msgToSelf, new Vector<>(), Message.EncFormat.PEP);
+            assert ctx.msgAliceToAlice.getEncFormat() == Message.EncFormat.None : "Orig msg not plain";
+            Message enc = ctx.engine.encrypt_message(ctx.msgAliceToAlice, new Vector<>(), Message.EncFormat.PEP);
             assert enc.getEncFormat() == Message.EncFormat.PGPMIME : "Message not encrypted";
-            assert !enc.getLongmsg().contains(ctx.msgToSelf.getLongmsg()) : "Message not encrypted";
+            assert !enc.getLongmsg().contains(ctx.msgAliceToAlice.getLongmsg()) : "Message not encrypted";
             log(AdapterTestUtils.msgToString(enc, false));
         });
 

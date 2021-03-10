@@ -32,7 +32,7 @@ class TestMain {
             ctx.engine.importKey(ctx.keyBobPub);
             // Make msg1 by encrypting msgToBob
             logH2("Create target Message");
-            Message msg1 = ctx.engine.encrypt_message(ctx.msgToBob, null, Message.EncFormat.PEP);
+            Message msg1 = ctx.engine.encrypt_message(ctx.msgAliceToBob, null, Message.EncFormat.PEP);
             log("\n" + msgToString(msg1, false));
 
             // Lets get the pgpText of the msg1, and the EncFormat
@@ -55,7 +55,7 @@ class TestMain {
             ctx.engine.importKey(ctx.keyBobPub);
             // Make msg1 by encrypting msgToBob
             logH2("Create target Message");
-            Message msg1 = ctx.engine.encrypt_message(ctx.msgToBob, null, Message.EncFormat.PEPEncInlineEA);
+            Message msg1 = ctx.engine.encrypt_message(ctx.msgAliceToBob, null, Message.EncFormat.PEPEncInlineEA);
             log("\n" + msgToString(msg1, false));
 
             // Lets get the pgpText of the msg1, and the EncFormat

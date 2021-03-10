@@ -41,9 +41,9 @@ class CTXReEvaluateMessageRating extends AdapterBaseTestContext {
 
         Vector<Identity> msgToBobRcpts = new Vector<>();
         msgToBobRcpts.add(bob);
-        msgToBob.setTo(msgToBobRcpts);
+        msgAliceToBob.setTo(msgToBobRcpts);
 
-        msgToBobEncrypted = engine.encrypt_message(msgToBob, null, Message.EncFormat.PEP);
+        msgToBobEncrypted = engine.encrypt_message(msgAliceToBob, null, Message.EncFormat.PEP);
         msgToBobDecrypted = msgToBobEncrypted;
         msgToBobDecryptResult = engine.decrypt_message(msgToBobDecrypted, new Vector<String>(), 0);
         if (msgToBobEncrypted == null) {
@@ -78,19 +78,19 @@ class TestMain {
         });
 
         new TestUnit<AdapterBaseTestContext>("Engine.encrypt_message", new AdapterBaseTestContext(), ctx -> {
-            ctx.engine.encrypt_message(ctx.msgToBob, null, Message.EncFormat.PEP);
+            ctx.engine.encrypt_message(ctx.msgAliceToBob, null, Message.EncFormat.PEP);
         });
 
         new TestUnit<CTXAlice>("Engine.encrypt_message_and_add_priv_key", new CTXAlice(), ctx -> {
-            ctx.engine.encrypt_message_and_add_priv_key(ctx.msgToSelf, ctx.alice.fpr);
+            ctx.engine.encrypt_message_and_add_priv_key(ctx.msgAliceToAlice, ctx.alice.fpr);
         });
 
         new TestUnit<CTXAlice>("Engine.encrypt_message_for_self", new CTXAlice(), ctx -> {
-            ctx.engine.encrypt_message_for_self(ctx.alice, ctx.msgToSelf, null);
+            ctx.engine.encrypt_message_for_self(ctx.alice, ctx.msgAliceToAlice, null);
         });
 
         new TestUnit<AdapterBaseTestContext>("Engine.decrypt_message", new AdapterBaseTestContext(), ctx -> {
-            ctx.engine.decrypt_message(ctx.msgToSelf, new Vector<String>(), 0);
+            ctx.engine.decrypt_message(ctx.msgAliceToAlice, new Vector<String>(), 0);
         });
 
         new TestUnit<CTXReEvaluateMessageRating>("Engine.re_evaluate_message_rating", new CTXReEvaluateMessageRating(), ctx -> {
@@ -98,11 +98,11 @@ class TestMain {
         });
 
         new TestUnit<AdapterBaseTestContext>("Engine.outgoing_message_rating", new AdapterBaseTestContext(), ctx -> {
-            ctx.engine.outgoing_message_rating(ctx.msgToBob);
+            ctx.engine.outgoing_message_rating(ctx.msgAliceToBob);
         });
 
         new TestUnit<AdapterBaseTestContext>("Engine.outgoing_message_rating_preview", new AdapterBaseTestContext(), ctx -> {
-            ctx.engine.outgoing_message_rating_preview(ctx.msgToBob);
+            ctx.engine.outgoing_message_rating_preview(ctx.msgAliceToBob);
         });
 
         new TestUnit<CTXAlice>("Engine.get_identity", new CTXAlice(), ctx -> {
@@ -147,7 +147,7 @@ class TestMain {
         });
 
         new TestUnit<AdapterBaseTestContext>("Engine.get_message_trustwords", new AdapterBaseTestContext(), ctx -> {
-            ctx.engine.get_message_trustwords(ctx.msgToBob, null, ctx.bob, "en", false);
+            ctx.engine.get_message_trustwords(ctx.msgAliceToBob, null, ctx.bob, "en", false);
         });
 
         new TestUnit<AdapterBaseTestContext>("Engine.get_languagelist", new AdapterBaseTestContext(), ctx -> {
