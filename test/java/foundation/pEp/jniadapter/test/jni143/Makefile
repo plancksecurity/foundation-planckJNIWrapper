@@ -7,7 +7,7 @@ JAVA_CLASSES = \
  	TestAlice.class \
  	../utils/AdapterBaseTestContext.class \
  	../utils/AdapterTestUtils.class \
- 	../utils/DiffREsult.class \
+ 	../utils/DiffResult.class \
  	../utils/TestCallbacks.class
 
 .PHONY: pitytest compile alice test clean
