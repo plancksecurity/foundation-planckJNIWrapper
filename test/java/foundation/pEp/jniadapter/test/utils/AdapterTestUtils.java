@@ -277,11 +277,22 @@ public class AdapterTestUtils {
     }
 
     // Factory methods to create test objects
-    public static Vector<Blob> makeNewTestBlobList(int len) {
+    public static Vector<Blob> makeNewTestBlobList(int count) {
         Vector<Blob> blbList = new Vector<>();
 
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < count; i++) {
             Blob blb = makeNewTestBlob("Attachement nr: " + i + " [TEST DATA]", "testfilename"+i+".txt", "text/plain" );
+            blbList.add(blb);
+        }
+        return blbList;
+    }
+
+    // Factory methods to create test objects
+    public static Vector<Blob> makeNewTestBlobList(int sizeBytes, String filename, String mime_type, int count) {
+        Vector<Blob> blbList = new Vector<>();
+
+        for (int i = 0; i < count; i++) {
+            Blob blb = makeNewTestBlob(sizeBytes, filename + Integer.toString(i), mime_type);
             blbList.add(blb);
         }
         return blbList;
