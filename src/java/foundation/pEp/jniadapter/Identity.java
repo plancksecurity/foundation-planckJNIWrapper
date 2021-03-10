@@ -1,6 +1,6 @@
 package foundation.pEp.jniadapter;
 
-import foundation.pEp.jniadapter.interfaces.*;
+import foundation.pEp.jniadapter.interfaces.IdentityInterface;
 import java.io.Serializable;
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class Identity implements IdentityInterface, Serializable {
 
     public static String toXKeyList(List<Identity> ids) {
         String ret = "";
-        if(ids.size() > 0) {
+        if (ids.size() > 0) {
             for (Identity id : ids) {
                 ret += id.fpr;
                 ret += ",";
@@ -55,8 +55,7 @@ public class Identity implements IdentityInterface, Serializable {
 
     @Override
     public String toString() {
-        return address + "::" + username + "\n" +
-                user_id + "::" + fpr;
+        return address + "::" + user_id + "::" + username + "::" + fpr;
     }
 }
 
