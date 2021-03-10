@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 
-//public class ABAliceTestContext extends AdapterBaseTestContext {
+//public class ABAliceTestContext extends CTXBase {
 //    FsMQManager transport;
 //
 //    @Override
@@ -30,7 +30,7 @@ import java.nio.file.Paths;
 
 
 
-public class AdapterBaseTestContext extends AbstractTestContext {
+public class CTXBase extends AbstractTestContext {
     // Basic
     public Engine engine;
     public TestCallbacks callbacks;
@@ -72,7 +72,7 @@ public class AdapterBaseTestContext extends AbstractTestContext {
     public AttachmentList attachmentList = new AttachmentList(3,10000);
 
 
-    public AdapterBaseTestContext init() throws Throwable {
+    public CTXBase init() throws Throwable {
         callbacks = new TestCallbacks();
         engine = new Engine();
         engine.setMessageToSendCallback(callbacks);

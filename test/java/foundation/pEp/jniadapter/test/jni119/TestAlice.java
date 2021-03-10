@@ -1,7 +1,7 @@
 package foundation.pEp.jniadapter.test.jni119;
 
 import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
+import foundation.pEp.jniadapter.test.utils.CTXBase;
 import foundation.pEp.pitytest.TestSuite;
 import foundation.pEp.pitytest.TestUnit;
 import foundation.pEp.pitytest.utils.TestUtils;
@@ -14,12 +14,12 @@ class TestAlice {
         TestSuite.getDefault().setVerbose(true);
         TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
 
-        new TestUnit<AdapterBaseTestContext>("enter_device_group() no exception with no identities", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("enter_device_group() no exception with no identities", new CTXBase(), ctx -> {
             ctx.alice = ctx.engine.myself(ctx.alice);
             ctx.engine.enter_device_group(new Vector<Identity>());
         });
 
-        new TestUnit<AdapterBaseTestContext>("enter_device_group() no exception with 2 identities", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("enter_device_group() no exception with 2 identities", new CTXBase(), ctx -> {
             ctx.alice = ctx.engine.myself(ctx.alice);
             ctx.bob = ctx.engine.myself(ctx.bob);
 

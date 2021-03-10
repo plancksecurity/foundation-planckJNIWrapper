@@ -3,7 +3,7 @@ package foundation.pEp.jniadapter.test.jni98;
 import foundation.pEp.jniadapter.*;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.pitytest.TestUnit;
-import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
+import foundation.pEp.jniadapter.test.utils.CTXBase;
 
 import java.util.Vector;
 
@@ -28,7 +28,7 @@ Please see https://pep.foundation/jira/browse/JNI-98 for further discussion
 
 class TestMain {
     public static void main(String[] args) throws Exception {
-        new TestUnit<AdapterBaseTestContext>("JNI-98 - Message.EncFormat.PEP", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("JNI-98 - Message.EncFormat.PEP", new CTXBase(), ctx -> {
             ctx.engine.importKey(ctx.keyBobPub);
             // Make msg1 by encrypting msgToBob
             logH2("Create target Message");
@@ -51,7 +51,7 @@ class TestMain {
             log("\n" + msgToString(result.dst, false));
         }).run();
 
-        new TestUnit<AdapterBaseTestContext>("JNI-98 - Message.EncFormat.PEP_enc_inline_EA", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("JNI-98 - Message.EncFormat.PEP_enc_inline_EA", new CTXBase(), ctx -> {
             ctx.engine.importKey(ctx.keyBobPub);
             // Make msg1 by encrypting msgToBob
             logH2("Create target Message");

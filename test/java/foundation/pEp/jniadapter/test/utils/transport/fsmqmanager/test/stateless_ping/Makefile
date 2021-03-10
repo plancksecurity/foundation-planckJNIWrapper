@@ -2,7 +2,7 @@ include ../Makefile.conf
 
 TEST_UNIT_NAME=stateless_ping
 
-JAVA_CLASSES = \
+JAVA_CLASSES+= \
  	TestAlice.class \
  	TestBob.class
 

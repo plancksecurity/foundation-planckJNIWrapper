@@ -9,7 +9,7 @@ class TestCarol {
         TestSuite.getDefault().setVerbose(true);
         TestSuite.getDefault().setTestColor(TestUtils.TermColor.RED);
 
-        new TestUnit<AdapterBaseTestContext>("Test Carol",new AdapterBaseTestContext() , ctx  -> {
+        new TestUnit<CTXBase>("Test Carol",new CTXBase() , ctx  -> {
             // do stuff using the context
             // throw or assert, to let a testunit fail
 

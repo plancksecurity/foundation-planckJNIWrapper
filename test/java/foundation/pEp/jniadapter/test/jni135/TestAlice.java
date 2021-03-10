@@ -4,7 +4,7 @@ import foundation.pEp.jniadapter.Blob;
 import foundation.pEp.jniadapter.Engine;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.decrypt_message_Return;
-import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
+import foundation.pEp.jniadapter.test.utils.CTXBase;
 import foundation.pEp.jniadapter.test.utils.AdapterTestUtils;
 import foundation.pEp.pitytest.TestSuite;
 import foundation.pEp.pitytest.TestUnit;
@@ -16,9 +16,9 @@ import java.util.Vector;
 import static foundation.pEp.pitytest.TestLogger.log;
 
 
-class Jni135TestContext extends AdapterBaseTestContext {
+class Jni135TestContext extends CTXBase {
     @Override
-    public AdapterBaseTestContext init() throws Throwable {
+    public CTXBase init() throws Throwable {
         super.init();
         return this;
     }
@@ -40,11 +40,11 @@ class TestAlice {
 //        TestUtils.readKey();
         TestSuite.getDefault().setVerbose(true);
         TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
-        AdapterBaseTestContext jni135Ctx = new Jni135TestContext();
+        CTXBase jni135Ctx = new Jni135TestContext();
 
         Engine.setDebugLogEnabled(false);
 
-        new TestUnit<AdapterBaseTestContext>("setDir() == getDir() ", new Jni135TestContext(), ctx -> {
+        new TestUnit<CTXBase>("setDir() == getDir() ", new Jni135TestContext(), ctx -> {
             ctx.alice = ctx.engine.myself(ctx.alice);
             ctx.bob = ctx.engine.myself(ctx.bob);
 

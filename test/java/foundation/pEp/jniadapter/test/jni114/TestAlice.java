@@ -21,8 +21,8 @@ class TestAlice {
         TestSuite.getDefault().setVerbose(true);
         TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
 
-        AdapterBaseTestContext jni114Ctx = new AdapterBaseTestContext();
-        new TestUnit<AdapterBaseTestContext>("ImportKey/SetOwnKey", jni114Ctx, ctx -> {
+        CTXBase jni114Ctx = new CTXBase();
+        new TestUnit<CTXBase>("ImportKey/SetOwnKey", jni114Ctx, ctx -> {
             // ImportKey and setOwnKey (with passphrase, of course)
             ctx.alice = ctx.engine.importKey(ctx.keyAliceSecPassphrase).get(0);
             log(AdapterTestUtils.identityToString(ctx.alice, true));
@@ -34,7 +34,7 @@ class TestAlice {
         });
 
 
-        new TestUnit<AdapterBaseTestContext>("no callback / encrypt fails nonblocking", jni114Ctx, ctx -> {
+        new TestUnit<CTXBase>("no callback / encrypt fails nonblocking", jni114Ctx, ctx -> {
             ctx.alice = ctx.engine.myself(ctx.alice);
             try {
                 Message enc = ctx.engine.encrypt_message(ctx.msgAliceToAlice, new Vector<>(), Message.EncFormat.PEP);
@@ -46,7 +46,7 @@ class TestAlice {
         });
 
 
-        new TestUnit<AdapterBaseTestContext>("use callback for encrypt", jni114Ctx, ctx -> {
+        new TestUnit<CTXBase>("use callback for encrypt", jni114Ctx, ctx -> {
             // Register callback passphraseRequired()
             ctx.engine.setPassphraseRequiredCallback(new Sync.PassphraseRequiredCallback() {
                 @Override

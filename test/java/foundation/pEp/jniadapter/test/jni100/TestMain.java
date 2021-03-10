@@ -8,7 +8,7 @@ import java.util.Vector;
 
 class TestMain {
     public static void main(String[] args) throws Exception {
-        new TestUnit<AdapterBaseTestContext>("JNI-100",new AdapterBaseTestContext() , ctx -> {
+        new TestUnit<CTXBase>("JNI-100",new CTXBase() , ctx -> {
             TestCallbacks cb = new TestCallbacks();
 
             ctx.engine.setMessageToSendCallback(cb);

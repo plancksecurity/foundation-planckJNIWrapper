@@ -2,8 +2,8 @@ include ../Makefile.conf
 
 TEST_UNIT_NAME=identities
 
-JAVA_CLASSES = \
- 	TestMain.class \
+JAVA_CLASSES+= \
+ 	TestMain.class
 
 JAVA_CLASSES += $(JAVA_CLASSES_FSMSGQUEUE)
 JAVA_CLASSES += $(JAVA_CLASSES_TESTSCOMMON)

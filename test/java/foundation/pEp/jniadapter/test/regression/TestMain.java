@@ -8,7 +8,7 @@ import java.util.Vector;
 
 import static foundation.pEp.pitytest.TestLogger.log;
 
-class CTXAlice extends AdapterBaseTestContext {
+class CTXAlice extends CTXBase {
     @Override
     public CTXAlice init() throws Throwable {
         super.init();
@@ -28,7 +28,7 @@ class CTXAlice2 extends CTXAlice {
 }
 
 // Almost exact copy of JNI1118Context, we need a shared context hierarchy
-class CTXReEvaluateMessageRating extends AdapterBaseTestContext {
+class CTXReEvaluateMessageRating extends CTXBase {
     public Message msgToBobEncrypted;
     public Message msgToBobDecrypted;
     public decrypt_message_Return msgToBobDecryptResult;
@@ -73,11 +73,11 @@ class TestMain {
     public static void main(String[] args) {
         TestSuite.getDefault().setVerbose(false);
         
-        new TestUnit<AdapterBaseTestContext>("Engine.myself", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.myself", new CTXBase(), ctx -> {
             ctx.alice = ctx.engine.myself(ctx.alice);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.encrypt_message", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.encrypt_message", new CTXBase(), ctx -> {
             ctx.engine.encrypt_message(ctx.msgAliceToBob, null, Message.EncFormat.PEP);
         });
 
@@ -89,7 +89,7 @@ class TestMain {
             ctx.engine.encrypt_message_for_self(ctx.alice, ctx.msgAliceToAlice, null);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.decrypt_message", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.decrypt_message", new CTXBase(), ctx -> {
             ctx.engine.decrypt_message(ctx.msgAliceToAlice, new Vector<String>(), 0);
         });
 
@@ -97,11 +97,11 @@ class TestMain {
             ctx.engine.re_evaluate_message_rating(ctx.msgToBobDecrypted);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.outgoing_message_rating", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.outgoing_message_rating", new CTXBase(), ctx -> {
             ctx.engine.outgoing_message_rating(ctx.msgAliceToBob);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.outgoing_message_rating_preview", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.outgoing_message_rating_preview", new CTXBase(), ctx -> {
             ctx.engine.outgoing_message_rating_preview(ctx.msgAliceToBob);
         });
 
@@ -113,7 +113,7 @@ class TestMain {
             ctx.engine.identity_rating(ctx.alice);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.blacklist_retrieve", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.blacklist_retrieve", new CTXBase(), ctx -> {
             ctx.engine.blacklist_retrieve();
         });
 
@@ -122,19 +122,19 @@ class TestMain {
 //            ctx.engine.own_message_private_key_details(ctx.msgToSelf);
 //        });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.OpenPGP_list_keyinfo", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.OpenPGP_list_keyinfo", new CTXBase(), ctx -> {
             ctx.engine.OpenPGP_list_keyinfo("");
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.set_identity_flags", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.set_identity_flags", new CTXBase(), ctx -> {
             ctx.engine.set_identity_flags(ctx.alice, 0);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.unset_identity_flags", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.unset_identity_flags", new CTXBase(), ctx -> {
             ctx.engine.unset_identity_flags(ctx.alice, 0);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.own_identities_retrieve", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.own_identities_retrieve", new CTXBase(), ctx -> {
             ctx.engine.own_identities_retrieve();
         });
 
@@ -146,11 +146,11 @@ class TestMain {
             ctx.engine.get_trustwords_for_fprs(ctx.alice.fpr, ctx.bob.fpr, "en", false);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.get_message_trustwords", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.get_message_trustwords", new CTXBase(), ctx -> {
             ctx.engine.get_message_trustwords(ctx.msgAliceToBob, null, ctx.bob, "en", false);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.get_languagelist", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.get_languagelist", new CTXBase(), ctx -> {
             ctx.engine.get_languagelist();
         });
 
@@ -166,12 +166,12 @@ class TestMain {
             ctx.engine.key_reset_user("fsdjugsh", ctx.alice.fpr);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.key_reset_all_own_keys", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.key_reset_all_own_keys", new CTXBase(), ctx -> {
             ctx.engine.key_reset_all_own_keys();
         });
 
 //        TODO: FAILS
-//        new TestUnit<AdapterBaseTestContext>("Engine.deliverHandshakeResult", new AdapterBaseTestContext(), ctx -> {
+//        new TestUnit<CTXBase>("Engine.deliverHandshakeResult", new CTXBase(), ctx -> {
 //            ctx.engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel, ctx.vID);
 //        });
 
@@ -182,7 +182,7 @@ class TestMain {
 //        [17:52] <        heck> | the error i get is:
 //        [17:53] <        heck> | *** send message KeySync Beacon service KeySync_fsm.c:234
 //        [17:53] <        heck> | Assertion failed: (msg->from && msg->from->fpr), function attach_own_key, file message_api.c, line 1581.
-//        new TestUnit<AdapterBaseTestContext>("Engine.leave_device_group", new AdapterBaseTestContext(), ctx -> {
+//        new TestUnit<CTXBase>("Engine.leave_device_group", new CTXBase(), ctx -> {
 //            ctx.engine.startSync();
 //            ctx.engine.leave_device_group();
 //        });
@@ -195,15 +195,15 @@ class TestMain {
             ctx.engine.disable_identity_for_sync(ctx.alice);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.config_cipher_suite", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.config_cipher_suite", new CTXBase(), ctx -> {
             ctx.engine.config_cipher_suite(CipherSuite.pEpCipherSuiteDefault);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.trustwords", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.trustwords", new CTXBase(), ctx -> {
             ctx.engine.trustwords(ctx.alice);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.updateIdentity", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.updateIdentity", new CTXBase(), ctx -> {
             ctx.engine.updateIdentity(ctx.alice);
         });
 
@@ -215,11 +215,11 @@ class TestMain {
             ctx.engine.keyMistrusted(ctx.alice);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.keyResetTrust", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.keyResetTrust", new CTXBase(), ctx -> {
             ctx.engine.keyResetTrust(ctx.alice);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.trustPersonalKey", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.trustPersonalKey", new CTXBase(), ctx -> {
             ctx.engine.trustPersonalKey(ctx.alice);
         });
 
@@ -227,84 +227,84 @@ class TestMain {
             ctx.engine.trustOwnKey(ctx.alice);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.importKey", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.importKey", new CTXBase(), ctx -> {
             ctx.engine.importKey(ctx.keyBobPub);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.blacklist_add", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.blacklist_add", new CTXBase(), ctx -> {
             ctx.engine.blacklist_add("43");
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.blacklist_delete", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.blacklist_delete", new CTXBase(), ctx -> {
             ctx.engine.blacklist_delete("43");
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.blacklist_is_listed", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.blacklist_is_listed", new CTXBase(), ctx -> {
             ctx.engine.blacklist_is_listed("43");
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.config_passive_mode", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.config_passive_mode", new CTXBase(), ctx -> {
             ctx.engine.config_passive_mode(false);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.config_unencrypted_subject", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.config_unencrypted_subject", new CTXBase(), ctx -> {
             ctx.engine.config_unencrypted_subject(false);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.getCrashdumpLog", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.getCrashdumpLog", new CTXBase(), ctx -> {
             ctx.engine.getCrashdumpLog(0);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.getUserDirectory", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.getUserDirectory", new CTXBase(), ctx -> {
             ctx.engine.getUserDirectory();
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.getMachineDirectory", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.getMachineDirectory", new CTXBase(), ctx -> {
             ctx.engine.getMachineDirectory();
         });
 
         // AbstractEngine.java
-        new TestUnit<AdapterBaseTestContext>("Engine.close", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.close", new CTXBase(), ctx -> {
             ctx.engine.close();
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.getVersion", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.getVersion", new CTXBase(), ctx -> {
             ctx.engine.getVersion();
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.getProtocolVersion", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.getProtocolVersion", new CTXBase(), ctx -> {
             ctx.engine.getProtocolVersion();
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.startKeyserverLookup", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.startKeyserverLookup", new CTXBase(), ctx -> {
             ctx.engine.startKeyserverLookup();
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.startSync", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.startSync", new CTXBase(), ctx -> {
             ctx.engine.startSync();
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.stopSync", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.stopSync", new CTXBase(), ctx -> {
             ctx.engine.stopSync();
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.isSyncRunning", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.isSyncRunning", new CTXBase(), ctx -> {
             ctx.engine.isSyncRunning();
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.config_passphrase",new AdapterBaseTestContext() , ctx  -> {
+        new TestUnit<CTXBase>("Engine.config_passphrase",new CTXBase() , ctx  -> {
             ctx.engine.config_passphrase("SUPERCOMPLICATEDPASSPHRASE");
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.config_passphrase_for_new_keys",new AdapterBaseTestContext() , ctx  -> {
+        new TestUnit<CTXBase>("Engine.config_passphrase_for_new_keys",new CTXBase() , ctx  -> {
             ctx.engine.config_passphrase_for_new_keys(true, "SUPERCOMPLICATEDPASSPHRASE");
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.setDebugLogEnabled", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.setDebugLogEnabled", new CTXBase(), ctx -> {
             Engine.setDebugLogEnabled(true);
         });
 
-        new TestUnit<AdapterBaseTestContext>("Engine.setDebugLogEnabled", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("Engine.setDebugLogEnabled", new CTXBase(), ctx -> {
             Engine.getDebugLogEnabled();
         });
 

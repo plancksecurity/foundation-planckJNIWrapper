@@ -3,7 +3,7 @@ include ../Makefile.conf
 
 TEST_UNIT_NAME=speedtest
 
-JAVA_CLASSES = \
+JAVA_CLASSES+= \
 	MT999.class \
     MTConstants.class \
     MTMsgCodec.class \

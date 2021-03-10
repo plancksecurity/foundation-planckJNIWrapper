@@ -2,7 +2,7 @@ include Makefile.conf
 
 PKGNAME=pitytest
 
-JAVA_CLASSES = $(JAVA_CLASSES_PITYTEST)
+JAVA_CLASSES+= $(JAVA_CLASSES_PITYTEST)
 
 .PHONY: all compile clean
 

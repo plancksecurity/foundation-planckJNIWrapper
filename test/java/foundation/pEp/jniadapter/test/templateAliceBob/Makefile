@@ -3,15 +3,12 @@ include ../Makefile.conf
 
 TEST_UNIT_NAME=templateAliceBob
 
-JAVA_CLASSES = \
+JAVA_CLASSES+= \
  	TestAlice.class \
  	TestBob.class \
  	MultiPeerCTX.class \
  	Utils.class \
- 	TransportMessage.class \
- 	../utils/AdapterBaseTestContext.class \
- 	../utils/AdapterTestUtils.class \
- 	../utils/TestCallbacks.class
+ 	TransportMessage.class
 
 .PHONY: pitytest compile alice bob test clean
 

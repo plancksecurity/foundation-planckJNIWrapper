@@ -1,7 +1,7 @@
 package foundation.pEp.jniadapter.test.jni94;
 import foundation.pEp.pitytest.*;
 import foundation.pEp.jniadapter.*;
-import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
+import foundation.pEp.jniadapter.test.utils.CTXBase;
 
 /*
 This test tries to use the feature described in in JNI-94
@@ -13,7 +13,7 @@ https://pep.foundation/jira/browse/JNI-94
 
 class TestMain {
     public static void main(String[] args) {
-        new TestUnit<AdapterBaseTestContext>("JNI-94", new AdapterBaseTestContext(), ctx -> {
+        new TestUnit<CTXBase>("JNI-94", new CTXBase(), ctx -> {
             TestLogger.logH2("Creating new Engine");
             ctx.engine = new Engine();
             Sync.DefaultCallback callbacks = new Sync.DefaultCallback();

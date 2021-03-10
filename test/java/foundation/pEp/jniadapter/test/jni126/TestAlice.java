@@ -1,7 +1,7 @@
 package foundation.pEp.jniadapter.test.jni126;
 
 import foundation.pEp.jniadapter.*;
-import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
+import foundation.pEp.jniadapter.test.utils.CTXBase;
 import foundation.pEp.pitytest.TestSuite;
 import foundation.pEp.pitytest.TestUnit;
 import foundation.pEp.pitytest.utils.TestUtils;
@@ -9,9 +9,9 @@ import foundation.pEp.pitytest.utils.TestUtils;
 import static foundation.pEp.pitytest.TestLogger.*;
 import static foundation.pEp.pitytest.utils.TestUtils.*;
 
-class Jni126TestContext extends AdapterBaseTestContext {
+class Jni126TestContext extends CTXBase {
     @Override
-    public AdapterBaseTestContext init() throws Throwable {
+    public CTXBase init() throws Throwable {
         super.init();
 
         alice = engine.importKey(keyAliceSecPassphrase).get(0);
@@ -41,9 +41,9 @@ class TestAlice {
         TestSuite.getDefault().setVerbose(true);
         TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
 
-        AdapterBaseTestContext jni126Ctx = new Jni126TestContext();
+        CTXBase jni126Ctx = new Jni126TestContext();
 
-        new TestUnit<AdapterBaseTestContext>("startSync()/stopSync()", jni126Ctx, ctx -> {
+        new TestUnit<CTXBase>("startSync()/stopSync()", jni126Ctx, ctx -> {
             for(int reps = 0; reps < 3; reps++) {
                 ctx.engine.startSync();
                 for (int i = 0; i < 10; i++) {

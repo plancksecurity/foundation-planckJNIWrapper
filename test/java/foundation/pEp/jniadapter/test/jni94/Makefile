@@ -3,8 +3,8 @@ include ../Makefile.conf
 
 TEST_UNIT_NAME=jni94
 
-JAVA_CLASSES = \
- 	TestMain.class \
+JAVA_CLASSES+= \
+ 	TestMain.class
 
 .PHONY: pitytest compile run test clean
 

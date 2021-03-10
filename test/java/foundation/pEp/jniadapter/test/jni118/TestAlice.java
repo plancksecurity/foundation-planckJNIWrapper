@@ -36,7 +36,7 @@ import java.util.Vector;
 
 
 
-class JNI1118Context extends AdapterBaseTestContext {
+class JNI1118Context extends CTXBase {
     public Message msgToBobEncrypted;
     public Message msgToBobDecrypted;
     public decrypt_message_Return msgToBobDecryptResult;

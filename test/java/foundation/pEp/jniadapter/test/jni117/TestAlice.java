@@ -1,5 +1,5 @@
 package foundation.pEp.jniadapter.test.jni117;
-import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
+import foundation.pEp.jniadapter.test.utils.CTXBase;
 import foundation.pEp.pitytest.TestSuite;
 import foundation.pEp.pitytest.TestUnit;
 import foundation.pEp.pitytest.utils.TestUtils;
@@ -18,7 +18,7 @@ class TestAlice {
         TestSuite.getDefault().setVerbose(true);
         TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
 
-        new TestUnit<AdapterBaseTestContext>("Test Alice",new AdapterBaseTestContext() , ctx  -> {
+        new TestUnit<CTXBase>("Test Alice",new CTXBase() , ctx  -> {
             ctx.alice = ctx.engine.myself(ctx.alice);
             byte[] keydata = ctx.engine.export_key(ctx.alice.fpr);
             String keydataStr = new String(keydata);

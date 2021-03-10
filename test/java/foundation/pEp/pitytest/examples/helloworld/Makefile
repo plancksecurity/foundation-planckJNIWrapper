@@ -3,8 +3,8 @@ include ../Makefile.conf
 
 TEST_UNIT_NAME=helloworld
 
-JAVA_CLASSES = \
- 	TestMain.class \
+JAVA_CLASSES+= \
+ 	TestMain.class
 
 # Use PityTest
 JAVA_CLASSES += $(JAVA_CLASSES_PITYTEST)

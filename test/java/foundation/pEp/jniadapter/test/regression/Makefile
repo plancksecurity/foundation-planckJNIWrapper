@@ -3,9 +3,8 @@ include ../Makefile.conf
 
 TEST_UNIT_NAME=regression
 
-JAVA_CLASSES = \
- 	TestMain.class \
-	../utils/AdapterBaseTestContext.class
+JAVA_CLASSES+= \
+ 	TestMain.class
 
 .PHONY: pitytest compile run test clean
 

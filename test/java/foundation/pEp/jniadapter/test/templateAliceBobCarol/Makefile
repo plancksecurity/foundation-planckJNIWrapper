@@ -3,13 +3,10 @@ include ../Makefile.conf
 
 TEST_UNIT_NAME=templateAliceBobCarol
 
-JAVA_CLASSES = \
+JAVA_CLASSES+= \
  	TestAlice.class \
  	TestBob.class \
- 	TestCarol.class \
- 	../utils/AdapterBaseTestContext.class \
- 	../utils/AdapterTestUtils.class \
- 	../utils/TestCallbacks.class
+ 	TestCarol.class
 
 .PHONY: pitytest compile alice bob carol test clean
 

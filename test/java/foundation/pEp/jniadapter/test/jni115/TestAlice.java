@@ -1,7 +1,7 @@
 package foundation.pEp.jniadapter.test.jni115;
 
 import foundation.pEp.jniadapter.Message;
-import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
+import foundation.pEp.jniadapter.test.utils.CTXBase;
 import foundation.pEp.jniadapter.test.utils.AdapterTestUtils;
 import foundation.pEp.pitytest.TestSuite;
 import foundation.pEp.pitytest.TestUnit;
@@ -13,7 +13,7 @@ import java.util.List;
 import static foundation.pEp.pitytest.TestLogger.log;
 import static foundation.pEp.pitytest.TestLogger.logRaw;
 
-class Jni115TestContext extends AdapterBaseTestContext {
+class Jni115TestContext extends CTXBase {
     public int messagesToBobCount = 10;
     public List<Message> messagesToBobSmall;
     public List<Message> messagesToBobBig;

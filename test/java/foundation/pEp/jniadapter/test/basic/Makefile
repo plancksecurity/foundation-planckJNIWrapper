@@ -3,11 +3,7 @@ include ../Makefile.conf
 
 TEST_UNIT_NAME=basic
 
-JAVA_CLASSES = \
- 	TestMain.class \
-	../utils/AdapterBaseTestContext.class \
-	../utils/AdapterTestUtils.class \
-	../utils/TestCallbacks.class
+JAVA_CLASSES+=TestMain.class
 
 .PHONY: pitytest compile run test clean
 

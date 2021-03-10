@@ -3,7 +3,7 @@ package foundation.pEp.jniadapter.test.jni143;
 import foundation.pEp.jniadapter.Blob;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.decrypt_message_Return;
-import foundation.pEp.jniadapter.test.utils.AdapterBaseTestContext;
+import foundation.pEp.jniadapter.test.utils.CTXBase;
 import foundation.pEp.jniadapter.test.utils.AdapterTestUtils;
 import foundation.pEp.pitytest.TestSuite;
 import foundation.pEp.pitytest.TestUnit;
@@ -26,9 +26,9 @@ assert dataIn == dataOut
 Logs the count of differing bytes.
  */
 
-class Jni143TestContext extends AdapterBaseTestContext {
+class Jni143TestContext extends CTXBase {
     @Override
-    public AdapterBaseTestContext init() throws Throwable {
+    public CTXBase init() throws Throwable {
         super.init();
         return this;
     }
@@ -41,9 +41,9 @@ class TestAlice {
         TestSuite.getDefault().setVerbose(true);
         TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
 //        TestUtils.readKey();
-        AdapterBaseTestContext jni143Ctx = new Jni143TestContext();
+        CTXBase jni143Ctx = new Jni143TestContext();
 
-        new TestUnit<AdapterBaseTestContext>("Attachement sizes", new Jni143TestContext(), ctx -> {
+        new TestUnit<CTXBase>("Attachement sizes", new Jni143TestContext(), ctx -> {
             ctx.alice = ctx.engine.myself(ctx.alice);
             ctx.bob = ctx.engine.myself(ctx.bob);
 
