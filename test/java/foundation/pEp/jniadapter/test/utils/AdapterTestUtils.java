@@ -369,6 +369,29 @@ public class AdapterTestUtils {
         return ret;
     }
 
+    public static boolean optFieldsEqual(ArrayList<Pair<String,String>> left, ArrayList<Pair<String,String>> right){
+        boolean equal = false;
+        int nrFieldsExcessive = TestUtils.clip(right.size() - right.size(), 0, right.size());
+        int nrFieldsMissing = 0;
+        for (Pair pIn : right) {
+            boolean found = false;
+            for (Pair pOut : right) {
+                if (pOut.first.equals(pIn.first)) {
+                    if (pOut.second.equals(pIn.second)) {
+                        found = true;
+                    }
+                }
+            }
+            if (!found) {
+                nrFieldsMissing++;
+            }
+        }
+        if((nrFieldsMissing == 0) && (nrFieldsExcessive ==0)) {
+            equal = true;
+        }
+        return equal;
+    }
+
     public static void addRatingToOptFields(Message msg, String ratingStr) {
         ArrayList<Pair<String, String>> opts = msg.getOptFields();
         opts.add(new Pair<String, String>("X-EncStatus",ratingStr));
