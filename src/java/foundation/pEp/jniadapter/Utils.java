@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
     private Utils() { }
@@ -111,5 +113,15 @@ public class Utils {
             result.set(i, toUTF16(list.get(i)));
 
         return result;
+    }
+
+    public static boolean URIEqual(String left, String right) {
+        Pattern pattern = Pattern.compile("^.*?://");
+        Matcher leftMatcher = pattern.matcher(left.trim());
+        String leftRelevant = leftMatcher.replaceAll("");
+        Matcher rightMatcher = pattern.matcher(right.trim());
+        String rightRelevant = rightMatcher.replaceAll("");
+
+        return rightRelevant.equals(leftRelevant);
     }
 }
