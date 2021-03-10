@@ -344,7 +344,6 @@ public class AdapterTestUtils {
     }
 
 
-
     public static DiffResult diff(byte[] left, byte[] right) {
         DiffResult ret = new DiffResult();
         String diffString = "";
@@ -369,5 +368,18 @@ public class AdapterTestUtils {
         ret.setFirstDiffByte(firstDiff);
         return ret;
     }
+
+    public static void addRatingToOptFields(Message msg, String ratingStr) {
+        ArrayList<Pair<String, String>> opts = msg.getOptFields();
+        opts.add(new Pair<String, String>("X-EncStatus",ratingStr));
+        msg.setOptFields(opts);
+    }
+
+    public static void addRcptsToOptFields(Message msg, String fprs) {
+        ArrayList<Pair<String, String>> opts = msg.getOptFields();
+        opts.add(new Pair<String, String>("X-KeyList", fprs));
+        msg.setOptFields(opts);
+    }
+
 }
 

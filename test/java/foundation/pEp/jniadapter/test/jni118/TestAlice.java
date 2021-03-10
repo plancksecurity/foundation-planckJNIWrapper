@@ -60,19 +60,6 @@ class JNI1118Context extends AdapterBaseTestContext {
         }
         return this;
     }
-
-    public void addRatingToOptFields(Message msg, String ratingStr) {
-        ArrayList<Pair<String, String>> opts = msg.getOptFields();
-        opts.add(new Pair<String, String>("X-EncStatus",ratingStr));
-        msg.setOptFields(opts);
-    }
-
-    public void addRcptsToOptFields(Message msg, String fprs) {
-        ArrayList<Pair<String, String>> opts = msg.getOptFields();
-        opts.add(new Pair<String, String>("X-KeyList", fprs));
-        msg.setOptFields(opts);
-    }
-
 }
 
 class TestAlice {
@@ -81,8 +68,8 @@ class TestAlice {
         TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
 
         new TestUnit<JNI1118Context>("re_evaluate_message_rating() equal to decrypt_message_result.rating when Message has correct OptFields", new JNI1118Context(), ctx -> {
-            ctx.addRatingToOptFields(ctx.msgToBobDecrypted,ctx.msgToBobDecryptResult.rating.getInternalStringValue());
-            ctx.addRcptsToOptFields(ctx.msgToBobDecrypted,Identity.toXKeyList(ctx.msgToBobDecrypted.getTo()));
+            AdapterTestUtils.addRatingToOptFields(ctx.msgToBobDecrypted,ctx.msgToBobDecryptResult.rating.getInternalStringValue());
+            AdapterTestUtils.addRcptsToOptFields(ctx.msgToBobDecrypted,Identity.toXKeyList(ctx.msgToBobDecrypted.getTo()));
             log("running re_evaluate_message_rating() on:\n" + AdapterTestUtils.msgToString(ctx.msgToBobDecrypted, false));
             Rating rat = ctx.engine.re_evaluate_message_rating(ctx.msgToBobDecrypted);
             log("re_evaluate_message_rating() result: " + rat.toString());
@@ -90,8 +77,8 @@ class TestAlice {
         });
 
         new TestUnit<JNI1118Context>("re_evaluate_message_rating() equal to decrypt_message_result.rating when Message has random rating string on XEncStatus", new JNI1118Context(), ctx -> {
-            ctx.addRatingToOptFields(ctx.msgToBobDecrypted, TestUtils.randomASCIIString(TestUtils.CharClass.Unbounded, TestUtils.randomInt(0,42)));
-            ctx.addRcptsToOptFields(ctx.msgToBobDecrypted,Identity.toXKeyList(ctx.msgToBobDecrypted.getTo()));
+            AdapterTestUtils.addRatingToOptFields(ctx.msgToBobDecrypted, TestUtils.randomASCIIString(TestUtils.CharClass.Unbounded, TestUtils.randomInt(0,42)));
+            AdapterTestUtils.addRcptsToOptFields(ctx.msgToBobDecrypted,Identity.toXKeyList(ctx.msgToBobDecrypted.getTo()));
             log("running re_evaluate_message_rating() on:\n" + AdapterTestUtils.msgToString(ctx.msgToBobDecrypted, false));
             Rating rat = ctx.engine.re_evaluate_message_rating(ctx.msgToBobDecrypted);
             log("re_evaluate_message_rating() result: " + rat.toString());
