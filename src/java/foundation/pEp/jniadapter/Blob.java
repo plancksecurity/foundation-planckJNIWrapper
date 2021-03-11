@@ -1,7 +1,8 @@
 package foundation.pEp.jniadapter;
 
-import foundation.pEp.jniadapter.interfaces.*;
+import foundation.pEp.jniadapter.interfaces.BlobInterface;
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class Blob implements BlobInterface, Serializable {
     public byte[] data;
@@ -36,5 +37,29 @@ public class Blob implements BlobInterface, Serializable {
         return ret;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        if (this.getClass() != o.getClass()) return false;
+        boolean ret = false;
+        Blob blob = (Blob) o;
+        if (Arrays.equals(data, blob.data)) {
+            if (this.mime_type.equals(((Blob) o).mime_type)) {
+                if (Utils.URIEqual(this.filename, ((Blob) o).filename)) {
+                    ret = true;
+                }
+            }
+        }
+        return ret;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mime_type == null ? 0 : mime_type.hashCode();
+        result = 31 * result + Utils.URIHash(filename);
+        result = 31 * result + Arrays.hashCode(data);
+        return result;
+    }
 }
 
