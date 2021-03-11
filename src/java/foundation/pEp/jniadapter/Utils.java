@@ -116,12 +116,24 @@ public class Utils {
     }
 
     public static boolean URIEqual(String left, String right) {
-        Pattern pattern = Pattern.compile("^.*?://");
-        Matcher leftMatcher = pattern.matcher(left.trim());
-        String leftRelevant = leftMatcher.replaceAll("");
-        Matcher rightMatcher = pattern.matcher(right.trim());
-        String rightRelevant = rightMatcher.replaceAll("");
+        if(left == right) return true;
+        if(left == null) return false;
+        if(right == null) return false;
+        return URITrim(left).equals(URITrim(right));
+    }
 
-        return rightRelevant.equals(leftRelevant);
+    // Returns the hash of a string that represents a URI
+    // Returns 0 if uri i null
+    public static int URIHash(String uri) {
+        if(uri == null) {
+            return 0;
+        }
+        return URITrim(uri).hashCode();
+    }
+
+    private static String URITrim(String uri) {
+        Pattern pattern = Pattern.compile("^.*?://");
+        Matcher leftMatcher = pattern.matcher(uri.trim());
+        return leftMatcher.replaceAll("");
     }
 }
