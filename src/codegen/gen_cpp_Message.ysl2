@@ -28,14 +28,17 @@ tstylesheet {
             namespace JNIAdapter {
             static ::«@name» *«@name»_ptr(JNIEnv *env, jobject me) {
                 jfieldID handle;
-
-                try {
-                    handle = getFieldID(env, "foundation/pEp/jniadapter/«$jname»", "handle", "J");
-                } catch (std::exception& ex) {
-                    assert(0);
-                    return NULL;
+                handle = getFieldID(env, "foundation/pEp/jniadapter/«$jname»", "handle", "J");
+                if(!handle) {
+                    throw runtime_error("field not found: handle");
                 }
-                return reinterpret_cast<::«@name» *>(env->GetLongField(me, handle));
+
+                long handle_val = static_cast<long>(env->GetLongField(me, handle));
+                if(!handle_val) {
+                    throw runtime_error("invalid handle (0)");
+                }
+
+                return reinterpret_cast<::«@name» *>(handle_val);
             }
 
             };
@@ -86,10 +89,19 @@ tstylesheet {
             }
 
             JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_«$jname»__1encodeMIME(JNIEnv *env,
-                    jobject msg)
+                    jobject obj)
             {
                 pEpLog("called");
-                «@name» *_obj = «@name»_ptr(env, msg);
+                «@name»* _obj = nullptr;
+                try {
+                    _obj = «@name»_ptr(env, obj);
+                } catch(...) {
+                    jclass ex = env->FindClass("java/lang/IllegalStateException");
+                    assert(ex);
+                    env->ThrowNew(ex, nullptr);
+                    return static_cast<jbyteArray>(NULL);
+                }
+
                 char *mime_text = nullptr;
                 PEP_STATUS status = ::mime_encode_«@name»(_obj, false, &mime_text, false);
                 if (status) {
@@ -136,12 +148,24 @@ tstylesheet {
             with "type", "$type";
             with "name", "concat('set', $jname)";
         }
+        const "type_ret" call "jni_type" with "type", "name(.)";
+
         ||
-        JNIEXPORT `call "jni_type" with "type", "name(.)"` JNICALL «$getname»(JNIEnv *env,
+        // CodeGen: Getter
+        JNIEXPORT «$type_ret» JNICALL «$getname»(JNIEnv *env,
                 jobject obj)
         {
             pEpLog("called");
-            «$name» *_obj = «$name»_ptr(env, obj);
+            «$name»* _obj = nullptr;
+            try {
+                _obj = «$name»_ptr(env, obj);
+            } catch(...) {
+                jclass ex = env->FindClass("java/lang/IllegalStateException");
+                assert(ex);
+                env->ThrowNew(ex, nullptr);
+                return static_cast<«$type_ret»>(NULL);
+            }
+
         ||
         choose {
             when "../enum[@name=$type]"
@@ -151,14 +175,22 @@ tstylesheet {
         }
         ||
         }
-
+        // CodeGen: Setter
         JNIEXPORT void JNICALL «$setname»(JNIEnv *env,
                 jobject obj,
                 `call "jni_type" with "type", "name(.)"`
                 value)
         {
             pEpLog("called");
-            «$name» *_obj = «$name»_ptr(env, obj);
+            «$name»* _obj = nullptr;
+            try {
+                _obj = «$name»_ptr(env, obj);
+            } catch(...) {
+                jclass ex = env->FindClass("java/lang/IllegalStateException");
+                assert(ex);
+                env->ThrowNew(ex, nullptr);
+                return;
+            }
         ||
         choose {
             when "../enum[@name=$type]"

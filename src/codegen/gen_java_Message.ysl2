@@ -66,6 +66,7 @@ tstylesheet {
 
                 public final void close() {
                     release(handle);
+                    handle = 0;
                 }
 
                 final protected long getHandle() {
