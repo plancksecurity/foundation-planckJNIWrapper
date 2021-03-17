@@ -3,8 +3,8 @@ package foundation.pEp.jniadapter.test.jni143;
 import foundation.pEp.jniadapter.Blob;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.decrypt_message_Return;
-import foundation.pEp.jniadapter.test.utils.CTXBase;
 import foundation.pEp.jniadapter.test.utils.AdapterTestUtils;
+import foundation.pEp.jniadapter.test.utils.CTXBase;
 import foundation.pEp.pitytest.TestSuite;
 import foundation.pEp.pitytest.TestUnit;
 import foundation.pEp.pitytest.utils.TestUtils;
@@ -24,9 +24,10 @@ Starts with attachment size 1 byte.
 For each encrypt/decrypt cycle, doubles the size of the attachment data.
 assert dataIn == dataOut
 Logs the count of differing bytes.
- */
 
-class Jni143TestContext extends CTXBase {
+*/
+
+class CTXJNI143 extends CTXBase {
     @Override
     public CTXBase init() throws Throwable {
         super.init();
@@ -35,20 +36,17 @@ class Jni143TestContext extends CTXBase {
 }
 
 class TestAlice {
-
-
     public static void main(String[] args) throws Exception {
         TestSuite.getDefault().setVerbose(true);
         TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
 //        TestUtils.readKey();
-        CTXBase jni143Ctx = new Jni143TestContext();
 
-        new TestUnit<CTXBase>("Attachement sizes", new Jni143TestContext(), ctx -> {
+        new TestUnit<CTXBase>("Attachement sizes", new CTXJNI143(), ctx -> {
             ctx.alice = ctx.engine.myself(ctx.alice);
             ctx.bob = ctx.engine.myself(ctx.bob);
 
             int attachmentSizeBytes = 1;
-            while (true) {
+            while (attachmentSizeBytes <= 10000000) {
                 Message msg1Plain = AdapterTestUtils.makeNewTestMessage(ctx.alice, ctx.bob, Message.Direction.Outgoing);
                 Blob origBlob = AdapterTestUtils.makeNewTestBlob(attachmentSizeBytes, "atti1", null);
                 Vector<Blob> atts = new Vector<Blob>();
@@ -75,9 +73,9 @@ class TestAlice {
 
                 attachmentSizeBytes *= 2;
             }
-        }).run();
+        });
 
-//        TestSuite.getDefault().run();
+        TestSuite.getDefault().run();
     }
 }
 
