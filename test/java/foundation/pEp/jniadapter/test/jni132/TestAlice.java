@@ -20,27 +20,38 @@ equality definition:
 - bytewise equality of mime_type
 */
 
+class CTXJNI132 extends CTXBase {
+    public Blob attachment1MB;
+    public Blob attachment10MB;
+
+    @Override
+    public CTXBase init() throws Throwable {
+        attachment1MB = AdapterTestUtils.makeNewTestBlob(1000000, "att with size 1MB", null);
+        attachment10MB = AdapterTestUtils.makeNewTestBlob(10000000, "att with size 10MB", null);
+
+        return this;
+    }
+}
 
 class TestAlice {
     public static void main(String[] args) throws Exception {
         TestSuite.getDefault().setVerbose(true);
         TestSuite.getDefault().setTestColor(TestUtils.TermColor.GREEN);
-        CTXBase jni132Ctx = new CTXBase();
 
         // SAME
-        new TestUnit<CTXBase>("Blob.equals() equality", new CTXBase(), ctx -> {
+        new TestUnit<CTXJNI132>("Blob.equals() equality", new CTXJNI132(), ctx -> {
             Blob one = AdapterTestUtils.makeNewTestBlob("testBlob data", "testblobfilename", null);
             Blob two = AdapterTestUtils.makeNewTestBlob("testBlob data", "testblobfilename", null);
             assert one.equals(two) : "\n" + one.toString() + "\n" + "does not equal:\n" + two.toString();
         });
 
-        new TestUnit<CTXBase>("Blob.equals() equality", new CTXBase(), ctx -> {
+        new TestUnit<CTXJNI132>("Blob.equals() equality", new CTXJNI132(), ctx -> {
             Blob one = AdapterTestUtils.makeNewTestBlob("testBlob data", "file://testblobfilename", null);
             Blob two = AdapterTestUtils.makeNewTestBlob("testBlob data", "testblobfilename", null);
             assert one.equals(two) : "\n" + one.toString() + "\n" + "does not equal:\n" + two.toString();
         });
 
-        new TestUnit<CTXBase>("Blob.equals() equality", new CTXBase(), ctx -> {
+        new TestUnit<CTXJNI132>("Blob.equals() equality", new CTXJNI132(), ctx -> {
             Blob one = AdapterTestUtils.makeNewTestBlob(1000000, "testfilename", "anything goes");
             Blob two = new Blob();
             two.mime_type = new String(one.mime_type);
@@ -49,7 +60,7 @@ class TestAlice {
             assert one.equals(two) : "\n" + one.toString() + "\n" + "does not equal:\n" + two.toString();
         });
 
-        new TestUnit<CTXBase>("Blob.equals() equality", new CTXBase(), ctx -> {
+        new TestUnit<CTXJNI132>("Blob.equals() equality", new CTXJNI132(), ctx -> {
             Blob one = AdapterTestUtils.makeNewTestBlob(1000000, "file://testfilename", "anything goes");
             Blob two = new Blob();
             two.mime_type = new String(one.mime_type);
@@ -59,7 +70,7 @@ class TestAlice {
         });
 
         // NOT SAME
-        new TestUnit<CTXBase>("Blob.equals() - diff mime_type", new CTXBase(), ctx -> {
+        new TestUnit<CTXJNI132>("Blob.equals() - diff mime_type", new CTXJNI132(), ctx -> {
             Blob one = ctx.attachment1KB;
             Blob two = new Blob();
             two.mime_type = "diff";
@@ -68,7 +79,7 @@ class TestAlice {
             assert !one.equals(two) : "\n" + one.toString() + "\n" + "equals:\n" + two.toString();
         });
 
-        new TestUnit<CTXBase>("Blob.equals() diff filename", new CTXBase(), ctx -> {
+        new TestUnit<CTXJNI132>("Blob.equals() diff filename", new CTXJNI132(), ctx -> {
             Blob one = ctx.attachment1KB;
             Blob two = new Blob();
             two.mime_type = ctx.attachment1KB.mime_type;
@@ -77,7 +88,7 @@ class TestAlice {
             assert !one.equals(two) : "\n" + one.toString() + "\n" + "equals:\n" + two.toString();
         });
 
-        new TestUnit<CTXBase>("Blob.equals() diff data", new CTXBase(), ctx -> {
+        new TestUnit<CTXJNI132>("Blob.equals() diff data", new CTXJNI132(), ctx -> {
             Blob one = ctx.attachment1KB;
             Blob two = new Blob();
             two.mime_type = ctx.attachment1KB.mime_type;

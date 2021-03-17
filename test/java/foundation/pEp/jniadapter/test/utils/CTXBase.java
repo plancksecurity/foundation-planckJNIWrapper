@@ -67,10 +67,7 @@ public class CTXBase extends AbstractTestContext {
     public Message.Direction msgDirOutgoing = Message.Direction.Outgoing;
     public Blob attachmentTiny;
     public Blob attachment1KB;
-    public Blob attachment1MB;
-    public Blob attachment10MB;
     public AttachmentList attachmentList = new AttachmentList(3,10000);
-
 
     public CTXBase init() throws Throwable {
         callbacks = new TestCallbacks();
@@ -85,8 +82,6 @@ public class CTXBase extends AbstractTestContext {
 
         attachmentTiny = AdapterTestUtils.makeNewTestBlob("attachment1", "attachment1.txt", "text/plain");
         attachment1KB = AdapterTestUtils.makeNewTestBlob(1000, "att with size 1KB", null);
-        attachment1MB = AdapterTestUtils.makeNewTestBlob(1000000, "att with size 1MB", null);
-        attachment10MB = AdapterTestUtils.makeNewTestBlob(10000000, "att with size 10MB", null);
 
         alice = new Identity();
         alice.user_id = "23";
