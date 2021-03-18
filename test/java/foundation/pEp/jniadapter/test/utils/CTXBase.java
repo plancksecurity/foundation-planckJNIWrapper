@@ -84,14 +84,20 @@ public class CTXBase extends AbstractTestContext {
         attachment1KB = AdapterTestUtils.makeNewTestBlob(1000, "att with size 1KB", null);
 
         alice = new Identity();
+        alice.username = "Alice pEp Test";
         alice.user_id = "23";
         alice.address = "alice@peptest.org";
         alice.me = true;
 
         bob = new Identity();
-        bob.username = "pEp Test Bob";
+        bob.username = "Bob pEp Test";
         bob.user_id = "42";
         bob.address = "bob@peptest.org";
+
+        carol = new Identity();
+        carol.username = "Carol pEp Test";
+        carol.user_id = "65";
+        carol.address = "carol@peptest.org";
 
         msgAliceToAlice = AdapterTestUtils.makeNewTestMessage(alice, alice, Message.Direction.Outgoing);
         msgAliceToBob = AdapterTestUtils.makeNewTestMessage(alice, bob, Message.Direction.Outgoing);

@@ -242,6 +242,8 @@ namespace pEp {
                 in identity ident
             );
 
+	    method cached=true disable_all_sync_channels();
+
         method config_cipher_suite(
                 in CipherSuite suite
             );

@@ -24,6 +24,7 @@ run: compile
 	$(MAKE) -C jni143
 	$(MAKE) -C jni147
 	$(MAKE) -C jni148
+	$(MAKE) -C jni149
 
 
 compile:
@@ -52,6 +53,7 @@ compile:
 	$(MAKE) -C jni143 compile
 	$(MAKE) -C jni147 compile
 	$(MAKE) -C jni148 compile
+	$(MAKE) -C jni149 compile
 
 clean:
 	$(MAKE) -C templateAlice clean
@@ -78,6 +80,7 @@ clean:
 	$(MAKE) -C jni143 clean
 	$(MAKE) -C jni147 clean
 	$(MAKE) -C jni148 clean
+	$(MAKE) -C jni149 clean
 
 clean-pep-home:
 	$(MAKE) -C basic clean-pep-home
