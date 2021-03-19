@@ -4,6 +4,7 @@ import foundation.pEp.jniadapter.Blob;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Pair;
+import foundation.pEp.pitytest.utils.RangeInt;
 import foundation.pEp.pitytest.utils.TestUtils;
 
 import java.util.ArrayList;
@@ -288,36 +289,36 @@ public class AdapterTestUtils {
     }
 
     // Factory methods to create test objects
-    public static Vector<Blob> makeNewTestBlobList(int sizeBytes, String filename, String mime_type, int count) {
+    public static Vector<Blob> makeNewTestBlobList(int sizeBytes, String filename, String mimeType, int count) {
         Vector<Blob> blbList = new Vector<>();
 
         for (int i = 0; i < count; i++) {
-            Blob blb = makeNewTestBlob(sizeBytes, filename + Integer.toString(i), mime_type);
+            Blob blb = makeNewTestBlob(sizeBytes, filename + Integer.toString(i), mimeType);
             blbList.add(blb);
         }
         return blbList;
     }
 
-    public static Blob makeNewTestBlob(String data, String filename, String mime_type) {
-        Blob blb = new Blob();
-        blb.data = data.getBytes();
-        blb.filename = filename;
-        if (mime_type != null) {
-            blb.mime_type = mime_type;
-        }
-        return blb;
+    public static Blob makeNewTestBlob(String data, String filename, String mimeType) {
+        return makeNewTestBlob(data.getBytes(),filename,mimeType);
     }
 
-    public static Blob makeNewTestBlob(int sizeBytes, String filename, String mime_type) {
+    public static Blob makeNewTestBlob(int sizeBytes, String filename, String mimeType) {
         byte bData[] = new byte[sizeBytes];
         for (int i = 0; i < sizeBytes; i++) {
-            bData[i] = (byte) TestUtils.randomInt(65, 90); // All uppercase letters
+            bData[i] = (byte) TestUtils.randomInt(new RangeInt(65, 90)); // All uppercase letters
         }
+        return makeNewTestBlob(bData,filename,mimeType);
+    }
+
+
+
+    public static Blob makeNewTestBlob(byte[] data, String filename, String mimeType) {
         Blob blb = new Blob();
-        blb.data = bData;
+        blb.data = data;
         blb.filename = filename;
-        if (mime_type != null) {
-            blb.mime_type = mime_type;
+        if (mimeType != null) {
+            blb.mime_type = mimeType;
         }
         return blb;
     }
