@@ -319,6 +319,8 @@ public class TestUtils {
     Math Utils
      */
 
+    private static Random rand = new Random();
+
     public static int clip(int val, int min, int max) {
         return Math.max(min, Math.min(max, val));
     }
@@ -331,16 +333,12 @@ public class TestUtils {
     Random data generators
      */
 
-    public static int randomInt(int min, int max) {
+    public static int randomInt(RangeInt range) {
         int ret = 0;
-        int range = max - min;
-        if (range <= 0) {
-            range = 1;
-        }
-        Random rand = new Random();
-        ret = rand.nextInt(range) + min;
+            ret = rand.nextInt(range.getSize()) + range.effectiveMin();
         return ret;
     }
+
 
     public static String randomASCIIString(CharClass charClass, int len) {
         byte[] array = new byte[len]; // length is bounded by 7
@@ -348,7 +346,7 @@ public class TestUtils {
         int rangeMax = 0;
 
         switch (charClass) {
-            case Unbounded: {
+            case All: {
                 rangeMin = 0;
                 rangeMax = 255;
                 break;
@@ -371,14 +369,14 @@ public class TestUtils {
         }
         new Random().nextBytes(array);
         for (int i = 0; i < array.length; i++) {
-            array[i] = (byte)clip(randomInt(rangeMin, rangeMax),0,255);
+            array[i] = (byte) clip(randomInt(new RangeInt(rangeMin, rangeMax)), 0, 255);
         }
         String generatedString = new String(array, Charset.forName("UTF-8"));
         return generatedString;
     }
 
     public enum CharClass {
-        Unbounded(0) {
+        All(0) {
             @Override
             public String toString() {
                 return "Unbounded";
