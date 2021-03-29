@@ -77,7 +77,7 @@ class TestAlice {
         });
 
         new TestUnit<JNI1118Context>("re_evaluate_message_rating() equal to decrypt_message_result.rating when Message has random rating string on XEncStatus", new JNI1118Context(), ctx -> {
-            AdapterTestUtils.addRatingToOptFields(ctx.msgToBobDecrypted, TestUtils.randomASCIIString(TestUtils.CharClass.All, TestUtils.randomInt(new RangeInt(0,42))));
+            AdapterTestUtils.addRatingToOptFields(ctx.msgToBobDecrypted, TestUtils.randomASCIIString(TestUtils.EASCIICharClassName.All, TestUtils.randomInt(new RangeInt(0,42))));
             AdapterTestUtils.addRcptsToOptFields(ctx.msgToBobDecrypted,Identity.toXKeyList(ctx.msgToBobDecrypted.getTo()));
             log("running re_evaluate_message_rating() on:\n" + AdapterTestUtils.msgToString(ctx.msgToBobDecrypted, false));
             Rating rat = ctx.engine.re_evaluate_message_rating(ctx.msgToBobDecrypted);

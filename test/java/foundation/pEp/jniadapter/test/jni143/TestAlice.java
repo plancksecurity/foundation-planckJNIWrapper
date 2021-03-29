@@ -5,8 +5,11 @@ import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.decrypt_message_Return;
 import foundation.pEp.jniadapter.test.utils.AdapterTestUtils;
 import foundation.pEp.jniadapter.test.utils.CTXBase;
+import foundation.pEp.pitytest.StopWatch;
 import foundation.pEp.pitytest.TestSuite;
 import foundation.pEp.pitytest.TestUnit;
+import foundation.pEp.pitytest.utils.SlowFilteredNoise;
+import foundation.pEp.pitytest.utils.RangeInt;
 import foundation.pEp.pitytest.utils.TestUtils;
 
 import java.util.Arrays;
@@ -73,9 +76,18 @@ class TestAlice {
 
                 attachmentSizeBytes *= 2;
             }
+        }).run();
+
+        // TODO:
+        new TestUnit<CTXBase>("Attachement sizes", new CTXBase(), ctx -> {
+            SlowFilteredNoise sfn = new SlowFilteredNoise();
+            sfn.addSelection(new RangeInt(0,10));
+            sfn.addSelection(new RangeInt(50,100));
+            sfn.addFilter(new RangeInt(60,89));
+            log(sfn.toString());
         });
 
-        TestSuite.getDefault().run();
+//        TestSuite.getDefault().run();
     }
 }
 

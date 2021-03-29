@@ -340,7 +340,7 @@ public class TestUtils {
     }
 
 
-    public static String randomASCIIString(CharClass charClass, int len) {
+    public static String randomASCIIString(EASCIICharClassName charClass, int len) {
         byte[] array = new byte[len]; // length is bounded by 7
         int rangeMin = 0;
         int rangeMax = 0;
@@ -375,11 +375,11 @@ public class TestUtils {
         return generatedString;
     }
 
-    public enum CharClass {
+    public enum EASCIICharClassName {
         All(0) {
             @Override
             public String toString() {
-                return "Unbounded";
+                return "All";
             }
         },
         Alpha(1) {
@@ -403,16 +403,16 @@ public class TestUtils {
 
         public final int value;
 
-        private static HashMap<Integer, CharClass> intMap;
+        private static HashMap<Integer, EASCIICharClassName> intMap;
 
-        private CharClass(int value) {
+        private EASCIICharClassName(int value) {
             this.value = value;
         }
 
-        public static CharClass getByInt(int value) {
+        public static EASCIICharClassName getByInt(int value) {
             if (intMap == null) {
-                intMap = new HashMap<Integer, CharClass>();
-                for (CharClass s : CharClass.values()) {
+                intMap = new HashMap<Integer, EASCIICharClassName>();
+                for (EASCIICharClassName s : EASCIICharClassName.values()) {
                     intMap.put(s.value, s);
                 }
             }
