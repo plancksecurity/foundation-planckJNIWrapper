@@ -2,5 +2,5 @@
 ## Prefer git tags instead of SHA hashes when possible.
 
 libpEpAdapter=Release_2.1.19
-pEpEngine=Release_2.1.24
+pEpEngine=Release_2.1.25
 sequoia=365d00a08bec6a5a48d48a7c7893d78c27092b59
