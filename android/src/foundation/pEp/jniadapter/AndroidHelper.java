@@ -69,11 +69,10 @@ public class AndroidHelper {
 
         // Set HOME environment variable pointing to
         // something like "/data/data/app.package.name/home"
-        // pEpEngine use it to find management DB and gpg home
+        // pEpEngine use it to find management DB
         homeDir = c.getDir("home", Context.MODE_PRIVATE);
         gnupgHomeDir = new File(homeDir, ".gnupg");
         setenv("HOME", homeDir.getAbsolutePath(), true);
-        setenv("GNUPGHOME", gnupgHomeDir.getAbsolutePath(), true);
 
         // pEpEngine need to find the safe words database
         shareDir = c.getDir("trustwords", Context.MODE_PRIVATE);
@@ -99,23 +98,14 @@ public class AndroidHelper {
             assetFileExtract(c, dBFileName, shareDir);
         }
 
-        // Copy GnuPG binaries
+        // TODO: Remove this when releasing JNI 2.2.X
+        // Delete opt dir as no longer needed
         if (optDir.exists() && needUpgrade){
             try {
                 FileUtils.deleteDirectory(optDir);
             } catch (IOException e) {
-                Log.e(TAG, "Couldn't delete existing gpg binaries");
+                Log.e(TAG, "Couldn't delete opt directory");
             }
-        }
-        if (!optDir.exists()){
-            optDir.mkdirs();
-            assetPathExtract(c, "lib", optDir);
-            assetPathExtract(c, "bin", optDir);
-            assetPathExtract(c, "libexec", optDir);
-            new File(optDir, "var/cache/gnupg").mkdirs();
-            new File(optDir, "var/lib/gnupg").mkdirs();
-            new File(optDir, "var/run/gnupg").mkdirs();
-            chmod("0755", optDir, true);
         }
 
         // Fill version file
