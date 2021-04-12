@@ -30,7 +30,8 @@ public class AndroidHelper {
     private static File tmpDir;
         
     // TODO : Increment when needed.
-    public static int ENGINE_VERSION_CODE = 5115;
+    // TODO : Check if this version tracking is really needed and Automatize it
+    public static String ENGINE_VERSION_CODE = "Release_2.1.27";
 
     private static File shareDir;
 
@@ -45,7 +46,7 @@ public class AndroidHelper {
 
         // Add GnuPG's bin to PATH
         binDir = new File(optDir, "bin");
-        setenv("PATH", System.getenv("PATH") + ":" + 
+        setenv("PATH", System.getenv("PATH") + ":" +
                        binDir.getAbsolutePath(), true);
 
         tmpDir = new File(c.getCacheDir(), "tmp");
@@ -62,11 +63,11 @@ public class AndroidHelper {
         }
 
         libDir = new File(optDir, "lib");
-        setenv("LD_LIBRARY_PATH", appLibDir + ":" + 
+        setenv("LD_LIBRARY_PATH", appLibDir + ":" +
                 libDir.getAbsolutePath() + ":" +
                 System.getenv("LD_LIBRARY_PATH"), true);
 
-        // Set HOME environment variable pointing to 
+        // Set HOME environment variable pointing to
         // something like "/data/data/app.package.name/home"
         // pEpEngine use it to find management DB and gpg home
         homeDir = c.getDir("home", Context.MODE_PRIVATE);
@@ -206,8 +207,8 @@ public class AndroidHelper {
         try {
 
             InputStream inputStream = assetManager.open(assetPath);
-            String targetFileName = 
-                new File(targetDir, 
+            String targetFileName =
+                new File(targetDir,
                          new File(assetPath).getName()).getAbsolutePath();
             OutputStream outputStream = new FileOutputStream(targetFileName);
             IOUtils.copy(inputStream, outputStream);
@@ -219,12 +220,12 @@ public class AndroidHelper {
         }
     }
 
-    private static int getInstalledVersion() {
-        int versionCode = -1;
+    private static String getInstalledVersion() {
+        String versionCode = "";
         if (versionFile.exists()){
             try {
                 Scanner scan = new Scanner(versionFile);
-                versionCode = Integer.parseInt(scan.next());
+                versionCode = scan.next();
                 scan.close();
             } catch (Exception e) {
                 Log.e(TAG, "getInstalledVersion: " + e.getMessage());
@@ -237,7 +238,7 @@ public class AndroidHelper {
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(versionFile);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-            outputStreamWriter.write(String.valueOf(ENGINE_VERSION_CODE) + "\n");
+            outputStreamWriter.write(ENGINE_VERSION_CODE + "\n");
             outputStreamWriter.close();
             fileOutputStream.close();
         } catch (Exception e) {
@@ -246,7 +247,7 @@ public class AndroidHelper {
     }
 
     public static boolean needNewAssets() {
-        return ENGINE_VERSION_CODE != getInstalledVersion();
+        return !getInstalledVersion().equals(ENGINE_VERSION_CODE);
     }
 
     // TODO: replace with native impl, less prone to failure.
