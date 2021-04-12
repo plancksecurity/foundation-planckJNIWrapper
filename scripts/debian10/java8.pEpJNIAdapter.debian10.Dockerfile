@@ -23,12 +23,6 @@ WORKDIR ${BUILDROOT}/libpEpAdapter
 RUN sh ./scripts/${CURRENT_DISTRO}/build_libpEpAdapter.sh && \
     rm -rf ${BUILDROOT}/*
 
-### Install system dependencies
-USER root
-RUN apt-get update -yqq && \
-    apt-get install -yqq default-jdk-headless
-USER pep-builder
-
 
 ## Build and install pEpJNIAdapter
 ### Install Java 8
