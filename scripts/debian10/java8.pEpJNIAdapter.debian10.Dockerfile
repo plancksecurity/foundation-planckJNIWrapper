@@ -2,7 +2,7 @@ ARG DOCKER_REGISTRY_HOST
 ARG CURRENT_DISTRO
 ARG PEPENGINE_VERSION
 
-FROM ${DOCKER_REGISTRY_HOST}/pep-${CURRENT_DISTRO}-engine:${PEPENGINE_VERSION}
+FROM ${DOCKER_REGISTRY_HOST}/pep-${CURRENT_DISTRO}-engine:${PEPENGINE_VERSION} AS builder
 
 ENV BUILDROOT /build
 ENV INSTPREFIX /install
@@ -53,3 +53,23 @@ RUN sh ./scripts/${CURRENT_DISTRO}/build_pEpJNIAdapter.sh && \
     install -m 644 -t ${INSTPREFIX}/lib dist/libpEpJNI.a && \
     install -m 755 -t ${INSTPREFIX}/lib dist/libpEpJNI.so && \
     install -m 644 -t ${INSTPREFIX}/lib dist/pEp.jar
+
+### Cleanup
+RUN find /install -name '*.a' -delete && \
+    rm  -rf /install/lib/sequoia/ && \
+    rm -f /install/lib/libsequoia_ffi.so*
+
+## Switch to final image
+FROM openjdk:8-slim-buster@sha256:cf05a507973843bd6a1ded846c94a5e655e0a3d4796ae17de54545403252901a
+
+ENV LD_LIBRARY_PATH=/install/lib:/install/libetpan/lib:$LD_LIBRARY_PATH
+
+COPY --from=builder /install/include /install/include
+COPY --from=builder /install/lib /install/lib
+COPY --from=builder /install/libetpan /install/libetpan
+COPY --from=builder /share/pEp /share/pEp
+COPY --from=builder /build /build
+
+RUN apt-get update -yqq && \
+    apt-get install -yqq --no-install-recommends sqlite3 && \
+    rm -rf /var/lib/apt/lists/*
