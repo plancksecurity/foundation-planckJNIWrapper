@@ -52,5 +52,4 @@ ARG CURRENT_DISTRO
 RUN sh ./scripts/${CURRENT_DISTRO}/build_pEpJNIAdapter.sh && \
     install -m 644 -t ${INSTPREFIX}/lib dist/libpEpJNI.a && \
     install -m 755 -t ${INSTPREFIX}/lib dist/libpEpJNI.so && \
-    install -m 644 -t ${INSTPREFIX}/lib dist/pEp.jar && \
-    rm -rf ${BUILDROOT}/*
+    install -m 644 -t ${INSTPREFIX}/lib dist/pEp.jar
