@@ -30,6 +30,7 @@ class TestAlice {
         CTXBase ctxBase = new CTXBase();
 
         new TestUnit<CTXBase>("user_id after first myself() ever", ctxBase, ctx -> {
+            ctx.alice.user_id = "23";
             Identity result = ctx.engine.myself(ctx.alice);
             log(AdapterTestUtils.identityToString(result, true));
             assert result.user_id.equals(ctx.alice.user_id): result.address + ": user_id is expected to be "+ctx.alice.user_id+", but is: " + result.user_id;

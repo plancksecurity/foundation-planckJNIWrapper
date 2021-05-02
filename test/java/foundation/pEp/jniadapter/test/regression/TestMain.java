@@ -126,11 +126,11 @@ class TestMain {
             ctx.engine.OpenPGP_list_keyinfo("");
         });
 
-        new TestUnit<CTXBase>("Engine.set_identity_flags", new CTXBase(), ctx -> {
+        new TestUnit<CTXAlice>("Engine.set_identity_flags", new CTXAlice(), ctx -> {
             ctx.engine.set_identity_flags(ctx.alice, 0);
         });
 
-        new TestUnit<CTXBase>("Engine.unset_identity_flags", new CTXBase(), ctx -> {
+        new TestUnit<CTXAlice>("Engine.unset_identity_flags", new CTXAlice(), ctx -> {
             ctx.engine.unset_identity_flags(ctx.alice, 0);
         });
 
@@ -199,7 +199,7 @@ class TestMain {
             ctx.engine.config_cipher_suite(CipherSuite.pEpCipherSuiteDefault);
         });
 
-        new TestUnit<CTXBase>("Engine.trustwords", new CTXBase(), ctx -> {
+        new TestUnit<CTXAlice>("Engine.trustwords", new CTXAlice(), ctx -> {
             ctx.engine.trustwords(ctx.alice);
         });
 
@@ -215,11 +215,11 @@ class TestMain {
             ctx.engine.keyMistrusted(ctx.alice);
         });
 
-        new TestUnit<CTXBase>("Engine.keyResetTrust", new CTXBase(), ctx -> {
+        new TestUnit<CTXAlice>("Engine.keyResetTrust", new CTXAlice(), ctx -> {
             ctx.engine.keyResetTrust(ctx.alice);
         });
 
-        new TestUnit<CTXBase>("Engine.trustPersonalKey", new CTXBase(), ctx -> {
+        new TestUnit<CTXAlice>("Engine.trustPersonalKey", new CTXAlice(), ctx -> {
             ctx.engine.trustPersonalKey(ctx.alice);
         });
 
