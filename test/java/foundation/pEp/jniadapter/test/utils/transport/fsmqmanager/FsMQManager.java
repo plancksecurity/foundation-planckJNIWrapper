@@ -1,12 +1,10 @@
 package foundation.pEp.jniadapter.test.utils.transport.fsmqmanager;
 
-import foundation.pEp.pitytest.utils.TestUtils;
 import foundation.pEp.jniadapter.test.utils.transport.fsmsgqueue.FsMsgQueue;
+import foundation.pEp.pitytest.utils.TestUtils;
 
 import java.io.*;
-import java.util.*;
-
-import static foundation.pEp.pitytest.TestLogger.log;
+import java.util.Base64;
 
 public class FsMQManager {
     public FsMQIdentities identities = null;
@@ -19,12 +17,16 @@ public class FsMQManager {
         identities.getQueueForIdentity(identities.self.getAddress()).clear();
     }
 
-    public void sendMessage(String address, String msg) throws UnknownIdentityException, IOException, NullPointerException {
+    public void sendMessage(String address, String msg) throws UnknownIdentityException, NullPointerException {
         if (address != null) {
             if (msg != null) {
                 FsMQMessageInternal mqMsg = new FsMQMessageInternal(identities.self, msg);
-                String serializedStr = mqMsg.serialize();
-                identities.getQueueForIdentity(address).add(serializedStr);
+                try {
+                    String serializedStr = mqMsg.serialize();
+                    identities.getQueueForIdentity(address).add(serializedStr);
+                } catch (IOException e) {
+                    throw new RuntimeException(e.toString());
+                }
             } else {
                 throw new NullPointerException("msg cant be null");
             }
@@ -35,13 +37,13 @@ public class FsMQManager {
 
     // Non blocking read
     // Returns null if no messages available
-    public FsMQMessage receiveMessage() throws IOException, ClassNotFoundException {
+    public FsMQMessage receiveMessage() {
         return receiveMessage(0);
     }
 
     // Blocking read
     // Returns null if no messages available within timeout
-    public FsMQMessage receiveMessage(int timeoutSec) throws IOException, ClassNotFoundException {
+    public FsMQMessage receiveMessage(int timeoutSec) {
         FsMQMessage ret = null;
         FsMsgQueue onwQueue = identities.getQueueForIdentity(identities.self.getAddress());
         FsMQMessageInternal mqMsg = null;
@@ -57,9 +59,12 @@ public class FsMQManager {
             }
         }
         String serializedMsg = onwQueue.remove();
-        mqMsg = FsMQMessageInternal.deserialize(serializedMsg);
-
-        ret = mqMsg.toFsMQMessage();
+        try {
+            mqMsg = FsMQMessageInternal.deserialize(serializedMsg);
+            ret = mqMsg.toFsMQMessage();
+        } catch (Exception e) {
+            throw  new RuntimeException(e.getMessage());
+        }
         return ret;
     }
 }
