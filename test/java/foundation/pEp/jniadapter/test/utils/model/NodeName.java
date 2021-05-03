@@ -1,6 +1,6 @@
 package foundation.pEp.jniadapter.test.utils.model;
 
-public enum Node {
+public enum NodeName {
     NODE_A1() {
         public String toString() {
             return "node_a1";
