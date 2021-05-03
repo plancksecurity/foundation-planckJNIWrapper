@@ -46,16 +46,16 @@ public class CTXBase extends AbstractTestContext {
         engine.setNotifyHandshakeCallback(callbacks);
 
         setupModel();
-        alice = model.get(Role.ALICE).pEpIdent;
-        bob = model.get(Role.BOB).pEpIdent;
-        carol = model.get(Role.CAROL).pEpIdent;
+        alice = model.getIdent(Role.ALICE).pEpIdent;
+        bob = model.getIdent(Role.BOB).pEpIdent;
+        carol = model.getIdent(Role.CAROL).pEpIdent;
 
-        keyAlicePub = model.get(Role.ALICE).getDefaultKey(false).getKeyPub();
-        keyAliceSec = model.get(Role.ALICE).getDefaultKey(false).getKeySec();
-        keyAlicePubPassphrase = model.get(Role.ALICE).getDefaultKey(true).getKeyPub();
-        keyAliceSecPassphrase = model.get(Role.ALICE).getDefaultKey(true).getKeySec();
-        keyBobPub = model.get(Role.BOB).getDefaultKey(false).getKeyPub();
-        keyBobSec = model.get(Role.BOB).getDefaultKey(false).getKeySec();
+        keyAlicePub = model.getIdent(Role.ALICE).getDefaultKey(false).getKeyPub();
+        keyAliceSec = model.getIdent(Role.ALICE).getDefaultKey(false).getKeySec();
+        keyAlicePubPassphrase = model.getIdent(Role.ALICE).getDefaultKey(true).getKeyPub();
+        keyAliceSecPassphrase = model.getIdent(Role.ALICE).getDefaultKey(true).getKeySec();
+        keyBobPub = model.getIdent(Role.BOB).getDefaultKey(false).getKeyPub();
+        keyBobSec = model.getIdent(Role.BOB).getDefaultKey(false).getKeySec();
 
         TestLogger.logH2("Machine directory: ");
         TestLogger.log(engine.getMachineDirectory());
@@ -71,43 +71,18 @@ public class CTXBase extends AbstractTestContext {
     }
 
     private void setupModel() {
-        // Idents
-        {
-            model.add(new TestIdentity(Role.ALICE));
-            model.add(new TestIdentity(Role.BOB));
-            model.add(new TestIdentity(Role.CAROL));
-        }
-        // Nodes
-        {
-            TestNode tn = new TestNode(Node.NODE_A1);
-            tn.addOwnIdent(model.get(Role.ALICE));
-            model.add(tn);
-        }
-        {
-            TestNode tn = new TestNode(Node.NODE_B1);
-            tn.addOwnIdent(model.get(Role.BOB));
-            model.add(tn);
-        }
-        {
-            TestNode tn = new TestNode(Node.NODE_C1);
-            tn.addOwnIdent(model.get(Role.CAROL));
-            model.add(tn);
-        }
-        {
-            TestNode tn = new TestNode(Node.NODE_A2);
-            tn.addOwnIdent(model.get(Role.ALICE));
-            model.add(tn);
-        }
-        {
-            TestNode tn = new TestNode(Node.NODE_B2);
-            tn.addOwnIdent(model.get(Role.BOB));
-            model.add(tn);
-        }
-        {
-            TestNode tn = new TestNode(Node.NODE_C2);
-            tn.addOwnIdent(model.get(Role.CAROL));
-            model.add(tn);
-        }
+        // Idents to Nodes (1-n)
+        model.getNode(NodeName.NODE_A1).setRole(Role.ALICE);
+        model.getNode(NodeName.NODE_B1).setRole(Role.BOB);
+        model.getNode(NodeName.NODE_C1).setRole(Role.CAROL);
+        model.getNode(NodeName.NODE_A2).setRole(Role.ALICE);
+        model.getNode(NodeName.NODE_B2).setRole(Role.BOB);
+        model.getNode(NodeName.NODE_C2).setRole(Role.CAROL);
+
+        // Default Partner
+        model.getIdent(Role.ALICE).setDefaultPartner(Role.BOB);
+        model.getIdent(Role.BOB).setDefaultPartner(Role.CAROL);
+        model.getIdent(Role.CAROL).setDefaultPartner(Role.ALICE);
 
         // Keys
         {
@@ -115,13 +90,13 @@ public class CTXBase extends AbstractTestContext {
             String pathSec = "../resources/test_keys/alice-sec-DE5DF92A358DCE5F.asc";
             String pathPubPP = "../resources/test_keys/alice-passphrase-pub-BCBAC48800026D6F.asc";
             String pathSecPP = "../resources/test_keys/alice-passphrase-sec-BCBAC48800026D6F.asc";
-            new TestKeyPair(model.get(Role.ALICE), pathPub, pathSec, true);
-            new TestKeyPair(model.get(Role.ALICE), pathPubPP, pathSecPP, "passphrase_alice", true);
+            new TestKeyPair(model.getIdent(Role.ALICE), pathPub, pathSec, true);
+            new TestKeyPair(model.getIdent(Role.ALICE), pathPubPP, pathSecPP, "passphrase_alice", true);
         }
         {
             String pathPub = "../resources/test_keys/bob-pub.asc";
             String pathSec = "../resources/test_keys/bob-sec.asc";
-            new TestKeyPair(model.get(Role.BOB), pathPub, pathSec, true);
+            new TestKeyPair(model.getIdent(Role.BOB), pathPub, pathSec, true);
         }
 
     }
