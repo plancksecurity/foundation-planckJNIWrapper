@@ -18,19 +18,21 @@ class TestAlice {
         CTXMultiNode JNI153Ctx = new CTXMultiNode(NodeName.NODE_A1);
 
         new TestUnit<CTXMultiNode>("test", JNI153Ctx, ctx -> {
+            ctx.transport.clearOwnQueue();
             ctx.myself.pEpIdent = ctx.engine.myself(ctx.myself.pEpIdent);
             log(AdapterTestUtils.identityToString(ctx.myself.pEpIdent, true));
-            ctx.transport.clearOwnQueue();
-            int counter = 0;
-            while (true) {
-                Message src = AdapterTestUtils.makeNewTestMessage(ctx.myself.pEpIdent, ctx.partner.pEpIdent, Message.Direction.Outgoing);
-                src.setLongmsg("UNIQUE_" + String.valueOf(counter));
-                ctx.sendMessage(ctx.partner.pEpIdent, src.getLongmsg());
-                ctx.reveiveMessage();
 
-                counter++;
-                TestUtils.sleep(3000);
-//                TestUtils.readKey();
+            ctx.transport.start();
+
+            ctx.transport.sendAsync(AdapterTestUtils.newOutMessage(ctx.myself.pEpIdent, ctx.partner.pEpIdent, "UNIQUE_" + String.valueOf(0)));
+            int counter = 0;
+
+            while (true) {
+                while (ctx.transport.canReceiveAsync()) {
+                    ctx.transport.sendAsync(AdapterTestUtils.newOutMessage(ctx.myself.pEpIdent, ctx.partner.pEpIdent, "UNIQUE_" + String.valueOf(counter)));
+                    Message msg = ctx.transport.receiveAsyncNonBlocking();
+                    counter++;
+                }
             }
         });
 

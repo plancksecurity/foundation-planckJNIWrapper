@@ -338,6 +338,30 @@ public class AdapterTestUtils {
         return msg;
     }
 
+    public static Message newOutMessage(Identity from, Identity to, String longMessage) {
+        Message ret = new Message();
+        Vector<Identity> toList = new Vector<>();
+        toList.add(to);
+        ret.setTo(toList);
+        ret.setFrom(from);
+//        ret.setShortmsg();
+        ret.setLongmsg(longMessage);
+        ret.setDir(Message.Direction.Outgoing);
+        return ret;
+    }
+
+//    public static Message newInMessage(Identity from, Identity to, String longMessage) {
+//        Message ret = new Message();
+//        Vector<Identity> toList = new Vector<>();
+//        toList.add(to);
+//        ret.setTo(toList);
+//        ret.setFrom(from);
+////        ret.setShortmsg();
+//        ret.setLongmsg(longMessage);
+//        ret.setDir(Message.Direction.Outgoing);
+//        return ret;
+//    }
+
     public static Message generateSourceMessage(Identity from, Identity to, long id, long longMsgLen) {
         Message msg = new Message();
         Vector<Identity> vID = new Vector<Identity>();

@@ -1,11 +1,15 @@
 package foundation.pEp.jniadapter.test.jni153;
 
+import foundation.pEp.jniadapter.Engine;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.test.utils.AdapterTestUtils;
 import foundation.pEp.jniadapter.test.utils.model.NodeName;
 import foundation.pEp.pitytest.TestSuite;
 import foundation.pEp.pitytest.TestUnit;
 import foundation.pEp.pitytest.utils.TestUtils;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static foundation.pEp.pitytest.TestLogger.log;
 
@@ -17,24 +21,31 @@ class TestBob {
         CTXMultiNode JNI153Ctx = new CTXMultiNode(NodeName.NODE_B1);
 
         new TestUnit<CTXMultiNode>("test", JNI153Ctx, ctx -> {
+            ExecutorService executorService = Executors.newFixedThreadPool(10);
+            ctx.transport.clearOwnQueue();
             ctx.myself.pEpIdent = ctx.engine.myself(ctx.myself.pEpIdent);
             log(AdapterTestUtils.identityToString(ctx.myself.pEpIdent, true));
-            ctx.transport.clearOwnQueue();
+
+            ctx.transport.start();
+
             int counter = 0;
-
             while (true) {
-                TestUtils.sleep(3000);
-                Message msgRx = ctx.reveiveMessage();
 
-                //Mistrust
-                if (counter == 1) {
-                    log("Mistrusting");
-                    ctx.engine.keyMistrusted(msgRx.getFrom());
+                while (ctx.transport.canReceiveAsync()) {
+                    Message msgRx = ctx.transport.receiveAsyncNonBlocking();
+                    log(AdapterTestUtils.identityToString(msgRx.getFrom(),true));
+                    ctx.transport.sendAsync(AdapterTestUtils.newOutMessage(ctx.myself.pEpIdent, msgRx.getFrom(), msgRx.getLongmsg() + " - ACK"));
+                    counter++;
+
+                    if (counter % 4 == 0) {
+                        executorService.submit(() -> {
+                            Engine eng = new Engine();
+                            log("Mistrusting");
+                            eng.keyMistrusted(msgRx.getFrom());
+
+                        });
+                    }
                 }
-
-                ctx.sendMessage(msgRx.getFrom(), msgRx.getLongmsg() + " - ACK");
-
-                counter++;
             }
         });
 
