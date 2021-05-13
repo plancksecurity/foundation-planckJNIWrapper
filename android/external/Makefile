@@ -49,6 +49,7 @@ clean-all:
 	$(MAKE) -C arm64-v8a clean-all
 	$(MAKE) -C x86 clean-all
 	$(MAKE) -C x86_64 clean-all
+	rm -rf build
 
 downloads/downloads.stamp:
 	$(MAKE) -C downloads
