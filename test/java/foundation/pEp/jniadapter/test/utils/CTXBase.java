@@ -14,7 +14,7 @@ public class CTXBase extends AbstractTestContext {
     public Engine engine;
     public TestCallbacks callbacks;
 
-    public TestModel model = new TestModel();
+    public TestModel<pEpTestIdentity,TestNode<pEpTestIdentity>> model = new TestModel(pEpTestIdentity::new,TestNode::new);
 
     // Identities
     public Identity alice;
@@ -72,12 +72,12 @@ public class CTXBase extends AbstractTestContext {
 
     private void setupModel() {
         // Idents to Nodes (1-n)
-        model.getNode(NodeName.NODE_A1).setRole(Role.ALICE);
-        model.getNode(NodeName.NODE_B1).setRole(Role.BOB);
-        model.getNode(NodeName.NODE_C1).setRole(Role.CAROL);
-        model.getNode(NodeName.NODE_A2).setRole(Role.ALICE);
-        model.getNode(NodeName.NODE_B2).setRole(Role.BOB);
-        model.getNode(NodeName.NODE_C2).setRole(Role.CAROL);
+        model.getNode(NodeName.NODE_A1).setDefaultRole(Role.ALICE);
+        model.getNode(NodeName.NODE_B1).setDefaultRole(Role.BOB);
+        model.getNode(NodeName.NODE_C1).setDefaultRole(Role.CAROL);
+        model.getNode(NodeName.NODE_A2).setDefaultRole(Role.ALICE);
+        model.getNode(NodeName.NODE_B2).setDefaultRole(Role.BOB);
+        model.getNode(NodeName.NODE_C2).setDefaultRole(Role.CAROL);
 
         // Default Partner
         model.getIdent(Role.ALICE).setDefaultPartner(Role.BOB);
@@ -90,13 +90,13 @@ public class CTXBase extends AbstractTestContext {
             String pathSec = "../resources/test_keys/alice-sec-DE5DF92A358DCE5F.asc";
             String pathPubPP = "../resources/test_keys/alice-passphrase-pub-BCBAC48800026D6F.asc";
             String pathSecPP = "../resources/test_keys/alice-passphrase-sec-BCBAC48800026D6F.asc";
-            new TestKeyPair(model.getIdent(Role.ALICE), pathPub, pathSec, true);
-            new TestKeyPair(model.getIdent(Role.ALICE), pathPubPP, pathSecPP, "passphrase_alice", true);
+            new pEpTestKeyPair(model.getIdent(Role.ALICE), pathPub, pathSec, true);
+            new pEpTestKeyPair(model.getIdent(Role.ALICE), pathPubPP, pathSecPP, "passphrase_alice", true);
         }
         {
             String pathPub = "../resources/test_keys/bob-pub.asc";
             String pathSec = "../resources/test_keys/bob-sec.asc";
-            new TestKeyPair(model.getIdent(Role.BOB), pathPub, pathSec, true);
+            new pEpTestKeyPair(model.getIdent(Role.BOB), pathPub, pathSec, true);
         }
 
     }
