@@ -4,27 +4,27 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class TestKeyPair {
+public class pEpTestKeyPair {
     private KeyType type = null;
-    private TestIdentity owner = null;
+    private pEpTestIdentity owner = null;
     private String pathPub = null;
     private String pathSec = null;
     private byte[] keyPub = null;
     private byte[] keySec = null;
     private String passphrase = null;
 
-    public TestKeyPair(TestIdentity owner, String pathPub, String pathSec, boolean isDefault) {
+    public pEpTestKeyPair(pEpTestIdentity owner, String pathPub, String pathSec, boolean isDefault) {
         type = KeyType.NORMAL;
         init(owner, pathPub, pathSec, isDefault);
     }
 
-    public TestKeyPair(TestIdentity owner, String pathPub, String pathSec, String passphrase, boolean isDefault) {
+    public pEpTestKeyPair(pEpTestIdentity owner, String pathPub, String pathSec, String passphrase, boolean isDefault) {
         this.passphrase = passphrase;
         type = KeyType.PASSPHRASE;
         init(owner, pathPub, pathSec, isDefault);
     }
 
-    private void init(TestIdentity owner, String pathPub, String pathSec, boolean isDefault) {
+    private void init(pEpTestIdentity owner, String pathPub, String pathSec, boolean isDefault) {
         this.owner = owner;
         this.pathPub = pathPub;
         this.pathSec = pathSec;
@@ -33,7 +33,7 @@ public class TestKeyPair {
         owner.addKey(this, isDefault);
     }
 
-    public TestIdentity getOwner() {
+    public pEpTestIdentity getOwner() {
         return owner;
     }
 
