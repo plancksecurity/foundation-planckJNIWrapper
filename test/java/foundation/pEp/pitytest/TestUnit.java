@@ -192,7 +192,8 @@ public class TestUnit<T extends TestContextInterface> implements Runnable {
         TestUtils.standardOutErrEnabled(true);
         logH1(makeLogString());
         if (result == TestState.FAILED || state == TestState.CTX_FAIL) {
-            log("ERROR: " + getLastException().toString());
+            getLastException().printStackTrace();
+//            log("ERROR: " + getLastException().toString());
         }
         if (verboseMode) logRaw("\n\n");
         TestUtils.standardOutErrEnabled(verboseMode);
