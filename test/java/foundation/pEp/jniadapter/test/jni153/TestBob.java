@@ -32,9 +32,11 @@ class TestBob {
             while (true) {
 
                 while (ctx.transport.canReceiveAsync()) {
-                    Message msgRx = ctx.transport.receiveAsyncNonBlocking();
+                    Message msgRx = new Message(ctx.transport.receiveAsyncNonBlocking());
                     log(AdapterTestUtils.identityToString(msgRx.getFrom(),true));
-                    ctx.transport.sendAsync(AdapterTestUtils.newOutMessage(ctx.myself.pEpIdent, msgRx.getFrom(), msgRx.getLongmsg() + " - ACK"));
+                    Message msgOut = AdapterTestUtils.newOutMessage(ctx.myself.pEpIdent, msgRx.getFrom(), msgRx.getLongmsg() + " - ACK");
+//                    ctx.transport.sendAsync(msgOut, ms);
+                    ctx.transport.sendAsync(msgOut.encodeMIME(), ctx.partner); // HACK NEED TO RESOLVE FROM ADDRESS
                     counter++;
 
                     if (counter % 4 == 0) {

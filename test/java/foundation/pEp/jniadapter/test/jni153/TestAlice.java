@@ -23,14 +23,15 @@ class TestAlice {
             log(AdapterTestUtils.identityToString(ctx.myself.pEpIdent, true));
 
             ctx.transport.start();
-
-            ctx.transport.sendAsync(AdapterTestUtils.newOutMessage(ctx.myself.pEpIdent, ctx.partner.pEpIdent, "UNIQUE_" + String.valueOf(0)));
+            Message outMsg = AdapterTestUtils.newOutMessage(ctx.myself.pEpIdent, ctx.partner.pEpIdent, "UNIQUE_" + String.valueOf(0));
+            ctx.transport.sendAsync(outMsg.encodeMIME(), ctx.partner);
             int counter = 0;
-
+//            TestUtils.readKey();
             while (true) {
                 while (ctx.transport.canReceiveAsync()) {
-                    ctx.transport.sendAsync(AdapterTestUtils.newOutMessage(ctx.myself.pEpIdent, ctx.partner.pEpIdent, "UNIQUE_" + String.valueOf(counter)));
-                    Message msg = ctx.transport.receiveAsyncNonBlocking();
+                    outMsg = AdapterTestUtils.newOutMessage(ctx.myself.pEpIdent, ctx.partner.pEpIdent, "UNIQUE_" + String.valueOf(counter));
+                    ctx.transport.sendAsync(outMsg.encodeMIME(), ctx.partner);
+                    Message msg = new Message(ctx.transport.receiveAsyncNonBlocking());
                     counter++;
                 }
             }
