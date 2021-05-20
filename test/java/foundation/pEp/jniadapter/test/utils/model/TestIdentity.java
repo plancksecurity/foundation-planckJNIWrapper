@@ -1,39 +1,37 @@
 package foundation.pEp.jniadapter.test.utils.model;
 
-import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.FsMQIdentity;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class TestIdentity {
-    private TestModel model = null;
-    private Role role = null;
+    private TestModel model = null; // Belongs to a TestModel (Tree struture)
+    private Role role = null;       // Assumes a Role
     private Role defaultPartner = null;
-    public Identity pEpIdent = null;
-    private List<TestKeyPair> keys = new ArrayList<>();
-    private TestKeyPair defaultKey = null;
-    private TestKeyPair defaultKeyPP = null;
-    private Map<NodeName,FsMQIdentity> transportIdents = new HashMap<>();
+    private Map<NodeName, FsMQIdentity> transportIdents = new HashMap<>();
+    private boolean isInitialized = false;
 
-    public TestIdentity(TestModel model, Role role) {
-        this.model = model;
-        this.role = role;
-        pEpIdent = new Identity();
-        pEpIdent.username = role.toString();
-        pEpIdent.address = role + "@peptest.org";
-        this.model.addIdent(this);
+    public TestIdentity() {
     }
 
-//    public TestModel getModel() {
-//        return model;
-//    }
+    // this method has to be called before you can do ANYTHING with this object
+    public void initialize( TestModel model, Role role) {
+        this.role = role;
+        this.model = model;
+        isInitialized = true;
+    }
 
     public Role getRole() {
+        ensureInitialized();
         return role;
     }
 
     public TestIdentity getDefaultPartner() {
+        ensureInitialized();
         return model.getIdent(defaultPartner);
     }
 
@@ -46,10 +44,11 @@ public class TestIdentity {
     }
 
     public void addNode(TestNode node) {
+        ensureInitialized();
         FsMQIdentity tmp = createTransportIdentity(node);
-        transportIdents.put(node.getName(),tmp);
+        transportIdents.put(node.getName(), tmp);
         if (node.getIdent().getRole() != getRole()) {
-            node.setRole(getRole());
+            node.setDefaultRole(getRole());
         }
     }
 
@@ -61,45 +60,16 @@ public class TestIdentity {
         return transportIdents.get(nodeName);
     }
 
-    public void addKey(TestKeyPair kp, boolean isDefault) {
-        keys.add(kp);
-        if (isDefault) {
-            if (kp.getType() == KeyType.NORMAL) {
-                defaultKey = kp;
-            } else {
-                defaultKeyPP = kp;
-            }
-        }
-    }
-
-
-    public TestKeyPair getDefaultKey(boolean passphrase) {
-        if (!passphrase) {
-            return defaultKey;
-        } else {
-            return defaultKeyPP;
-        }
-    }
-
-    public List<TestKeyPair> getAllKeys() {
-        return keys;
-    }
-
-    public List<TestKeyPair> getNormalKeys() {
-        return keys.stream().filter(i -> {
-            return i.getType().equals(KeyType.NORMAL);
-        }).collect(Collectors.toList());
-    }
-
-    public List<TestKeyPair> getPassphraseKeys() {
-        return keys.stream().filter(i -> {
-            return i.getType().equals(KeyType.PASSPHRASE);
-        }).collect(Collectors.toList());
-    }
-
     private FsMQIdentity createTransportIdentity(TestNode node) {
+        ensureInitialized();
         String transportAddress = node.getName().toString() + getRole().toString();
         String transportDir = node.getTransportDir() + getRole().toString();
         return new FsMQIdentity(transportAddress, transportDir);
+    }
+
+    private void ensureInitialized() {
+        if (!isInitialized) {
+            throw new IllegalStateException("not initialized");
+        }
     }
 }

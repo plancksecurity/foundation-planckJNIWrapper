@@ -1,53 +1,55 @@
 package foundation.pEp.jniadapter.test.utils.model;
 
-import foundation.pEp.jniadapter.test.utils.transport.fsmqmanager.FsMQIdentity;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 
-public class TestModel {
-    private Map<Role, TestIdentity> idents = new HashMap<>();
-    private Map<NodeName, TestNode> nodes = new HashMap<>();
+public class TestModel<IdentityType extends TestIdentity, NodeType extends TestNode> {
+    private Map<Role, IdentityType> idents = new HashMap<>();
+    private Map<NodeName, NodeType> nodes = new HashMap<>();
 
-    public String dataDir = "../resources/";;
+    public String dataDir = "../resources/";
     public String nodesDir = dataDir + "nodes/";
 
-    public TestModel() {
+    public TestModel(Supplier<IdentityType> identityTypeSupplier, Supplier<NodeType> nodeTypeSupplier) {
         // Creating all Roles
         for (Role r : Role.values()) {
-            new TestIdentity(this, r);
+            IdentityType tmp = identityTypeSupplier.get();
+            tmp.initialize(this,r);
+            addIdent(tmp);
         }
         // Creating all Nodes
         for (NodeName n : NodeName.values()) {
-            new TestNode(this, n);
+            NodeType tmp = nodeTypeSupplier.get();
+            tmp.initialize(this, n);
+            addNode(tmp);
         }
     }
 
-    public void addIdent(TestIdentity ident) {
+    public void addIdent(IdentityType ident) {
         idents.put(ident.getRole(), ident);
     }
 
-    public TestIdentity getIdent(Role name) {
+    public IdentityType getIdent(Role name) {
         return idents.get(name);
     }
 
-    public List<TestIdentity> getAllIdents() {
-        return new ArrayList<TestIdentity>(idents.values());
+    public List<IdentityType> getAllIdents() {
+        return new ArrayList<>(idents.values());
     }
 
-    public void addNode(TestNode node) {
+    public void addNode(NodeType node) {
         nodes.put(node.getName(), node);
     }
 
-    public TestNode getNode(NodeName name) {
-        TestNode re = nodes.get(name);
-        return re;
+    public NodeType getNode(NodeName name) {
+        return nodes.get(name);
     }
 
-    public List<TestNode> getAllNodes() {
-        return new ArrayList<TestNode>(nodes.values());
+    public List<NodeType> getAllNodes() {
+        return new ArrayList<>(nodes.values());
     }
 }
