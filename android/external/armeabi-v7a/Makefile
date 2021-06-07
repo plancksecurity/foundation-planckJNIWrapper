@@ -285,6 +285,7 @@ nettle-clean:
 nettle/Makefile: nettle.src.stamp
 	-patch -N -p1 --reject-file=- nettle/configure.ac  ../nettle-3.4.1-remove-so-versioning.patch
 	-patch -N -p1 --reject-file=- nettle/Makefile.in  ../nettle-3.4.1-remove-so-versioning-link.patch
+	-patch -N -p1 <../rsa-fixes-3.patch
 	cd nettle && \
 		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
