@@ -15,6 +15,12 @@ import java.util.List;
 
 import static foundation.pEp.pitytest.TestLogger.log;
 
+// The way it should be:
+// Context contains:
+// - Model (The whole truth, objective)
+// - Persepective (re-interpretation/subset of the model, subjective)
+// - Utility objects (like transport, logging, etc...)
+
 public class CTXMultiNode extends AbstractTestContext {
     public Engine engine;
     public TestCallbacks callbacks;
@@ -23,7 +29,7 @@ public class CTXMultiNode extends AbstractTestContext {
     // Model
     public TestModel<pEpTestIdentity, TestNode<pEpTestIdentity>> model;
 
-    // Mappings
+    // Perspective
     private NodeName ownNodeName;
     private TestNode<pEpTestIdentity> ownNode;
     public pEpTestIdentity myself;
