@@ -313,6 +313,7 @@ CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/../build
 sequoia.src.stamp: ../downloads/sequoia.tar.gz
 	mkdir -p sequoia
 	cd sequoia && tar xvf ../$<
+	cd sequoia && cargo update -p nettle-sys --precise 2.0.8
 	touch $@
 
 sequoia-ffi-clean:
@@ -327,7 +328,7 @@ $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so:  
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_LIB_DIR="$(LOCAL)/lib" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_INCLUDE_DIR="$(LOCAL)/include" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR="$(LOCAL)/bin" \
-	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) rustup run nightly cargo build --target armv7-linux-androideabi -p sequoia-openpgp-ffi --release -Z build-std=core,alloc,std
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target armv7-linux-androideabi -p sequoia-openpgp-ffi --release
 
 
 $(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so
