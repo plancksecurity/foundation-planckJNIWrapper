@@ -1,5 +1,4 @@
 #include <pEp/keymanagement.h>
-#include <pEp/blacklist.h>
 #include <pEp/Adapter.hh>
 #include <pEp/pEpLog.hh>
 
@@ -340,88 +339,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1unencrypt
     ::config_unencrypted_subject(session(), static_cast<bool>(enable));
 }
 
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1blacklist_1add(JNIEnv *env,
-        jobject obj,
-        jbyteArray fpr
-    )
-{
-    std::mutex *mutex_local = nullptr;
-    {
-        std::lock_guard<std::mutex> l(global_mutex);
-        pEpLog("called with lock_guard");
-        mutex_local = get_engine_java_object_mutex(env, obj);
-    }
-    std::lock_guard<std::mutex> l(*mutex_local);
 
-    const char *_fpr = to_string(env, fpr);
-
-    if(_fpr == NULL){
-        throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
-        return;
-    }
-
-    PEP_STATUS status = passphraseWrap(::blacklist_add, session(), _fpr);
-    if (status != PEP_STATUS_OK) {
-        throw_pEp_Exception(env, status);
-        return;
-    }
-}
-
-JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1blacklist_1delete(JNIEnv *env,
-        jobject obj,
-        jbyteArray fpr)
-{
-    std::mutex *mutex_local = nullptr;
-    {
-        std::lock_guard<std::mutex> l(global_mutex);
-        pEpLog("called with lock_guard");
-        mutex_local = get_engine_java_object_mutex(env, obj);
-    }
-    std::lock_guard<std::mutex> l(*mutex_local);
-
-    const char *_fpr = to_string(env, fpr);
-
-    if(_fpr == NULL){
-        throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
-        return;
-    }
-
-    PEP_STATUS status = passphraseWrap(::blacklist_delete, session(), _fpr);
-    if (status != PEP_STATUS_OK) {
-        throw_pEp_Exception(env, status);
-        return;
-    }
-
-}
-
-JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_Engine__1blacklist_1is_1listed(JNIEnv *env,
-        jobject obj,
-        jbyteArray fpr)
-{
-    std::mutex *mutex_local = nullptr;
-    {
-        std::lock_guard<std::mutex> l(global_mutex);
-        pEpLog("called with lock_guard");
-        mutex_local = get_engine_java_object_mutex(env, obj);
-    }
-    std::lock_guard<std::mutex> l(*mutex_local);
-
-    const char *_fpr = to_string(env, fpr);
-    bool _listed = 0;
-
-    if(_fpr == NULL){
-        throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
-        return 0;
-    }
-
-    PEP_STATUS status = passphraseWrap(::blacklist_is_listed, session(), _fpr, &_listed);
-    if (status != PEP_STATUS_OK) {
-        throw_pEp_Exception(env, status);
-        return 0;
-    }
-
-    return (jboolean)_listed;
-}
 
 JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1getCrashdumpLog(JNIEnv *env,
         jobject obj,
