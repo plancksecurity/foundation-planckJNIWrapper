@@ -113,10 +113,6 @@ class TestMain {
             ctx.engine.identity_rating(ctx.alice);
         });
 
-        new TestUnit<CTXBase>("Engine.blacklist_retrieve", new CTXBase(), ctx -> {
-            ctx.engine.blacklist_retrieve();
-        });
-
 //        TODO: FAILS
 //        new TestUnit<CTXAlice2>("Engine.own_message_private_key_details", new CTXAlice2(), ctx -> {
 //            ctx.engine.own_message_private_key_details(ctx.msgToSelf);
@@ -229,18 +225,6 @@ class TestMain {
 
         new TestUnit<CTXBase>("Engine.importKey", new CTXBase(), ctx -> {
             ctx.engine.importKey(ctx.keyBobPub);
-        });
-
-        new TestUnit<CTXBase>("Engine.blacklist_add", new CTXBase(), ctx -> {
-            ctx.engine.blacklist_add("43");
-        });
-
-        new TestUnit<CTXBase>("Engine.blacklist_delete", new CTXBase(), ctx -> {
-            ctx.engine.blacklist_delete("43");
-        });
-
-        new TestUnit<CTXBase>("Engine.blacklist_is_listed", new CTXBase(), ctx -> {
-            ctx.engine.blacklist_is_listed("43");
         });
 
         new TestUnit<CTXBase>("Engine.config_passive_mode", new CTXBase(), ctx -> {
