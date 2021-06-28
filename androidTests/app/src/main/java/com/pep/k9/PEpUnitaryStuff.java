@@ -1,8 +1,9 @@
 package com.pep.k9;
 
-import org.pEp.jniadapter.Engine;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.Engine;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.decrypt_message_Return;
 
 import java.util.Vector;
 
@@ -37,7 +38,7 @@ public class PEpUnitaryStuff {
         msg.setCc(cc);
 
         Message encriptedMessage = engine.encrypt_message(msg, null, Message.EncFormat.PEP);
-        Engine.decrypt_message_Return decrypt_message_return = engine.decrypt_message(encriptedMessage, 0);
+        decrypt_message_Return decrypt_message_return = engine.decrypt_message(encriptedMessage, new Vector<>(), 0);
 
         if (!decrypt_message_return.dst.getLongmsg().equals(message)) {
             throw new RuntimeException("FAILED");

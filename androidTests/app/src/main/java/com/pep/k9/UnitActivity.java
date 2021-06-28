@@ -1,17 +1,18 @@
 package com.pep.k9;
 
 import android.content.res.AssetManager;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import org.pEp.jniadapter.Blob;
-import org.pEp.jniadapter.Engine;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Message;
-import org.pEp.jniadapter.Pair;
-import org.pEp.jniadapter.pEpException;
+import foundation.pEp.jniadapter.Blob;
+import foundation.pEp.jniadapter.Engine;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.Pair;
+import foundation.pEp.jniadapter.decrypt_message_Return;
+import foundation.pEp.jniadapter.exceptions.pEpException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,7 +70,7 @@ public class UnitActivity extends AppCompatActivity {
 
         Vector<Blob> attachments = encryptedMessage.getAttachments();
 
-        Engine.decrypt_message_Return result;
+        decrypt_message_Return result;
         result = decryptMessageOnEngine(engine, encryptedMessage);
 
         engine.close();
@@ -107,7 +108,7 @@ public class UnitActivity extends AppCompatActivity {
 
         Vector<Blob> attachments = encryptedMessage.getAttachments();
 
-        Engine.decrypt_message_Return result;
+        decrypt_message_Return result;
         result = decryptMessageOnEngine(engine, encryptedMessage);
 
         engine.close();
@@ -145,7 +146,7 @@ public class UnitActivity extends AppCompatActivity {
 
         Vector<Blob> attachments = encryptedMessage.getAttachments();
 
-        Engine.decrypt_message_Return result;
+        decrypt_message_Return result;
         result = decryptMessageOnEngine(engine, encryptedMessage);
 
         engine.close();
@@ -175,9 +176,9 @@ public class UnitActivity extends AppCompatActivity {
         return msg;
     }
 
-    private Engine.decrypt_message_Return decryptMessageOnEngine(Engine engine, Message encriptedMessage) throws pEpException {
+    private decrypt_message_Return decryptMessageOnEngine(Engine engine, Message encriptedMessage) throws pEpException {
         long lastTime = System.currentTimeMillis();
-        Engine.decrypt_message_Return decrypt_message_return = engine.decrypt_message(encriptedMessage, 0);
+        decrypt_message_Return decrypt_message_return = engine.decrypt_message(encriptedMessage, new Vector<>(), 0x0);
         long time = System.currentTimeMillis() - lastTime;
         Log.d("time", " " + time);
         return decrypt_message_return;
@@ -256,7 +257,7 @@ public class UnitActivity extends AppCompatActivity {
 
     private void importKeyFromEngine(Engine engine, String filename) throws IOException {
         long lastTime = System.currentTimeMillis();
-        engine.importKey(LoadAssetAsString(filename));
+        engine.importKey(LoadAssetAsBuffer(filename));
         long time = System.currentTimeMillis() - lastTime;
         Log.d("time", " " + time);
     }

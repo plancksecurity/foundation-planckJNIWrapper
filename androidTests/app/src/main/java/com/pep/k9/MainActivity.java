@@ -8,8 +8,8 @@ import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,14 +31,16 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
-import org.pEp.jniadapter.AndroidHelper;
-import org.pEp.jniadapter.Blob;
-import org.pEp.jniadapter.Engine;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Message;
-import org.pEp.jniadapter.Pair;
-import org.pEp.jniadapter.Rating;
-import org.pEp.jniadapter.pEpException;
+import foundation.pEp.jniadapter.AndroidHelper;
+import foundation.pEp.jniadapter.Blob;
+import foundation.pEp.jniadapter.Engine;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.Pair;
+import foundation.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Utils;
+import foundation.pEp.jniadapter.decrypt_message_Return;
+import foundation.pEp.jniadapter.exceptions.pEpException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -83,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Context c = getApplicationContext();
 
-        Dexter.initialize(getApplication());
         PermissionListener feedbackViewPermissionListener = new PermissionListener() {
             @Override
             public void onPermissionGranted(PermissionGrantedResponse response) {
@@ -105,7 +106,12 @@ public class MainActivity extends AppCompatActivity {
                 SnackbarOnDeniedPermissionListener.Builder.with(rootView, R.string.hello_world)
                         .withOpenSettingsButton("SETTINGS")
                         .build());
-        Dexter.checkPermission(storagePermissionListener, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        Dexter.withActivity(this)
+                .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withListener(storagePermissionListener)
+                .onSameThread()
+                .check();
 
         generatedIdentities = new ArrayList<>();
         text = new StringBuilder();
@@ -265,9 +271,6 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.encrypt_and_decrypt) Button runEncryptAndDecrypt;
     @BindView(R.id.encrypt_and_decrypt_without_key) Button runEncryptAndDecryptWithoutKey;
     @BindView(R.id.ratings) Button runRatings;
-    @BindView(R.id.black_list) Button runBlackList;
-    @BindView(R.id.black_list_and_send) Button runBlackListAndSendMessage;
-    @BindView(R.id.black_list_and_delete) Button runBlackListAndDelete;
     @BindView(R.id.unencrypted_subject) Button runUnencryptedSubject;
     @BindView(R.id.passive_mode) Button runPassiveMode;
     @BindView(R.id.message_from_me_green) Button runMessageFromMeIsGreen;
@@ -275,7 +278,6 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.times_to_test) EditText timesToTest;
     @BindView(R.id.outgoing_color) Button runOutgoingColor;
     @BindView(R.id.identity_rating) Button runIdentityRating;
-    @BindView(R.id.deblacklist) Button runDeblacklist;
 
     @OnClick(R.id.bRunTypes)
     public void runTypes() {
@@ -311,12 +313,6 @@ public class MainActivity extends AppCompatActivity {
     public void runRatings() {
         runRatings.setText(TESTING);
         new RunTestTask().execute(5);
-    }
-
-    @OnClick(R.id.deblacklist)
-    public void runDeblack() {
-        runDeblacklist.setText(TESTING);
-        new RunTestTask().execute(16);
     }
 
     @OnClick(R.id.test_everything)
@@ -362,10 +358,6 @@ public class MainActivity extends AppCompatActivity {
         encryptAndDecryptAMessage();
     }
 
-    private void runDeblacklistRatingTest() throws IOException, pEpException {
-        deblacklistRating();
-    }
-
     private void runEncryptAndDecryptAMessageFromMyselft() throws IOException, pEpException {
         encryptAndDecryptAMessageFromMyselfTest();
     }
@@ -396,18 +388,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void runTestKeyGen() throws pEpException, InterruptedException, IOException {
         testKeyGen();
-    }
-
-    private void runAddToBlacklistTest() throws pEpException, InterruptedException, IOException {
-        addToBlacklistTest();
-    }
-
-    private void runAddToBlacklistAndSendMessageTest() throws pEpException, InterruptedException, IOException {
-        addToBlacklistAndSendMessageTest();
-    }
-
-    private void runAddAndRemoveFromBlacklistTest() throws pEpException, InterruptedException, IOException {
-        addAndRemoveFromBlacklistTest();
     }
 
     private void runPassiveModeTest() throws pEpException, InterruptedException, IOException {
@@ -785,32 +765,6 @@ public class MainActivity extends AppCompatActivity {
         log("TEST: ", "integration test finished");
     }
 
-    public void addToBlacklistTest() throws pEpException, IOException, AssertionError {
-        log("TEST: ", "blacklist test started");
-        long lastTime = System.currentTimeMillis();
-        Engine engine;
-        engine = new Engine();
-        log("engine.new Engine()", String.valueOf(System.currentTimeMillis() - lastTime));
-
-        // trustwords
-        testTrustwords(engine);
-
-        Identity alice = loadFromAliceFromEngine(engine);
-
-        String fingerprint = alice.fpr;
-        addToBlacklistInEngine(engine, fingerprint);
-
-        alice = myselfInEngine(engine, alice);
-
-        //if (!fingerprint.equals(PEP_OWN_USER_ID)) {
-        //    throw new AssertionError("fingerprint was " + fingerprint + " instead of PEP_OWN_USER_ID");
-        //}
-
-        removeFromBlacklistOnEngine(engine, alice.fpr);
-        engine.close();
-        log("TEST: ", "blacklist test finished");
-    }
-
     public void testOutgoingColor() throws pEpException, IOException, AssertionError {
         log("TEST: ", "testOutgoingColor start");
         long lastTime = System.currentTimeMillis();
@@ -868,118 +822,12 @@ public class MainActivity extends AppCompatActivity {
         log("TEST: ", "testIdetntityRating finished");
     }
 
-    public void addToBlacklistAndSendMessageTest() throws pEpException, IOException, AssertionError {
-        log("TEST: ", "blacklist + send message test started");
-        long lastTime = System.currentTimeMillis();
-        Engine engine;
-        engine = new Engine();
-        log("engine.new Engine()", String.valueOf(System.currentTimeMillis() - lastTime));
-
-        // trustwords
-        testTrustwords(engine);
-
-        Identity aliceFrom = loadFromAliceFromEngine(engine);
-        Identity bobTo = loadToBobFromEngine(engine);
-        String fingerprint = bobTo.fpr;
-        addToBlacklistInEngine(engine, fingerprint);
-//        myselfInEngine(engine, aliceFrom);
-  //      updateIdentityOnEngine(engine, bobTo);
-
-        // message
-        Message msg = setupMessage(aliceFrom, bobTo);
-
-        ArrayList<Pair<String, String>> pairs = new ArrayList<>();
-        pairs.add(new Pair<>("Received", "in time"));
-        pairs.add(new Pair<>("X-Foobaz", "of course"));
-        msg.setOptFields(pairs);
-
-        byte[] gif = LoadAssetAsBuffer("spinner.gif");
-        byte[] png = LoadAssetAsBuffer("pep.png");
-        byte[] tbz = LoadAssetAsBuffer("yml2.tar.bz2");
-
-        attachToMessage(msg, gif, png, tbz);
-
-        Message encriptedMessage;
-        encriptedMessage = encryptMessageOnEngine(engine, msg);
-
-        if (encriptedMessage != null) throw new AssertionError();
-
-        //if (!(encriptedMessage.getShortmsg().equals("pEp"))) throw new AssertionError();
-        //if (!(encriptedMessage.getLongmsg().contains("pEp-project.org")))
-         //   throw new AssertionError();
-
-        removeFromBlacklistOnEngine(engine, fingerprint);
-
-        engine.close();
-        log("TEST: ", "blacklist + send message test finished");
-    }
-
-    public void addAndRemoveFromBlacklistTest() throws pEpException, IOException, AssertionError {
-        log("TEST: ", "blacklist + delete from blacklist test started");
-        long lastTime = System.currentTimeMillis();
-        Engine engine;
-        engine = new Engine();
-        log("engine.new Engine()", String.valueOf(System.currentTimeMillis() - lastTime));
-
-        // trustwords
-        testTrustwords(engine);
-
-        Identity bob = loadToBobFromEngine(engine);
-
-        String fingerprint = bob.fpr;
-        addToBlacklistInEngine(engine, fingerprint);
-
-        removeFromBlacklistOnEngine(engine, fingerprint);
-
-        Boolean isBlacklisted = isBlacklistedOnEngine(engine, bob);
-
-        if (isBlacklisted) {
-            throw new AssertionError();
-        }
-        // message
-
-        getBlackList(engine);
-
-        engine.close();
-        log("TEST: ", "blacklist + delete from blacklist finished");
-    }
-
-    private Vector<String> getBlackList(Engine engine) throws pEpException {
-        long lastTime = System.currentTimeMillis();
-        logStart("blacklist_retrieve", String.valueOf(lastTime));
-        Vector<String> blacklist = engine.blacklist_retrieve();
-        logEnd("blacklist_retrieve", String.valueOf(System.currentTimeMillis() - lastTime));
-        return blacklist;
-    }
-
-    private Boolean isBlacklistedOnEngine(Engine engine, Identity bob) {
-        long lastTime = System.currentTimeMillis();
-        logStart("blacklist_is_listed", String.valueOf(lastTime));
-        Boolean isBlacklisted = engine.blacklist_is_listed(bob.fpr);
-        logEnd("blacklist_is_listed", String.valueOf(System.currentTimeMillis() - lastTime));
-        return isBlacklisted;
-    }
-
-    private void removeFromBlacklistOnEngine(Engine engine, String fingerprint) {
-        long lastTime = System.currentTimeMillis();
-        logStart("blacklist_delete", String.valueOf(lastTime));
-        engine.blacklist_delete(fingerprint);
-        logEnd("backlist_delete", String.valueOf(System.currentTimeMillis() - lastTime));
-    }
-
     private Identity myselfInEngine(Engine engine, Identity identity) {
         long lastTime = System.currentTimeMillis();
         logStart("engine.addToBlacklist", String.valueOf(lastTime));
         Identity myself = engine.myself(identity);
         logEnd("engine.addToBlacklist", String.valueOf(System.currentTimeMillis() - lastTime));
         return myself;
-    }
-
-    private void addToBlacklistInEngine(Engine engine, String fingerprint) {
-        long lastTime = System.currentTimeMillis();
-        logStart("engine.addToBlacklist", String.valueOf(lastTime));
-        engine.blacklist_add(fingerprint);
-        logEnd("engine.addToBlacklist", String.valueOf(System.currentTimeMillis() - lastTime));
     }
 
     private void ratingsTest() throws pEpException, IOException, AssertionError {
@@ -1032,50 +880,6 @@ public class MainActivity extends AppCompatActivity {
         log("TEST: ", "Test encrypt and decrypt finished");
     }
 
-    public void deblacklistRating() throws pEpException, IOException, AssertionError {
-        log("TEST: ", "Test deblacklistRating loaded");
-        long lastTime = System.currentTimeMillis();
-        Engine engine;
-        engine = new Engine();
-        log("engine.new Engine()", String.valueOf(System.currentTimeMillis() - lastTime));
-
-        Identity alice = loadFromAliceFromEngine(engine);
-
-        Identity bob = loadToBobFromEngine(engine);
-
-        removeFromBlacklistOnEngine(engine, bob.fpr);
-        // message
-        Message msg = setupMessage(alice, bob);
-
-        log("Test deblacklistRating after remove blacklist", getOutgoingMessageRatingFromEngine(engine, msg).name());
-
-        if (!(getOutgoingMessageRatingFromEngine(engine, msg).value >= Rating.pEpRatingReliable.value)) {
-            throw new AssertionError();
-        }
-
-        String fingerprint = bob.fpr;
-        addToBlacklistInEngine(engine, fingerprint);
-
-        Message msgBlacklisted = setupMessage(alice, bob);
-
-        log("Test deblacklistRating after blacklist", getOutgoingMessageRatingFromEngine(engine, msgBlacklisted).name());
-
-        if (getOutgoingMessageRatingFromEngine(engine, msgBlacklisted).value > 4) {
-            throw new AssertionError();
-        }
-
-        removeFromBlacklistOnEngine(engine, fingerprint);
-
-        Message msgDeBlacklisted = setupMessage(alice, bob);
-
-        log("Test deblacklistRating after remove blacklist", getOutgoingMessageRatingFromEngine(engine, msg).name());
-        if (!(getOutgoingMessageRatingFromEngine(engine, msgDeBlacklisted).equals(Rating.pEpRatingReliable))) {
-            throw new AssertionError();
-        }
-
-        engine.close();
-        log("TEST: ", "Test deblacklistRating finished");
-    }
 
     public void encryptAndDecryptAMessageFromMyselfTest() throws pEpException, IOException, AssertionError {
         log("TEST: ", "Test encrypt and decrypt from myself loaded");
@@ -1104,10 +908,10 @@ public class MainActivity extends AppCompatActivity {
             throw new AssertionError();
 
         Vector<Blob> attachments = encryptedMessage.getAttachments();
-        if (!(Engine.toUTF16(attachments.get(1).data).startsWith("-----BEGIN PGP MESSAGE-----")))
+        if (!(Utils.toUTF16(attachments.get(1).data).startsWith("-----BEGIN PGP MESSAGE-----")))
             throw new AssertionError();
 
-        Engine.decrypt_message_Return result = null;
+        decrypt_message_Return result = null;
         decryptMessageOnEngine(engine, encryptedMessage);
 
         engine.close();
@@ -1131,7 +935,7 @@ public class MainActivity extends AppCompatActivity {
         pairs.add(new Pair<>("X-Foobaz", "of course"));
         msg.setOptFields(pairs);
 
-        Engine.decrypt_message_Return decrypt_message_return = encrypAndDecryptMessage(engine, msg);
+        decrypt_message_Return decrypt_message_return = encrypAndDecryptMessage(engine, msg);
 
         if(decrypt_message_return.rating.value < 6) {
             throw new AssertionError();
@@ -1304,7 +1108,7 @@ public class MainActivity extends AppCompatActivity {
     private void importKeyFromEngine(Engine engine, String filename) throws IOException {
         long lastTime = System.currentTimeMillis();
         logStart("engine.importKey", String.valueOf(lastTime));
-        engine.importKey(LoadAssetAsString(filename));
+        engine.importKey(LoadAssetAsBuffer(filename));
         logEnd("engine.importKey", String.valueOf(System.currentTimeMillis() - lastTime));
     }
 
@@ -1404,7 +1208,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private Engine.decrypt_message_Return encrypAndDecryptMessage(Engine engine, Message msg) throws pEpException {
+    private decrypt_message_Return encrypAndDecryptMessage(Engine engine, Message msg) throws pEpException {
         Message encryptedMessage;
         encryptedMessage = encryptMessageOnEngine(engine, msg);
 
@@ -1415,10 +1219,10 @@ public class MainActivity extends AppCompatActivity {
             throw new AssertionError();
 
         Vector<Blob> attachments = encryptedMessage.getAttachments();
-        if (!(Engine.toUTF16(attachments.get(1).data).startsWith("-----BEGIN PGP MESSAGE-----")))
+        if (!(Utils.toUTF16(attachments.get(1).data).startsWith("-----BEGIN PGP MESSAGE-----")))
             throw new AssertionError();
 
-        Engine.decrypt_message_Return result;
+        decrypt_message_Return result;
         result = decryptMessageOnEngine(engine, encryptedMessage);
 
         if (!(result.dst.getShortmsg().equals("hello, world"))) throw new AssertionError();
@@ -1426,10 +1230,10 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
-    private Engine.decrypt_message_Return decryptMessageOnEngine(Engine engine, Message encriptedMessage) throws pEpException {
+    private decrypt_message_Return decryptMessageOnEngine(Engine engine, Message encriptedMessage) throws pEpException {
         long lastTime = System.currentTimeMillis();
         logStart("engine.decrypt_message", String.valueOf(lastTime));
-        Engine.decrypt_message_Return decrypt_message_return = engine.decrypt_message(encriptedMessage, 0);
+        decrypt_message_Return decrypt_message_return = engine.decrypt_message(encriptedMessage, new Vector<>(), 0);
         logEnd("engine.decrypt_message", String.valueOf(System.currentTimeMillis() - lastTime));
         return decrypt_message_return;
     }
@@ -1643,7 +1447,7 @@ public class MainActivity extends AppCompatActivity {
                     case 7:
                         if (!executedTasks.contains(7)) {
                             for (int i = 0; i< testingTimes; i++) {
-                                runAddToBlacklistTest();
+                                runUnencryptedSubjectTest();
                             }
                             executedTasks.add(7);
                             return 7;
@@ -1652,7 +1456,7 @@ public class MainActivity extends AppCompatActivity {
                     case 8:
                         if (!executedTasks.contains(8)) {
                             for (int i = 0; i< testingTimes; i++) {
-                                runAddToBlacklistAndSendMessageTest();
+                                runPassiveModeTest();
                             }
                             executedTasks.add(8);
                             return 8;
@@ -1661,7 +1465,7 @@ public class MainActivity extends AppCompatActivity {
                     case 9:
                         if (!executedTasks.contains(9)) {
                             for (int i = 0; i< testingTimes; i++) {
-                                runAddAndRemoveFromBlacklistTest();
+                                runEncryptAndDecryptAMessageFromMyselft();
                             }
                             executedTasks.add(9);
                             return 9;
@@ -1670,7 +1474,7 @@ public class MainActivity extends AppCompatActivity {
                     case 10:
                         if (!executedTasks.contains(10)) {
                             for (int i = 0; i< testingTimes; i++) {
-                                runUnencryptedSubjectTest();
+                                runMessageForMeIsAlwaysGreenTest();
                             }
                             executedTasks.add(10);
                             return 10;
@@ -1679,8 +1483,9 @@ public class MainActivity extends AppCompatActivity {
                     case 11:
                         if (!executedTasks.contains(11)) {
                             for (int i = 0; i< testingTimes; i++) {
-                                runPassiveModeTest();
+                                runOutgoingColorTest();
                             }
+                            log("outgoing average", String.valueOf(outgoingColorAccumulative /testingTimes));
                             executedTasks.add(11);
                             return 11;
                         }
@@ -1688,47 +1493,10 @@ public class MainActivity extends AppCompatActivity {
                     case 12:
                         if (!executedTasks.contains(12)) {
                             for (int i = 0; i< testingTimes; i++) {
-                                runEncryptAndDecryptAMessageFromMyselft();
+                                runIdetntityRatingTest();
                             }
                             executedTasks.add(12);
                             return 12;
-                        }
-                        break;
-                    case 13:
-                        if (!executedTasks.contains(13)) {
-                            for (int i = 0; i< testingTimes; i++) {
-                                runMessageForMeIsAlwaysGreenTest();
-                            }
-                            executedTasks.add(13);
-                            return 13;
-                        }
-                        break;
-                    case 14:
-                        if (!executedTasks.contains(14)) {
-                            for (int i = 0; i< testingTimes; i++) {
-                                runOutgoingColorTest();
-                            }
-                            log("outgoing average", String.valueOf(outgoingColorAccumulative /testingTimes));
-                            executedTasks.add(14);
-                            return 14;
-                        }
-                        break;
-                    case 15:
-                        if (!executedTasks.contains(15)) {
-                            for (int i = 0; i< testingTimes; i++) {
-                                runIdetntityRatingTest();
-                            }
-                            executedTasks.add(15);
-                            return 15;
-                        }
-                        break;
-                    case 16:
-                        if (!executedTasks.contains(16)) {
-                            for (int i = 0; i< testingTimes; i++) {
-                                runDeblacklistRatingTest();
-                            }
-                            executedTasks.add(16);
-                            return 16;
                         }
                         break;
                 }
@@ -1780,58 +1548,29 @@ public class MainActivity extends AppCompatActivity {
                     new RunAllTestsTask().execute(6);
                     break;
                 case 6:
-                    runIntegration.setText(PASSED);
-                    runBlackList.setText(TESTING);
+                    runUnencryptedSubject.setText(PASSED);
+                    runPassiveMode.setText(TESTING);
                     new RunAllTestsTask().execute(7);
                     break;
                 case 7:
-                    runBlackList.setText(PASSED);
-                    runBlackListAndSendMessage.setText(TESTING);
+                    runPassiveMode.setText(PASSED);
+                    runMessageMe.setText(TESTING);
                     new RunAllTestsTask().execute(8);
                     break;
                 case 8:
-                    runBlackListAndSendMessage.setText(PASSED);
-                    runBlackListAndDelete.setText(TESTING);
+                    runMessageMe.setText(PASSED);
+                    runMessageFromMeIsGreen.setText(TESTING);
                     new RunAllTestsTask().execute(9);
                     break;
                 case 9:
-                    runBlackListAndDelete.setText(PASSED);
-                    runUnencryptedSubject.setText(TESTING);
+                    runMessageFromMeIsGreen.setText(PASSED);
+                    runOutgoingColor.setText(TESTING);
                     new RunAllTestsTask().execute(10);
                     break;
                 case 10:
-                    runUnencryptedSubject.setText(PASSED);
-                    runPassiveMode.setText(TESTING);
-                    new RunAllTestsTask().execute(11);
-                    break;
-                case 11:
-                    runPassiveMode.setText(PASSED);
-                    runMessageMe.setText(TESTING);
-                    new RunAllTestsTask().execute(12);
-                    break;
-                case 12:
-                    runMessageMe.setText(PASSED);
-                    runMessageFromMeIsGreen.setText(TESTING);
-                    new RunAllTestsTask().execute(13);
-                    break;
-                case 13:
-                    runMessageFromMeIsGreen.setText(PASSED);
-                    runOutgoingColor.setText(TESTING);
-                    new RunAllTestsTask().execute(14);
-                    break;
-                case 14:
                     runOutgoingColor.setText(PASSED);
                     runIdentityRating.setText(TESTING);
-                    new RunAllTestsTask().execute(15);
-                    break;
-                case 15:
-                    runIdentityRating.setText(PASSED);
-                    runDeblacklist.setText(TESTING);
-                    new RunAllTestsTask().execute(16);
-                    break;
-                case 16:
-                    runDeblacklist.setText(PASSED);
-                    generateNoteOnSD("dump_test_engine");
+                    new RunAllTestsTask().execute(11);
                     break;
             }
             Log.i("RunAllTestsTask", "onPostExecute " + "Ended test");
@@ -1869,44 +1608,28 @@ public class MainActivity extends AppCompatActivity {
                     new RunAllTestsTask().execute(7);
                     break;
                 case 7:
-                    runBlackList.setText(FAILED);
-                    new RunAllTestsTask().execute(8);
+                    runUnencryptedSubject.setText(FAILED);
+                    new RunAllTestsTask().execute(7);
                     break;
                 case 8:
-                    runBlackListAndSendMessage.setText(FAILED);
-                    new RunAllTestsTask().execute(9);
+                    runMessageMe.setText(FAILED);
+                    new RunAllTestsTask().execute(8);
                     break;
                 case 9:
-                    runBlackListAndDelete.setText(FAILED);
-                    new RunAllTestsTask().execute(10);
+                    runMessageMe.setText(FAILED);
+                    new RunAllTestsTask().execute(9);
                     break;
                 case 10:
-                    runUnencryptedSubject.setText(FAILED);
-                    new RunAllTestsTask().execute(11);
+                    runMessageFromMeIsGreen.setText(FAILED);
+                    new RunAllTestsTask().execute(10);
                     break;
                 case 11:
-                    runMessageMe.setText(FAILED);
-                    new RunAllTestsTask().execute(12);
+                    runMessageFromMeIsGreen.setText(FAILED);
+                    new RunAllTestsTask().execute(11);
                     break;
                 case 12:
-                    runMessageMe.setText(FAILED);
-                    new RunAllTestsTask().execute(13);
-                    break;
-                case 13:
-                    runMessageFromMeIsGreen.setText(FAILED);
-                    new RunAllTestsTask().execute(14);
-                    break;
-                case 14:
-                    runMessageFromMeIsGreen.setText(FAILED);
-                    new RunAllTestsTask().execute(14);
-                    break;
-                case 15:
                     runIdentityRating.setText(FAILED);
-                    new RunAllTestsTask().execute(15);
-                    break;
-                case 16:
-                    runDeblacklist.setText(FAILED);
-                    generateNoteOnSD("dump_test_engine");
+                    new RunAllTestsTask().execute(12);
                     break;
             }
         }
@@ -1940,9 +1663,6 @@ public class MainActivity extends AppCompatActivity {
                         return 5;
                     case 6:
                         runIntegrationTest();
-                        return 6;
-                    case 16:
-                        runDeblacklistRatingTest();
                         return 6;
                 }
             } catch (Exception e) {
@@ -1981,9 +1701,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case 6:
                     runIntegration.setText(TESTED);
-                    break;
-                case 16:
-                    runDeblacklist.setText(TESTED);
                     break;
             }
             Log.i("RunAllTestsTask", "onPostExecute " + "Ended test");
