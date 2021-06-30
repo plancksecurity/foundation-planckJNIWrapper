@@ -237,7 +237,6 @@ jbyteArray from_string(JNIEnv *env,
         const char *str)
 {
     if (str && str[0]) {
-        jboolean isCopy;
         size_t l = strlen(str);
         jbyteArray _str = env->NewByteArray(l);
         env->SetByteArrayRegion(_str, 0, l, (jbyte *) str);
