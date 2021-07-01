@@ -8,10 +8,6 @@ public interface AbstractEngineInterface extends AutoCloseable {
 
     public String getProtocolVersion();
 
-    public void startKeyserverLookup();
-
-    public void stopKeyserverLookup();
-
     public void startSync();
 
     public void stopSync();
