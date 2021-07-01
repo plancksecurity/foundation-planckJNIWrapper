@@ -260,10 +260,6 @@ class TestMain {
             ctx.engine.getProtocolVersion();
         });
 
-        new TestUnit<CTXBase>("Engine.startKeyserverLookup", new CTXBase(), ctx -> {
-            ctx.engine.startKeyserverLookup();
-        });
-
         new TestUnit<CTXBase>("Engine.startSync", new CTXBase(), ctx -> {
             ctx.engine.startSync();
         });

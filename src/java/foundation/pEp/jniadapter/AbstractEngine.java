@@ -23,9 +23,6 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
     private native void init();
     private native void release();
 
-    private long keyserverThread;
-    private long keyserverQueue;
-
     public AbstractEngine() throws pEpException {
         synchronized (AbstractEngine.class) {
             init();
@@ -65,20 +62,6 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
     }
 
     private native String _getProtocolVersion();
-
-
-    public void startKeyserverLookup() {
-        _startKeyserverLookup();
-    }
-
-    private native void _startKeyserverLookup();
-
-
-    public void stopKeyserverLookup() {
-        _startKeyserverLookup();
-    }
-
-    private native void _stopKeyserverLookup();
 
 
     public void startSync() {
