@@ -37,12 +37,14 @@ tstylesheet {
             public class «$cname» implements MessageInterface, AutoCloseable, Serializable {
                 private static final long serialVersionUID = 2119420428331150924L;
                 private long handle;
+                private static int instanceCount = 0;
 
                 native long init();
                 native void release(long handle);
 
                 public «$cname»() {
                     handle = init();
+                    instanceCount++;
                 }
 
                 private native long _«$cname»(
@@ -52,6 +54,7 @@ tstylesheet {
                 public «$cname»(String mime_text) {
                     byte[] _mime_text = Utils.toUTF8(mime_text);
                     handle = _«$cname»(_mime_text);
+                    instanceCount++;
                 }
 
                 private native byte[] _encodeMIME() throws pEpException;
@@ -62,11 +65,17 @@ tstylesheet {
 
                 private «$cname»(long h) {
                     handle = h;
+                    instanceCount++;
                 }
 
                 public final void close() {
                     release(handle);
                     handle = 0;
+                    instanceCount--;
+                }
+
+                public static int getInstanceCount() {
+                    return instanceCount;
                 }
 
                 final protected long getHandle() {
