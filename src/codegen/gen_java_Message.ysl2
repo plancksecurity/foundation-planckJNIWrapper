@@ -33,18 +33,19 @@ tstylesheet {
             import java.util.Date;
             import java.util.HashMap;
             import java.io.Serializable;
+            import java.util.concurrent.atomic.AtomicLong;
 
             public class «$cname» implements MessageInterface, AutoCloseable, Serializable {
                 private static final long serialVersionUID = 2119420428331150924L;
                 private long handle;
-                private static int instanceCount = 0;
+                private static AtomicLong instanceCount = new AtomicLong(0);
 
                 native long init();
                 native void release(long handle);
 
                 public «$cname»() {
                     handle = init();
-                    instanceCount++;
+                    instanceCount.getAndIncrement();
                 }
 
                 private native long _«$cname»(
@@ -54,7 +55,7 @@ tstylesheet {
                 public «$cname»(String mime_text) {
                     byte[] _mime_text = Utils.toUTF8(mime_text);
                     handle = _«$cname»(_mime_text);
-                    instanceCount++;
+                    instanceCount.getAndIncrement();
                 }
 
                 private native byte[] _encodeMIME() throws pEpException;
@@ -65,14 +66,14 @@ tstylesheet {
 
                 private «$cname»(long h) {
                     handle = h;
-                    instanceCount++;
+                    instanceCount.getAndIncrement();
                 }
 
                 public synchronized final void close() {
                     if(handle != 0) {
                         release(handle);
                         handle = 0;
-                        instanceCount--;
+                        instanceCount.getAndDecrement();
                     }
                 }
 
