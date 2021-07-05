@@ -68,7 +68,7 @@ tstylesheet {
                     instanceCount++;
                 }
 
-                public final void close() {
+                public synchronized final void close() {
                     if(handle != 0) {
                         release(handle);
                         handle = 0;
