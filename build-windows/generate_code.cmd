@@ -38,10 +38,6 @@ javac -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\*.java
 javac -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\exceptions\*.java
 javac -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\interfaces\*.java
 
-<<<<<<< HEAD
-"C:\Program Files\Java\jdk-16\bin\jar" -cvf ..\..\build\java\pEp.jar -C "%java_build_root%" foundation
-=======
 "C:\Program Files\Java\jdk-16\bin\jar" -cvf ..\build\java\pEp.jar -C "%java_build_root%" foundation
->>>>>>> fd6cbb9 (Add Windows build project and reference platform.h)
 
 POPD
