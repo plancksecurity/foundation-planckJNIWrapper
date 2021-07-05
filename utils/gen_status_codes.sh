@@ -23,6 +23,7 @@ OS="$(uname -s)"
 case "${OS}" in
     Linux*)     SED=sed;;
     Darwin*)    SED=gsed;;
+    MSYS*)      SED=sed;;
     CYGWIN*)    echo "UNSUPORTED YET" && exit;;
     MINGW*)     echo "UNSUPORTED YET" && exit;;
     *)          echo "UNKNOWN:${OS}" && exit;;

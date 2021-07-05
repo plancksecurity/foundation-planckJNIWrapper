@@ -11,6 +11,11 @@ SET java_pkg_basename=foundation\pEp\jniadapter
 MKDIR %marker_dir%
 MKDIR %exceptions_directory%
 
+:: Generate Status files
+SH ..\utils\gen_status_codes.sh ..\..\pEp\pEpEngine.h
+MV passphrase_status_list.yml2 ..\src\codegen\
+MV status_list.yml2 ..\src\codegen\
+
 :: Generate YML2 code
 PUSHD ..
 CD src
