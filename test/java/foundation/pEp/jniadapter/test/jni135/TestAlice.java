@@ -99,10 +99,10 @@ class TestAlice {
                 msg1Enc.close();
                 msg1Plain.close();
                 log("cycle nr: " + cycles++ + " / Message.getInstanceCount(): " + Message.getInstanceCount());
-                assert Message.getInstanceCount() == 0 : "Leaking messages";
+                assert Message.getInstanceCount().get() == 0 : "Leaking messages";
             } else {
                 log("cycle nr: " + cycles++ + " / Message.getInstanceCount(): " + Message.getInstanceCount());
-                assert Message.getInstanceCount() > 0 : "We should be leaking messages, actually";
+                assert Message.getInstanceCount().get() > 0 : "We should be leaking messages, actually";
             }
         }
     }
