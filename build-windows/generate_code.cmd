@@ -1,5 +1,3 @@
-@ECHO OFF
-
 SET current_directory=%~dp0
 SET dist_directory=%current_directory:~0,-15%\dist
 SET build_directory=%current_directory:~0,-15%\build
@@ -22,23 +20,33 @@ PUSHD ..
 CD src
 CD codegen
 
-@ECHO ON
 PY -m yml2.yml2proc -E utf-8 -y gen_java_Engine.ysl2 pEp.yml2
+IF %ERRORLEVEL% NEQ 0 GOTO end
 PY -m yml2.yml2proc -E utf-8 -y gen_java_Message.ysl2 pEp.yml2
+IF %ERRORLEVEL% NEQ 0 GOTO end
 PY -m yml2.yml2proc -E utf-8 -y gen_cpp_Engine.ysl2 pEp.yml2
+IF %ERRORLEVEL% NEQ 0 GOTO end
 PY -m yml2.yml2proc -E utf-8 -y gen_cpp_Message.ysl2 pEp.yml2
+IF %ERRORLEVEL% NEQ 0 GOTO end
 PY -m yml2.yml2proc -E utf-8 -y gen_throw_pEp_exception.ysl2 pEp.yml2
-@ECHO OFF
+IF %ERRORLEVEL% NEQ 0 GOTO end
 
 :: Compile the Java part
 CD ..
 CD java
 
 javac -encoding UTF-8 -d "%java_build_root%" -h ..\cxx %java_pkg_basename%\*.java
+IF %ERRORLEVEL% NEQ 0 GOTO end
 javac -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\*.java
+IF %ERRORLEVEL% NEQ 0 GOTO end
 javac -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\exceptions\*.java
+IF %ERRORLEVEL% NEQ 0 GOTO end
 javac -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\interfaces\*.java
+IF %ERRORLEVEL% NEQ 0 GOTO end
 
 "C:\Program Files\Java\jdk-16\bin\jar" -cvf "%java_build_root%\pEp.jar" -C "%java_build_root%" foundation
+IF %ERRORLEVEL% NEQ 0 GOTO end
 
+:end
 POPD
+EXIT /B %ERRORLEVEL%
