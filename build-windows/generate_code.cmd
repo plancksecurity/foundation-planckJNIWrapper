@@ -2,9 +2,10 @@
 
 SET current_directory=%~dp0
 SET dist_directory=%current_directory:~0,-15%\dist
-SET marker_dir=%current_directory:~0,-15%\build\marker
+SET build_directory=%current_directory:~0,-15%\build
+SET marker_dir=%build_directory%\marker
 SET exceptions_directory=%current_directory:~0,-15%\src\java\foundation\pEp\jniadapter\exceptions
-SET java_build_root=%current_directory:~0,-15%\build\java
+SET java_build_root=%build_directory%\java
 SET java_pkg_basename=foundation\pEp\jniadapter
 
 :: Create directories as necessary
@@ -38,6 +39,6 @@ javac -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\*.java
 javac -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\exceptions\*.java
 javac -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\interfaces\*.java
 
-"C:\Program Files\Java\jdk-16\bin\jar" -cvf ..\build\java\pEp.jar -C "%java_build_root%" foundation
+"C:\Program Files\Java\jdk-16\bin\jar" -cvf "%java_build_root%\pEp.jar" -C "%java_build_root%" foundation
 
 POPD
