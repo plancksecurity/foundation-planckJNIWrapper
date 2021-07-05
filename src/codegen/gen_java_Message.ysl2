@@ -69,9 +69,11 @@ tstylesheet {
                 }
 
                 public final void close() {
-                    release(handle);
-                    handle = 0;
-                    instanceCount--;
+                    if(handle != 0) {
+                        release(handle);
+                        handle = 0;
+                        instanceCount--;
+                    }
                 }
 
                 public static int getInstanceCount() {
