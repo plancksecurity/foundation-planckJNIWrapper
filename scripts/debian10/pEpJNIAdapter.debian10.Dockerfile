@@ -43,7 +43,7 @@ ARG PEPJNIADAPTER_VERSION
 ARG CURRENT_DISTRO
 
 ### Build pEpJNIAdapter
-RUN sh ./scripts/${CURRENT_DISTRO}/build_pEpJNIAdapter.sh && \
+RUN sh ./scripts/common/build_pEpJNIAdapter.sh && \
     install -m 644 -t ${INSTPREFIX}/lib dist/libpEpJNI.a && \
     install -m 755 -t ${INSTPREFIX}/lib dist/libpEpJNI.so && \
     install -m 644 -t ${INSTPREFIX}/lib dist/pEp.jar
