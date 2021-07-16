@@ -8,11 +8,22 @@
   - 'which rsync || ( sudo apt-get update -y && sudo apt-get install rsync -y )'
   - 'which make || ( sudo apt-get update -y && sudo apt-get install make -y )'
 
+.add_ssh_keys: &add_ssh_keys
+  # Add the SSH key (stored in the SSH_PRIVATE_KEY variable) to the agent.
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+
+.verify_ssh_host_keys: &verify_ssh_host_keys
+  # Verify SSH host keys
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - echo "${SSH_KNOWN_HOSTS}" >> ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
+
 .standard_job:
   tags: [kvm]
   before_script:
     - *ensure_docker
-    - *ensure_rsync
 
 .make_in_docker:
   extends: .standard_job
@@ -20,3 +31,21 @@
     - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
     - cd scripts/${CI_DISTRO_TARGET}
     - make ${MAKE_TARGET}
+
+.upload_pkg:
+  extends: .standard_job
+  before_script:
+    - *ensure_rsync
+    - *add_ssh_keys
+    - *verify_ssh_host_keys
+  script:
+    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - cd scripts/${CI_DISTRO_TARGET}
+    - make ${MAKE_TARGET}
+    - pwd
+    - cd out
+    - time rsync -avP -e "ssh -p ${PKG_HOST_SSH_PORT}" depot@${PKG_HOST}:files/pkgs/RHEL/8/pEpJNIAdapter/SHA256SUMS || true
+    - if sha256sum --ignore-missing --check SHA256SUMS ; then echo "Package already exists... Exiting..." && exit ; else true ; fi
+    - sha256sum ./*.rpm | tee --append SHA256SUMS
+    - cat ./SHA256SUMS
+    - time rsync -azvP -e "ssh -p ${PKG_HOST_SSH_PORT}" --rsync-path="mkdir -p /home/depot/files/pkgs/RHEL/8/pEpJNIAdapter && rsync" ./*.rpm SHA256SUMS depot@${PKG_HOST}:files/pkgs/RHEL/8/pEpJNIAdapter/

@@ -3,6 +3,8 @@ include:
 
 stages:
   - build
+  - packages
+
 
 # Debian
 
@@ -10,6 +12,7 @@ debian10:build:
   extends: .make_in_docker
   stage: build
   variables:
+    MAKE_TARGET: "build"
     CI_DISTRO_TARGET: "debian10"
     DEBIAN_FRONTEND: "noninteractive"
   rules:
@@ -19,6 +22,7 @@ debian10:tagged-build:
   extends: .make_in_docker
   stage: build
   variables:
+    MAKE_TARGET: "build"
     CI_DISTRO_TARGET: "debian10"
     DEBIAN_FRONTEND: "noninteractive"
     TAGGED_BUILD: "true"
@@ -29,8 +33,8 @@ debian10-java8:build:
   extends: .make_in_docker
   stage: build
   variables:
-    CI_DISTRO_TARGET: "debian10"
     MAKE_TARGET: "java8"
+    CI_DISTRO_TARGET: "debian10"
     DEBIAN_FRONTEND: "noninteractive"
   rules:
     - if: '$CI_COMMIT_TAG  !~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
@@ -42,6 +46,49 @@ debian10-java8:tagged-build:
     CI_DISTRO_TARGET: "debian10"
     MAKE_TARGET: "java8"
     DEBIAN_FRONTEND: "noninteractive"
+    TAGGED_BUILD: "true"
+  rules:
+    - if: '$CI_COMMIT_TAG  =~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
+
+# CentOS
+
+centos8:build:
+  extends: .make_in_docker
+  stage: build
+  variables:
+    MAKE_TARGET: "build"
+    CI_DISTRO_TARGET: "centos8"
+  rules:
+    - if: '$CI_COMMIT_TAG  !~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
+
+centos8:tagged-build:
+  extends: .make_in_docker
+  stage: build
+  variables:
+    MAKE_TARGET: "build"
+    CI_DISTRO_TARGET: "centos8"
+    TAGGED_BUILD: "true"
+  rules:
+    - if: '$CI_COMMIT_TAG  =~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
+
+centos8:rpm:
+  extends: .make_in_docker
+  stage: packages
+  needs: ["centos8:build"]
+  variables:
+    MAKE_TARGET: "rpm"
+    CI_DISTRO_TARGET: "centos8"
+  rules:
+    - if: '$CI_COMMIT_TAG  !~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
+
+
+centos8:rpm:tagged-build:
+  extends: .upload_pkg
+  stage: packages
+  needs: ["centos8:tagged-build"]
+  variables:
+    MAKE_TARGET: "rpm"
+    CI_DISTRO_TARGET: "centos8"
     TAGGED_BUILD: "true"
   rules:
     - if: '$CI_COMMIT_TAG  =~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
