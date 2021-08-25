@@ -260,7 +260,6 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.bRunTypes) Button runTypes;
     @BindView(R.id.bRunAliceBob) Button runIntegration;
-    @BindView(R.id.bRunServerLookup) Button runLookup;
     @BindView(R.id.bRunGenKey) Button runGenKey;
     @BindView(R.id.encrypt_and_decrypt) Button runEncryptAndDecrypt;
     @BindView(R.id.encrypt_and_decrypt_without_key) Button runEncryptAndDecryptWithoutKey;
@@ -286,11 +285,6 @@ public class MainActivity extends AppCompatActivity {
     public void runIntegration() {
         runIntegration.setText(TESTING);
         new RunTestTask().execute(6);
-    }
-    @OnClick(R.id.bRunServerLookup)
-    public void runLookup() {
-        runLookup.setText(TESTING);
-        new RunTestTask().execute(2);
     }
     @OnClick(R.id.bRunGenKey)
     public void runGenKey() {
@@ -388,10 +382,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void runTestPEpTypes() throws IOException, pEpException {
         testPEpTypes();
-    }
-
-    private void runTestKeyserverLookup() throws pEpException, InterruptedException, IOException {
-        testKeyserverLookup();
     }
 
     private void runTestKeyGen() throws pEpException, InterruptedException, IOException {
@@ -1495,46 +1485,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*
-    tests its possible to find the fingerprint on server
-     */
-    public void testKeyserverLookup() throws pEpException, IOException, AssertionError, InterruptedException {
-        log("TEST: ", "Test keyserver lookup loaded");
-        Engine e;
-
-        e = new Engine();
-
-        long lastTime = System.currentTimeMillis();
-        e.startKeyserverLookup();
-        log("engine.startLookup", String.valueOf(System.currentTimeMillis() - lastTime));
-
-        Identity vb = new Identity();
-        vb.username = "pEpDontAssert";
-        vb.address = "vb@ulm.ccc.de";
-        vb.user_id = "SsI6H9";
-        updateIdentityOnEngine(e, vb);
-
-        int count = 0;
-        while (count++ < 5000) {
-            Thread.sleep(1);
-        }
-
-        String fpr = e.updateIdentity(vb).fpr;
-
-        log("PEPTEST", "keyserver test fpr");
-        log("PEPTEST", fpr != null ? fpr : "NULL");
-        if (fpr == null) throw new AssertionError();
-
-        lastTime = System.currentTimeMillis();
-        e.stopKeyserverLookup();
-        log("engine.stopLookup", String.valueOf(System.currentTimeMillis() - lastTime));
-
-        lastTime = System.currentTimeMillis();
-        e.close();
-        log("engine.close", String.valueOf(System.currentTimeMillis() - lastTime));
-        log("TEST: ", "Test keyserver lookup finished");
-    }
-
-    /*
     tests I can get my own fingerprint
      */
     public void testKeyGen() throws pEpException, IOException, AssertionError, InterruptedException {
@@ -1927,18 +1877,15 @@ public class MainActivity extends AppCompatActivity {
                         runTestPEpTypes();
                         return 1;
                     case 2:
-                        runTestKeyserverLookup();
-                        return 2;
-                    case 3:
                         runEncryptAndDecryptTest();
                         return 3;
-                    case 4:
+                    case 3:
                         runEncryptAndDecryptWithoutKeyTest();
                         return 4;
-                    case 5:
+                    case 4:
                         runColorRatingsTest();
                         return 5;
-                    case 6:
+                    case 5:
                         runIntegrationTest();
                         return 6;
                     case 16:

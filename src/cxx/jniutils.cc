@@ -1,17 +1,7 @@
-#include <cassert>
 #include "jniutils.hh"
 #include <pEp/pEpLog.hh>
-
-#ifndef __LP64__
-
-#include <time64.h>
-
-#define time_t time64_t
-#define timegm timegm64
-#define gmtime_r gmtime64_r
-#else
-#include <string.h>
-#endif
+#include <cassert>
+#include <cstring>
 
 namespace pEp {
 namespace JNIAdapter {
