@@ -5,6 +5,7 @@
 #include <pEp/pEpLog.hh>
 #include <pEp/passphrase_cache.hh>
 #include <pEp/callback_dispatcher.hh>
+#include <pEp/Adapter.hh>
 #include "throw_pEp_exception.hh"
 #include "jniutils.hh"
 #include "passphrase_callback.hh"
@@ -257,11 +258,10 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_init(JNIEnv
         jni_init();
         objj = env->NewGlobalRef(obj);
         callback_dispatcher.add(messageToSend, notifyHandshake, JNISync::onSyncStartup, JNISync::onSyncShutdown);
-        Adapter::_messageToSend = CallbackDispatcher::messageToSend;
     }
 
     create_engine_java_object_mutex(env, obj);  // Create a mutex per java object
-    Adapter::session();
+    Adapter::session.initialize(Adapter::SyncModes::Async, false);
 }
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_release(JNIEnv *env,
@@ -270,7 +270,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_release(JNI
     std::lock_guard<std::mutex> l(global_mutex);  // global mutex for write access to <unordered_map>
     pEpLog("called");
     release_engine_java_object_mutex(env, obj);
-    Adapter::session(pEp::Adapter::release);
+    Adapter::session.release();
 }
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1setDebugLogEnabled(
@@ -337,7 +337,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1startSync
     std::lock_guard<std::mutex> l(*mutex_local);
 
     try {
-        CallbackDispatcher::start_sync();
+        Adapter::start_sync();
     } catch (RuntimeError& ex) {
         throw_pEp_Exception(env, ex.status);
         return;
@@ -355,7 +355,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1stopSync(
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    CallbackDispatcher::stop_sync();
+    Adapter::stop_sync();
 }
 
 JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1isSyncRunning(JNIEnv *env,
