@@ -248,6 +248,11 @@ namespace pEp {
                 in identitylist identities const
             );
 
+        method cached=true set_comm_partner_key(
+                in identity ident,
+                in string fpr
+            );
+
         // "basic" methods are generated on the java side, but
         // on the C++ side, manually implemented in basic_api.cc
 

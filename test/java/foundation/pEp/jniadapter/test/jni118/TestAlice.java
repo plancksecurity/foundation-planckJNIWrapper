@@ -47,6 +47,7 @@ class JNI1118Context extends CTXBase {
         super.init();
         alice = engine.myself(alice);
         engine.importKey(keyBobPub);
+        engine.set_comm_partner_key(bob, "F804FBE1781F3E2F6158F9F709FB5BDA72BE51C1");
 
         Vector<Identity> msgToBobRcpts = new Vector<>();
         msgToBobRcpts.add(bob);

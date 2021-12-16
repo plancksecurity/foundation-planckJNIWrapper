@@ -40,6 +40,10 @@ class TestMain {
             ctx.engine.importKey(ctx.keyBobPub);
         });
 
+        new TestUnit<BasicTestContext>("set comm partner key", btc, ctx -> {
+            ctx.engine.set_comm_partner_key(ctx.bob, "F804FBE1781F3E2F6158F9F709FB5BDA72BE51C1");
+        });
+
         new TestUnit<BasicTestContext>("Trustwords", btc, ctx -> {
             ctx.carol = new Identity();
             ctx.carol.fpr = "4ABE3AAF59AC32CFE4F86500A9411D176FF00E97";

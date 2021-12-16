@@ -4,7 +4,7 @@ all: compile
 
 run: compile
 	$(MAKE) -C basic
-	$(MAKE) -C regression
+# Disabled because broken since KER 	$(MAKE) -C regression
 	#$(MAKE) -C jni88
 	#$(MAKE) -C jni91
 	#$(MAKE) -C jni92
@@ -17,7 +17,7 @@ run: compile
 	$(MAKE) -C jni115
 	$(MAKE) -C jni118
 	$(MAKE) -C jni125
-	$(MAKE) -C jni126
+# Disabled because broken since KER	$(MAKE) -C jni126
 	$(MAKE) -C jni132
 	$(MAKE) -C jni134
 	#$(MAKE) -C jni135

@@ -22,6 +22,7 @@ class CTXAlice2 extends CTXAlice {
     public CTXAlice2 init() throws Throwable {
         super.init();
         engine.importKey(keyBobSec);
+        engine.set_comm_partner_key(bob, "F804FBE1781F3E2F6158F9F709FB5BDA72BE51C1");
         bob = engine.updateIdentity(bob);
         return this;
     }
@@ -38,6 +39,7 @@ class CTXReEvaluateMessageRating extends CTXBase {
         super.init();
         alice = engine.myself(alice);
         engine.importKey(keyBobPub);
+        engine.set_comm_partner_key(bob, "F804FBE1781F3E2F6158F9F709FB5BDA72BE51C1");
 
         Vector<Identity> msgToBobRcpts = new Vector<>();
         msgToBobRcpts.add(bob);
@@ -225,6 +227,10 @@ class TestMain {
 
         new TestUnit<CTXBase>("Engine.importKey", new CTXBase(), ctx -> {
             ctx.engine.importKey(ctx.keyBobPub);
+        });
+
+        new TestUnit<CTXBase>("Engine.set_comm_partner_key", new CTXBase(), ctx -> {
+            ctx.engine.set_comm_partner_key(ctx.bob, "F804FBE1781F3E2F6158F9F709FB5BDA72BE51C1");
         });
 
         new TestUnit<CTXBase>("Engine.config_passive_mode", new CTXBase(), ctx -> {
