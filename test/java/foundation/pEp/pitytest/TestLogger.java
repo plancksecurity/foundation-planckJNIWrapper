@@ -25,10 +25,11 @@ public class TestLogger {
         if (!initialized) {
             logEnabled = true;
             threadStrLen = 10;
-            lineWidth = 80;
+            lineWidth = 120;
             threadSeparator = ": ";
 
-            tryDetermineTermSize();
+// TODO: Disabled term size detection, not working anymore on macOS at least.... grmpl
+//            tryDetermineTermSize();
             initialized = true;
         }
     }

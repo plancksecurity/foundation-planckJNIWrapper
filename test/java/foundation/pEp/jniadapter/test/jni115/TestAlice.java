@@ -106,6 +106,7 @@ class TestAlice {
         // Key import
         new TestUnit<Jni115TestContext>("importKey()", ctx1, ctx -> {
             ctx.engine.importKey(ctx.keyBobPub);
+            ctx.engine.set_comm_partner_key(ctx.bob, "F804FBE1781F3E2F6158F9F709FB5BDA72BE51C1");
         }).run();
 
         // Perf test for ENCRTYPTED (with pubkey)

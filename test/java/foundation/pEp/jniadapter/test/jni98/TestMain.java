@@ -30,6 +30,7 @@ class TestMain {
     public static void main(String[] args) throws Exception {
         new TestUnit<CTXBase>("JNI-98 - Message.EncFormat.PEP", new CTXBase(), ctx -> {
             ctx.engine.importKey(ctx.keyBobPub);
+            ctx.engine.set_comm_partner_key(ctx.bob, "F804FBE1781F3E2F6158F9F709FB5BDA72BE51C1");
             // Make msg1 by encrypting msgToBob
             logH2("Create target Message");
             Message msg1 = ctx.engine.encrypt_message(ctx.msgAliceToBob, null, Message.EncFormat.PEP);
@@ -53,6 +54,7 @@ class TestMain {
 
         new TestUnit<CTXBase>("JNI-98 - Message.EncFormat.PEP_enc_inline_EA", new CTXBase(), ctx -> {
             ctx.engine.importKey(ctx.keyBobPub);
+            ctx.engine.set_comm_partner_key(ctx.bob, "F804FBE1781F3E2F6158F9F709FB5BDA72BE51C1");
             // Make msg1 by encrypting msgToBob
             logH2("Create target Message");
             Message msg1 = ctx.engine.encrypt_message(ctx.msgAliceToBob, null, Message.EncFormat.PEPEncInlineEA);
