@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\cxx\basic_api.cc" />
+    <ClCompile Include="..\src\cxx\foundation_pEp_jniadapter_AbstractEngine.cc" />
+    <ClCompile Include="..\src\cxx\foundation_pEp_jniadapter_Engine.cc" />
+    <ClCompile Include="..\src\cxx\foundation_pEp_jniadapter_Message.cc" />
+    <ClCompile Include="..\src\cxx\foundation_pEp_jniadapter__Blob.cc" />
+    <ClCompile Include="..\src\cxx\get_header.cc" />
+    <ClCompile Include="..\src\cxx\identity_api.cc" />
+    <ClCompile Include="..\src\cxx\jniutils.cc" />
+    <ClCompile Include="..\src\cxx\throw_pEp_exception.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\cxx\foundation_pEp_jniadapter_AbstractEngine.h" />
+    <ClInclude Include="..\src\cxx\foundation_pEp_jniadapter_Engine.h" />
+    <ClInclude Include="..\src\cxx\foundation_pEp_jniadapter_Identity.h" />
+    <ClInclude Include="..\src\cxx\foundation_pEp_jniadapter_Message.h" />
+    <ClInclude Include="..\src\cxx\foundation_pEp_jniadapter__Blob.h" />
+    <ClInclude Include="..\src\cxx\jniutils.hh" />
+    <ClInclude Include="..\src\cxx\passphrase_callback.hh" />
+    <ClInclude Include="..\src\cxx\passphrase_callback.hxx" />
+    <ClInclude Include="..\src\cxx\throw_pEp_exception.hh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\libpEpAdapter\build-windows\libpEpAdapter.vcxproj">
+      <Project>{ec44fec9-2f3a-4a0c-b60e-0f22aa43ef58}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\pEpEngine\build-windows\pEpEngine.vcxproj">
+      <Project>{146e69f8-e1da-456a-b048-6dd29d9acf6b}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{2a1167be-f438-4e08-b32e-25f130d97c33}</ProjectGuid>
+    <RootNamespace>pEpJNIAdapter</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>$(ProjectDir)..\..\pEpForWindowsAdapterSolution\Debug\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>__LP64__;WIN32;_DEBUG;PEPJNIADAPTER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk-16\include\win32;C:\Program Files\Java\jdk-16\include;$(ProjectDir)..\..\</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+     <PreBuildEvent>
+      <Command>IF NOT EXIST "..\build" CALL generate_code.cmd</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>CP "..\build\java\pEp.jar" "$(SolutionDir)\$(Configuration)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>__LP64__;WIN32;NDEBUG;PEPJNIADAPTER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk-16\include\win32;C:\Program Files\Java\jdk-16\include;$(ProjectDir)..\..\</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+     <PreBuildEvent>
+      <Command>IF NOT EXIST "..\build" CALL generate_code.cmd</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>CP "..\build\java\pEp.jar" "$(SolutionDir)\$(Configuration)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <Target Name="CustomClean" BeforeTargets="Clean">
+    <RemoveDir Directories="..\build" />
+  </Target>
+</Project>

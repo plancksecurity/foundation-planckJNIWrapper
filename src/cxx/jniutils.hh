@@ -10,6 +10,7 @@
 #include <pEp/message.h>
 #include <pEp/sync_api.h>
 #include <pEp/passphrase_cache.hh>
+#include <pEp/platform.h>
 
 #if 0 // Enable if log needed
 #include <android/log.h>

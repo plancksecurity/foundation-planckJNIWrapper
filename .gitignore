@@ -89,5 +89,12 @@ org.tar.gz
 
 android/external/[?]*
 android/external/build
+
+# Ignore Windows build
+build-windows/Debug
+build-windows/Release
+build-windows/.vs
+build-windows/pEpJNIAdapter.vcxproj.user
+
 # Default ignored files
 ?idea/
