@@ -174,6 +174,84 @@ tstylesheet {
                 return result;
             }
 
+            JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Message__1decodeASN1XER(JNIEnv *env,
+                    jclass clazz,
+                    jbyteArray _msg_xer)
+            {
+                pEpLog("called");
+                char *msg_xer = nullptr;
+                if(_msg_xer) {
+                    msg_xer = to_string(env, _msg_xer);
+                }
+                // validate param msg_xer
+                if (msg_xer == nullptr) {
+                    jclass ex = env->FindClass("java/lang/IllegalStateException");
+                    assert(ex);
+                    env->ThrowNew(ex, nullptr);
+                    return NULL;
+                }
+
+                // convert XER to PER
+                char *msg_per = nullptr;
+                size_t msg_per_size = 0;
+                PEP_STATUS status = ::XER_to_PER_ASN1Message_msg(msg_xer, &msg_per, &msg_per_size);
+                free(msg_xer);
+                if (status) {
+                    throw_pEp_Exception(env, status);
+                    return NULL;
+                }
+                if (msg_per == nullptr) {
+                    jclass ex = env->FindClass("java/lang/IllegalStateException");
+                    assert(ex);
+                    env->ThrowNew(ex, nullptr);
+                    return NULL;
+                }
+
+                // decode PER to ASN1Message
+                ASN1Message *msg_asn1 = nullptr;
+                status = ::decode_ASN1Message_message(msg_per, msg_per_size, &msg_asn1);
+                free(msg_per);
+                if (status) {
+                    throw_pEp_Exception(env, status);
+                    return NULL;
+                }
+                if (msg_asn1 == nullptr) {
+                    jclass ex = env->FindClass("java/lang/IllegalStateException");
+                    assert(ex);
+                    env->ThrowNew(ex, nullptr);
+                    return NULL;
+                }
+
+                // convert ASN1Message to message
+                message *msg_out = nullptr;
+                msg_out = ::ASN1Message_to_message(msg_asn1, NULL, false, 0);
+                // msg_asn1 gets moved, so dont free it
+                if (msg_out == nullptr) {
+                    jclass ex = env->FindClass("java/lang/IllegalStateException");
+                    assert(ex);
+                    env->ThrowNew(ex, nullptr);
+                    return NULL;
+                }
+
+                // Convert message to java class Message
+                jobject msg_ = nullptr;
+                jclass clazz_dst_ = findClass(env, "foundation/pEp/jniadapter/Message");
+                assert(clazz_dst_);
+                jmethodID constructor_dst_ = env->GetMethodID(clazz_dst_, "<init>", "(J)V");
+                assert(constructor_dst_);
+                msg_ = env->NewObject(clazz_dst_, constructor_dst_, reinterpret_cast<jlong>(msg_out));
+
+                // msg_ will point to msg_out, so dont free it
+                if (msg_ == nullptr) {
+                    jclass ex = env->FindClass("java/lang/IllegalStateException");
+                    assert(ex);
+                    env->ThrowNew(ex, nullptr);
+                    return NULL;
+                }
+
+                return msg_;
+            }
+
             ||
             apply "*[name(.)!='enum']", 0, mode=entry {
                 with "name", "@name";

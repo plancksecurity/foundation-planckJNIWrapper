@@ -76,8 +76,16 @@ tstylesheet {
 
                 private native static Message _decodeASN1XER(byte[] msgXER) throws pEpException;
 
-                public String encodeASN1XER() {
-                    return Utils.toUTF16(_encodeASN1XER());
+                public static Message decodeASN1XER(String msgXER) {
+                    byte[] _msgXER = new byte[0];
+                    if (msgXER != null) {
+                        _msgXER = Utils.toUTF8(msgXER);
+                    }
+                    return _decodeASN1XER(_msgXER);
+                }
+
+                public static Message fromXER(String msgXER) {
+                    return decodeASN1XER(msgXER);
                 }
 
                 private «$cname»(long h) {
