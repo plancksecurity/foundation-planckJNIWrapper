@@ -126,6 +126,8 @@ tstylesheet {
             public interface «$cname»Interface {
                 public String encodeMIME();
 
+                public String toXER();
+
                 `` apply "*[name(.)!='enum']", mode=interface
             }
             ||
