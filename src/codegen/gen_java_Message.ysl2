@@ -64,7 +64,17 @@ tstylesheet {
                     return Utils.toUTF16(_encodeMIME());
                 }
 
-                private native byte[] _encodeASN1XER() throws pEpException;
+                private native static byte[] _encodeASN1XER(Message msg) throws pEpException;
+
+                public static String encodeASN1XER(Message msg) {
+                    return Utils.toUTF16(_encodeASN1XER(msg));
+                }
+
+                public String toXER() {
+                   return encodeASN1XER(this);
+                }
+
+                private native static Message _decodeASN1XER(byte[] msgXER) throws pEpException;
 
                 public String encodeASN1XER() {
                     return Utils.toUTF16(_encodeASN1XER());
