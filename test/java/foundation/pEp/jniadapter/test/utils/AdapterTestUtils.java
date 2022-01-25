@@ -8,6 +8,7 @@ import foundation.pEp.pitytest.utils.RangeInt;
 import foundation.pEp.pitytest.utils.TestUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import static foundation.pEp.pitytest.utils.TestUtils.clipString;
@@ -168,7 +169,7 @@ public class AdapterTestUtils {
 
         key = "getOptFields";
         try {
-            value = stringPairListToString(msg.getOptFields());
+            value = OptFieldsToString(msg.getOptFields());
         } catch (Throwable e) {
             value = e.toString();
         }
@@ -186,7 +187,7 @@ public class AdapterTestUtils {
             kvs = clipStrings(kvs, 200, "clipped...");
         }
 
-        ret = stringPairListToString(kvs);
+        ret = OptFieldsToString(kvs);
 
         ret = ret.trim();
         return ret;
@@ -210,7 +211,7 @@ public class AdapterTestUtils {
         return ret;
     }
 
-    public static String stringPairListToString(ArrayList<Pair<String, String>> spl) {
+    public static String OptFieldsToString(ArrayList<Pair<String, String>> spl) {
         String ret = "Invalid List: null object\n";
         if (spl != null) {
             ret = "";
@@ -405,9 +406,19 @@ public class AdapterTestUtils {
         return ret;
     }
 
+    public static List<String> optFieldValuesOfKey(List<Pair<String, String>> opts, String key) {
+        List<String> ret = new ArrayList<String>();
+        for (Pair<String, String> pair : opts) {
+            if (pair.first.equals(key)) {
+                ret.add(pair.second);
+            }
+        }
+        return ret;
+    }
+
     public static boolean optFieldsEqual(ArrayList<Pair<String,String>> left, ArrayList<Pair<String,String>> right){
         boolean equal = false;
-        int nrFieldsExcessive = TestUtils.clip(right.size() - right.size(), 0, right.size());
+        int nrFieldsExcessive = TestUtils.clip(right.size() - left.size(), 0, right.size());
         int nrFieldsMissing = 0;
         for (Pair pIn : right) {
             boolean found = false;
