@@ -18,13 +18,3 @@
 
 ############ YML2 ##############
 # YML2_PATH=$(HOME)/src/yml2
-
-########### Engine #############
-# ENGINE_LIB_PATH=$(PREFIX)/lib
-# ENGINE_INC_PATH=$(PREFIX)/include
-
-########## libAdapter ##########
-# AD_LIB_PATH=$(PREFIX)/lib
-# AD_INC_PATH=$(PREFIX)/include
-
-
