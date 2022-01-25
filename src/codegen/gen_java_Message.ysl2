@@ -64,6 +64,30 @@ tstylesheet {
                     return Utils.toUTF16(_encodeMIME());
                 }
 
+                private native static byte[] _encodeASN1XER(Message msg) throws pEpException;
+
+                public static String encodeASN1XER(Message msg) {
+                    return Utils.toUTF16(_encodeASN1XER(msg));
+                }
+
+                public String toXER() {
+                   return encodeASN1XER(this);
+                }
+
+                private native static Message _decodeASN1XER(byte[] msgXER) throws pEpException;
+
+                public static Message decodeASN1XER(String msgXER) {
+                    byte[] _msgXER = new byte[0];
+                    if (msgXER != null) {
+                        _msgXER = Utils.toUTF8(msgXER);
+                    }
+                    return _decodeASN1XER(_msgXER);
+                }
+
+                public static Message fromXER(String msgXER) {
+                    return decodeASN1XER(msgXER);
+                }
+
                 private «$cname»(long h) {
                     handle = h;
                     instanceCount.getAndIncrement();
@@ -101,6 +125,8 @@ tstylesheet {
 
             public interface «$cname»Interface {
                 public String encodeMIME();
+
+                public String toXER();
 
                 `` apply "*[name(.)!='enum']", mode=interface
             }
