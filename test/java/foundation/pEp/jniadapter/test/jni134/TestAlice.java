@@ -242,6 +242,7 @@ class TestAlice {
             ArrayList<Pair<String, String>> inVal = new ArrayList<>();
             inVal.add(new Pair<>("Received", "in time"));
             inVal.add(new Pair<>("X-Foobaz", "of course"));
+            inVal.add(new Pair<>("   ", " no trim "));
             msg.setOptFields(inVal);
             ArrayList<Pair<String, String>> outVal = msg.getOptFields();
             assert AdapterTestUtils.optFieldsEqual(inVal, outVal) : "\nreturned:\n '" + outVal + "'\nexpected:\n '" + inVal + "'";
