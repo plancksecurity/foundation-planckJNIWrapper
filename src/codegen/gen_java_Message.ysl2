@@ -64,6 +64,12 @@ tstylesheet {
                     return Utils.toUTF16(_encodeMIME());
                 }
 
+                private native byte[] _encodeASN1XER() throws pEpException;
+
+                public String encodeASN1XER() {
+                    return Utils.toUTF16(_encodeASN1XER());
+                }
+
                 private «$cname»(long h) {
                     handle = h;
                     instanceCount.getAndIncrement();
