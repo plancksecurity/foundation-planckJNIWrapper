@@ -148,7 +148,7 @@ public class TransportMessage implements Serializable {
             kvs = AdapterTestUtils.clipStrings(kvs, 200, "clipped...");
         }
 
-        ret = AdapterTestUtils.stringPairListToString(kvs);
+        ret = AdapterTestUtils.OptFieldsToString(kvs);
         ret = ret.trim();
 
         return ret;
