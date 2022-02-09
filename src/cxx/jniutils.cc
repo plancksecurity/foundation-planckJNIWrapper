@@ -1,16 +1,17 @@
-#include <cassert>
 #include "jniutils.hh"
 #include <pEp/pEpLog.hh>
+#include <cassert>
+#include <cstring>
 
-#ifndef __LP64__
+#ifdef ANDROID
+    #ifndef __LP64__
 
-#include <time64.h>
+        #include <time64.h>
 
-#define time_t time64_t
-#define timegm timegm64
-#define gmtime_r gmtime64_r
-#else
-#include <string.h>
+        #define time_t time64_t
+        #define timegm timegm64
+        #define gmtime_r gmtime64_r
+    #endif
 #endif
 
 namespace pEp {
