@@ -35,16 +35,16 @@ IF %ERRORLEVEL% NEQ 0 GOTO end
 CD ..
 CD java
 
-javac -encoding UTF-8 -d "%java_build_root%" -h ..\cxx %java_pkg_basename%\*.java
+"%JAVA_HOME%\bin\javac" -encoding UTF-8 -d "%java_build_root%" -h ..\cxx %java_pkg_basename%\*.java
 IF %ERRORLEVEL% NEQ 0 GOTO end
-javac -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\*.java
+"%JAVA_HOME%\bin\javac" -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\*.java
 IF %ERRORLEVEL% NEQ 0 GOTO end
-javac -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\exceptions\*.java
+"%JAVA_HOME%\bin\javac" -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\exceptions\*.java
 IF %ERRORLEVEL% NEQ 0 GOTO end
-javac -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\interfaces\*.java
+"%JAVA_HOME%\bin\javac" -encoding UTF-8 -d "%java_build_root%" %java_pkg_basename%\interfaces\*.java
 IF %ERRORLEVEL% NEQ 0 GOTO end
 
-"C:\Program Files\Java\jdk-16\bin\jar" -cvf "%java_build_root%\pEp.jar" -C "%java_build_root%" foundation
+"%JAVA_HOME%\bin\jar" -cvf "%java_build_root%\pEp.jar" -C "%java_build_root%" foundation
 IF %ERRORLEVEL% NEQ 0 GOTO end
 
 :end
