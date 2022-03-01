@@ -443,7 +443,7 @@ timestamp *to_timestamp(JNIEnv *env,
 
     if (t) {
         time_t clock = t / 1000;
-        gmtime_r(&clock, ts);
+        gmtime_r(&clock, (struct tm*)ts);
 
         //LOGD("/* Seconds (0-60) */  TO     :%d", ts->tm_sec);
         //LOGD("/* Minutes (0-59) */         :%d", ts->tm_min);
