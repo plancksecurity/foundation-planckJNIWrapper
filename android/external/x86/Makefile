@@ -18,14 +18,7 @@ ANDROID_API ?= 18
 
 all: build
 
-build: generate-ndk-toolchain showsetup uuid-install sequoia-ffi-install libetpan-build
-
-#------------------------------------------------------------------------------#
-# Generate standalone toolchain
-generate-ndk-toolchain: ndk-standalone-toolchain/bin/clang
-
-ndk-standalone-toolchain/bin/clang:
-	bash generate-standalone-ndk-toolchain.sh
+build: showsetup uuid-install sequoia-ffi-install libetpan-build
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
@@ -48,14 +41,13 @@ NDK_TOOLCHAIN = $(APP_ABI)-$(NDK_TOOLCHAIN_COMPILER)
 TARGET_ARCH_ABI = $(APP_ABI)
 include $(ANDROID_NDK)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 
-ANDROID_NDK_HOME=$(EXTERNAL_ROOT)/ndk-standalone-toolchain
+ANDROID_NDK_HOME=$(ANDROID_NDK)/toolchains/llvm/prebuilt/$(TOOLCHAIN_ARCH)
 
 LD := $(ANDROID_NDK_HOME)/bin/$(HOST)-ld
 AR := $(ANDROID_NDK_HOME)/bin/$(HOST)-ar
-AS := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
-CC := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
-CC := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
-CXX := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang++
+AS := $(ANDROID_NDK_HOME)/bin/$(HOST)-as
+CC := $(ANDROID_NDK_HOME)/bin/$(HOST)$(ANDROID_API)-clang
+CXX := $(ANDROID_NDK_HOME)/bin/$(HOST)$(ANDROID_API)-clang++
 RANLIB := $(ANDROID_NDK_HOME)/bin/$(HOST)-ranlib
 STRIP := $(ANDROID_NDK_HOME)/bin/$(HOST)-strip
 
