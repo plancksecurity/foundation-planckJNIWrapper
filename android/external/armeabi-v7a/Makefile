@@ -14,7 +14,6 @@ include ../Makefile.conf
 # Build parameters
 
 APP_ABI ?= armeabi-v7a
-ANDROID_API ?= 18
 
 all: build
 #assets
@@ -126,9 +125,9 @@ libetpan.src.stamp: ../downloads/libetpan.tar.gz
 	touch $@
 
 libetpan/Makefile: libetpan.src.stamp | libiconv-install
-	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh
-	cp -r libetpan/build-android/libetpan-android-1/$(APP_ABI)/lib/* $(LOCAL)/lib/
-	cp -r libetpan/build-android/libetpan-android-1/include/* $(LOCAL)/include/
+	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh $(APP_ABI)
+	cp -r libetpan/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/$(APP_ABI)/lib/* $(LOCAL)/lib/
+	cp -r libetpan/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/include/* $(LOCAL)/include/
 	touch $@
 
 libetpan-build: libetpan/Makefile
