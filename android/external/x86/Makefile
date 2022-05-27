@@ -14,18 +14,10 @@ include ../Makefile.conf
 # Build parameters
 
 APP_ABI ?= x86
-ANDROID_API ?= 18
 
 all: build
 
-build: generate-ndk-toolchain showsetup uuid-install sequoia-ffi-install libetpan-build
-
-#------------------------------------------------------------------------------#
-# Generate standalone toolchain
-generate-ndk-toolchain: ndk-standalone-toolchain/bin/clang
-
-ndk-standalone-toolchain/bin/clang:
-	bash generate-standalone-ndk-toolchain.sh
+build: showsetup uuid-install sequoia-ffi-install libetpan-build
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
@@ -48,14 +40,13 @@ NDK_TOOLCHAIN = $(APP_ABI)-$(NDK_TOOLCHAIN_COMPILER)
 TARGET_ARCH_ABI = $(APP_ABI)
 include $(ANDROID_NDK)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 
-ANDROID_NDK_HOME=$(EXTERNAL_ROOT)/ndk-standalone-toolchain
+ANDROID_NDK_HOME=$(ANDROID_NDK)/toolchains/llvm/prebuilt/$(TOOLCHAIN_ARCH)
 
 LD := $(ANDROID_NDK_HOME)/bin/$(HOST)-ld
 AR := $(ANDROID_NDK_HOME)/bin/$(HOST)-ar
-AS := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
-CC := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
-CC := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
-CXX := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang++
+AS := $(ANDROID_NDK_HOME)/bin/$(HOST)-as
+CC := $(ANDROID_NDK_HOME)/bin/$(HOST)$(ANDROID_API)-clang
+CXX := $(ANDROID_NDK_HOME)/bin/$(HOST)$(ANDROID_API)-clang++
 RANLIB := $(ANDROID_NDK_HOME)/bin/$(HOST)-ranlib
 STRIP := $(ANDROID_NDK_HOME)/bin/$(HOST)-strip
 
@@ -131,9 +122,9 @@ libetpan.src.stamp: ../downloads/libetpan.tar.gz
 	touch $@
 
 libetpan/Makefile: libetpan.src.stamp | libiconv-install
-	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh
-	cp -r libetpan/build-android/libetpan-android-1/$(APP_ABI)/lib/* $(LOCAL)/lib/
-	cp -r libetpan/build-android/libetpan-android-1/include/* $(LOCAL)/include/
+	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh $(APP_ABI)
+	cp -r libetpan/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/$(APP_ABI)/lib/* $(LOCAL)/lib/
+	cp -r libetpan/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/include/* $(LOCAL)/include/
 	touch $@
 
 libetpan-build: libetpan/Makefile
