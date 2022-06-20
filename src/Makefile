@@ -41,7 +41,6 @@ $(info AD_INC_PATH:     $(AD_INC_PATH))
 $(info YML2_PATH:       $(YML2_PATH))
 $(info CXXFLAGS:        $(CXXFLAGS))
 $(info LDFLAGS:         $(LDFLAGS))
-$(info LDLIBS:          $(LDLIBS))
 $(info ---------------------------------------------------)
 
 # Dirs
@@ -122,7 +121,7 @@ $(LIB_JAVA): compile-java
 	$(JAVA_BIN_DIR)/jar cf $@ -C $(JAVA_BUILD_ROOT) foundation
 
 $(LIB_CXX_DYN): compile-cxx
-	$(CXX) $(OBJ_DIR)*.o $(LDFLAGS) $(LDLIBS) -o $@
+	$(CXX) $(OBJ_DIR)*.o $(LDFLAGS) -o $@
 
 $(LIB_CXX_STATIC): compile-cxx
 	$(AR) -r $@ $(OBJ_DIR)*.o
