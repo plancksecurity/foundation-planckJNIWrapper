@@ -1,7 +1,11 @@
+#include <iostream>
 #include <pEp/keymanagement.h>
 #include <pEp/blacklist.h>
 #include <pEp/Adapter.hh>
 #include <pEp/pEpLog.hh>
+#include <pEp/unpack.hh>
+#include <cryptopp/xed25519.h>
+
 
 #ifndef ANDROID
 #include <string.h>
@@ -537,6 +541,25 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1export_1key
     }
 
     return from_string(env, buff);
+}
+
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1provision(JNIEnv *env,
+        jobject obj,
+        jbyteArray url)
+{
+    const char *_url = to_string(env, url);
+
+    std::cout << "PROVISION: " << _url << std::endl;
+
+    pEp::UpdateClient::product p { "provisioning data", std::string(_url) };
+    pEp::UpdateClient::PublicKey update_key;
+    pEp::UpdateClient::load_key("update_key.der");
+    CryptoPP::ed25519PublicKey deployment_key;
+    SignedPackage::LoadPublicKey("deployment_key-pub.der", deployment_key);
+    CryptoPP::RSA::PrivateKey provisioning_key;
+    SignedPackage::LoadPrivateKey("provisioning_key.der", provisioning_key);
+    SignedPackage::provision_user(p, update_key, deployment_key, provisioning_key);
+
 }
 
 } // extern "C"
