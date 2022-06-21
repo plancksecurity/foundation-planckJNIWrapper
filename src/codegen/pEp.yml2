@@ -275,7 +275,6 @@ namespace pEp {
         basic void config_passphrase(string passphrase);
         basic void config_passphrase_for_new_keys(bool enable, string passphrase);
         basic bytearray export_key(string fpr);
-        basic void provision(string url);
     };
 
     struct message {

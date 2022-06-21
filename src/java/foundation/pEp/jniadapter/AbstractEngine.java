@@ -49,6 +49,13 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
 
     private native static boolean _getDebugLogEnabled();
 
+    // CodeGen "basic"
+    public static void provision(String url) {
+        byte[] _url = Utils.toUTF8(url);
+        _provision(_url);
+    }
+
+    private static native void _provision(byte[] url);
 
     public String getVersion() {
         return _getVersion();

@@ -1,4 +1,7 @@
 #include "foundation_pEp_jniadapter_AbstractEngine.h"
+#include <iostream>
+#include <pEp/unpack.hh>
+#include <cryptopp/xed25519.h>
 #include <pEp/keymanagement.h>
 #include <pEp/message_api.h>
 #include <pEp/sync_api.h>
@@ -288,6 +291,25 @@ JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1getDe
 {
     return static_cast<jboolean>(Adapter::pEpLog::get_enabled());
 }
+
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1provision(JNIEnv *env,
+        jclass clazz,
+        jbyteArray url)
+{
+    const char *_url = to_string(env, url);
+
+    std::cout << "PROVISION: " << _url << std::endl;
+
+    pEp::UpdateClient::product p { "provisioning data", std::string(_url) };
+    pEp::UpdateClient::PublicKey update_key;
+    pEp::UpdateClient::load_key("update_key.der");
+    CryptoPP::ed25519PublicKey deployment_key;
+    SignedPackage::LoadPublicKey("deployment_key-pub.der", deployment_key);
+    CryptoPP::RSA::PrivateKey provisioning_key;
+    SignedPackage::LoadPrivateKey("provisioning_key.der", provisioning_key);
+    SignedPackage::provision_user(p, update_key, deployment_key, provisioning_key);
+}
+
 
 JNIEXPORT jstring JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1getVersion(JNIEnv *env,
         jobject obj)
