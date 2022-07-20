@@ -25,6 +25,9 @@ build: all
 
 all: build-arm build-arm64 build-x86 build-x86_64
 
+build-common: downloads/downloads.stamp
+	$(MAKE) -C common
+
 build-arm: downloads/downloads.stamp
 	$(MAKE) -C armeabi-v7a
 

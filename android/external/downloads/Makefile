@@ -13,10 +13,7 @@ include ../Makefile.conf
 #------------------------------------------------------------------------------#
 # Build parameters
 
-all: downloads.stamp
-
-downloads.stamp: download-iconv download-uuid download-sequoia-deps download-etpan download-sequoia
-	touch $@
+all: download-iconv download-uuid download-sequoia-deps download-etpan download-sequoia download-boost
 
 download-iconv: libiconv-1.15.tar.gz
 
@@ -25,9 +22,11 @@ download-uuid: ossp-uuid_1.6.2.orig.tar.gz
 download-sequoia-deps: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSION).tar.bz2 \
 						nettle-$(NETTLE_VERSION).tar.gz
 
-download-etpan: libetpan.git.stamp
+download-etpan: libetpan.tar.gz
 
-download-sequoia: sequoia.git.stamp
+download-sequoia: sequoia.tar.gz
+
+download-boost: boost-for-android.tar.gz
 
 # Download source and patch it
 libiconv-1.15.tar.gz:
@@ -56,22 +55,20 @@ nettle-$(NETTLE_VERSION).tar.gz:
 # selected commit is archived in external/$project
 
 define per_repo_targets
-$(1).git.stamp:
+$(1).tar.gz:
 	git clone $(2) $(1).git
 	(cd $(1).git; git archive --format=tar $(3)) > $(1).tar.gz
-	touch $(1).git.stamp
 
-$(1).git_update: $(1).git.stamp
+$(1).git_update: $(1).tar.gz
 	cd $(1).git; git pull
 	rm -rf $(1).tar.gz
 	(cd $(1).git; git archive --format=tar $(3)) > $(1).tar.gz
-	touch $(1).git.stamp
 
 $(1)-clean:
 	rm -rf $(1)
 	rm -f $(1).src.stamp
 
-EXTERNAL_LOCAL_GITS += $(1).git.stamp
+EXTERNAL_LOCAL_GITS += $(1).tar.gz
 EXTERNAL_LOCAL_GITS_UPDATE += $(1).git_update
 EXTERNAL_SRCS += $(1)-src
 EXTERNAL_SRCS_CLEAN += $(1)-clean
