@@ -28,16 +28,16 @@ all: build-arm build-arm64 build-x86 build-x86_64
 build-common: downloads/downloads.stamp
 	$(MAKE) -C common
 
-build-arm: downloads/downloads.stamp
+build-arm: downloads/downloads.stamp build-common
 	$(MAKE) -C armeabi-v7a
 
-build-arm64: downloads/downloads.stamp
+build-arm64: downloads/downloads.stamp build-common
 	$(MAKE) -C arm64-v8a
 
-build-x86: downloads/downloads.stamp
+build-x86: downloads/downloads.stamp build-common
 	$(MAKE) -C x86
 
-build-x86_64: downloads/downloads.stamp
+build-x86_64: downloads/downloads.stamp build-common
 	$(MAKE) -C x86_64
 
 clean:
@@ -52,6 +52,7 @@ clean-all:
 	$(MAKE) -C arm64-v8a clean-all
 	$(MAKE) -C x86 clean-all
 	$(MAKE) -C x86_64 clean-all
+	$(MAKE) -C common clean-all
 	rm -rf build
 
 downloads/downloads.stamp:
