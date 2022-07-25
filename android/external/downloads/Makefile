@@ -13,7 +13,7 @@ include ../Makefile.conf
 #------------------------------------------------------------------------------#
 # Build parameters
 
-all: download-iconv download-uuid download-sequoia-deps download-etpan download-sequoia download-boost
+all: download-iconv download-uuid download-sequoia-deps download-etpan download-sequoia download-boost download-cryptopp
 
 download-iconv: libiconv-1.15.tar.gz
 
@@ -27,6 +27,8 @@ download-etpan: libetpan.tar.gz
 download-sequoia: sequoia.tar.gz
 
 download-boost: boost-for-android.tar.gz
+
+download-cryptopp: cryptopp.tar.gz
 
 # Download source and patch it
 libiconv-1.15.tar.gz:

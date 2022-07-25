@@ -12,13 +12,12 @@ include ../Makefile.conf
 
 #------------------------------------------------------------------------------#
 # Build parameters
-
 APP_ABI ?= armeabi-v7a
 
 all: build
 #assets
 
-build: showsetup uuid-install sequoia-ffi-install libetpan-build
+build: showsetup uuid-install sequoia-ffi-install libetpan-build cryptopp-install
 
 
 #------------------------------------------------------------------------------#
@@ -333,6 +332,26 @@ $(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/armv7-linux-androide
 sequoia-ffi-build: $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so
 
 sequoia-ffi-install: sequoia-deps-build $(LOCAL)/lib/libsequoia_openpgp_ffi.so
+
+#------------------------------------------------------------------------------#
+# Crypto++
+cryptopp.src.stamp: ../downloads/cryptopp.tar.gz
+	mkdir -p cryptopp
+	cd cryptopp && tar xvf ../$<
+	touch $@
+
+cryptopp-src: cryptopp.src.stamp
+
+cryptopp-clean:
+	rm -rf cryptopp
+	rm -rf cryptopp.src.stamp
+
+$(LOCAL)/lib/libcryptopp.so: cryptopp.src.stamp
+	cd cryptopp && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" ../../install_cryptopp.sh $(APP_ABI) $(ANDROID_API) $(LOCAL) $(MAKE)
+
+cryptopp-build: $(LOCAL)/lib/libcryptopp.so
+
+cryptopp-install: $(LOCAL)/lib/libcryptopp.so
 
 #------------------------------------------------------------------------------#
 # assets for Android app

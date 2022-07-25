@@ -129,6 +129,8 @@ public class AndroidHelper {
         System.loadLibrary("nettle");
         System.loadLibrary("hogweed");
 
+        System.loadLibrary("cryptopp");
+
         migrateFromGPGToSequoiaIfNeeded(c.getFilesDir());
 
     }

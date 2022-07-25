@@ -17,7 +17,7 @@ APP_ABI ?= x86_64
 
 all: build
 
-build:showsetup uuid-install sequoia-ffi-install libetpan-build
+build: showsetup uuid-install sequoia-ffi-install libetpan-build cryptopp-install
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
@@ -108,7 +108,7 @@ libiconv/lib/.libs/libiconv.a: libiconv/Makefile
 
 $(LOCAL)/lib/libiconv.a: libiconv/lib/.libs/libiconv.a
 	$(MAKE) -C libiconv DESTDIR=$(DESTDIR) prefix=$(prefix) install
-	ls -l $(LOCAL)/lib/libiconv.a
+	ls -l $(LOCAL)/lib
 
 libiconv-build: libiconv/lib/.libs/libiconv.a
 
@@ -168,7 +168,7 @@ $(LOCAL)/lib/libuuid.so: uuid/.libs/libuuid.so
 	# install fails copying uuid cmdline tool, but libs are copied ...
 	-$(MAKE) -C uuid DESTDIR=$(DESTDIR) prefix=$(prefix) install
 	echo "****** THIS ERROR WAS WILLINGLY IGNORED ******"
-	ls -l $(LOCAL)/lib/libuuid.so
+	ls -l $(LOCAL)/lib
 
 uuid-build: uuid/.libs/libuuid.so
 
@@ -214,7 +214,7 @@ $(LOCAL)/lib/libssl.so: openssl/libssl.so
 		cp libcrypto.a $(LOCAL)/lib && \
 		cp libssl.so $(LOCAL)/lib && \
 		cp libssl.a $(LOCAL)/lib 
-	ls -l $(LOCAL)/lib/libssl.so
+	ls -l $(LOCAL)/lib
 
 openssl-build: openssl/libssl.so
 
@@ -250,7 +250,7 @@ gmp/.libs/libgmp.so: gmp/Makefile
 $(LOCAL)/lib/libgmp.so: gmp/.libs/libgmp.so
 	$(MAKE) -C gmp DESTDIR=$(DESTDIR) prefix=$(prefix) install
 	#gmp/libtool --finish $(LOCAL)/lib/
-	ls -l $(LOCAL)/lib/libgmp.so
+	ls -l $(LOCAL)/lib
 	touch $@
 
 gmp-build: gmp/.libs/libgmp.so
@@ -330,6 +330,26 @@ $(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/x86_64-linux-android
 sequoia-ffi-build: $(CARGO_TARGET_DIR)/x86_64-linux-android/release/libsequoia_openpgp_ffi.so
 
 sequoia-ffi-install: sequoia-deps-build $(LOCAL)/lib/libsequoia_openpgp_ffi.so
+
+#------------------------------------------------------------------------------#
+# Crypto++
+cryptopp.src.stamp: ../downloads/cryptopp.tar.gz
+	mkdir -p cryptopp
+	cd cryptopp && tar xvf ../$<
+	touch $@
+
+cryptopp-src: cryptopp.src.stamp
+
+cryptopp-clean:
+	rm -rf cryptopp
+	rm -rf cryptopp.src.stamp
+
+$(LOCAL)/lib/libcryptopp.so: cryptopp.src.stamp
+	cd cryptopp && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" ../../install_cryptopp.sh $(APP_ABI) $(ANDROID_API) $(LOCAL) $(MAKE)
+
+cryptopp-build: $(LOCAL)/lib/libcryptopp.so
+
+cryptopp-install: $(LOCAL)/lib/libcryptopp.so
 
 #------------------------------------------------------------------------------#
 # assets for Android app

@@ -17,7 +17,7 @@ APP_ABI ?= x86
 
 all: build
 
-build: showsetup uuid-install sequoia-ffi-install libetpan-build
+build: showsetup uuid-install sequoia-ffi-install libetpan-build cryptopp-install
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
@@ -330,6 +330,26 @@ $(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/i686-linux-android/r
 sequoia-ffi-build: $(CARGO_TARGET_DIR)/i686-linux-android/release/libsequoia_openpgp_ffi.so
 
 sequoia-ffi-install: sequoia-deps-build $(LOCAL)/lib/libsequoia_openpgp_ffi.so
+
+#------------------------------------------------------------------------------#
+# Crypto++
+cryptopp.src.stamp: ../downloads/cryptopp.tar.gz
+	mkdir -p cryptopp
+	cd cryptopp && tar xvf ../$<
+	touch $@
+
+cryptopp-src: cryptopp.src.stamp
+
+cryptopp-clean:
+	rm -rf cryptopp
+	rm -rf cryptopp.src.stamp
+
+$(LOCAL)/lib/libcryptopp.so: cryptopp.src.stamp
+	cd cryptopp && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" ../../install_cryptopp.sh $(APP_ABI) $(ANDROID_API) $(LOCAL) $(MAKE)
+
+cryptopp-build: $(LOCAL)/lib/libcryptopp.so
+
+cryptopp-install: $(LOCAL)/lib/libcryptopp.so
 
 #------------------------------------------------------------------------------#
 # assets for Android app
