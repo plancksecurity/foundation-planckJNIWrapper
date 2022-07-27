@@ -13,7 +13,8 @@ include ../Makefile.conf
 #------------------------------------------------------------------------------#
 # Build parameters
 
-all: download-iconv download-uuid download-sequoia-deps download-etpan download-sequoia download-boost download-cryptopp
+all: download-iconv download-uuid download-sequoia-deps download-etpan download-sequoia download-boost \
+	download-cryptopp download-archive
 
 download-iconv: libiconv-1.15.tar.gz
 
@@ -30,6 +31,7 @@ download-boost: boost-for-android.tar.gz
 
 download-cryptopp: cryptopp.tar.gz
 
+download-archive: libarchive-$(LIB_ARCHIVE_VERSION).tar.gz
 # Download source and patch it
 libiconv-1.15.tar.gz:
 	wget https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.15.tar.gz
@@ -49,6 +51,10 @@ gmp-$(GMP_VERSION).tar.bz2:
 nettle-$(NETTLE_VERSION).tar.gz:
 	wget -nc https://ftp.gnu.org/gnu/nettle/nettle-$(NETTLE_VERSION).tar.gz
 	md5sum -c nettle-$(NETTLE_VERSION).tar.gz.md5
+
+libarchive-$(LIB_ARCHIVE_VERSION).tar.gz:
+	wget -nc https://libarchive.org/downloads/libarchive-$(LIB_ARCHIVE_VERSION).tar.gz
+	md5sum -c libarchive-$(LIB_ARCHIVE_VERSION).tar.gz.md5
 
 
 #------------------------------------------------------------------------------#
