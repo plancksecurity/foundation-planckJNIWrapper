@@ -209,11 +209,7 @@ openssl/libssl.so: | openssl/Makefile
 	PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" $(MAKE) -C openssl
 
 $(LOCAL)/lib/libssl.so: openssl/libssl.so
-	cd openssl && \
-		cp libcrypto.so $(LOCAL)/lib && \
-		cp libcrypto.a $(LOCAL)/lib && \
-		cp libssl.so $(LOCAL)/lib && \
-		cp libssl.a $(LOCAL)/lib 
+	$(MAKE) -C openssl install
 	ls -l $(LOCAL)/lib
 
 openssl-build: openssl/libssl.so
