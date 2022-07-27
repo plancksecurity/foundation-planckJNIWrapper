@@ -292,6 +292,42 @@ nettle-build: nettle/libnettle.so
 
 nettle-install: $(LOCAL)/lib/libnettle.so
 
+#------------------------------------------------------------------------------#
+# LibArchive
+
+libarchive.src.stamp: ../downloads/libarchive-$(LIB_ARCHIVE_VERSION).tar.gz
+	tar xvf $<
+	mv libarchive-$(LIB_ARCHIVE_VERSION) libarchive
+	touch $@
+
+libarchive-src: nettle.src.stamp gmp-install
+
+libarchive-clean:
+	rm -rf libarchive
+	rm -rf libarchive.src.stamp
+
+libarchive/Makefile: libarchive.src.stamp
+	cd libarchive && \
+		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+			./configure \
+				--with-lib-path=$(LOCAL)/lib \
+                --with-include-path=$(LOCAL)/include \
+                --disable-documentation \
+                --disable-bsdtar \
+                --disable-bsdcpio \
+				--host=$(HOST) \
+				--prefix=$(LOCAL)
+
+libarchive/libarchive.so: libarchive/Makefile
+	$(MAKE) -C libarchive
+
+$(LOCAL)/lib/libarchive.so: libarchive/libarchive.so
+	$(MAKE) -C libarchive DESTDIR=$(DESTDIR) prefix=$(prefix) install
+
+libarchive-build: libarchive/libarchive.so
+
+libarchive-install: $(LOCAL)/lib/libarchive.so
+
 
 #------------------------------------------------------------------------------#
 # Sequoia-ffi
