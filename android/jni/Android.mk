@@ -37,15 +37,48 @@ LOCAL_EXPORT_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include
 LOCAL_EXPORT_LDLIBS := -lz
 include $(PREBUILT_STATIC_LIBRARY)
 
+include $(CLEAR_VARS)
+LOCAL_MODULE := libssl
+LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libssl.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libcrypto
+LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libcrypto.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libboost_iostreams
+LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libboost_iostreams.a
+LOCAL_EXPORT_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libboost_regex
+LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libboost_regex.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libboost_system
+LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libboost_system.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+
+
 #Take out Engine Headers
 $(shell sh $(ENGINE_PATH)/build-android/takeOutHeaderFiles.sh $(ENGINE_PATH))
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
-LOCAL_SHARED_LIBRARIES :=  libnettle libhogweed libgmp
+LOCAL_SHARED_LIBRARIES := libnettle libhogweed libgmp libcryptopp
 LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid pEpAdapter libsequoia_openpgp_ffi
+LOCAL_STATIC_LIBRARIES += libssl libcrypto libboost_system  libboost_regex libboost_iostreams
+
+LOCAL_CPPFLAGS += -fexceptions
+LOCAL_CPPFLAGS += -frtti
+
 LOCAL_CPP_FEATURES += exceptions
-LOCAL_CPPFLAGS += -std=c++11 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld
+LOCAL_CPPFLAGS += -std=c++17 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld
 LOCAL_SRC_FILES  := \
 		  ../../src/cxx/foundation_pEp_jniadapter_AbstractEngine.cc \
 		  ../../src/cxx/foundation_pEp_jniadapter_Engine.cc \
@@ -73,5 +106,7 @@ include $(BUILD_SHARED_LIBRARY)
 $(call import-add-path,$(SRC_PATH))
 $(call import-module, pEpEngine/build-android/jni/)
 $(call import-module, libpEpAdapter/build-android/jni/)
+$(call import-module, signedpkg/build-android/jni)
+$(call import-module, downloadclient/build-android/jni)
 $(info $(LOCAL_PATH))
 $(call import-module, pEpJNIAdapter/android/external/$(TARGET_ARCH_ABI)/uuid/jni)
