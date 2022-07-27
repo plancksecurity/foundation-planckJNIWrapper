@@ -93,7 +93,7 @@ LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include
 LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SRC_PATH)/libpEpAdapter
 
 LOCAL_LDFLAGS = -Wl,--allow-multiple-definition
-LOCAL_LDLIBS    += -llog
+LOCAL_LDLIBS    += -llog -lz
 
 include $(BUILD_SHARED_LIBRARY)
 
