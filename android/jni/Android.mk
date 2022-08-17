@@ -71,13 +71,13 @@ $(shell sh $(ENGINE_PATH)/build-android/takeOutHeaderFiles.sh $(ENGINE_PATH))
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
 LOCAL_SHARED_LIBRARIES := libnettle libhogweed libgmp libcryptopp
-LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid pEpAdapter libsequoia_openpgp_ffi
+LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid pEpAdapter libsequoia_openpgp_ffi downloadclient signedpkg
 LOCAL_STATIC_LIBRARIES += libssl libcrypto libboost_system  libboost_regex libboost_iostreams
 
 LOCAL_CPPFLAGS += -fexceptions
 LOCAL_CPPFLAGS += -frtti
 
-LOCAL_CPP_FEATURES += exceptions
+LOCAL_CPP_FEATURES += exceptiovns
 LOCAL_CPPFLAGS += -std=c++17 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld
 LOCAL_SRC_FILES  := \
 		  ../../src/cxx/foundation_pEp_jniadapter_AbstractEngine.cc \

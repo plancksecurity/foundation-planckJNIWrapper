@@ -17,7 +17,7 @@ APP_ABI ?= armeabi-v7a
 all: build
 #assets
 
-build: showsetup uuid-install sequoia-ffi-install libetpan-build cryptopp-install
+build: showsetup uuid-install sequoia-ffi-install libetpan-build cryptopp-install archive-install
 
 
 #------------------------------------------------------------------------------#
@@ -214,6 +214,7 @@ openssl/libssl.so: | openssl/Makefile
 	PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" $(MAKE) -C openssl
 
 $(LOCAL)/lib/libssl.so: openssl/libssl.so
+	mkdir -p $(LOCAL)
 	$(MAKE) -C openssl install
 	ls -l $(LOCAL)/lib
 
@@ -295,6 +296,79 @@ nettle-build: nettle/libnettle.so
 nettle-install: $(LOCAL)/lib/libnettle.so
 
 
+#------------------------------------------------------------------------------#
+# LibArchive
+
+libarchive.src.stamp: ../downloads/libarchive-$(LIB_ARCHIVE_VERSION).tar.gz
+	tar xvf $<
+	mv libarchive-$(LIB_ARCHIVE_VERSION) libarchive
+	touch $@
+
+libarchive-src: libarchive.src.stamp
+
+libarchive-clean:
+	rm -rf libarchive
+	rm -rf libarchive.src.stamp
+
+libarchive/Makefile: libarchive.src.stamp libarchive-install
+	cd libarchive && \
+		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+			./configure \
+				--with-lib-path=$(LOCAL)/lib \
+                --with-include-path=$(LOCAL)/include \
+                --disable-documentation \
+                --disable-bsdtar \
+                --disable-bsdcpio \
+				--host=$(HOST) \
+				--prefix=$(LOCAL)
+
+libarchive/libarchive.so: libarchive/Makefile
+	$(MAKE) -C libarchive
+
+$(LOCAL)/lib/libarchive.so: libarchive/libarchive.so
+	$(MAKE) -C libarchive DESTDIR=$(DESTDIR) prefix=$(prefix) install
+
+libarchive-build: libarchive/libarchive.so
+
+libarchive-install: $(LOCAL)/lib/libarchive.so
+
+#------------------------------------------------------------------------------#
+# libxml2
+
+
+libxml2.src.stamp: ../downloads/libxml2-$(LIB_XML_VERSION).tar.xz
+	tar xvf $<
+	mv libxml2-$(LIB_XML_VERSION) libxml2
+	touch $@
+
+libxml2-src: libxml2.src.stamp
+
+libxml2-clean:
+	rm -rf libxml2
+	rm -rf libxml2.src.stamp
+
+#There is a libxml2 version on the AOSP source code: https://android.googlesource.com/platform/external/libxml2/
+#, maybe it is a good idea to take it from there instead of mainstrem
+libxml2/Makefile: libxml2.src.stamp
+	cd libxml2 && \
+		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+			./configure \
+                --enable-static \
+                --disable-shared \
+                --without-lzma \
+                --without-zlib \
+				--host=$(HOST) \
+				--prefix=$(LOCAL)
+
+libxml2/.libs/libxml2.a: libxml2/Makefile
+	$(MAKE) -C libxml2
+
+$(LOCAL)/lib/libxml2.a: libxml2/.libs/libxml2.a
+	$(MAKE) -C libxml2 DESTDIR=$(DESTDIR) prefix=$(prefix) install
+
+libxml2-build: libxml2/.libs/libxml2.a
+
+libxml2-install: $(LOCAL)/lib/libxml2.a
 #------------------------------------------------------------------------------#
 # Sequoia-ffi
 CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/../build

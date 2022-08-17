@@ -35,6 +35,7 @@ boost.src.stamp:../downloads/boost-for-android.tar.gz
 
 
 boost.stamp: boost.src.stamp
+	mkdir -p $(LOCAL)
 	cd boost; NCPU=$(NCPU) bash ./build-android.sh $(ANDROID_NDK) \
 		--boost=$(BOOST_VERSION) \
 		--layout=system \

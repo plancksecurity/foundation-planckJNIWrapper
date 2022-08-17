@@ -14,7 +14,7 @@ include ../Makefile.conf
 # Build parameters
 
 all: download-iconv download-uuid download-sequoia-deps download-etpan download-sequoia download-boost \
-	download-cryptopp download-archive
+	download-cryptopp download-archive download-xml2
 
 download-iconv: libiconv-1.15.tar.gz
 
@@ -32,6 +32,9 @@ download-boost: boost-for-android.tar.gz
 download-cryptopp: cryptopp.tar.gz
 
 download-archive: libarchive-$(LIB_ARCHIVE_VERSION).tar.gz
+
+download-xml2: libxml2-$(LIB_XML_VERSION).tar.xz
+
 # Download source and patch it
 libiconv-1.15.tar.gz:
 	wget https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.15.tar.gz
@@ -55,6 +58,10 @@ nettle-$(NETTLE_VERSION).tar.gz:
 libarchive-$(LIB_ARCHIVE_VERSION).tar.gz:
 	wget -nc https://libarchive.org/downloads/libarchive-$(LIB_ARCHIVE_VERSION).tar.gz
 	md5sum -c libarchive-$(LIB_ARCHIVE_VERSION).tar.gz.md5
+
+libxml2-$(LIB_XML_VERSION).tar.xz:
+	wget -nc https://download.gnome.org/sources/libxml2/2.10/libxml2-$(LIB_XML_VERSION).tar.xz
+	md5sum -c libxml2-$(LIB_XML_VERSION).tar.xz.md5
 
 
 #------------------------------------------------------------------------------#
