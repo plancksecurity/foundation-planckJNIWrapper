@@ -316,6 +316,7 @@ libarchive/Makefile: libarchive.src.stamp libarchive-install
                 --disable-documentation \
                 --disable-bsdtar \
                 --disable-bsdcpio \
+                --without-xml2 \
 				--host=$(HOST) \
 				--prefix=$(LOCAL)
 
@@ -329,43 +330,6 @@ libarchive-build: libarchive/libarchive.so
 
 libarchive-install: $(LOCAL)/lib/libarchive.so
 
-#------------------------------------------------------------------------------#
-# libxml2
-
-
-libxml2.src.stamp: ../downloads/libxml2-$(LIB_XML_VERSION).tar.xz
-	tar xvf $<
-	mv libxml2-$(LIB_XML_VERSION) libxml2
-	touch $@
-
-libxml2-src: libxml2.src.stamp
-
-libxml2-clean:
-	rm -rf libxml2
-	rm -rf libxml2.src.stamp
-
-#There is a libxml2 version on the AOSP source code: https://android.googlesource.com/platform/external/libxml2/
-#, maybe it is a good idea to take it from there instead of mainstrem
-libxml2/Makefile: libxml2.src.stamp
-	cd libxml2 && \
-		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-			./configure \
-                --enable-static \
-                --disable-shared \
-                --without-lzma \
-                --without-zlib \
-				--host=$(HOST) \
-				--prefix=$(LOCAL)
-
-libxml2/.libs/libxml2.a: libxml2/Makefile
-	$(MAKE) -C libxml2
-
-$(LOCAL)/lib/libxml2.a: libxml2/.libs/libxml2.a
-	$(MAKE) -C libxml2 DESTDIR=$(DESTDIR) prefix=$(prefix) install
-
-libxml2-build: libxml2/.libs/libxml2.a
-
-libxml2-install: $(LOCAL)/lib/libxml2.a
 #------------------------------------------------------------------------------#
 # Sequoia-ffi
 
