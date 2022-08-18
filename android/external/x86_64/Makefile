@@ -307,7 +307,8 @@ libarchive-clean:
 	rm -rf libarchive
 	rm -rf libarchive.src.stamp
 
-libarchive/Makefile: libarchive.src.stamp libarchive-install
+libarchive/Makefile: libarchive.src.stamp
+	cp libarchive/contrib/android/include/android_lf.h libarchive/libarchive/
 	cd libarchive && \
 		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
