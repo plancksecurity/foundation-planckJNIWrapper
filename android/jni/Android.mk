@@ -63,6 +63,11 @@ LOCAL_MODULE := libboost_system
 LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libboost_system.a
 include $(PREBUILT_STATIC_LIBRARY)
 
+include $(CLEAR_VARS)
+LOCAL_MODULE := libarchive
+LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libarchive.a
+include $(PREBUILT_STATIC_LIBRARY)
+
 
 
 #Take out Engine Headers
