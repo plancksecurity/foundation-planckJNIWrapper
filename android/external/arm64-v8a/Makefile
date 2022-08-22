@@ -42,16 +42,13 @@ include $(ANDROID_NDK)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 
 ANDROID_NDK_HOME=$(ANDROID_NDK)/toolchains/llvm/prebuilt/$(TOOLCHAIN_ARCH)
 
-LD := $(ANDROID_NDK_HOME)/bin/$(HOST)-ld
-AR := $(ANDROID_NDK_HOME)/bin/$(HOST)-ar
-AS := $(ANDROID_NDK_HOME)/bin/$(HOST)-as
 CC := $(ANDROID_NDK_HOME)/bin/$(HOST)$(ANDROID_API)-clang
 CXX := $(ANDROID_NDK_HOME)/bin/$(HOST)$(ANDROID_API)-clang++
-RANLIB := $(ANDROID_NDK_HOME)/bin/$(HOST)-ranlib
-STRIP := $(ANDROID_NDK_HOME)/bin/$(HOST)-strip
+AS := $(CC)
 
-CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC -std=c99 --sysroot=$(NDK_SYSROOT)
-LDFLAGS += -lz -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie --sysroot=$(NDK_SYSROOT)
+
+CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC -std=c99
+LDFLAGS += -lz -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie
 
 # change 'release' to 'debug' for unoptimized debug builds
 CFLAGS += $(TARGET_arm64_debug_CFLAGS)
@@ -210,7 +207,7 @@ openssl/libssl.so: | openssl/Makefile
 
 $(LOCAL)/lib/libssl.so: openssl/libssl.so
 	mkdir -p $(LOCAL)
-	$(MAKE) -C openssl install
+	$(MAKE) -C openssl install_sw
 	ls -l $(LOCAL)/lib
 
 openssl-build: openssl/libssl.so
@@ -317,6 +314,7 @@ libarchive/Makefile: libarchive.src.stamp
                 --disable-documentation \
                 --disable-bsdtar \
                 --disable-bsdcpio \
+                --disable-bsdcat \
                 --without-xml2 \
 				--host=$(HOST) \
 				--prefix=$(LOCAL)
@@ -347,7 +345,8 @@ sequoia-ffi-clean:
 	rm -rf sequoia.src.stamp
 
 $(CARGO_TARGET_DIR)/aarch64-linux-android/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp sequoia-deps-build
-	cd sequoia && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
+	cd sequoia && CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)"\
+	CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
 	PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig \
 	PKG_CONFIG_ALLOW_CROSS=1 \
@@ -370,6 +369,14 @@ sequoia-ffi-install: sequoia-deps-build $(LOCAL)/lib/libsequoia_openpgp_ffi.so
 cryptopp.src.stamp: ../downloads/cryptopp.tar.gz
 	mkdir -p cryptopp
 	cd cryptopp && tar xvf ../$<
+
+	$(SED) -i 's,AR=.*,AR="llvm-ar",' cryptopp/TestScripts/setenv-android.sh
+	$(SED) -i 's,AS=.*,AS="$$(CC)",' cryptopp/TestScripts/setenv-android.sh
+	$(SED) -i 's,LD=.*,LD="ld",' cryptopp/TestScripts/setenv-android.sh
+	$(SED) -i 's,STRIP=.*,STRIP="llvm-strip",' cryptopp/TestScripts/setenv-android.sh
+	$(SED) -i 's,RANLIB=.*,RANLIB="llvm-ranlib",' cryptopp/TestScripts/setenv-android.sh
+	$(SED) -i 's,OBJDUMB=.*,OBJDUMB="llvm-objdumb",' cryptopp/TestScripts/setenv-android.sh
+
 	touch $@
 
 cryptopp-src: cryptopp.src.stamp

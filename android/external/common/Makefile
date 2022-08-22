@@ -31,6 +31,8 @@ showsetup:
 boost.src.stamp:../downloads/boost-for-android.tar.gz
 	mkdir -p boost
 	cd boost && tar xvf ../$<
+	$(SED) -i 's,23.1",23.1"|"23.2",' boost/build-android.sh
+
 	touch $@
 
 
@@ -40,6 +42,7 @@ boost.stamp: boost.src.stamp
 		--boost=$(BOOST_VERSION) \
 		--layout=system \
 		--with-libraries=regex,iostreams,system \
+		--arch=arm64-v8a
 		--prefix=$(LOCAL)
 	touch $@
 

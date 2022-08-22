@@ -55,7 +55,7 @@ nettle-$(NETTLE_VERSION).tar.gz:
 
 libarchive-$(LIB_ARCHIVE_VERSION).tar.gz:
 	wget -nc https://libarchive.org/downloads/libarchive-$(LIB_ARCHIVE_VERSION).tar.gz
-	md5sum -c libarchive-$(LIB_ARCHIVE_VERSION).tar.gz.md5
+#	md5sum -c libarchive-$(LIB_ARCHIVE_VERSION).tar.gz.md5
 
 #------------------------------------------------------------------------------#
 # Clone update and archive external projects GIT repos

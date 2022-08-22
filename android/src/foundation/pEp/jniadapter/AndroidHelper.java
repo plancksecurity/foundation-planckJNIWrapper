@@ -125,11 +125,12 @@ public class AndroidHelper {
     public static void nativeSetup(Context c) {
         // pre-load libs for pepengine, as
         // android cannot solve lib dependencies on its own
+        System.loadLibrary("cryptopp");
+
         System.loadLibrary("gmp");
         System.loadLibrary("nettle");
         System.loadLibrary("hogweed");
 
-        System.loadLibrary("cryptopp");
 
         migrateFromGPGToSequoiaIfNeeded(c.getFilesDir());
 

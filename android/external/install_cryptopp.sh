@@ -2,6 +2,8 @@
 ###
 ### Script to isolate ENV required by crytptoPP to build.
 ###
+echo "$0 $@" 
+
 ANDROID_CPU=$1
 ANDROID_API=$2
 PREFIX=$3

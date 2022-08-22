@@ -42,15 +42,10 @@ NDK_TOOLCHAIN = $(HOST)-$(NDK_TOOLCHAIN_COMPILER)
 TARGET_ARCH_ABI = $(APP_ABI)
 include $(ANDROID_NDK)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 
-ANDROID_NDK_HOME=$(ANDROID_NDK)/toolchains/llvm/prebuilt/$(TOOLCHAIN_ARCH)
-
-LD := $(ANDROID_NDK_HOME)/bin/$(HOST)-ld
-AR := $(ANDROID_NDK_HOME)/bin/$(HOST)-ar
-AS := $(ANDROID_NDK_HOME)/bin/$(HOST)-as
 CC := $(ANDROID_NDK_HOME)/bin/$(HOST_V7)$(ANDROID_API)-clang
 CXX := $(ANDROID_NDK_HOME)/bin/$(HOST_V7)$(ANDROID_API)-clang++
-RANLIB := $(ANDROID_NDK_HOME)/bin/$(HOST)-ranlib
-STRIP := $(ANDROID_NDK_HOME)/bin/$(HOST)-strip
+AS := $(CC)
+
 
 CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC -std=c99
 LDFLAGS += -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie
@@ -72,6 +67,7 @@ export ac_cv_func_malloc_0_nonnull=yes
 
 showsetup:
 	@echo "NDK_TOOLCHAIN: $(NDK_TOOLCHAIN)"
+	@echo "ANDROID_NDK_HOME: $(ANDROID_NDK_HOME)"
 	@echo "NDK_SYSROOT: $(NDK_SYSROOT)"
 	@echo "APP_ABI: $(APP_ABI)"
 	@echo "HOST: $(HOST)"
@@ -79,6 +75,7 @@ showsetup:
 	@echo "LD: $(LD)"
 	@echo "CFLAGS: $(CFLAGS)"
 	@echo "LDFLAGS: $(LDFLAGS)"
+	@echo "LOCAL: $(LOCAL)"
 
 #------------------------------------------------------------------------------#
 # libiconv
@@ -209,7 +206,7 @@ OPENSSL_ARCHITECTURE:=android-arm
 
 openssl/Makefile: openssl.src.stamp
 	cd openssl && \
-	    PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" ../../configure_openssl.sh ${OPENSSL_ARCHITECTURE} $(ANDROID_API) $(LOCAL)
+	    PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" bash ../../configure_openssl.sh ${OPENSSL_ARCHITECTURE} $(ANDROID_API) $(LOCAL)
 openssl/libssl.so: | openssl/Makefile
 	PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" $(MAKE) -C openssl
 
@@ -320,7 +317,9 @@ libarchive/Makefile: libarchive.src.stamp
                 --disable-documentation \
                 --disable-bsdtar \
                 --disable-bsdcpio \
+                --disable-bsdcat \
                 --without-xml2 \
+                --with-pic \
 				--host=$(HOST) \
 				--prefix=$(LOCAL)
 
@@ -349,7 +348,8 @@ sequoia-ffi-clean:
 	rm -rf sequoia.src.stamp
 
 $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp sequoia-deps-build
-	cd sequoia && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
+	cd sequoia && CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)"\
+	CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
 	PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig \
 	PKG_CONFIG_ALLOW_CROSS=1 \
@@ -373,6 +373,14 @@ sequoia-ffi-install: sequoia-deps-build $(LOCAL)/lib/libsequoia_openpgp_ffi.so
 cryptopp.src.stamp: ../downloads/cryptopp.tar.gz
 	mkdir -p cryptopp
 	cd cryptopp && tar xvf ../$<
+
+	$(SED) -i 's,AR=.*,AR="llvm-ar",' cryptopp/TestScripts/setenv-android.sh
+	$(SED) -i 's,AS=.*,AS=$$(CC),' cryptopp/TestScripts/setenv-android.sh
+	$(SED) -i 's,LD=.*,LD="ld",' cryptopp/TestScripts/setenv-android.sh
+	$(SED) -i 's,STRIP=.*,STRIP="llvm-strip",' cryptopp/TestScripts/setenv-android.sh
+	$(SED) -i 's,RANLIB=.*,RANLIB="llvm-ranlib",' cryptopp/TestScripts/setenv-android.sh
+	$(SED) -i 's,OBJDUMB=.*,OBJDUMB="llvm-objdumb",' cryptopp/TestScripts/setenv-android.sh
+
 	touch $@
 
 cryptopp-src: cryptopp.src.stamp
@@ -382,7 +390,7 @@ cryptopp-clean:
 	rm -rf cryptopp.src.stamp
 
 $(LOCAL)/lib/libcryptopp.so: cryptopp.src.stamp
-	cd cryptopp && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" ../../install_cryptopp.sh $(APP_ABI) $(ANDROID_API) $(LOCAL) $(MAKE)
+	cd cryptopp && bash ../../install_cryptopp.sh $(APP_ABI) $(ANDROID_API) $(LOCAL) $(MAKE)
 
 cryptopp-build: $(LOCAL)/lib/libcryptopp.so
 
