@@ -77,6 +77,19 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
 
     private native void _stopSync();
 
+    public void config_media_keys(ArrayList<Pair<String, String>> value) {
+        if (value != null) {
+            ArrayList<Pair<byte[], byte[]>> list = new ArrayList<Pair<byte[], byte[]>>();
+            for (Pair<String, String> i : value) {
+                list.add(new Pair<byte[],byte[]>(Utils.toUTF8(i.first), Utils.toUTF8(i.second)));
+            }
+            _config_media_keys(list);
+        } else {
+            _config_media_keys(null);
+        }
+    }
+
+    private native void _config_media_keys(ArrayList<Pair<byte[], byte[]>> value);
 
     public boolean isSyncRunning() {
         return _isSyncRunning();

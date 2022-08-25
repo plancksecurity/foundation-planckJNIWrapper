@@ -2,6 +2,7 @@
 #include <pEp/keymanagement.h>
 #include <pEp/message_api.h>
 #include <pEp/sync_api.h>
+#include <pEp/media_key.h>
 #include <pEp/pEpLog.hh>
 #include <pEp/passphrase_cache.hh>
 #include <pEp/callback_dispatcher.hh>
@@ -357,6 +358,26 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1stopSync(
 
     CallbackDispatcher::stop_sync();
 }
+
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1config_1media_1keys(JNIEnv *env,
+        jobject obj,
+        jobject value)
+{
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
+
+    PEP_STATUS status = ::config_media_keys(Adapter::session(),to_stringpairlist(env, value));
+    if (status) {
+        throw_pEp_Exception(env, status);
+    }
+
+}
+
 
 JNIEXPORT jboolean JNICALL Java_foundation_pEp_jniadapter_AbstractEngine__1isSyncRunning(JNIEnv *env,
         jobject obj)
