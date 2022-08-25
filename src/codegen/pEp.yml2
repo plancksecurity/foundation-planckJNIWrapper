@@ -279,6 +279,7 @@ namespace pEp {
         basic void config_passphrase_for_new_keys(bool enable, string passphrase);
         basic bytearray export_key(string fpr);
         basic void config_enable_echo_protocol(bool enable);
+        basic void config_enable_echo_in_outgoing_message_rating_preview(bool enable);
     };
 
     struct message {
