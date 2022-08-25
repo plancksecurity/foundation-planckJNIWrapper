@@ -70,6 +70,7 @@ namespace pEp {
         enumitem sync_notify_accepted_device_added      > 6
         enumitem sync_notify_accepted_group_created     > 7
         enumitem sync_notify_accepted_device_accepted   > 8
+        enumitem sync_notify_outgoing_rating_change     > 64
         enumitem sync_passphrase_required               > 128
         enumitem sync_notify_sole                       > 254
         enumitem sync_notify_in_group                   > 255
