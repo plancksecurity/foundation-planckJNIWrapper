@@ -194,7 +194,7 @@ namespace pEp {
                 in string fpr2,
                 in string lang,
                 returns sstring words,
-		in bool full
+		        in bool full
             );
 
         method cached=true get_message_trustwords(
@@ -278,6 +278,7 @@ namespace pEp {
         basic void config_passphrase(string passphrase);
         basic void config_passphrase_for_new_keys(bool enable, string passphrase);
         basic bytearray export_key(string fpr);
+        basic void config_enable_echo_protocol(bool enable);
     };
 
     struct message {
