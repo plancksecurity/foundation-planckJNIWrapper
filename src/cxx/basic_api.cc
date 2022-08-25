@@ -539,5 +539,19 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1export_1key
     return from_string(env, buff);
 }
 
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1enable_1echo_1protocol(JNIEnv *env,
+        jobject obj,
+        jboolean enable)
+{
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
+    ::config_enable_echo_protocol(session(),static_cast<bool>(enable));
+}
+
 } // extern "C"
 
