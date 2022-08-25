@@ -253,6 +253,8 @@ namespace pEp {
                 in identitylist identities const
             );
 
+        method cached=true sync_reinit();
+
         // "basic" methods are generated on the java side, but
         // on the C++ side, manually implemented in basic_api.cc
 
