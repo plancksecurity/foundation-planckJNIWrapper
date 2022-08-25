@@ -70,6 +70,7 @@ namespace pEp {
         enumitem sync_notify_accepted_device_added      > 6
         enumitem sync_notify_accepted_group_created     > 7
         enumitem sync_notify_accepted_device_accepted   > 8
+        enumitem sync_notify_outgoing_rating_change     > 64
         enumitem sync_passphrase_required               > 128
         enumitem sync_notify_sole                       > 254
         enumitem sync_notify_in_group                   > 255
@@ -193,7 +194,7 @@ namespace pEp {
                 in string fpr2,
                 in string lang,
                 returns sstring words,
-		in bool full
+		        in bool full
             );
 
         method cached=true get_message_trustwords(
@@ -252,6 +253,8 @@ namespace pEp {
                 in identitylist identities const
             );
 
+        method cached=true sync_reinit();
+
         // "basic" methods are generated on the java side, but
         // on the C++ side, manually implemented in basic_api.cc
 
@@ -275,6 +278,8 @@ namespace pEp {
         basic void config_passphrase(string passphrase);
         basic void config_passphrase_for_new_keys(bool enable, string passphrase);
         basic bytearray export_key(string fpr);
+        basic void config_enable_echo_protocol(bool enable);
+        basic void config_enable_echo_in_outgoing_message_rating_preview(bool enable);
     };
 
     struct message {
