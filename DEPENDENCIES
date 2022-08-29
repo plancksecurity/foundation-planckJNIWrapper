@@ -2,4 +2,4 @@
 ## Prefer git tags instead of SHA hashes when possible.
 
 libpEpAdapter=Release_2.1.22
-pEpEngine=Release_2.1.60
+pEpEngine=Release_2.1.61
