@@ -42,13 +42,9 @@ include $(ANDROID_NDK)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 
 ANDROID_NDK_HOME=$(ANDROID_NDK)/toolchains/llvm/prebuilt/$(TOOLCHAIN_ARCH)
 
-LD := $(ANDROID_NDK_HOME)/bin/$(HOST)-ld
-AR := $(ANDROID_NDK_HOME)/bin/$(HOST)-ar
-AS := $(ANDROID_NDK_HOME)/bin/$(HOST)-as
 CC := $(ANDROID_NDK_HOME)/bin/$(HOST)$(ANDROID_API)-clang
 CXX := $(ANDROID_NDK_HOME)/bin/$(HOST)$(ANDROID_API)-clang++
-RANLIB := $(ANDROID_NDK_HOME)/bin/$(HOST)-ranlib
-STRIP := $(ANDROID_NDK_HOME)/bin/$(HOST)-strip
+AS := $(CC)
 
 CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC -std=c99
 LDFLAGS += -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie
@@ -285,15 +281,17 @@ nettle/Makefile: nettle.src.stamp
 				--host=$(HOST) \
 				--prefix=$(LOCAL)
 
-nettle/libnettle.so: nettle/Makefile
+nettle/libnettle.so nettle/libhogweed.so: nettle/Makefile
 	$(MAKE) -C nettle
 
-$(LOCAL)/lib/libnettle.so: nettle/libnettle.so
+$(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libhogweed.so: nettle/libnettle.so nettle/libhogweed.so
 	$(MAKE) -C nettle DESTDIR=$(DESTDIR) prefix=$(prefix) install
+	cp nettle/libnettle.so $(LOCAL)/lib/libnettle.so
+	cp nettle/libhogweed.so $(LOCAL)/lib/libhogweed.so
 
-nettle-build: nettle/libnettle.so
+nettle-build: nettle/libnettle.so nettle/libhogweed.so
 
-nettle-install: $(LOCAL)/lib/libnettle.so
+nettle-install: $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libhogweed.so
 
 
 #------------------------------------------------------------------------------#
@@ -304,7 +302,11 @@ CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/../build/
 sequoia.src.stamp: ../downloads/sequoia.tar.gz
 	mkdir -p sequoia
 	cd sequoia && tar xvf ../$<
+	$(SED) -i 's,1.48.0,1.49.0,' sequoia/rust-toolchain
 	cd sequoia && cargo update -p nettle-sys --precise 2.0.8
+	mkdir -p $(LOCAL)/lib/
+# This is a bad fix, we should move this to a common makefile (but not the .conf one)
+	find -L $(ANDROID_NDK) -name libunwind.a -execdir sh -c 'echo "INPUT(-lunwind)" > $(LOCAL)/lib/libgcc.a' \;
 	touch $@
 
 sequoia-ffi-clean:
@@ -313,6 +315,7 @@ sequoia-ffi-clean:
 
 $(CARGO_TARGET_DIR)/i686-linux-android/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp sequoia-deps-build
 	cd sequoia && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
+	CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
 	PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig \
 	PKG_CONFIG_ALLOW_CROSS=1 \
