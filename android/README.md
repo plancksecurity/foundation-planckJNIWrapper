@@ -16,13 +16,13 @@ It can be done with the SDK and the sdkmanager cli tool, or using Android Studio
 
 Android studio -> Configure  -> SDK Manager -> SDK Tools (tab) -> Select NDK and install
 
-Tip: To install other versions click on "Show packages details" and select the desired NDK version (Currently using: 21.0.6113669)
+Tip: To install other versions click on "Show packages details" and select the desired NDK version (Currently using: 25.1.8937393)
 
 ## Required env\_vars (for MacOS):
 
 ``` bash
-export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
-export ANDROID_NDK=$ANDROID_SDK/ndk/21.0.6113669
+export JAVA_HOME=$(/usr/libexec/java_home -v 11)
+export ANDROID_NDK=$ANDROID_SDK/ndk/25.1.8937393
 export HOST_TAG=darwin-x86_64
 export ANDROID_MIN_SDK_32=18
 export ANDROID_MIN_SDK_64=21
@@ -39,6 +39,7 @@ rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-andro
 
 Tell rust the location of the new target linker and AR
 
+TODO: Update and point to llvm-ar
 ```bash
 echo "
 [target.aarch64-linux-android]

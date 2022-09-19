@@ -2,8 +2,10 @@
 
 def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
-def threadsToUse = hasProperty('threadsToUse') ?
-        threadsToUse : Runtime.getRuntime().availableProcessors()
+//CHeck M1 answers the correct thing off .avaialableprocessors here
+//def threadsToUse = hasProperty('threadsToUse') ?
+//        threadsToUse : Runtime.getRuntime().availableProcessors()
+def threadsToUse = 1
 
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 
@@ -145,7 +147,7 @@ android {
         from file(new File(pEpEngineDB, 'system.db'))
         into 'assets'
     }
-    ndkVersion '21.0.6113669'
+    ndkVersion '25.1.8937393'
 
     if(buildAutomatic == "true") {
         buildpEpEngineSystemDB.dependsOn(buildExternal)
