@@ -3,9 +3,9 @@
 def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 //CHeck M1 answers the correct thing off .avaialableprocessors here
-//def threadsToUse = hasProperty('threadsToUse') ?
-//        threadsToUse : Runtime.getRuntime().availableProcessors()
-def threadsToUse = 1
+def threadsToUse = hasProperty('threadsToUse') ?
+        threadsToUse : Runtime.getRuntime().availableProcessors()
+//threadsToUse = 1
 
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 
