@@ -31,7 +31,7 @@ public class AndroidHelper {
         
     // TODO : Increment when needed.
     // TODO : Check if this version tracking is really needed and Automatize it
-    public static String ENGINE_VERSION_CODE = "Release_2.1.37";
+    public static String ENGINE_VERSION_CODE = "Release_2.1.56";
 
     private static File shareDir;
 

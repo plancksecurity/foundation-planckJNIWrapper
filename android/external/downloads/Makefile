@@ -15,21 +15,8 @@ include ../Makefile.conf
 
 all: downloads.stamp
 
-downloads.stamp: download-iconv download-uuid download-sequoia-deps download-etpan download-sequoia \
-	generate-ndk-arm generate-ndk-arm64 generate-ndk-x86 generate-ndk-x86_64
+downloads.stamp: download-iconv download-uuid download-sequoia-deps download-etpan download-sequoia
 	touch $@
-
-generate-ndk-arm64:
-	cd ../arm64-v8a && bash generate-standalone-ndk-toolchain.sh
-
-generate-ndk-arm:
-	cd ../armeabi-v7a && bash generate-standalone-ndk-toolchain.sh
-
-generate-ndk-x86:
-	cd ../x86 && bash generate-standalone-ndk-toolchain.sh
-
-generate-ndk-x86_64:
-	cd ../x86_64 && bash generate-standalone-ndk-toolchain.sh
 
 download-iconv: libiconv-1.15.tar.gz
 

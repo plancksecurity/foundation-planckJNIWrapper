@@ -14,19 +14,12 @@ include ../Makefile.conf
 # Build parameters
 
 APP_ABI ?= armeabi-v7a
-ANDROID_API ?= 18
 
 all: build
 #assets
 
-build: generate-ndk-toolchain showsetup uuid-install sequoia-ffi-install libetpan-build
+build: showsetup uuid-install sequoia-ffi-install libetpan-build
 
-#------------------------------------------------------------------------------#
-# Generate standalone toolchain
-generate-ndk-toolchain: ndk-standalone-toolchain/bin/clang
-
-ndk-standalone-toolchain/bin/clang:
-	bash generate-standalone-ndk-toolchain.sh
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, DESTDIR, LOCAL and PATH
@@ -43,21 +36,18 @@ PATH := ${PATH}:$(NDK_TOOLCHAIN)/bin:$(LOCAL)/bin
 NDK_SYSROOT=$(ANDROID_NDK_HOME)/sysroot
 
 HOST = arm-linux-androideabi
+HOST_V7 = armv7a-linux-androideabi
 NDK_TOOLCHAIN = $(HOST)-$(NDK_TOOLCHAIN_COMPILER)
 
 # include Android's build flags
 TARGET_ARCH_ABI = $(APP_ABI)
 include $(ANDROID_NDK)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 
-ANDROID_NDK_HOME=$(EXTERNAL_ROOT)/ndk-standalone-toolchain
+ANDROID_NDK_HOME=$(ANDROID_NDK)/toolchains/llvm/prebuilt/$(TOOLCHAIN_ARCH)
 
-LD := $(ANDROID_NDK_HOME)/bin/$(HOST)-ld
-AR := $(ANDROID_NDK_HOME)/bin/$(HOST)-ar
-AS := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
-CC := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang
-CXX := $(ANDROID_NDK_HOME)/bin/$(HOST)-clang++
-RANLIB := $(ANDROID_NDK_HOME)/bin/$(HOST)-ranlib
-STRIP := $(ANDROID_NDK_HOME)/bin/$(HOST)-strip
+CC := $(ANDROID_NDK_HOME)/bin/$(HOST_V7)$(ANDROID_API)-clang
+CXX := $(ANDROID_NDK_HOME)/bin/$(HOST_V7)$(ANDROID_API)-clang++
+AS := $(CC)
 
 CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC -std=c99
 LDFLAGS += -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie
@@ -131,9 +121,9 @@ libetpan.src.stamp: ../downloads/libetpan.tar.gz
 	touch $@
 
 libetpan/Makefile: libetpan.src.stamp | libiconv-install
-	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh
-	cp -r libetpan/build-android/libetpan-android-1/$(APP_ABI)/lib/* $(LOCAL)/lib/
-	cp -r libetpan/build-android/libetpan-android-1/include/* $(LOCAL)/include/
+	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh $(APP_ABI)
+	cp -r libetpan/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/$(APP_ABI)/lib/* $(LOCAL)/lib/
+	cp -r libetpan/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/include/* $(LOCAL)/include/
 	touch $@
 
 libetpan-build: libetpan/Makefile
@@ -300,6 +290,8 @@ nettle/libnettle.so: nettle/Makefile
 
 $(LOCAL)/lib/libnettle.so: nettle/libnettle.so
 	$(MAKE) -C nettle DESTDIR=$(DESTDIR) prefix=$(prefix) install
+	cp nettle/libnettle.so $(LOCAL)/lib/libnettle.so
+	cp nettle/libhogweed.so $(LOCAL)/lib/libhogweed.so
 
 nettle-build: nettle/libnettle.so
 
@@ -313,7 +305,11 @@ CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/../build
 sequoia.src.stamp: ../downloads/sequoia.tar.gz
 	mkdir -p sequoia
 	cd sequoia && tar xvf ../$<
+	$(SED) -i 's,1.48.0,1.49.0,' sequoia/rust-toolchain
 	cd sequoia && cargo update -p nettle-sys --precise 2.0.8
+	mkdir -p $(LOCAL)/lib/
+# This is a bad fix, we should move this to a common makefile (but not the .conf one)
+	find -L $(ANDROID_NDK) -name libunwind.a -execdir sh -c 'echo "INPUT(-lunwind)" > $(LOCAL)/lib/libgcc.a' \;
 	touch $@
 
 sequoia-ffi-clean:
@@ -322,6 +318,7 @@ sequoia-ffi-clean:
 
 $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp sequoia-deps-build
 	cd sequoia && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
+	CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
 	PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig \
 	PKG_CONFIG_ALLOW_CROSS=1 \

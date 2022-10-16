@@ -3,6 +3,17 @@
 #include <cassert>
 #include <cstring>
 
+#ifdef ANDROID
+    #ifndef __LP64__
+
+        #include <time64.h>
+
+        #define time_t time64_t
+        #define timegm timegm64
+        #define gmtime_r gmtime64_r
+    #endif
+#endif
+
 namespace pEp {
 namespace JNIAdapter {
 
@@ -237,7 +248,6 @@ jbyteArray from_string(JNIEnv *env,
         const char *str)
 {
     if (str && str[0]) {
-        jboolean isCopy;
         size_t l = strlen(str);
         jbyteArray _str = env->NewByteArray(l);
         env->SetByteArrayRegion(_str, 0, l, (jbyte *) str);
@@ -433,7 +443,7 @@ timestamp *to_timestamp(JNIEnv *env,
 
     if (t) {
         time_t clock = t / 1000;
-        gmtime_r(&clock, ts);
+        gmtime_r(&clock, (struct tm*)ts);
 
         //LOGD("/* Seconds (0-60) */  TO     :%d", ts->tm_sec);
         //LOGD("/* Minutes (0-59) */         :%d", ts->tm_min);
