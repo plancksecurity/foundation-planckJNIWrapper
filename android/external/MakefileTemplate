@@ -80,8 +80,6 @@ libiconv.src.stamp: ../downloads/libiconv-1.15.tar.gz
 	mv libiconv-1.15 libiconv
 	touch $@
 
-libiconv-src: libiconv.src.stamp
-
 libiconv/Makefile: libiconv.src.stamp
 	cd libiconv && \
 		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
@@ -126,8 +124,6 @@ uuid.src.stamp: ../downloads/ossp-uuid_1.6.2.orig-patched.tar.gz
 	tar xvf $<
 	mv uuid-1.6.2 uuid
 	touch $@
-
-uuid-src: uuid.src.stamp
 
 uuid/Makefile: uuid.src.stamp
 	$(SED) -i 's,AC_CHECK_VA_COPY(),,' uuid/uuid.ac
@@ -175,8 +171,6 @@ openssl.src.stamp: ../downloads/openssl-$(OPENSSL_VERSION).tar.gz
 	mv openssl-$(OPENSSL_VERSION) openssl
 	touch $@
 
-openssl-src: openssl.src.stamp
-
 OPENSSL_ARCHITECTURE:=[OPENSSL_ARCHITECTURE]
 
 openssl/Makefile: openssl.src.stamp
@@ -205,8 +199,6 @@ gmp.src.stamp: ../downloads/gmp-$(GMP_VERSION).tar.bz2
 	tar xvf $<
 	mv gmp-$(GMP_VERSION) gmp
 	touch $@
-
-gmp-src: gmp.src.stamp
 
 gmp/Makefile: gmp.src.stamp
 	cd gmp && \
@@ -238,8 +230,6 @@ nettle.src.stamp: ../downloads/nettle-$(NETTLE_VERSION)-patched.tar.gz $(LOCAL)/
 	tar xvf $<
 	mv nettle-$(NETTLE_VERSION) nettle
 	touch $@
-
-nettle-src: nettle.src.stamp
 
 nettle/Makefile: nettle.src.stamp gmp-install
 	cd nettle && \
@@ -361,3 +351,10 @@ clean-all: clean
 	assets \
     $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN)\
 	showsetup
+
+#------------------------------------------------------------------------------#
+
+.SECONDEXPANSION:
+# src
+%-src: %.src.stamp
+	@echo $<
