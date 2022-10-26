@@ -23,7 +23,7 @@ download-iconv: libiconv-1.15.tar.gz
 download-uuid: ossp-uuid_1.6.2.orig.tar.gz
 
 download-sequoia-deps: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSION).tar.bz2 \
-						nettle-$(NETTLE_VERSION).tar.gz
+						nettle-$(NETTLE_VERSION)-patched.tar.gz
 
 download-etpan: libetpan.git.stamp
 
@@ -44,6 +44,12 @@ openssl-$(OPENSSL_VERSION).tar.gz:
 gmp-$(GMP_VERSION).tar.bz2:
 	wget -nc https://gmplib.org/download/gmp/gmp-$(GMP_VERSION).tar.bz2
 	md5sum -c gmp-$(GMP_VERSION).tar.bz2.md5
+
+nettle-$(NETTLE_VERSION)-patched.tar.gz: nettle-$(NETTLE_VERSION).tar.gz
+	tar -xvf $<
+	-patch -N -p1 --reject-file=- nettle-$(NETTLE_VERSION)/configure.ac  ../nettle-3.4.1-remove-so-versioning.patch
+	-patch -N -p1 --reject-file=- nettle-$(NETTLE_VERSION)/Makefile.in  ../nettle-3.4.1-remove-so-versioning-link.patch
+	tar -czvf $@ nettle-$(NETTLE_VERSION)
 
 nettle-$(NETTLE_VERSION).tar.gz:
 	wget -nc https://ftp.gnu.org/gnu/nettle/nettle-$(NETTLE_VERSION).tar.gz
