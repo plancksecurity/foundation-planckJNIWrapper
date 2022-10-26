@@ -25,31 +25,47 @@ build: all
 
 all: build-arm build-arm64 build-x86 build-x86_64
 
-build-arm: downloads/downloads.stamp
+build-arm: armeabi-v7a/Makefile
 	$(MAKE) -C armeabi-v7a
 
-build-arm64: downloads/downloads.stamp
+armeabi-v7a/Makefile: downloads/downloads.stamp
+	sh createMakefile.sh armeabi-v7a
+
+build-arm64: arm64-v8a/Makefile
 	$(MAKE) -C arm64-v8a
 
-build-x86: downloads/downloads.stamp
+arm64-v8a/Makefile: downloads/downloads.stamp
+	sh createMakefile.sh arm64-v8a
+
+build-x86: x86/Makefile
 	$(MAKE) -C x86
 
-build-x86_64: downloads/downloads.stamp
+x86/Makefile: downloads/downloads.stamp
+	sh createMakefile.sh x86
+
+build-x86_64: x86_64/Makefile
 	$(MAKE) -C x86_64
 
+x86_64/Makefile: downloads/downloads.stamp
+	sh createMakefile.sh x86_64
+
 clean:
-	$(MAKE) -C armeabi-v7a clean
-	$(MAKE) -C arm64-v8a clean
-	$(MAKE) -C x86 clean
-	$(MAKE) -C x86_64 clean
+	-$(MAKE) -C armeabi-v7a clean
+	-$(MAKE) -C arm64-v8a clean
+	-$(MAKE) -C x86 clean
+	-$(MAKE) -C x86_64 clean
 
 clean-all:
 	$(MAKE) -C downloads clean
-	$(MAKE) -C armeabi-v7a clean-all
-	$(MAKE) -C arm64-v8a clean-all
-	$(MAKE) -C x86 clean-all
-	$(MAKE) -C x86_64 clean-all
 	rm -rf build
+	-$(MAKE) -C armeabi-v7a clean-all
+	-$(MAKE) -C arm64-v8a clean-all
+	-$(MAKE) -C x86 clean-all
+	-$(MAKE) -C x86_64 clean-all
+	rm -f arm64-v8a/Makefile
+	rm -f armeabi-v7a/Makefile
+	rm -f x86/Makefile
+	rm -f x86_64/Makefile
 
 downloads/downloads.stamp:
 	$(MAKE) -C downloads
