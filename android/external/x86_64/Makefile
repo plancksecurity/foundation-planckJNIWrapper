@@ -132,7 +132,7 @@ libetpan-clean:
 #------------------------------------------------------------------------------#
 # uuid
 
-uuid.src.stamp: ../downloads/ossp-uuid_1.6.2.orig.tar.gz
+uuid.src.stamp: ../downloads/ossp-uuid_1.6.2.orig-patched.tar.gz
 	tar xvf $<
 	mv uuid-1.6.2 uuid
 	touch $@
@@ -146,7 +146,6 @@ uuid-clean:
 uuid/Makefile: uuid.src.stamp
 	$(SED) -i 's,AC_CHECK_VA_COPY(),,' uuid/uuid.ac
 	cd uuid && autoconf
-	-patch -N -p1 --reject-file=- uuid/libtool.m4 ../libtool-Add-Android-Linux-support-iconv.patch
 	cp ../config.sub uuid
 	cp ../config.guess uuid
 	cd uuid && \

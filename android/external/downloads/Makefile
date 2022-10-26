@@ -20,7 +20,7 @@ downloads.stamp: download-iconv download-uuid download-sequoia-deps download-etp
 
 download-iconv: libiconv-1.15.tar.gz
 
-download-uuid: ossp-uuid_1.6.2.orig.tar.gz
+download-uuid: ossp-uuid_1.6.2.orig-patched.tar.gz
 
 download-sequoia-deps: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSION).tar.bz2 \
 						nettle-$(NETTLE_VERSION)-patched.tar.gz
@@ -32,6 +32,11 @@ download-sequoia: sequoia.git.stamp
 # Download source and patch it
 libiconv-1.15.tar.gz:
 	wget https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.15.tar.gz
+
+ossp-uuid_1.6.2.orig-patched.tar.gz: ossp-uuid_1.6.2.orig.tar.gz
+	tar -xvf $<
+	-patch -N -p1 --reject-file=- uuid-1.6.2/libtool.m4 ../libtool-Add-Android-Linux-support-iconv.patch
+	tar -czvf $@ uuid-1.6.2
 
 ossp-uuid_1.6.2.orig.tar.gz:
 	wget http://http.debian.net/debian/pool/main/o/ossp-uuid/ossp-uuid_1.6.2.orig.tar.gz
