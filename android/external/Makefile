@@ -55,17 +55,13 @@ clean:
 	-$(MAKE) -C x86 clean
 	-$(MAKE) -C x86_64 clean
 
-clean-all:
+clean-all: clean
 	$(MAKE) -C downloads clean
 	rm -rf build
-	-$(MAKE) -C armeabi-v7a clean-all
-	-$(MAKE) -C arm64-v8a clean-all
-	-$(MAKE) -C x86 clean-all
-	-$(MAKE) -C x86_64 clean-all
-	rm -f arm64-v8a/Makefile
-	rm -f armeabi-v7a/Makefile
-	rm -f x86/Makefile
-	rm -f x86_64/Makefile
+	rm -rf arm64-v8a
+	rm -rf armeabi-v7a
+	rm -rf x86
+	rm -rf x86_64
 
 downloads/downloads.stamp:
 	$(MAKE) -C downloads
