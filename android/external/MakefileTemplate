@@ -32,18 +32,17 @@ LOCAL := $(DESTDIR)$(prefix)
 
 PATH := ${PATH}:$(NDK_TOOLCHAIN)/bin:$(LOCAL)/bin
 
-NDK_SYSROOT=$(ANDROID_NDK_HOME)/sysroot
-
 HOST = [HOST]
 NDK_TOOLCHAIN = $([NDK_TOOLCHAIN_TARGET])-$(NDK_TOOLCHAIN_COMPILER)
+COMPILER_PREFIX = [COMPILER_PREFIX]
 
 # include Android's build flags
 TARGET_ARCH_ABI = $(APP_ABI)
 include $(ANDROID_NDK)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 
-CC := $(ANDROID_NDK_HOME)/bin/$(HOST)[EXTRA_FLAGS_API]-clang
-CXX := $(ANDROID_NDK_HOME)/bin/$(HOST)[EXTRA_FLAGS_API]-clang++
-AS := $(ANDROID_NDK_HOME)/bin/$(HOST)[EXTRA_FLAGS_API]-clang
+CC := $(ANDROID_NDK_HOME)/bin/$(COMPILER_PREFIX)$(ANDROID_API)-clang
+CXX := $(ANDROID_NDK_HOME)/bin/$(COMPILER_PREFIX)$(ANDROID_API)-clang++
+AS := $(CC)
 
 CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC -std=c99
 LDFLAGS += -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie
@@ -65,9 +64,9 @@ export ac_cv_func_malloc_0_nonnull=yes
 
 showsetup:
 	@echo "NDK_TOOLCHAIN: $(NDK_TOOLCHAIN)"
-	@echo "NDK_SYSROOT: $(NDK_SYSROOT)"
 	@echo "APP_ABI: $(APP_ABI)"
 	@echo "HOST: $(HOST)"
+	@echo "COMPILER_PREFIX: $(COMPILER_PREFIX)"
 	@echo "CC: $(CC)"
 	@echo "LD: $(LD)"
 	@echo "CFLAGS: $(CFLAGS)"
