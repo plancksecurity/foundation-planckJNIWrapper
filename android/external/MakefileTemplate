@@ -35,6 +35,7 @@ PATH := ${PATH}:$(NDK_TOOLCHAIN)/bin:$(LOCAL)/bin
 HOST = [HOST]
 NDK_TOOLCHAIN = $([NDK_TOOLCHAIN_TARGET])-$(NDK_TOOLCHAIN_COMPILER)
 COMPILER_PREFIX = [COMPILER_PREFIX]
+SEQUOIA_ARCH = [SEQUOIA_ARCH]
 
 # include Android's build flags
 TARGET_ARCH_ABI = $(APP_ABI)
@@ -274,7 +275,7 @@ sequoia-ffi-clean:
 	rm -rf sequoia
 	rm -rf sequoia.src.stamp
 
-$(CARGO_TARGET_DIR)/[SEQUOIA_ARCH]/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp sequoia-deps-build
+$(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp sequoia-deps-build
 	cd sequoia && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
 	CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
@@ -283,14 +284,14 @@ $(CARGO_TARGET_DIR)/[SEQUOIA_ARCH]/release/libsequoia_openpgp_ffi.so:  sequoia.s
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_LIB_DIR="$(LOCAL)/lib" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_INCLUDE_DIR="$(LOCAL)/include" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR="$(LOCAL)/bin" \
-	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target [SEQUOIA_ARCH] -p sequoia-openpgp-ffi --release
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target $(SEQUOIA_ARCH) -p sequoia-openpgp-ffi --release
 
-$(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/[SEQUOIA_ARCH]/release/libsequoia_openpgp_ffi.so
-	cp $(CARGO_TARGET_DIR)/[SEQUOIA_ARCH]/release/libsequoia_openpgp_ffi.* $(LOCAL)/lib/
+$(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so
+	cp $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.* $(LOCAL)/lib/
 	cp -r sequoia/openpgp-ffi/include/* $(LOCAL)/include
 
 
-sequoia-ffi-build: $(CARGO_TARGET_DIR)/[SEQUOIA_ARCH]/release/libsequoia_openpgp_ffi.so
+sequoia-ffi-build: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so
 
 sequoia-ffi-install: sequoia-deps-build $(LOCAL)/lib/libsequoia_openpgp_ffi.so
 
