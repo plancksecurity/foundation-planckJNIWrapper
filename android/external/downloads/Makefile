@@ -37,6 +37,7 @@ ossp-uuid_1.6.2.orig-patched.tar.gz: ossp-uuid_1.6.2.orig.tar.gz
 	tar -xvf $<
 	-patch -N -p1 --reject-file=- uuid-1.6.2/libtool.m4 ../libtool-Add-Android-Linux-support-iconv.patch
 	tar -czvf $@ uuid-1.6.2
+	rm -rf uuid-1.6.2
 
 ossp-uuid_1.6.2.orig.tar.gz:
 	wget http://http.debian.net/debian/pool/main/o/ossp-uuid/ossp-uuid_1.6.2.orig.tar.gz
@@ -55,6 +56,7 @@ nettle-$(NETTLE_VERSION)-patched.tar.gz: nettle-$(NETTLE_VERSION).tar.gz
 	-patch -N -p1 --reject-file=- nettle-$(NETTLE_VERSION)/configure.ac  ../nettle-3.4.1-remove-so-versioning.patch
 	-patch -N -p1 --reject-file=- nettle-$(NETTLE_VERSION)/Makefile.in  ../nettle-3.4.1-remove-so-versioning-link.patch
 	tar -czvf $@ nettle-$(NETTLE_VERSION)
+	rm -rf nettle-$(NETTLE_VERSION)
 
 nettle-$(NETTLE_VERSION).tar.gz:
 	wget -nc https://ftp.gnu.org/gnu/nettle/nettle-$(NETTLE_VERSION).tar.gz
