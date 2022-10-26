@@ -257,7 +257,7 @@ gmp-install: $(LOCAL)/lib/libgmp.so
 #------------------------------------------------------------------------------#
 # NETTLE
 
-nettle.src.stamp: ../downloads/nettle-$(NETTLE_VERSION).tar.gz $(LOCAL)/lib/libgmp.so
+nettle.src.stamp: ../downloads/nettle-$(NETTLE_VERSION)-patched.tar.gz $(LOCAL)/lib/libgmp.so
 	tar xvf $<
 	mv nettle-$(NETTLE_VERSION) nettle
 	touch $@
@@ -269,8 +269,6 @@ nettle-clean:
 	rm -rf nettle.src.stamp
 
 nettle/Makefile: nettle.src.stamp
-	-patch -N -p1 --reject-file=- nettle/configure.ac  ../nettle-3.4.1-remove-so-versioning.patch
-	-patch -N -p1 --reject-file=- nettle/Makefile.in  ../nettle-3.4.1-remove-so-versioning-link.patch
 	cd nettle && \
 		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
