@@ -21,7 +21,7 @@ endif
 
 .PHONY: all build clean clean-all build-arm build-arm64 build-x86 build-x86_64
 
-build: all
+build: $(if $(archs),$(foreach wrd, $(archs), build-$(wrd)), all)
 
 all: build-arm build-arm64 build-x86 build-x86_64
 
