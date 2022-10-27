@@ -3,6 +3,8 @@
 # This file may be used under the terms of the GNU General Public License version 3
 # see LICENSE.txt
 
+include ../Makefile.conf
+
 # Build parameters
 APP_ABI ?= [ARCH]
 HOST ?= [HOST]
@@ -11,7 +13,8 @@ SEQUOIA_ARCH ?= [SEQUOIA_ARCH]
 OPENSSL_ARCHITECTURE ?= [OPENSSL_ARCHITECTURE]
 COMPILER_PREFIX ?= [COMPILER_PREFIX]
 
-include ../Makefile.conf
+# This include is dependent on the *build parameters* defined above and needs to be declared after them
+include ../PerArchMakefile.conf
 
 #------------------------------------------------------------------------------#
 # Makefile to build deps for use with pEpEngine
