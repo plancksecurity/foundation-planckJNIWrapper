@@ -49,10 +49,12 @@ export ac_cv_func_malloc_0_nonnull=yes
 # debugging stuff
 
 showsetup:
+	@echo "============================================== CURRENT SETUP ===================================================="
 	@echo "NDK_TOOLCHAIN: $(NDK_TOOLCHAIN)"
 	@echo "NDK_TOOLCHAIN_COMPILER: $(NDK_TOOLCHAIN_COMPILER)"
 	@echo "NDK_TOOLCHAIN_TARGET: $(NDK_TOOLCHAIN_TARGET)"
 	@echo "TEMP_WORK_PATH: $(TEMP_WORK_PATH)"
+	@echo "LOCAL: $(LOCAL)"
 	@echo "APP_ABI: $(APP_ABI)"
 	@echo "HOST: $(HOST)"
 	@echo "SEQUOIA_ARCH: $(SEQUOIA_ARCH)"
@@ -64,6 +66,7 @@ showsetup:
 	@echo "RANLIB: $(RANLIB)"
 	@echo "CFLAGS: $(CFLAGS)"
 	@echo "LDFLAGS: $(LDFLAGS)"
+	@echo "============================================== CURRENT SETUP END ===================================================="
 
 #------------------------------------------------------------------------------#
 # libiconv
