@@ -82,10 +82,6 @@ libiconv.src.stamp: ../downloads/libiconv-1.15.tar.gz
 
 libiconv-src: libiconv.src.stamp
 
-libiconv-clean:
-	rm -rf libiconv
-	rm -rf libiconv.src.stamp
-
 libiconv/Makefile: libiconv.src.stamp
 	cd libiconv && \
 		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
@@ -123,10 +119,6 @@ libetpan/Makefile: libetpan.src.stamp | libiconv-install
 
 libetpan-build: libetpan/Makefile
 
-libetpan-clean:
-	rm -rf libetpan
-	rm -rf libetpan.src.stamp
-
 #------------------------------------------------------------------------------#
 # uuid
 
@@ -136,10 +128,6 @@ uuid.src.stamp: ../downloads/ossp-uuid_1.6.2.orig-patched.tar.gz
 	touch $@
 
 uuid-src: uuid.src.stamp
-
-uuid-clean:
-	rm -rf uuid
-	rm -rf uuid.src.stamp
 
 uuid/Makefile: uuid.src.stamp
 	$(SED) -i 's,AC_CHECK_VA_COPY(),,' uuid/uuid.ac
@@ -189,10 +177,6 @@ openssl.src.stamp: ../downloads/openssl-$(OPENSSL_VERSION).tar.gz
 
 openssl-src: openssl.src.stamp
 
-openssl-clean:
-	rm -rf openssl
-	rm -rf openssl.src.stamp
-
 OPENSSL_ARCHITECTURE:=[OPENSSL_ARCHITECTURE]
 
 openssl/Makefile: openssl.src.stamp
@@ -223,10 +207,6 @@ gmp.src.stamp: ../downloads/gmp-$(GMP_VERSION).tar.bz2
 	touch $@
 
 gmp-src: gmp.src.stamp
-
-gmp-clean:
-	rm -rf gmp
-	rm -rf gmp.src.stamp
 
 gmp/Makefile: gmp.src.stamp
 	cd gmp && \
@@ -260,10 +240,6 @@ nettle.src.stamp: ../downloads/nettle-$(NETTLE_VERSION)-patched.tar.gz $(LOCAL)/
 	touch $@
 
 nettle-src: nettle.src.stamp
-
-nettle-clean:
-	rm -rf nettle
-	rm -rf nettle.src.stamp
 
 nettle/Makefile: nettle.src.stamp gmp-install
 	cd nettle && \
@@ -356,6 +332,9 @@ sequoia-ffi-install: sequoia-deps-build $(LOCAL)/lib/libsequoia_openpgp_ffi.so
 
 #------------------------------------------------------------------------------#
 # clean
+%-clean:
+	rm -rf $*
+	rm -rf $*.src.stamp
 
 clean-assets:
 	rm -rf $(ASSETS)
