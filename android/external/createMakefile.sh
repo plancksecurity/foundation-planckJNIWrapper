@@ -13,7 +13,6 @@ FILE_DEST=$ARCH_DEST/Makefile
 
 case $ARCH_DEST in
  	x86)
- 		ANDROID_API=18
  		HOST=i686-linux-android
  		COMPILER_PREFIX="$HOST"
  		NDK_TOOLCHAIN_TARGET="$ARCH_DEST"
@@ -22,7 +21,6 @@ case $ARCH_DEST in
  		SEQUOIA_ARCH=i686-linux-android
  	;;
  	x86_64)
- 		ANDROID_API=21
  		HOST=x86_64-linux-android
  		COMPILER_PREFIX="$HOST"
  		NDK_TOOLCHAIN_TARGET="$ARCH_DEST"
@@ -31,7 +29,6 @@ case $ARCH_DEST in
  		SEQUOIA_ARCH=x86_64-linux-android
  	;;
  	armeabi-v7a)
- 		ANDROID_API=18
  		HOST=arm-linux-androideabi
  		COMPILER_PREFIX=armv7a-linux-androideabi
  		NDK_TOOLCHAIN_TARGET="$HOST"
@@ -40,7 +37,6 @@ case $ARCH_DEST in
  		SEQUOIA_ARCH=armv7-linux-androideabi
  	;;
  	arm64-v8a)
- 		ANDROID_API=21
  		HOST=aarch64-linux-android
  		COMPILER_PREFIX="$HOST"
  		NDK_TOOLCHAIN_TARGET="$HOST"
@@ -70,7 +66,6 @@ esac
 ################################################################################
 
 $SED -i 's/\[ARCH\]/'"$ARCH_DEST"'/g' "$FILE_DEST"
-$SED -i 's/\[ANDROID_API\]/'"$ANDROID_API"'/g' "$FILE_DEST"
 $SED -i 's/\[HOST\]/'"$HOST"'/g' "$FILE_DEST"
 $SED -i 's@\[COMPILER_PREFIX\]@'"$COMPILER_PREFIX"'@g' "$FILE_DEST"
 $SED -i 's@\[NDK_TOOLCHAIN_TARGET\]@'"$NDK_TOOLCHAIN_TARGET"'@g' "$FILE_DEST"
