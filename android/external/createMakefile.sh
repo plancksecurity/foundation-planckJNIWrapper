@@ -16,7 +16,7 @@ case $ARCH_DEST in
  		ANDROID_API=18
  		HOST=i686-linux-android
  		COMPILER_PREFIX="$HOST"
- 		NDK_TOOLCHAIN_TARGET="APP_ABI"
+ 		NDK_TOOLCHAIN_TARGET="$ARCH_DEST"
  		ARCH_DEBUG_CFLAGS=TARGET_x86_debug_CFLAGS
  		OPENSSL_ARCHITECTURE=android-x86
  		SEQUOIA_ARCH=i686-linux-android
@@ -25,7 +25,7 @@ case $ARCH_DEST in
  		ANDROID_API=21
  		HOST=x86_64-linux-android
  		COMPILER_PREFIX="$HOST"
- 		NDK_TOOLCHAIN_TARGET="APP_ABI"
+ 		NDK_TOOLCHAIN_TARGET="$ARCH_DEST"
  		ARCH_DEBUG_CFLAGS=TARGET_x86_64_debug_CFLAGS
  		OPENSSL_ARCHITECTURE=android-x86_64
  		SEQUOIA_ARCH=x86_64-linux-android
@@ -34,7 +34,7 @@ case $ARCH_DEST in
  		ANDROID_API=18
  		HOST=arm-linux-androideabi
  		COMPILER_PREFIX=armv7a-linux-androideabi
- 		NDK_TOOLCHAIN_TARGET="HOST"
+ 		NDK_TOOLCHAIN_TARGET="$HOST"
  		ARCH_DEBUG_CFLAGS=TARGET_arm_debug_CFLAGS
  		OPENSSL_ARCHITECTURE=android-arm
  		SEQUOIA_ARCH=armv7-linux-androideabi
@@ -43,13 +43,20 @@ case $ARCH_DEST in
  		ANDROID_API=21
  		HOST=aarch64-linux-android
  		COMPILER_PREFIX="$HOST"
- 		NDK_TOOLCHAIN_TARGET="HOST"
+ 		NDK_TOOLCHAIN_TARGET="$HOST"
  		ARCH_DEBUG_CFLAGS=TARGET_arm64_debug_CFLAGS
  		OPENSSL_ARCHITECTURE=android-arm64
  		GMP_MAKEFILE_EXTRA=' MPN_PATH=\"arm64 generic\"'
  		SEQUOIA_ARCH=aarch64-linux-android
  	;;
  esac
+
+prefix="/output/$ARCH_DEST"
+CC="\$(ANDROID_NDK_HOME)/bin/$COMPILER_PREFIX$ANDROID_API-clang"
+CXX="\$(ANDROID_NDK_HOME)/bin/$COMPILER_PREFIX$ANDROID_API-clang++"
+NDK_TOOLCHAIN="$NDK_TOOLCHAIN_TARGET-\$(NDK_TOOLCHAIN_COMPILER)"
+CFLAGS="-DANDROID -I\$(LOCAL)/include \$(TARGET_CFLAGS) -fPIE -fPIC -std=c99 \$($ARCH_DEBUG_CFLAGS)" # change 'release' to 'debug' for unoptimized debug builds
+LDFLAGS="-llog -L\$(LOCAL)/lib \$(TARGET_LDFLAGS) -pie"
 
 ################################################################################
 #                                Select GNU SED                                #
@@ -72,11 +79,15 @@ esac
 $SED -i 's/\[ARCH\]/'"$ARCH_DEST"'/g' "$FILE_DEST"
 $SED -i 's/\[ANDROID_API\]/'"$ANDROID_API"'/g' "$FILE_DEST"
 $SED -i 's/\[HOST\]/'"$HOST"'/g' "$FILE_DEST"
-$SED -i 's/\[COMPILER_PREFIX\]/'"$COMPILER_PREFIX"'/g' "$FILE_DEST"
-$SED -i 's/\[NDK_TOOLCHAIN_TARGET\]/'"$NDK_TOOLCHAIN_TARGET"'/g' "$FILE_DEST"
+$SED -i 's@\[prefix\]@'"$prefix"'@g' "$FILE_DEST"
+$SED -i 's@\[NDK_TOOLCHAIN\]@'"$NDK_TOOLCHAIN"'@g' "$FILE_DEST"
 $SED -i 's/\[ARCH_DEBUG_CFLAGS\]/'"$ARCH_DEBUG_CFLAGS"'/g' "$FILE_DEST"
 $SED -i 's/\[OPENSSL_ARCHITECTURE\]/'"$OPENSSL_ARCHITECTURE"'/g' "$FILE_DEST"
 $SED -i 's/\[GMP_MAKEFILE_EXTRA\]/'"$GMP_MAKEFILE_EXTRA"'/g' "$FILE_DEST"
 $SED -i 's/\[SEQUOIA_ARCH\]/'"$SEQUOIA_ARCH"'/g' "$FILE_DEST"
+$SED -i 's@\[CC\]@'"$CC"'@g' "$FILE_DEST"
+$SED -i 's@\[CXX\]@'"$CXX"'@g' "$FILE_DEST"
+$SED -i 's@\[CFLAGS\]@'"$CFLAGS"'@g' "$FILE_DEST"
+$SED -i 's@\[LDFLAGS\]@'"$LDFLAGS"'@g' "$FILE_DEST"
 
 cat "$FILE_DEST"

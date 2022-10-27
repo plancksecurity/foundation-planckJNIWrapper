@@ -21,35 +21,27 @@ all: build
 build: showsetup uuid-install sequoia-ffi-install libetpan-build
 
 #------------------------------------------------------------------------------#
-# Manage paths for PREFIX, DESTDIR, LOCAL and PATH
+# Manage paths for PREFIX, LOCAL and PATH
 
-EXTERNAL_ROOT := $(shell pwd)
-
-# install root for built files
-DESTDIR = $(EXTERNAL_ROOT)/..
-prefix = /output/$(APP_ABI)
+prefix := [prefix]
 LOCAL := $(DESTDIR)$(prefix)
 
 PATH := ${PATH}:$(NDK_TOOLCHAIN)/bin:$(LOCAL)/bin
 
 HOST = [HOST]
-NDK_TOOLCHAIN = $([NDK_TOOLCHAIN_TARGET])-$(NDK_TOOLCHAIN_COMPILER)
-COMPILER_PREFIX = [COMPILER_PREFIX]
+NDK_TOOLCHAIN := [NDK_TOOLCHAIN]
 SEQUOIA_ARCH = [SEQUOIA_ARCH]
+OPENSSL_ARCHITECTURE:=[OPENSSL_ARCHITECTURE]
 
 # include Android's build flags
-TARGET_ARCH_ABI = $(APP_ABI)
 include $(ANDROID_NDK)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 
-CC := $(ANDROID_NDK_HOME)/bin/$(COMPILER_PREFIX)$(ANDROID_API)-clang
-CXX := $(ANDROID_NDK_HOME)/bin/$(COMPILER_PREFIX)$(ANDROID_API)-clang++
+CC := [CC]
+CXX := [CXX]
 AS := $(CC)
 
-CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC -std=c99
-LDFLAGS += -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie
-
-# change 'release' to 'debug' for unoptimized debug builds
-CFLAGS += $([ARCH_DEBUG_CFLAGS])
+CFLAGS += [CFLAGS]
+LDFLAGS += [LDFLAGS]
 
 #------------------------------------------------------------------------------#
 # GNU Tools trickery
@@ -65,11 +57,16 @@ export ac_cv_func_malloc_0_nonnull=yes
 
 showsetup:
 	@echo "NDK_TOOLCHAIN: $(NDK_TOOLCHAIN)"
+	@echo "NDK_TOOLCHAIN_COMPILER: $(NDK_TOOLCHAIN_COMPILER)"
 	@echo "APP_ABI: $(APP_ABI)"
 	@echo "HOST: $(HOST)"
-	@echo "COMPILER_PREFIX: $(COMPILER_PREFIX)"
+	@echo "SEQUOIA_ARCH: $(SEQUOIA_ARCH)"
 	@echo "CC: $(CC)"
 	@echo "LD: $(LD)"
+	@echo "AR: $(AR)"
+	@echo "AS: $(AS)"
+	@echo "STRIP: $(STRIP)"
+	@echo "RANLIB: $(RANLIB)"
 	@echo "CFLAGS: $(CFLAGS)"
 	@echo "LDFLAGS: $(LDFLAGS)"
 
@@ -171,8 +168,6 @@ openssl.src.stamp: ../downloads/openssl-$(OPENSSL_VERSION).tar.gz
 	tar xvf $<
 	mv openssl-$(OPENSSL_VERSION) openssl
 	touch $@
-
-OPENSSL_ARCHITECTURE:=[OPENSSL_ARCHITECTURE]
 
 openssl/Makefile: openssl.src.stamp
 	cd openssl && \
