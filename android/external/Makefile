@@ -67,3 +67,19 @@ downloads/downloads.stamp:
 	$(MAKE) -C downloads
 
 assets:
+
+showAllSetups: showx86Setup showx86_64Setup showArmSetup showArm64Setup
+
+showx86Setup:
+	$(MAKE) -C x86 showsetup
+
+showx86_64Setup:
+	$(MAKE) -C x86_64 showsetup
+
+showArmSetup:
+	$(MAKE) -C armeabi-v7a showsetup
+
+showArm64Setup:
+	$(MAKE) -C arm64-v8a showsetup
+
+createMakefiles: armeabi-v7a/Makefile arm64-v8a/Makefile x86/Makefile x86_64/Makefile
