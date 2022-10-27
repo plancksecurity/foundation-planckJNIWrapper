@@ -3,6 +3,15 @@
 # This file may be used under the terms of the GNU General Public License version 3
 # see LICENSE.txt
 
+# Build parameters
+APP_ABI ?= [ARCH]
+ANDROID_API ?= [ANDROID_API]
+HOST ?= [HOST]
+NDK_TOOLCHAIN_TARGET ?= [NDK_TOOLCHAIN_TARGET]
+SEQUOIA_ARCH ?= [SEQUOIA_ARCH]
+OPENSSL_ARCHITECTURE ?= [OPENSSL_ARCHITECTURE]
+COMPILER_PREFIX ?= [COMPILER_PREFIX]
+
 include ../Makefile.conf
 
 #------------------------------------------------------------------------------#
@@ -11,10 +20,6 @@ include ../Makefile.conf
 #------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
-# Build parameters
-
-APP_ABI ?= [ARCH]
-ANDROID_API ?= [ANDROID_API]
 
 all: build
 
@@ -23,25 +28,11 @@ build: showsetup uuid-prebuild sequoia-ffi-install libetpan-build
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, LOCAL and PATH
 
-prefix := [prefix]
-LOCAL := $(DESTDIR)$(prefix)
-
-PATH := ${PATH}:$(NDK_TOOLCHAIN)/bin:$(LOCAL)/bin
-
-HOST = [HOST]
-NDK_TOOLCHAIN := [NDK_TOOLCHAIN]
-SEQUOIA_ARCH = [SEQUOIA_ARCH]
-OPENSSL_ARCHITECTURE:=[OPENSSL_ARCHITECTURE]
-
 # include Android's build flags
 include $(ANDROID_NDK)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 
-CC := [CC]
-CXX := [CXX]
-AS := $(CC)
-
-CFLAGS += [CFLAGS]
-LDFLAGS += [LDFLAGS]
+CFLAGS += $(MYCFLAGS)
+LDFLAGS += $(MYLDFLAGS)
 
 #------------------------------------------------------------------------------#
 # GNU Tools trickery
@@ -58,6 +49,8 @@ export ac_cv_func_malloc_0_nonnull=yes
 showsetup:
 	@echo "NDK_TOOLCHAIN: $(NDK_TOOLCHAIN)"
 	@echo "NDK_TOOLCHAIN_COMPILER: $(NDK_TOOLCHAIN_COMPILER)"
+	@echo "NDK_TOOLCHAIN_TARGET: $(NDK_TOOLCHAIN_TARGET)"
+	@echo "TEMP_WORK_PATH: $(TEMP_WORK_PATH)"
 	@echo "APP_ABI: $(APP_ABI)"
 	@echo "HOST: $(HOST)"
 	@echo "SEQUOIA_ARCH: $(SEQUOIA_ARCH)"
@@ -166,9 +159,9 @@ openssl.src.stamp: ../downloads/openssl-$(OPENSSL_VERSION).tar.gz
 
 openssl/Makefile: openssl.src.stamp
 	cd openssl && \
-	     PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" ../../configure_openssl.sh ${OPENSSL_ARCHITECTURE} $(ANDROID_API) $(LOCAL)
+	    PATH=$(TEMP_WORK_PATH) ../../configure_openssl.sh ${OPENSSL_ARCHITECTURE} $(ANDROID_API) $(LOCAL)
 openssl/libssl.so: | openssl/Makefile
-	PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" $(MAKE) -C openssl
+	PATH=$(TEMP_WORK_PATH) $(MAKE) -C openssl
 
 $(LOCAL)/lib/libssl.so: openssl/libssl.so
 	mkdir -p $(LOCAL)/lib && cd openssl && \
@@ -266,7 +259,7 @@ sequoia-ffi-clean:
 	rm -rf sequoia.src.stamp
 
 $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp sequoia-deps-build
-	cd sequoia && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
+	cd sequoia && PATH=$(TEMP_WORK_PATH) \
 	CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
 	PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig \
