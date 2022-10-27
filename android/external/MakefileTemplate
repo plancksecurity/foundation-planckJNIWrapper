@@ -18,7 +18,7 @@ ANDROID_API ?= [ANDROID_API]
 
 all: build
 
-build: showsetup uuid-install sequoia-ffi-install libetpan-build
+build: showsetup uuid-prebuild sequoia-ffi-install libetpan-build
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, LOCAL and PATH
@@ -139,17 +139,12 @@ uuid/Makefile: uuid.src.stamp
 uuid/.libs/libuuid.so: uuid/Makefile
 	$(MAKE) -C uuid
 
-$(LOCAL)/lib/libuuid.so: uuid/.libs/libuuid.so
-	# install fails copying uuid cmdline tool, but libs are copied ...
-	-$(MAKE) -C uuid DESTDIR=$(DESTDIR) prefix=$(prefix) install
-	echo "****** THIS ERROR WAS WILLINGLY IGNORED ******"
-	ls -l $(LOCAL)/lib/libuuid.so
-
 uuid-build: uuid/.libs/libuuid.so
 
-uuid-prebuild: uuid/jni/Android.mk uuid/Makefile
+$(LOCAL)/include/uuid.h: uuid/Makefile
+	mkdir -p $(LOCAL)/include && cd uuid && cp uuid.h $(LOCAL)/include
 
-uuid-install: $(LOCAL)/lib/libuuid.so | uuid-prebuild
+uuid-prebuild: uuid/jni/Android.mk $(LOCAL)/include/uuid.h
 
 uuid/jni/Android.mk: uuid.src.stamp
 	mkdir -p uuid/jni
@@ -176,7 +171,7 @@ openssl/libssl.so: | openssl/Makefile
 	PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" $(MAKE) -C openssl
 
 $(LOCAL)/lib/libssl.so: openssl/libssl.so
-	cd openssl && \
+	mkdir -p $(LOCAL)/lib && cd openssl && \
 		cp libcrypto.so $(LOCAL)/lib && \
 		cp libcrypto.a $(LOCAL)/lib && \
 		cp libssl.so $(LOCAL)/lib && \
@@ -338,7 +333,7 @@ clean-all: clean
 .PHONY = clean clean-install clean-assets libetpan-clean \
 	libiconv-build libiconv-install \
 	libetpan-build \
-	uuid-build uuid-prebuild uuid-install \
+	uuid-build uuid-prebuild \
 	gmp-build  gmp-install \
 	sequoia-deps-build \
 	openssl-build  openssl-install \
