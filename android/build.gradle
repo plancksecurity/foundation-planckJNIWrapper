@@ -81,7 +81,7 @@ android {
             jniDebuggable true
             externalNativeBuild {
                 ndkBuild {
-                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null'
+                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null', '--output-sync=none'
                    // arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1'
                 }
             }
