@@ -105,7 +105,7 @@ libetpan.src.stamp: ../downloads/libetpan.tar.gz
 	cd libetpan && tar xvf ../$<
 	touch $@
 
-libetpan/Makefile: libetpan.src.stamp | libiconv-install
+libetpan/Makefile: libetpan.src.stamp | $(LOCAL)/lib/libiconv.a
 	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh $(APP_ABI)
 	cp -r libetpan/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/$(APP_ABI)/lib/* $(LOCAL)/lib/
 	cp -r libetpan/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/include/* $(LOCAL)/include/
@@ -152,7 +152,7 @@ uuid/jni/Android.mk: uuid.src.stamp
 #------------------------------------------------------------------------------#
 # Sequoia
 
-sequoia-deps-build: openssl-install nettle-install
+sequoia-deps-build: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so
 
 #------------------------------------------------------------------------------#
 # OpenSSL
@@ -220,7 +220,7 @@ nettle.src.stamp: ../downloads/nettle-$(NETTLE_VERSION)-patched.tar.gz $(LOCAL)/
 	mv nettle-$(NETTLE_VERSION) nettle
 	touch $@
 
-nettle/Makefile: nettle.src.stamp gmp-install
+nettle/Makefile: nettle.src.stamp $(LOCAL)/lib/libgmp.so
 	cd nettle && \
 		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
@@ -263,7 +263,7 @@ sequoia-ffi-clean:
 	rm -rf sequoia
 	rm -rf sequoia.src.stamp
 
-$(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp sequoia-deps-build
+$(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so
 	cd sequoia && PATH=$(TEMP_WORK_PATH) \
 	CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
@@ -281,7 +281,7 @@ $(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/rele
 
 sequoia-ffi-build: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so
 
-sequoia-ffi-install: sequoia-deps-build $(LOCAL)/lib/libsequoia_openpgp_ffi.so
+sequoia-ffi-install: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libsequoia_openpgp_ffi.so
 
 #------------------------------------------------------------------------------#
 # assets for Android app
