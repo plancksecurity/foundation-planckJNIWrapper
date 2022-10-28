@@ -2,6 +2,7 @@ LOCAL_PATH:= $(call my-dir)
 SRC_PATH := $(LOCAL_PATH)/../../../
 ENGINE_PATH := $(LOCAL_PATH)/../../../pEpEngine
 LIB_PEP_ADAPTER_PATH:=$(SRC_PATH)/libpEpAdapter
+LIB_PEP_CXX11_PATH:=$(SRC_PATH)/libpEpCxx11
 GPGBUILD:= $(LOCAL_PATH)/../external/output/
 
 include $(CLEAR_VARS)
@@ -43,7 +44,7 @@ $(shell sh $(ENGINE_PATH)/build-android/takeOutHeaderFiles.sh $(ENGINE_PATH))
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
 LOCAL_SHARED_LIBRARIES :=  libnettle libhogweed libgmp libpep_engine_sequoia_backend
-LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid pEpAdapter
+LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid pEpAdapter pEpCxx11
 LOCAL_CPP_FEATURES += exceptions
 LOCAL_CPPFLAGS += -std=c++11 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld
 LOCAL_SRC_FILES  := \
@@ -58,6 +59,7 @@ LOCAL_SRC_FILES  := \
 
 LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include
 LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SRC_PATH)/libpEpAdapter
+LOCAL_C_INCLUDES += $(LIB_PEP_CXX11_PATH)/build-android/include $(SRC_PATH)/libpEpCxx11
 
 LOCAL_LDFLAGS = -Wl,--allow-multiple-definition
 LOCAL_LDLIBS    += -llog
@@ -73,5 +75,6 @@ include $(BUILD_SHARED_LIBRARY)
 $(call import-add-path,$(SRC_PATH))
 $(call import-module, pEpEngine/build-android/jni/)
 $(call import-module, libpEpAdapter/build-android/jni/)
+$(call import-module, libpEpCxx11/build-android/jni/)
 $(info $(LOCAL_PATH))
 $(call import-module, pEpJNIAdapter/android/external/$(TARGET_ARCH_ABI)/uuid/jni)
