@@ -8,7 +8,9 @@ def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 def threadsToUse = 1
 
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
-def archsToCompile = "arm arm64 x86 x86_64"
+ext.archsToCompile = "arm arm64 x86 x86_64"
+
+apply from: 'gradle/plugins/set-pep-jniadapter-archs.gradle'
 
 buildscript {
     repositories {
@@ -117,9 +119,14 @@ android {
     }
 
     // call external build (GnuPG, GPGME, etc)
-    task buildExternal(type:Exec, dependsOn: 'genSources') {
-        workingDir 'external'
-        commandLine 'make', "-j${threadsToUse}", 'build', "archs=${archsToCompile}"
+    task buildExternal(dependsOn: ['genSources', 'setpEpJNIAdapterArchs']) {
+        doLast {
+            println("compiling for abis: ${project.archsToCompile}")
+            exec {
+                workingDir 'external'
+                commandLine 'make', "-j${threadsToUse}", 'build', "archs=${project.archsToCompile}"
+            }
+        }
     }
 
     task externalAssets(type:Exec) {
