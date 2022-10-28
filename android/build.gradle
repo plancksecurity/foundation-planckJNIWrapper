@@ -104,7 +104,7 @@ android {
 
     task genpEpEngineSyncSources(type:Exec) {
         workingDir "${pEpEngineSrc}"
-        commandLine 'make', "-j${threadsToUse}", '-C', 'sync'
+        commandLine 'make', "-j${threadsToUse}", '-C', 'codegen'
     }
 
 
