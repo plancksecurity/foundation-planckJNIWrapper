@@ -60,6 +60,7 @@ LOCAL_SRC_FILES  := \
 LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include
 LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SRC_PATH)/libpEpAdapter
 LOCAL_C_INCLUDES += $(LIB_PEP_CXX11_PATH)/build-android/include $(SRC_PATH)/libpEpCxx11
+LOCAL_C_INCLUDES += $(ENGINE_PATH)/asn.1
 
 LOCAL_LDFLAGS = -Wl,--allow-multiple-definition
 LOCAL_LDLIBS    += -llog
