@@ -27,28 +27,28 @@ build: $(if $(archs),$(foreach wrd, $(archs), build-$(wrd)), all)
 
 all: build-arm build-arm64 build-x86 build-x86_64
 
-build-arm: armeabi-v7a/Makefile
+build-arm: armeabi-v7a/Makefile downloads/downloads.stamp
 	$(MAKE) -C armeabi-v7a
 
-armeabi-v7a/Makefile: downloads/downloads.stamp
+armeabi-v7a/Makefile:
 	sh createMakefile.sh armeabi-v7a
 
-build-arm64: arm64-v8a/Makefile
+build-arm64: arm64-v8a/Makefile downloads/downloads.stamp
 	$(MAKE) -C arm64-v8a
 
-arm64-v8a/Makefile: downloads/downloads.stamp
+arm64-v8a/Makefile:
 	sh createMakefile.sh arm64-v8a
 
-build-x86: x86/Makefile
+build-x86: x86/Makefile downloads/downloads.stamp
 	$(MAKE) -C x86
 
-x86/Makefile: downloads/downloads.stamp
+x86/Makefile:
 	sh createMakefile.sh x86
 
-build-x86_64: x86_64/Makefile
+build-x86_64: x86_64/Makefile downloads/downloads.stamp
 	$(MAKE) -C x86_64
 
-x86_64/Makefile: downloads/downloads.stamp
+x86_64/Makefile:
 	sh createMakefile.sh x86_64
 
 clean:
