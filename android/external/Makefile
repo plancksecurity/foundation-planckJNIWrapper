@@ -19,7 +19,9 @@ ifdef BUILD_CONFIG
     $(info ================================================)
 endif
 
-.PHONY: all build clean clean-all build-arm build-arm64 build-x86 build-x86_64
+.PHONY: all build clean clean-all build-arm build-arm64 build-x86 build-x86_64 showAllSetups \
+	showx86Setup showx86_64Setup showArmSetup showArm64Setup createMakefiles cleanMakefiles \
+	refreshMakefiles
 
 build: $(if $(archs),$(foreach wrd, $(archs), build-$(wrd)), all)
 
@@ -83,3 +85,11 @@ showArm64Setup:
 	$(MAKE) -C arm64-v8a showsetup
 
 createMakefiles: armeabi-v7a/Makefile arm64-v8a/Makefile x86/Makefile x86_64/Makefile
+
+cleanMakefiles:
+	rm armeabi-v7a/Makefile
+	rm arm64-v8a/Makefile
+	rm x86/Makefile
+	rm x86_64/Makefile
+
+refreshMakefiles: cleanMakefiles createMakefiles
