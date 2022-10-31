@@ -33,7 +33,7 @@ download-sequoia-deps: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSION).tar.
 download-etpan: libetpan.git.stamp
 
 ## Download sequoia
-download-sequoia: sequoia.git.stamp
+download-sequoia: pEpEngineSequoiaBackend.git.stamp
 
 # Download source and patch it
 libiconv-1.15.tar.gz:

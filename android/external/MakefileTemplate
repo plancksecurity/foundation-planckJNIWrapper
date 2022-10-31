@@ -27,7 +27,7 @@ include ../PerArchMakefile.conf
 all: build
 
 ## Build dependencies for arch [ARCH]
-build: showsetup uuid-prebuild sequoia-ffi-install libetpan-build
+build: showsetup uuid-prebuild pEpEngineSequoiaBackend-install libetpan-build
 
 #------------------------------------------------------------------------------#
 # Manage paths for PREFIX, LOCAL and PATH
@@ -259,26 +259,21 @@ nettle-install: $(LOCAL)/lib/libnettle.so
 
 
 #------------------------------------------------------------------------------#
-# Sequoia-ffi
+# pEpEngineSequoiaBackend
 
 CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/../build/
 
-sequoia.src.stamp: ../downloads/sequoia.tar.gz
-	mkdir -p sequoia
-	cd sequoia && tar xvf ../$<
-	$(SED) -i 's,1.48.0,1.49.0,' sequoia/rust-toolchain
-	cd sequoia && cargo update -p nettle-sys --precise 2.0.8
+pEpEngineSequoiaBackend.src.stamp: ../downloads/pEpEngineSequoiaBackend.tar.gz
+	mkdir -p pEpEngineSequoiaBackend
+	cd pEpEngineSequoiaBackend && tar xvf ../$<
+	$(SED) -i 's,1.48.0,1.60,' pEpEngineSequoiaBackend/rust-toolchain
 	mkdir -p $(LOCAL)/lib/
 # This is a bad fix, we should move this to a common makefile (but not the .conf one)
 	find -L $(ANDROID_NDK) -name libunwind.a -execdir sh -c 'echo "INPUT(-lunwind)" > $(LOCAL)/lib/libgcc.a' \;
 	touch $@
 
-sequoia-ffi-clean:
-	rm -rf sequoia
-	rm -rf sequoia.src.stamp
-
-$(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so
-	cd sequoia && PATH=$(TEMP_WORK_PATH) \
+$(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.so:  pEpEngineSequoiaBackend.src.stamp $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so
+	cd pEpEngineSequoiaBackend && PATH=$(TEMP_WORK_PATH) \
 	CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
 	PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig \
@@ -286,17 +281,15 @@ $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so:  sequoia.
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_LIB_DIR="$(LOCAL)/lib" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_INCLUDE_DIR="$(LOCAL)/include" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR="$(LOCAL)/bin" \
-	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target $(SEQUOIA_ARCH) -p sequoia-openpgp-ffi --release
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target $(SEQUOIA_ARCH) -p pep_engine_sequoia_backend --release
 
-$(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so
-	cp $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.* $(LOCAL)/lib/
-	cp -r sequoia/openpgp-ffi/include/* $(LOCAL)/include
+$(LOCAL)/lib/libpep_engine_sequoia_backend.so: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.so
+	cp $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.* $(LOCAL)/lib/
 
-## Build sequoia-ffi
-sequoia-ffi-build: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so
 
-## Install sequoia-ffi
-sequoia-ffi-install: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libsequoia_openpgp_ffi.so
+pEpEngineSequoiaBackend-build: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.so
+
+pEpEngineSequoiaBackend-install: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libpep_engine_sequoia_backend.so
 
 #------------------------------------------------------------------------------#
 # assets for Android app
@@ -354,7 +347,7 @@ clean-all: clean
 	sequoia-deps-build \
 	openssl-build  openssl-install \
 	nettle-build  nettle-install \
-	sequoia-ffi-build sequoia-ffi-install \
+	pEpEngineSequoiaBackend-build pEpEngineSequoiaBackend-install \
 	assets \
     $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN) \
 	showsetup
