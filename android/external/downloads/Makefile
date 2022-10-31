@@ -13,20 +13,26 @@ include ../Makefile.conf
 #------------------------------------------------------------------------------#
 # Build parameters
 
+## Download all dependencies
 all: downloads.stamp
 
 downloads.stamp: download-iconv download-uuid download-sequoia-deps download-etpan download-sequoia
 	touch $@
 
+## Download iconv
 download-iconv: libiconv-1.15.tar.gz
 
+## Download and patch uuid
 download-uuid: ossp-uuid_1.6.2.orig-patched.tar.gz
 
+## Download sequoia dependencies
 download-sequoia-deps: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSION).tar.bz2 \
 						nettle-$(NETTLE_VERSION)-patched.tar.gz
 
+## Download etpan
 download-etpan: libetpan.git.stamp
 
+## Download sequoia
 download-sequoia: sequoia.git.stamp
 
 # Download source and patch it
@@ -107,15 +113,14 @@ git_update: $(EXTERNAL_LOCAL_GITS_UPDATE)
 
 #------------------------------------------------------------------------------#
 clean:
-	rm -rf *.git
-	rm -rf *.stamp
-	rm -rf *.tar.gz
-	rm -rf *.tar.bz2
-	rm -rf ../arm64-v8a/ndk-standalone-toolchain
-	rm -rf ../armeabi-v7a/ndk-standalone-toolchain
-	rm -rf ../x86/ndk-standalone-toolchain
-	rm -rf ../x86_64/ndk-standalone-toolchain
+	-rm -rf *.git
+	-rm -rf *.stamp
+	-rm -rf *.tar.gz
+	-rm -rf *.tar.bz2
 
 .PHONY: all clean download-iconv \
 		download-uuid download-etpan \
 		download-sequoia-deps download-sequoia
+
+include ../help.mk
+helpPurpose='Download all files and packages needed to compile external dependencies for pEpEngine'

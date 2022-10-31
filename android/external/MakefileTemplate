@@ -23,8 +23,10 @@ include ../PerArchMakefile.conf
 
 #------------------------------------------------------------------------------#
 
+## Same as build
 all: build
 
+## Build dependencies for arch [ARCH]
 build: showsetup uuid-prebuild sequoia-ffi-install libetpan-build
 
 #------------------------------------------------------------------------------#
@@ -48,25 +50,26 @@ export ac_cv_func_malloc_0_nonnull=yes
 #------------------------------------------------------------------------------#
 # debugging stuff
 
+## Show setup values for [ARCH] Makefile
 showsetup:
-	@echo "============================================== CURRENT SETUP ===================================================="
-	@echo "NDK_TOOLCHAIN: $(NDK_TOOLCHAIN)"
-	@echo "NDK_TOOLCHAIN_COMPILER: $(NDK_TOOLCHAIN_COMPILER)"
-	@echo "NDK_TOOLCHAIN_TARGET: $(NDK_TOOLCHAIN_TARGET)"
-	@echo "TEMP_WORK_PATH: $(TEMP_WORK_PATH)"
-	@echo "LOCAL: $(LOCAL)"
-	@echo "APP_ABI: $(APP_ABI)"
-	@echo "HOST: $(HOST)"
-	@echo "SEQUOIA_ARCH: $(SEQUOIA_ARCH)"
-	@echo "CC: $(CC)"
-	@echo "LD: $(LD)"
-	@echo "AR: $(AR)"
-	@echo "AS: $(AS)"
-	@echo "STRIP: $(STRIP)"
-	@echo "RANLIB: $(RANLIB)"
-	@echo "CFLAGS: $(CFLAGS)"
-	@echo "LDFLAGS: $(LDFLAGS)"
-	@echo "============================================== CURRENT SETUP END ===================================================="
+	@echo "${YELLOW}============================================== CURRENT SETUP ====================================================${RESET}"
+	@echo "${YELLOW}NDK_TOOLCHAIN: $(NDK_TOOLCHAIN)${RESET}"
+	@echo "${YELLOW}NDK_TOOLCHAIN_COMPILER: $(NDK_TOOLCHAIN_COMPILER)${RESET}"
+	@echo "${YELLOW}NDK_TOOLCHAIN_TARGET: $(NDK_TOOLCHAIN_TARGET)${RESET}"
+	@echo "${YELLOW}TEMP_WORK_PATH: $(TEMP_WORK_PATH)${RESET}"
+	@echo "${YELLOW}LOCAL: $(LOCAL)${RESET}"
+	@echo "${YELLOW}APP_ABI: $(APP_ABI)${RESET}"
+	@echo "${YELLOW}HOST: $(HOST)${RESET}"
+	@echo "${YELLOW}SEQUOIA_ARCH: $(SEQUOIA_ARCH)${RESET}"
+	@echo "${YELLOW}CC: $(CC)${RESET}"
+	@echo "${YELLOW}LD: $(LD)${RESET}"
+	@echo "${YELLOW}AR: $(AR)${RESET}"
+	@echo "${YELLOW}AS: $(AS)${RESET}"
+	@echo "${YELLOW}STRIP: $(STRIP)${RESET}"
+	@echo "${YELLOW}RANLIB: $(RANLIB)${RESET}"
+	@echo "${YELLOW}CFLAGS: $(CFLAGS)${RESET}"
+	@echo "${YELLOW}LDFLAGS: $(LDFLAGS)${RESET}"
+	@echo "${YELLOW}============================================== CURRENT SETUP END ====================================================${RESET}"
 
 #------------------------------------------------------------------------------#
 # libiconv
@@ -94,8 +97,10 @@ $(LOCAL)/lib/libiconv.a: libiconv/lib/.libs/libiconv.a
 	$(MAKE) -C libiconv DESTDIR=$(DESTDIR) prefix=$(prefix) install
 	ls -l $(LOCAL)/lib/libiconv.a
 
+## Build iconv
 libiconv-build: libiconv/lib/.libs/libiconv.a
 
+## Install iconv
 libiconv-install: $(LOCAL)/lib/libiconv.a
 
 #------------------------------------------------------------------------------#
@@ -111,6 +116,7 @@ libetpan/Makefile: libetpan.src.stamp | $(LOCAL)/lib/libiconv.a
 	cp -r libetpan/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/include/* $(LOCAL)/include/
 	touch $@
 
+## Build etpan
 libetpan-build: libetpan/Makefile
 
 #------------------------------------------------------------------------------#
@@ -142,6 +148,7 @@ uuid-build: uuid/.libs/libuuid.so
 $(LOCAL)/include/uuid.h: uuid/Makefile
 	mkdir -p $(LOCAL)/include && cd uuid && cp uuid.h $(LOCAL)/include
 
+## Prebuild uuid
 uuid-prebuild: uuid/jni/Android.mk $(LOCAL)/include/uuid.h
 
 uuid/jni/Android.mk: uuid.src.stamp
@@ -152,6 +159,7 @@ uuid/jni/Android.mk: uuid.src.stamp
 #------------------------------------------------------------------------------#
 # Sequoia
 
+## Build sequoia dependencies
 sequoia-deps-build: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so
 
 #------------------------------------------------------------------------------#
@@ -176,8 +184,10 @@ $(LOCAL)/lib/libssl.so: openssl/libssl.so
 		cp libssl.a $(LOCAL)/lib
 	ls -l $(LOCAL)/lib/libssl.so
 
+## Build openssl
 openssl-build: openssl/libssl.so
 
+## Install openssl
 openssl-install: $(LOCAL)/lib/libssl.so
 
 
@@ -207,8 +217,10 @@ $(LOCAL)/lib/libgmp.so: gmp/.libs/libgmp.so
 	ls -l $(LOCAL)/lib/libgmp.so
 	touch $@
 
+## Build gmp
 gmp-build: gmp/.libs/libgmp.so
 
+## Install gmp
 gmp-install: $(LOCAL)/lib/libgmp.so
 
 
@@ -239,8 +251,10 @@ $(LOCAL)/lib/libnettle.so: nettle/libnettle.so
 	cp nettle/libnettle.so $(LOCAL)/lib/libnettle.so
 	cp nettle/libhogweed.so $(LOCAL)/lib/libhogweed.so
 
+## Build nettle
 nettle-build: nettle/libnettle.so
 
+## Install nettle
 nettle-install: $(LOCAL)/lib/libnettle.so
 
 
@@ -278,9 +292,10 @@ $(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/rele
 	cp $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.* $(LOCAL)/lib/
 	cp -r sequoia/openpgp-ffi/include/* $(LOCAL)/include
 
-
+## Build sequoia-ffi
 sequoia-ffi-build: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so
 
+## Install sequoia-ffi
 sequoia-ffi-install: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libsequoia_openpgp_ffi.so
 
 #------------------------------------------------------------------------------#
@@ -312,20 +327,23 @@ sequoia-ffi-install: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so $(LOCAL)/l
 #------------------------------------------------------------------------------#
 # clean
 %-clean:
-	rm -rf $*
-	rm -rf $*.src.stamp
+	-rm -rf $*
+	-rm -rf $*.src.stamp
 
 clean-assets:
-	rm -rf $(ASSETS)
+	-rm -rf $(ASSETS)
 
+## Delete install destination folder
 clean-install:
-	rm -rf $(LOCAL)
+	-rm -rf $(LOCAL)
 
+## Remove generated artifacts
 clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install libetpan-clean
 
+## Remove generated artifacts and files
 clean-all: clean
-	rm -rf *.git
-	rm -rf *.stamp
+	-rm -rf *.git
+	-rm -rf *.stamp
 #------------------------------------------------------------------------------#
 
 .PHONY = clean clean-install clean-assets libetpan-clean \
@@ -336,9 +354,9 @@ clean-all: clean
 	sequoia-deps-build \
 	openssl-build  openssl-install \
 	nettle-build  nettle-install \
-	sequoia-ffi-build sequoia-ffi-install\
+	sequoia-ffi-build sequoia-ffi-install \
 	assets \
-    $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN)\
+    $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN) \
 	showsetup
 
 #------------------------------------------------------------------------------#
@@ -347,3 +365,6 @@ clean-all: clean
 # src
 %-src: %.src.stamp
 	@echo $<
+
+include ../help.mk
+helpPurpose='Cross-compile external dependencies of pEpEngine for arch [ARCH]'
