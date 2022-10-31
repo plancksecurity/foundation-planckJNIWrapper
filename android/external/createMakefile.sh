@@ -1,6 +1,5 @@
 #!/bin/zsh
 #emulate -LR bash
-#cd ~code/android/pEpJNIAdapter/external
 
 ARCH_DEST="$1"
 mkdir "$ARCH_DEST"
