@@ -58,6 +58,7 @@ LOCAL_SRC_FILES  := \
 		  ../../src/cxx/jniutils.cc
 
 LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include
+#LOCAL_C_INCLUDES += $(ENGINE_PATH)/build-android/include/pEp
 LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SRC_PATH)/libpEpAdapter
 LOCAL_C_INCLUDES += $(LIB_PEP_CXX11_PATH)/build-android/include $(SRC_PATH)/libpEpCxx11
 LOCAL_C_INCLUDES += $(ENGINE_PATH)/asn.1

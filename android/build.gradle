@@ -1,6 +1,7 @@
 // Android pEp JNI adapter Aar gradle build script
 
 def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
+def libpEpTransportSrc = hasProperty('libpEpTransportSrc') ? libpEpTransportSrc : "../../libpEpTransport"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 //CHeck M1 answers the correct thing off .avaialableprocessors here
 //def threadsToUse = hasProperty('threadsToUse') ?
@@ -102,7 +103,12 @@ android {
         commandLine 'make', 'lib-java'
     }
 
-    task genpEpEngineSyncSources(type:Exec) {
+    task genlibpEpTransportSources(type:Exec) {
+        workingDir "${libpEpTransportSrc}"
+        commandLine 'make', "-j${threadsToUse}"
+    }
+
+    task genpEpEngineSyncSources(type:Exec, dependsOn: 'genlibpEpTransportSources') {
         workingDir "${pEpEngineSrc}"
         commandLine 'make', "-j${threadsToUse}", '-C', 'codegen'
     }
@@ -169,7 +175,7 @@ android {
     preBuild.dependsOn(externalAssets)
 }
 
-def isIdeBuild() {
+boolean isIdeBuild() {
     boolean runningFromIde = project.properties['android.injected.invoked.from.ide'] == 'true'
     if (runningFromIde) {
         println("GRADLE RUNNING FROM IDE")
