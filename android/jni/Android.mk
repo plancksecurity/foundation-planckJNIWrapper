@@ -3,6 +3,7 @@ SRC_PATH := $(LOCAL_PATH)/../../../
 ENGINE_PATH := $(LOCAL_PATH)/../../../pEpEngine
 LIB_PEP_ADAPTER_PATH:=$(SRC_PATH)/libpEpAdapter
 LIB_PEP_CXX11_PATH:=$(SRC_PATH)/libpEpCxx11
+#LIB_PEP_TRANSPORT_PATH:=$(SRC_PATH)/libpEpTransport
 GPGBUILD:= $(LOCAL_PATH)/../external/output/
 
 include $(CLEAR_VARS)
@@ -61,6 +62,7 @@ LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include
 #LOCAL_C_INCLUDES += $(ENGINE_PATH)/build-android/include/pEp
 LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SRC_PATH)/libpEpAdapter
 LOCAL_C_INCLUDES += $(LIB_PEP_CXX11_PATH)/build-android/include $(SRC_PATH)/libpEpCxx11
+#LOCAL_C_INCLUDES += $(LIB_PEP_TRANSPORT_PATH)/build-android/include $(SRC_PATH)/libpEpTransport
 LOCAL_C_INCLUDES += $(ENGINE_PATH)/asn.1
 
 LOCAL_LDFLAGS = -Wl,--allow-multiple-definition
@@ -74,9 +76,35 @@ LOCAL_CFLAGS += -DANDROID_STL=c++_shared
 LOCAL_SRC_FILES  := foundation_pEp_jniadapter_AndroidHelper.cc
 
 include $(BUILD_SHARED_LIBRARY)
+
 $(call import-add-path,$(SRC_PATH))
-$(call import-module, pEpEngine/build-android/jni/)
-$(call import-module, libpEpAdapter/build-android/jni/)
-$(call import-module, libpEpCxx11/build-android/jni/)
+
+$(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
+## uuid
 $(info $(LOCAL_PATH))
+$(warning ==== JNIADAPTER android.mk CALLING import-module uuid)
 $(call import-module, pEpJNIAdapter/android/external/$(TARGET_ARCH_ABI)/uuid/jni)
+$(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
+MY_UUID_BUILD := $(LOCAL_BUILT_MODULE)
+#$(call import-module, libpEpTransport/build-android/jni/)
+$(warning ==== CURRENT NDK LIBS OUT: $(NDK_LIBS_OUT))
+$(warning ==== CURRENT NDK OUT: $(NDK_OUT))
+$(warning ==== CURRENT TARGET OUT: $(TARGET_OUT))
+
+## pEpEngine
+$(warning ==== JNIADAPTER android.mk CALLING import-module pEpEngine)
+$(call import-module, pEpEngine/build-android/jni/)
+$(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
+pEpEngine.ndkBuild.stamp: $(MY_UUID_BUILD)
+	echo "==== INSIDE RECIPE: JNIADAPTER android.mk CALLING import-module pEpEngine"
+	$(warning ==== JNIADAPTER android.mk CALLING import-module pEpEngine)
+    $(call import-module, pEpEngine/build-android/jni/)
+    $(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
+## libpEpAdapter
+$(warning ==== JNIADAPTER android.mk CALLING import-module libpEpAdapter)
+$(call import-module, libpEpAdapter/build-android/jni/)
+$(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
+## libpEpCxx11
+$(warning ==== JNIADAPTER android.mk CALLING import-module libpEpCxx11)
+$(call import-module, libpEpCxx11/build-android/jni/)
+$(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
