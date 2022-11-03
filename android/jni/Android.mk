@@ -45,7 +45,8 @@ $(shell sh $(ENGINE_PATH)/build-android/takeOutHeaderFiles.sh $(ENGINE_PATH))
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
 LOCAL_SHARED_LIBRARIES :=  libnettle libhogweed libgmp libpep_engine_sequoia_backend
-LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv libuuid pEpAdapter pEpCxx11
+LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv pEpAdapter pEpCxx11
+LOCAL_WHOLE_STATIC_LIBRARIES := libuuid
 LOCAL_CPP_FEATURES += exceptions
 LOCAL_CPPFLAGS += -std=c++11 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld
 LOCAL_SRC_FILES  := \
@@ -91,15 +92,21 @@ $(warning ==== CURRENT NDK LIBS OUT: $(NDK_LIBS_OUT))
 $(warning ==== CURRENT NDK OUT: $(NDK_OUT))
 $(warning ==== CURRENT TARGET OUT: $(TARGET_OUT))
 
+#$(shell sleep 2)
+#$(warning ==== after sleeping 2 seconds)
+#$(shell sleep 2)
+#$(warning ==== after sleeping 4 seconds)
+#$(shell sleep 2)
+#$(warning ==== after sleeping 6 seconds)
 ## pEpEngine
 $(warning ==== JNIADAPTER android.mk CALLING import-module pEpEngine)
 $(call import-module, pEpEngine/build-android/jni/)
 $(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
-pEpEngine.ndkBuild.stamp: $(MY_UUID_BUILD)
-	echo "==== INSIDE RECIPE: JNIADAPTER android.mk CALLING import-module pEpEngine"
-	$(warning ==== JNIADAPTER android.mk CALLING import-module pEpEngine)
-    $(call import-module, pEpEngine/build-android/jni/)
-    $(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
+#pEpEngine.ndkBuild.stamp: $(MY_UUID_BUILD)
+#echo "==== INSIDE RECIPE: JNIADAPTER android.mk CALLING import-module pEpEngine"
+$(warning ==== JNIADAPTER android.mk CALLING import-module pEpEngine)
+$(call import-module, pEpEngine/build-android/jni/)
+$(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
 ## libpEpAdapter
 $(warning ==== JNIADAPTER android.mk CALLING import-module libpEpAdapter)
 $(call import-module, libpEpAdapter/build-android/jni/)
