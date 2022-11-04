@@ -128,8 +128,6 @@ public class AndroidHelper {
         System.loadLibrary("gmp");
         System.loadLibrary("nettle");
         System.loadLibrary("hogweed");
-        //TODO PEMA-103 Check if we are required to link the shared lib here
-//        System.loadLibrary("libpep_engine_sequoia_backend");
 
         migrateFromGPGToSequoiaIfNeeded(c.getFilesDir());
 

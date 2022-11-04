@@ -11,7 +11,7 @@ def threadsToUse = 1
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 ext.archsToCompile = "arm arm64 x86 x86_64"
 
-apply from: 'gradle/plugins/set-pep-jniadapter-archs.gradle'
+//apply from: 'gradle/plugins/set-pep-jniadapter-archs.gradle'
 
 buildscript {
     repositories {
@@ -167,7 +167,7 @@ android {
         buildpEpEngineSystemDB.dependsOn(buildExternal)
     }
     if(isIdeBuild()) {
-        buildExternal.dependsOn(setpEpJNIAdapterArchs)
+//        buildExternal.dependsOn(setpEpJNIAdapterArchs)
     }
 
     // This ensures that assets are populated before collecting resources.

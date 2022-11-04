@@ -267,12 +267,13 @@ pEpEngineSequoiaBackend.src.stamp: ../downloads/pEpEngineSequoiaBackend.tar.gz
 	mkdir -p pEpEngineSequoiaBackend
 	cd pEpEngineSequoiaBackend && tar xvf ../$<
 	$(SED) -i 's,1.48.0,1.60,' pEpEngineSequoiaBackend/rust-toolchain
+	cp ../Cargo.toml.tmp pEpEngineSequoiaBackend/Cargo.toml
 	mkdir -p $(LOCAL)/lib/
 # This is a bad fix, we should move this to a common makefile (but not the .conf one)
 	find -L $(ANDROID_NDK) -name libunwind.a -execdir sh -c 'echo "INPUT(-lunwind)" > $(LOCAL)/lib/libgcc.a' \;
 	touch $@
 
-$(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.so:  pEpEngineSequoiaBackend.src.stamp $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so
+$(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.a:  pEpEngineSequoiaBackend.src.stamp $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so
 	cd pEpEngineSequoiaBackend && PATH=$(TEMP_WORK_PATH) \
 	CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
@@ -282,14 +283,14 @@ $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.so:  p
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_INCLUDE_DIR="$(LOCAL)/include" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR="$(LOCAL)/bin" \
 	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target $(SEQUOIA_ARCH) -p pep_engine_sequoia_backend --release
-#TODO PEMA-103 we cna move seq to static (.a)
-$(LOCAL)/lib/libpep_engine_sequoia_backend.so: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.so
+
+$(LOCAL)/lib/libpep_engine_sequoia_backend.a: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.a
 	cp $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.* $(LOCAL)/lib/
 
 
-pEpEngineSequoiaBackend-build: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.so
+pEpEngineSequoiaBackend-build: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.a
 
-pEpEngineSequoiaBackend-install: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libpep_engine_sequoia_backend.so
+pEpEngineSequoiaBackend-install: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libpep_engine_sequoia_backend.a
 
 #------------------------------------------------------------------------------#
 # assets for Android app
