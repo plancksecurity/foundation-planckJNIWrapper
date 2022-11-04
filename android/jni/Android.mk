@@ -13,8 +13,8 @@ include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libpep_engine_sequoia_backend
-LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libpep_engine_sequoia_backend.so
-include $(PREBUILT_SHARED_LIBRARY)
+LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libpep_engine_sequoia_backend.a
+include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libhogweed
@@ -44,9 +44,9 @@ $(shell sh $(ENGINE_PATH)/build-android/takeOutHeaderFiles.sh $(ENGINE_PATH))
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
-LOCAL_SHARED_LIBRARIES :=  libnettle libhogweed libgmp libpep_engine_sequoia_backend
-LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libiconv pEpAdapter pEpCxx11
-LOCAL_WHOLE_STATIC_LIBRARIES := libuuid
+#TODO PEMA-103 we cna move seq to static
+LOCAL_SHARED_LIBRARIES :=  libnettle libhogweed libgmp
+LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libuuid libiconv pEpAdapter pEpCxx11 libpep_engine_sequoia_backend
 LOCAL_CPP_FEATURES += exceptions
 LOCAL_CPPFLAGS += -std=c++11 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld
 LOCAL_SRC_FILES  := \

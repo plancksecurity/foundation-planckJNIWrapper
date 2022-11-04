@@ -282,7 +282,7 @@ $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.so:  p
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_INCLUDE_DIR="$(LOCAL)/include" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR="$(LOCAL)/bin" \
 	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target $(SEQUOIA_ARCH) -p pep_engine_sequoia_backend --release
-
+#TODO PEMA-103 we cna move seq to static (.a)
 $(LOCAL)/lib/libpep_engine_sequoia_backend.so: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.so
 	cp $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.* $(LOCAL)/lib/
 
