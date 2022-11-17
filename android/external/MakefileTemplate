@@ -266,8 +266,6 @@ CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/../build/
 pEpEngineSequoiaBackend.src.stamp: ../downloads/pEpEngineSequoiaBackend.tar.gz
 	mkdir -p pEpEngineSequoiaBackend
 	cd pEpEngineSequoiaBackend && tar xvf ../$<
-	$(SED) -i 's,1.48.0,1.60.0,' pEpEngineSequoiaBackend/rust-toolchain
-	cp ../Cargo.toml.tmp pEpEngineSequoiaBackend/Cargo.toml
 	mkdir -p $(LOCAL)/lib/
 # This is a bad fix, we should move this to a common makefile (but not the .conf one)
 	find -L $(ANDROID_NDK) -name libunwind.a -execdir sh -c 'echo "INPUT(-lunwind)" > $(LOCAL)/lib/libgcc.a' \;
