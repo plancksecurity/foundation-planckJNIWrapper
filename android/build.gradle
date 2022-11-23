@@ -1,6 +1,7 @@
 // Android pEp JNI adapter Aar gradle build script
 
 def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
+def libpEpTransportSrc = hasProperty('libpEpTransportSrc') ? libpEpTransportSrc : "../../libpEpTransport"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 //CHeck M1 answers the correct thing off .avaialableprocessors here
 //def threadsToUse = hasProperty('threadsToUse') ?
@@ -8,6 +9,9 @@ def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 def threadsToUse = 1
 
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
+ext.archsToCompile = "arm arm64 x86 x86_64"
+
+//apply from: 'gradle/plugins/set-pep-jniadapter-archs.gradle'
 
 buildscript {
     repositories {
@@ -80,7 +84,7 @@ android {
             jniDebuggable true
             externalNativeBuild {
                 ndkBuild {
-                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null'
+                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null', '--output-sync=none', '-B', 'V=1'
                    // arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1'
                 }
             }
@@ -99,9 +103,14 @@ android {
         commandLine 'make', 'lib-java'
     }
 
-    task genpEpEngineSyncSources(type:Exec) {
+    task genlibpEpTransportSources(type:Exec) {
+        workingDir "${libpEpTransportSrc}"
+        commandLine 'make', "-j${threadsToUse}", 'install'
+    }
+
+    task genpEpEngineSyncSources(type:Exec, dependsOn: 'genlibpEpTransportSources') {
         workingDir "${pEpEngineSrc}"
-        commandLine 'make', "-j${threadsToUse}", '-C', 'sync'
+        commandLine 'make', "-j${threadsToUse}", '-C', 'codegen'
     }
 
 
@@ -116,9 +125,14 @@ android {
     }
 
     // call external build (GnuPG, GPGME, etc)
-    task buildExternal(type:Exec, dependsOn: 'genSources') {
-        workingDir 'external'
-        commandLine 'make', "-j${threadsToUse}", 'build'
+    task buildExternal(dependsOn: ['genSources']) {
+        doLast {
+            println("buildExternal for abis: ${project.archsToCompile}")
+            exec {
+                workingDir 'external'
+                commandLine 'make', "-j${threadsToUse}", 'build', "archs=${project.archsToCompile}"
+            }
+        }
     }
 
     task externalAssets(type:Exec) {
@@ -152,10 +166,19 @@ android {
     if(buildAutomatic == "true") {
         buildpEpEngineSystemDB.dependsOn(buildExternal)
     }
+    if(isIdeBuild()) {
+//        buildExternal.dependsOn(setpEpJNIAdapterArchs)
+    }
 
     // This ensures that assets are populated before collecting resources.
     preBuild.dependsOn(cpDBAssets)
     preBuild.dependsOn(externalAssets)
 }
 
-
+boolean isIdeBuild() {
+    boolean runningFromIde = project.properties['android.injected.invoked.from.ide'] == 'true'
+    if (runningFromIde) {
+        println("GRADLE RUNNING FROM IDE")
+    }
+    return runningFromIde
+}
