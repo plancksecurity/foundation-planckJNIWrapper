@@ -1,5 +1,5 @@
 ################################################################################
-#		 		Argument cheking			       #
+#		 		Argument checking			       #
 ################################################################################
 
 if [ ! -f $1 ]; then
@@ -39,6 +39,7 @@ $SED -i -e 's/\(.*\)/\L\1/' $STAT_FILE
 $SED -i "-e s/    pep/        pEp/g" $STAT_FILE
 $SED -i s/=/\>/g $STAT_FILE
 $SED -i s/,//g $STAT_FILE
+$SED -i s/^#define.*$//g $STAT_FILE
 
 grep -i passphrase $STAT_FILE | sed -e 's/^/enumitem/' > $PASS_FILE
 
