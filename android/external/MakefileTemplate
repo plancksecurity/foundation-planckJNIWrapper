@@ -266,7 +266,7 @@ CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/../build/
 sequoia.src.stamp: ../downloads/sequoia.tar.gz
 	mkdir -p sequoia
 	cd sequoia && tar xvf ../$<
-	$(SED) -i 's,1.48.0,1.49.0,' sequoia/rust-toolchain
+	$(SED) -i 's,1.48.0,1.64.0,' sequoia/rust-toolchain
 	cd sequoia && cargo update -p nettle-sys --precise 2.0.8
 	mkdir -p $(LOCAL)/lib/
 # This is a bad fix, we should move this to a common makefile (but not the .conf one)
