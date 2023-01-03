@@ -1,9 +1,20 @@
 # Copyright 2019, pEp Foundation
-# This file is part of pEpJNIAdapter for Android  - ARMv7 build
+# This file is part of pEpJNIAdapter for Android  - [ARCH] build
 # This file may be used under the terms of the GNU General Public License version 3
 # see LICENSE.txt
 
 include ../Makefile.conf
+
+# Build parameters
+APP_ABI ?= [ARCH]
+HOST ?= [HOST]
+NDK_TOOLCHAIN_TARGET ?= [NDK_TOOLCHAIN_TARGET]
+SEQUOIA_ARCH ?= [SEQUOIA_ARCH]
+OPENSSL_ARCHITECTURE ?= [OPENSSL_ARCHITECTURE]
+COMPILER_PREFIX ?= [COMPILER_PREFIX]
+
+# This include is dependent on the *build parameters* defined above and needs to be declared after them
+include ../PerArchMakefile.conf
 
 #------------------------------------------------------------------------------#
 # Makefile to build deps for use with pEpEngine
@@ -11,49 +22,21 @@ include ../Makefile.conf
 #------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
-# Build parameters
 
-APP_ABI ?= armeabi-v7a
-
+## Same as build
 all: build
-#assets
 
-build: showsetup uuid-install sequoia-ffi-install libetpan-build
-
+## Build dependencies for arch [ARCH]
+build: showsetup uuid-prebuild sequoia-ffi-install libetpan-build
 
 #------------------------------------------------------------------------------#
-# Manage paths for PREFIX, DESTDIR, LOCAL and PATH
-
-EXTERNAL_ROOT := $(shell pwd)
-
-# install root for built files
-DESTDIR = $(EXTERNAL_ROOT)/..
-prefix = /output/$(APP_ABI)
-LOCAL := $(DESTDIR)$(prefix)
-
-PATH := ${PATH}:$(NDK_TOOLCHAIN)/bin:$(LOCAL)/bin
-
-NDK_SYSROOT=$(ANDROID_NDK_HOME)/sysroot
-
-HOST = arm-linux-androideabi
-HOST_V7 = armv7a-linux-androideabi
-NDK_TOOLCHAIN = $(HOST)-$(NDK_TOOLCHAIN_COMPILER)
+# Manage paths for PREFIX, LOCAL and PATH
 
 # include Android's build flags
-TARGET_ARCH_ABI = $(APP_ABI)
 include $(ANDROID_NDK)/build/core/toolchains/$(NDK_TOOLCHAIN)/setup.mk
 
-ANDROID_NDK_HOME=$(ANDROID_NDK)/toolchains/llvm/prebuilt/$(TOOLCHAIN_ARCH)
-
-CC := $(ANDROID_NDK_HOME)/bin/$(HOST_V7)$(ANDROID_API)-clang
-CXX := $(ANDROID_NDK_HOME)/bin/$(HOST_V7)$(ANDROID_API)-clang++
-AS := $(CC)
-
-CFLAGS += -DANDROID -I$(LOCAL)/include $(TARGET_CFLAGS) -fPIE -fPIC -std=c99
-LDFLAGS += -llog -L$(LOCAL)/lib $(TARGET_LDFLAGS) -pie
-
-# change 'release' to 'debug' for unoptimized debug builds
-CFLAGS += $(TARGET_arm_debug_CFLAGS)
+CFLAGS += $(MYCFLAGS)
+LDFLAGS += $(MYLDFLAGS)
 
 #------------------------------------------------------------------------------#
 # GNU Tools trickery
@@ -67,15 +50,26 @@ export ac_cv_func_malloc_0_nonnull=yes
 #------------------------------------------------------------------------------#
 # debugging stuff
 
+## Show setup values for [ARCH] Makefile
 showsetup:
-	@echo "NDK_TOOLCHAIN: $(NDK_TOOLCHAIN)"
-	@echo "NDK_SYSROOT: $(NDK_SYSROOT)"
-	@echo "APP_ABI: $(APP_ABI)"
-	@echo "HOST: $(HOST)"
-	@echo "CC: $(CC)"
-	@echo "LD: $(LD)"
-	@echo "CFLAGS: $(CFLAGS)"
-	@echo "LDFLAGS: $(LDFLAGS)"
+	@echo "${YELLOW}============================================== CURRENT SETUP ====================================================${RESET}"
+	@echo "${YELLOW}NDK_TOOLCHAIN: $(NDK_TOOLCHAIN)${RESET}"
+	@echo "${YELLOW}NDK_TOOLCHAIN_COMPILER: $(NDK_TOOLCHAIN_COMPILER)${RESET}"
+	@echo "${YELLOW}NDK_TOOLCHAIN_TARGET: $(NDK_TOOLCHAIN_TARGET)${RESET}"
+	@echo "${YELLOW}TEMP_WORK_PATH: $(TEMP_WORK_PATH)${RESET}"
+	@echo "${YELLOW}LOCAL: $(LOCAL)${RESET}"
+	@echo "${YELLOW}APP_ABI: $(APP_ABI)${RESET}"
+	@echo "${YELLOW}HOST: $(HOST)${RESET}"
+	@echo "${YELLOW}SEQUOIA_ARCH: $(SEQUOIA_ARCH)${RESET}"
+	@echo "${YELLOW}CC: $(CC)${RESET}"
+	@echo "${YELLOW}LD: $(LD)${RESET}"
+	@echo "${YELLOW}AR: $(AR)${RESET}"
+	@echo "${YELLOW}AS: $(AS)${RESET}"
+	@echo "${YELLOW}STRIP: $(STRIP)${RESET}"
+	@echo "${YELLOW}RANLIB: $(RANLIB)${RESET}"
+	@echo "${YELLOW}CFLAGS: $(CFLAGS)${RESET}"
+	@echo "${YELLOW}LDFLAGS: $(LDFLAGS)${RESET}"
+	@echo "${YELLOW}============================================== CURRENT SETUP END ====================================================${RESET}"
 
 #------------------------------------------------------------------------------#
 # libiconv
@@ -84,12 +78,6 @@ libiconv.src.stamp: ../downloads/libiconv-1.15.tar.gz
 	tar xvf $<
 	mv libiconv-1.15 libiconv
 	touch $@
-
-libiconv-src: libiconv.src.stamp
-
-libiconv-clean:
-	rm -rf libiconv
-	rm -rf libiconv.src.stamp
 
 libiconv/Makefile: libiconv.src.stamp
 	cd libiconv && \
@@ -109,8 +97,10 @@ $(LOCAL)/lib/libiconv.a: libiconv/lib/.libs/libiconv.a
 	$(MAKE) -C libiconv DESTDIR=$(DESTDIR) prefix=$(prefix) install
 	ls -l $(LOCAL)/lib/libiconv.a
 
+## Build iconv
 libiconv-build: libiconv/lib/.libs/libiconv.a
 
+## Install iconv
 libiconv-install: $(LOCAL)/lib/libiconv.a
 
 #------------------------------------------------------------------------------#
@@ -120,38 +110,26 @@ libetpan.src.stamp: ../downloads/libetpan.tar.gz
 	cd libetpan && tar xvf ../$<
 	touch $@
 
-libetpan/Makefile: libetpan.src.stamp | libiconv-install
+libetpan/Makefile: libetpan.src.stamp | $(LOCAL)/lib/libiconv.a
 	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh $(APP_ABI)
 	cp -r libetpan/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/$(APP_ABI)/lib/* $(LOCAL)/lib/
 	cp -r libetpan/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/include/* $(LOCAL)/include/
 	touch $@
 
+## Build etpan
 libetpan-build: libetpan/Makefile
-
-libetpan-clean:
-	rm -rf libetpan
-	rm -rf libetpan.src.stamp
 
 #------------------------------------------------------------------------------#
 # uuid
 
-# using released package from debian. official ftp wasn't available today
-
-uuid.src.stamp: ../downloads/ossp-uuid_1.6.2.orig.tar.gz
+uuid.src.stamp: ../downloads/ossp-uuid_1.6.2.orig-patched.tar.gz
 	tar xvf $<
 	mv uuid-1.6.2 uuid
 	touch $@
 
-uuid-src: uuid.src.stamp
-
-uuid-clean:
-	rm -rf uuid
-	rm -rf uuid.src.stamp
-
 uuid/Makefile: uuid.src.stamp
 	$(SED) -i 's,AC_CHECK_VA_COPY(),,' uuid/uuid.ac
 	cd uuid && autoconf
-	-patch -N -p1 --reject-file=- uuid/libtool.m4 ../libtool-Add-Android-Linux-support-iconv.patch
 	cp ../config.sub uuid
 	cp ../config.guess uuid
 	cd uuid && \
@@ -165,17 +143,13 @@ uuid/Makefile: uuid.src.stamp
 uuid/.libs/libuuid.so: uuid/Makefile
 	$(MAKE) -C uuid
 
-$(LOCAL)/lib/libuuid.so: uuid/.libs/libuuid.so
-	# install fails copying uuid cmdline tool, but libs are copied ...
-	-$(MAKE) -C uuid DESTDIR=$(DESTDIR) prefix=$(prefix) install
-	echo "****** THIS ERROR WAS WILLINGLY IGNORED ******"
-	ls -l $(LOCAL)/lib/libuuid.so
-
 uuid-build: uuid/.libs/libuuid.so
 
-uuid-prebuild: uuid/jni/Android.mk uuid/Makefile
+$(LOCAL)/include/uuid.h: uuid/Makefile
+	mkdir -p $(LOCAL)/include && cd uuid && cp uuid.h $(LOCAL)/include
 
-uuid-install: $(LOCAL)/lib/libuuid.so | uuid-prebuild
+## Prebuild uuid
+uuid-prebuild: uuid/jni/Android.mk $(LOCAL)/include/uuid.h
 
 uuid/jni/Android.mk: uuid.src.stamp
 	mkdir -p uuid/jni
@@ -185,7 +159,8 @@ uuid/jni/Android.mk: uuid.src.stamp
 #------------------------------------------------------------------------------#
 # Sequoia
 
-sequoia-deps-build: openssl-install nettle-install
+## Build sequoia dependencies
+sequoia-deps-build: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so
 
 #------------------------------------------------------------------------------#
 # OpenSSL
@@ -195,31 +170,24 @@ openssl.src.stamp: ../downloads/openssl-$(OPENSSL_VERSION).tar.gz
 	mv openssl-$(OPENSSL_VERSION) openssl
 	touch $@
 
-openssl-src: openssl.src.stamp
-
-openssl-clean:
-	rm -rf openssl
-	rm -rf openssl.src.stamp
-
-
-OPENSSL_ARCHITECTURE:=android-arm
-
 openssl/Makefile: openssl.src.stamp
 	cd openssl && \
-	    PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" ../../configure_openssl.sh ${OPENSSL_ARCHITECTURE} $(ANDROID_API) $(LOCAL)
+	    PATH=$(TEMP_WORK_PATH) ../../configure_openssl.sh ${OPENSSL_ARCHITECTURE} $(ANDROID_API) $(LOCAL)
 openssl/libssl.so: | openssl/Makefile
-	PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" $(MAKE) -C openssl
+	PATH=$(TEMP_WORK_PATH) $(MAKE) -C openssl
 
 $(LOCAL)/lib/libssl.so: openssl/libssl.so
-	cd openssl && \
+	mkdir -p $(LOCAL)/lib && cd openssl && \
 		cp libcrypto.so $(LOCAL)/lib && \
 		cp libcrypto.a $(LOCAL)/lib && \
 		cp libssl.so $(LOCAL)/lib && \
 		cp libssl.a $(LOCAL)/lib
 	ls -l $(LOCAL)/lib/libssl.so
 
+## Build openssl
 openssl-build: openssl/libssl.so
 
+## Install openssl
 openssl-install: $(LOCAL)/lib/libssl.so
 
 
@@ -231,18 +199,14 @@ gmp.src.stamp: ../downloads/gmp-$(GMP_VERSION).tar.bz2
 	mv gmp-$(GMP_VERSION) gmp
 	touch $@
 
-gmp-src: gmp.src.stamp
-
-gmp-clean:
-	rm -rf gmp
-	rm -rf gmp.src.stamp
-
 gmp/Makefile: gmp.src.stamp
 	cd gmp && \
 		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
 				--host=$(HOST) \
-				--prefix=$(LOCAL)
+				--prefix=$(LOCAL) \
+			    --disable-static[GMP_MAKEFILE_EXTRA]
+
 
 gmp/.libs/libgmp.so: gmp/Makefile
 	$(MAKE) -C gmp
@@ -253,28 +217,22 @@ $(LOCAL)/lib/libgmp.so: gmp/.libs/libgmp.so
 	ls -l $(LOCAL)/lib/libgmp.so
 	touch $@
 
+## Build gmp
 gmp-build: gmp/.libs/libgmp.so
 
+## Install gmp
 gmp-install: $(LOCAL)/lib/libgmp.so
 
 
 #------------------------------------------------------------------------------#
 # NETTLE
 
-nettle.src.stamp: ../downloads/nettle-$(NETTLE_VERSION).tar.gz $(LOCAL)/lib/libgmp.so
+nettle.src.stamp: ../downloads/nettle-$(NETTLE_VERSION)-patched.tar.gz $(LOCAL)/lib/libgmp.so
 	tar xvf $<
 	mv nettle-$(NETTLE_VERSION) nettle
 	touch $@
 
-nettle-src: nettle.src.stamp
-
-nettle-clean:
-	rm -rf nettle
-	rm -rf nettle.src.stamp
-
-nettle/Makefile: nettle.src.stamp
-	-patch -N -p1 --reject-file=- nettle/configure.ac  ../nettle-3.4.1-remove-so-versioning.patch
-	-patch -N -p1 --reject-file=- nettle/Makefile.in  ../nettle-3.4.1-remove-so-versioning-link.patch
+nettle/Makefile: nettle.src.stamp $(LOCAL)/lib/libgmp.so
 	cd nettle && \
 		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 			./configure \
@@ -293,19 +251,22 @@ $(LOCAL)/lib/libnettle.so: nettle/libnettle.so
 	cp nettle/libnettle.so $(LOCAL)/lib/libnettle.so
 	cp nettle/libhogweed.so $(LOCAL)/lib/libhogweed.so
 
+## Build nettle
 nettle-build: nettle/libnettle.so
 
+## Install nettle
 nettle-install: $(LOCAL)/lib/libnettle.so
 
 
 #------------------------------------------------------------------------------#
 # Sequoia-ffi
-CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/../build
+
+CARGO_TARGET_DIR=$(EXTERNAL_ROOT)/../build/
 
 sequoia.src.stamp: ../downloads/sequoia.tar.gz
 	mkdir -p sequoia
 	cd sequoia && tar xvf ../$<
-	$(SED) -i 's,1.48.0,1.49.0,' sequoia/rust-toolchain
+	$(SED) -i 's,1.48.0,1.64.0,' sequoia/rust-toolchain
 	cd sequoia && cargo update -p nettle-sys --precise 2.0.8
 	mkdir -p $(LOCAL)/lib/
 # This is a bad fix, we should move this to a common makefile (but not the .conf one)
@@ -316,8 +277,8 @@ sequoia-ffi-clean:
 	rm -rf sequoia
 	rm -rf sequoia.src.stamp
 
-$(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp sequoia-deps-build
-	cd sequoia && PATH="$(ANDROID_NDK_HOME)/bin:$(PATH)" \
+$(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so:  sequoia.src.stamp $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so
+	cd sequoia && PATH=$(TEMP_WORK_PATH) \
 	CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
 	PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig \
@@ -325,17 +286,17 @@ $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so:  
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_LIB_DIR="$(LOCAL)/lib" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_INCLUDE_DIR="$(LOCAL)/include" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR="$(LOCAL)/bin" \
-	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target armv7-linux-androideabi -p sequoia-openpgp-ffi --release
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target $(SEQUOIA_ARCH) -p sequoia-openpgp-ffi --release
 
-
-$(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so
-	cp $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.* $(LOCAL)/lib/
+$(LOCAL)/lib/libsequoia_openpgp_ffi.so: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so
+	cp $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.* $(LOCAL)/lib/
 	cp -r sequoia/openpgp-ffi/include/* $(LOCAL)/include
 
+## Build sequoia-ffi
+sequoia-ffi-build: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libsequoia_openpgp_ffi.so
 
-sequoia-ffi-build: $(CARGO_TARGET_DIR)/armv7-linux-androideabi/release/libsequoia_openpgp_ffi.so
-
-sequoia-ffi-install: sequoia-deps-build $(LOCAL)/lib/libsequoia_openpgp_ffi.so
+## Install sequoia-ffi
+sequoia-ffi-install: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libsequoia_openpgp_ffi.so
 
 #------------------------------------------------------------------------------#
 # assets for Android app
@@ -364,35 +325,46 @@ sequoia-ffi-install: sequoia-deps-build $(LOCAL)/lib/libsequoia_openpgp_ffi.so
 #
 
 #------------------------------------------------------------------------------#
-# Clone update and archive external projects GIT repos
-# Local clone is in external/$project.git while
-# selected commit is archived in external/$project
-
-#------------------------------------------------------------------------------#
 # clean
+%-clean:
+	-rm -rf $*
+	-rm -rf $*.src.stamp
 
 clean-assets:
-	rm -rf $(ASSETS)
+	-rm -rf $(ASSETS)
 
+## Delete install destination folder
 clean-install:
-	rm -rf $(LOCAL)
+	-rm -rf $(LOCAL)
 
+## Remove generated artifacts
 clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install libetpan-clean
 
+## Remove generated artifacts and files
 clean-all: clean
-	rm -rf *.git
-	rm -rf *.stamp
+	-rm -rf *.git
+	-rm -rf *.stamp
 #------------------------------------------------------------------------------#
 
 .PHONY = clean clean-install clean-assets libetpan-clean \
 	libiconv-build libiconv-install \
 	libetpan-build \
-	uuid-build uuid-prebuild uuid-install \
+	uuid-build uuid-prebuild \
 	gmp-build  gmp-install \
 	sequoia-deps-build \
 	openssl-build  openssl-install \
 	nettle-build  nettle-install \
-	sequoia-ffi-build sequoia-ffi-install\
+	sequoia-ffi-build sequoia-ffi-install \
 	assets \
-    $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN)\
+    $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN) \
 	showsetup
+
+#------------------------------------------------------------------------------#
+
+.SECONDEXPANSION:
+# src
+%-src: %.src.stamp
+	@echo $<
+
+include ../help.mk
+helpPurpose='Cross-compile external dependencies of pEpEngine for arch [ARCH]'

@@ -1,0 +1,56 @@
+task setpEpJNIAdapterArchs {
+
+    description = "Prepare pEpJNIAdapter to build with the first archs of each connected device."
+
+    doLast {
+        def serialNos = getConnectedDevicesIds()
+        println("Connected devices: $serialNos")
+        def abis = serialNos.collect { serialNo ->
+            convertAbiName(execCommand("adb -s ${serialNo} shell getprop ro.product.cpu.abilist", true).trim().split(",")[0])
+        }.toSet()
+        def sb = new StringBuilder()
+        for (String s : abis) {
+            sb.append(s)
+            sb.append(" ")
+        }
+        if (!abis.isEmpty()) {
+            project.archsToCompile = sb.toString().trim()
+            println("got archs to compile: ${project.archsToCompile}")
+        }
+    }
+}
+
+private List<String> getConnectedDevicesIds(boolean verbose = false) {
+    def lines = execCommand("adb devices", true, verbose).readLines()
+    lines.removeIf { it.trim().isEmpty() }
+    lines.remove(0)
+    if (lines.isEmpty()) return lines
+    return lines.collect { line ->
+        line.substring(0, line.indexOf("device")).trim()
+    }
+}
+
+static String convertAbiName(name) {
+    if (name == "armeabi-v7a") return "arm"
+    else if (name == "arm64-v8a") return "arm64"
+    else return name
+}
+
+private String execCommand(String command, boolean captureOutput = false, boolean verbose = false) {
+    def stdout = captureOutput ? new ByteArrayOutputStream() : null
+    exec {
+        if (verbose) {
+            println("running command: $command")
+        }
+        commandLine command.split(' ')
+        if (stdout != null) {
+            standardOutput = stdout
+        }
+    }
+    String out = null
+    if (stdout != null) {
+        out = stdout.toString()
+        stdout.close()
+    }
+    return out
+}
