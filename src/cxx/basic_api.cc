@@ -290,7 +290,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1importKey(JNIE
         return NULL;
     }
 
-    identity_list *_identities;
+    identity_list *_identities = nullptr;
 
     PEP_STATUS status =  passphraseWrap(::import_key, session(), reinterpret_cast<const char*>(_key), _size, &_identities);
     if (status != PEP_STATUS_OK && status != PEP_KEY_IMPORTED) {
