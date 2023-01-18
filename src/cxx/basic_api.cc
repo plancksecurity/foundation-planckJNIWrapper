@@ -86,7 +86,6 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1myself(JNIEnv 
     PEP_STATUS status = passphraseWrap(::myself, session(), _ident);
 
     if (status != PEP_STATUS_OK) {
-        LOGD("Failed Myself: 0x%04x\\n", status);
         throw_pEp_Exception(env, status);
         return NULL;
     }
@@ -130,7 +129,6 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1setOwnKey(JNIE
     PEP_STATUS status = passphraseWrap(::set_own_key, session(), _ident, _fpr);
 
     if (status != PEP_STATUS_OK) {
-        LOGD("Failed setOwnKey: 0x%04x\\n", status);
         throw_pEp_Exception(env, status);
         return NULL;
     }

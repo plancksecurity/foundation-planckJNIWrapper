@@ -12,14 +12,6 @@
 #include <pEp/passphrase_cache.hh>
 #include <pEp/platform.h>
 
-#if 0 // Enable if log needed
-#include <android/log.h>
-#define  LOG_TAG    "pEpJNIAdapter"
-#define  LOGD(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
-#else
-#define  LOGD(...) do{}while(0)
-#endif
-
 namespace pEp {
 namespace JNIAdapter {
 // Global mutex needs to be locked in all constructors which insert their own mutex object

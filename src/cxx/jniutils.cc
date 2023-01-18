@@ -406,15 +406,7 @@ jobject from_timestamp(JNIEnv *env,
         return NULL;
     }
 
-    //LOGD("/* Seconds (0-60) */  FROM   :%d", ts->tm_sec);
-    //LOGD("/* Minutes (0-59) */         :%d", ts->tm_min);
-    //LOGD("/* Hours (0-23) */           :%d", ts->tm_hour);
-    //LOGD("/* Day of the month (1-31) */:%d", ts->tm_mday);
-    //LOGD("/* Month (0-11) */           :%d", ts->tm_mon);
-    //LOGD("/* Year - 1900 */            :%d", ts->tm_year);
-
     time_t t = timegm(ts) * 1000;
-    //LOGD( "TimeGM returns : %lld", t);
     jclass clazz = findClass(env, "java/util/Date");
     jmethodID constructor = env->GetMethodID(clazz, "<init>", "(J)V");
     assert(constructor);
@@ -434,7 +426,6 @@ timestamp *to_timestamp(JNIEnv *env,
     }
 
     jlong t = callLongMethod(env, date, "getTime");
-    //LOGD( "Set Time to : %lld", t);
     timestamp *ts = static_cast<timestamp *>(calloc(1, sizeof(timestamp)));
     assert(ts);
     if (ts == NULL) {
@@ -444,13 +435,6 @@ timestamp *to_timestamp(JNIEnv *env,
     if (t) {
         time_t clock = t / 1000;
         gmtime_r(&clock, (struct tm*)ts);
-
-        //LOGD("/* Seconds (0-60) */  TO     :%d", ts->tm_sec);
-        //LOGD("/* Minutes (0-59) */         :%d", ts->tm_min);
-        //LOGD("/* Hours (0-23) */           :%d", ts->tm_hour);
-        //LOGD("/* Day of the month (1-31) */:%d", ts->tm_mday);
-        //LOGD("/* Month (0-11) */           :%d", ts->tm_mon);
-        //LOGD("/* Year - 1900 */            :%d", ts->tm_year);
     }
 
     return ts;
