@@ -518,41 +518,6 @@ jobject from_identity(JNIEnv *env,
     return obj;
 }
 
-//TODO: fix/generalize/clean patch added to make keysync work using globalref to class
-jobject from_identity(JNIEnv *env,
-        pEp_identity *ident,
-        jclass identityClass)
-{
-    if (!ident) {
-        return (jobject) NULL;
-    }
-
-    static const char *classname = "foundation/pEp/jniadapter/_Identity";
-    jmethodID constructor = env->GetMethodID(identityClass, "<init>", "()V");
-    assert(constructor);
-    jobject obj = env->NewObject(identityClass, constructor);
-
-    if (ident) {
-        _setStringField(env, classname, obj, "address", ident->address, identityClass);
-        _setStringField(env, classname, obj, "fpr", ident->fpr, identityClass);
-        _setStringField(env, classname, obj, "user_id", ident->user_id, identityClass);
-        _setStringField(env, classname, obj, "username", ident->username, identityClass);
-
-        jfieldID comm_type_id = getFieldID(env, classname, "comm_type", "I", identityClass);
-        env->SetIntField(obj, comm_type_id, static_cast<jint>(ident->comm_type));
-
-        _setStringField(env, classname, obj, "lang", ident->lang, identityClass);
-
-        jfieldID me_id = getFieldID(env, classname, "me", "Z", identityClass);
-        env->SetBooleanField(obj, me_id, static_cast<jboolean>(ident->me));
-
-        jfieldID flags_id = getFieldID(env, classname, "flags", "I", identityClass);
-        env->SetIntField(obj, flags_id, static_cast<jint>(ident->flags));
-    }
-
-    return obj;
-}
-
 char *_getStringField(JNIEnv *env,
         const char *classname,
         jobject obj,

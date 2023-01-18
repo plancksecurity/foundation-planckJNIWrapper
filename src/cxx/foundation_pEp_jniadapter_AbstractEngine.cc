@@ -33,7 +33,6 @@ jmethodID passphrase_callback_values = nullptr;
 jobject objj = nullptr;
 
 jclass messageClass = nullptr;
-jclass identityClass = nullptr;
 jclass signalClass = nullptr;
 jclass abstractEngineClass = nullptr;
 jclass passphraseTypeClass = nullptr;
@@ -69,7 +68,6 @@ void jni_init() {
     JNIEnv * _env = JNISync::env();
 
     messageClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/Message")));
-    identityClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/_Identity")));
     signalClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/SyncHandshakeSignal")));
     passphraseTypeClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/PassphraseType")));
     abstractEngineClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/AbstractEngine")));
@@ -203,8 +201,8 @@ PEP_STATUS notifyHandshake(pEp_identity *me,
     jobject me_ = nullptr;
     jobject partner_ = nullptr;
 
-    me_ = from_identity(JNISync::env(), me, identityClass);
-    partner_ = from_identity(JNISync::env(), partner, identityClass);
+    me_ = from_identity(JNISync::env(), me);
+    partner_ = from_identity(JNISync::env(), partner);
 
     jobject signal_ = nullptr;
     {
