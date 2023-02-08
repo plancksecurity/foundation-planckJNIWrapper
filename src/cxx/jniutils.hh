@@ -105,6 +105,10 @@ timestamp *to_timestamp(JNIEnv *env,
 jobject from_identity(JNIEnv *env,
         pEp_identity *ident);
 
+jobject from_identity(JNIEnv *env,
+        pEp_identity *ident,
+        jclass identityClass);
+
 pEp_identity *to_identity(JNIEnv *env,
         jobject obj);
 
