@@ -140,10 +140,6 @@ class TestMain {
             ctx.engine.get_trustwords(ctx.alice, ctx.bob, "en", false);
         });
 
-        new TestUnit<CTXAlice2>("Engine.get_trustwords_for_fprs", new CTXAlice2(), ctx -> {
-            ctx.engine.get_trustwords_for_fprs(ctx.alice.fpr, ctx.bob.fpr, "en", false);
-        });
-
         new TestUnit<CTXBase>("Engine.get_message_trustwords", new CTXBase(), ctx -> {
             ctx.engine.get_message_trustwords(ctx.msgAliceToBob, null, ctx.bob, "en", false);
         });
