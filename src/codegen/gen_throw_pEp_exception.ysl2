@@ -25,6 +25,7 @@ tstylesheet {
         document("../cxx/throw_pEp_exception.cc", "text")
             ||
             #include <assert.h>
+            #include <string>
             #include <pEp/pEpEngine.h>
             #include "throw_pEp_exception.hh"
 
@@ -33,7 +34,8 @@ tstylesheet {
                     jint throw_pEp_Exception(JNIEnv *env, PEP_STATUS status)
                     {
                         jclass ex;
-                        const char *ex_name;
+                        std::string ex_pkg{"foundation/pEp/jniadapter/exceptions/"};
+                        std::string ex_name{};
 
                         switch (status) {
                             `` apply "exception/*[text()!=0]", 4, mode=case
@@ -42,7 +44,7 @@ tstylesheet {
                                 ex_name = "Exception";
                         }
 
-                        ex = env->FindClass(ex_name);
+                        ex = env->FindClass(ex_name.c_str());
                         assert(ex);
 
                         if (ex == NULL) {
@@ -50,7 +52,7 @@ tstylesheet {
                             assert(ex);
                         }
 
-                        return env->ThrowNew(ex, ex_name);
+                        return env->ThrowNew(ex, ex_name.c_str());
                     }
                 };
             };
@@ -58,7 +60,7 @@ tstylesheet {
 
     template "*", mode=case {
         | case `call "UCASE" with "text", "name(.)"`:
-        |     ex_name = "foundation/pEp/jniadapter/exceptions/`call "CamelCase" with "text", "name(.)"`";
+        |     ex_name = ex_pkg + "`call "CamelCase" with "text", "name(.)"`";
         |     break;
     }
 }
