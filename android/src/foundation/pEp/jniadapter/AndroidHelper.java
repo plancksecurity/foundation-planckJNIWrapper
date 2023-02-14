@@ -31,7 +31,8 @@ public class AndroidHelper {
         
     // TODO : Increment when needed.
     // TODO : Check if this version tracking is really needed and Automatize it
-    public static String ENGINE_VERSION_CODE = "Release_2.1.56";
+    // TODO : This could be automatically generated as the version is tied to git tag && other files in the JNI part.
+    public static String ENGINE_VERSION_CODE = "v3.2.0-RC3";
 
     private static File shareDir;
 
@@ -141,12 +142,14 @@ public class AndroidHelper {
 
                 byte[] pubringBytes = new byte[(int) pubring.length()];
                 pubring.readFully(pubringBytes);
-                Engine pEpEngine = new Engine();
-                pEpEngine.importKey(pubringBytes);
+                Log.d("boss", "init engine objc at "+Thread.currentThread().getId());
+                try (Engine pEpEngine = new Engine()) {
+                    pEpEngine.importKey(pubringBytes);
 
-                byte[] secringBytes = new byte[(int) secring.length()];
-                secring.readFully(secringBytes);
-                pEpEngine.importKey(secringBytes);
+                    byte[] secringBytes = new byte[(int) secring.length()];
+                    secring.readFully(secringBytes);
+                    pEpEngine.importKey(secringBytes);
+                }
 
 
                 //TODO: MARK KEYRING AS IMPORTED

@@ -42,7 +42,7 @@ LDFLAGS += $(MYLDFLAGS)
 # GNU Tools trickery
 
 # point pkg-config to the .pc files generated from these builds
-export PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig
+export PKG_CONFIG_PATH=$(LOCAL)/lib/src/pEpEngineSequoiaBackend/target/release
 
 # workaround for cross-compiling bug in autoconf
 export ac_cv_func_malloc_0_nonnull=yes
