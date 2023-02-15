@@ -1,5 +1,6 @@
 #include <pEp/message_api.h>
 #include <pEp/pEpLog.hh>
+#include "foundation_pEp_jniadapter_Identity.h"
 
 #include "jniutils.hh"
 

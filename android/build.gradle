@@ -2,6 +2,7 @@
 
 def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
 def libpEpTransportSrc = hasProperty('libpEpTransportSrc') ? libpEpTransportSrc : "../../libpEpTransport"
+def libCxx11Src = hasProperty('libCxx11Src') ? libCxx11Src : "../../libpEpCxx11"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 //CHeck M1 answers the correct thing off .avaialableprocessors here
 //def threadsToUse = hasProperty('threadsToUse') ?
@@ -34,7 +35,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 31
-
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 31
@@ -96,9 +96,13 @@ android {
             path 'jni/Android.mk'
         }
     }
+    task genlibCxx11Sources(type:Exec) {
+        workingDir "${libCxx11Src}"
+        commandLine 'make', "-j${threadsToUse}", 'install'
+    }
 
     // call source generation makefile target
-    task genSources(type:Exec, dependsOn: 'genpEpEngineAsn1Sources') {
+    task genSources(type:Exec, dependsOn: ['genlibCxx11Sources', 'genpEpEngineAsn1Sources']) {
         workingDir '../src'
         commandLine 'make', 'lib-java'
     }
@@ -162,6 +166,10 @@ android {
         into 'assets'
     }
     ndkVersion '25.1.8937393'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     if(buildAutomatic == "true") {
         buildpEpEngineSystemDB.dependsOn(buildExternal)
