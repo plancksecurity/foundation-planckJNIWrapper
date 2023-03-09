@@ -1,7 +1,9 @@
 package foundation.pEp.jniadapter.interfaces;
 
 import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.Pair;
 import foundation.pEp.jniadapter.Sync;
+import java.util.ArrayList;
 
 public interface AbstractEngineInterface extends AutoCloseable {
     public String getVersion();
@@ -11,6 +13,8 @@ public interface AbstractEngineInterface extends AutoCloseable {
     public void startSync();
 
     public void stopSync();
+
+    public void config_media_keys(ArrayList<Pair<String, String>> value);
 
     public boolean isSyncRunning();
 
