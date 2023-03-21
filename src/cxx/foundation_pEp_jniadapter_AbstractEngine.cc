@@ -259,10 +259,11 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_init(JNIEnv
         jni_init();
         objj = env->NewGlobalRef(obj);
         callback_dispatcher.add(messageToSend, notifyHandshake, JNISync::onSyncStartup, JNISync::onSyncShutdown);
+        Adapter::Session::initialize(Adapter::SyncModes::Async, false);
     }
 
     create_engine_java_object_mutex(env, obj);  // Create a mutex per java object
-    Adapter::session.initialize(Adapter::SyncModes::Async, false);
+    Adapter::session();
 }
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_AbstractEngine_release(JNIEnv *env,
