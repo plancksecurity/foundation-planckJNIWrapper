@@ -1,5 +1,5 @@
 # 1st Party Dependencies
 ## Prefer git tags instead of SHA hashes when possible.
 
-pEpEngine=v2.1.66
-libpEpAdapter=v2.1.23
+pEpEngine=v2.1.72
+libpEpAdapter=v2.1.24
