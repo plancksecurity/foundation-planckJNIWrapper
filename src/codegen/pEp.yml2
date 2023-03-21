@@ -23,14 +23,13 @@ namespace pEp {
         enumitem PEP_color_red      toString="Red"      > -1
     };
 
-
     enum has_int_str_val=true Rating {
        enumitem pEp_rating_undefined              int_str_val=undefined                 > 0
        enumitem pEp_rating_cannot_decrypt         int_str_val=cannot_decrypt            > 1
        enumitem pEp_rating_have_no_key            int_str_val=have_no_key               > 2
        enumitem pEp_rating_unencrypted            int_str_val=unencrypted               > 3
-       enumitem pEp_rating_unencrypted_for_some   int_str_val=unencrypted_for_some      > 4
-       enumitem pEp_rating_unreliable             int_str_val=unreliable                > 5
+       enumitem pEp_rating_unreliable             int_str_val=unreliable                > 4
+       enumitem PEP_rating_media_key_protected    int_str_val=media_key_protected       > 5
        enumitem pEp_rating_reliable               int_str_val=reliable                  > 6
        enumitem pEp_rating_trusted                int_str_val=trusted                   > 7
        enumitem pEp_rating_trusted_and_anonymized int_str_val=trusted_and_anonymized    > 8
