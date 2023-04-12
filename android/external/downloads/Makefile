@@ -26,8 +26,14 @@ download-iconv: libiconv-1.15.tar.gz
 download-uuid: ossp-uuid_1.6.2.orig-patched.tar.gz
 
 ## Download sequoia dependencies
-download-sequoia-deps: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSION).tar.bz2 \
+	
+download-sequoia-deps: download-sequoia-deps-$(CRYPTO_LIB_NAME)
+#$(if $(findstring NETTLE,$(CRYPTO_LIB_NAME)), download-sequoia-deps-nettle, download-sequoia-deps-botan)
+
+download-sequoia-deps-nettle: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSION).tar.bz2 \
 						nettle-$(NETTLE_VERSION)-patched.tar.gz
+
+download-sequoia-deps-botan: Botan-$(BOTAN_VERSION).tar.xz
 
 ## Download etpan
 download-etpan: libetpan.git.stamp
@@ -64,9 +70,13 @@ nettle-$(NETTLE_VERSION)-patched.tar.gz: nettle-$(NETTLE_VERSION).tar.gz
 	tar -czvf $@ nettle-$(NETTLE_VERSION)
 	rm -rf nettle-$(NETTLE_VERSION)
 
+Botan-$(BOTAN_VERSION).tar.xz:
+	wget -nc https://botan.randombit.net/releases/Botan-$(BOTAN_VERSION).tar.xz
+
 nettle-$(NETTLE_VERSION).tar.gz:
 	wget -nc https://ftp.gnu.org/gnu/nettle/nettle-$(NETTLE_VERSION).tar.gz
 	md5sum -c nettle-$(NETTLE_VERSION).tar.gz.md5
+
 
 
 #------------------------------------------------------------------------------#
@@ -117,6 +127,7 @@ clean:
 	-rm -rf *.stamp
 	-rm -rf *.tar.gz
 	-rm -rf *.tar.bz2
+	-rm -rf *.tar.xz
 
 .PHONY: all clean download-iconv \
 		download-uuid download-etpan \

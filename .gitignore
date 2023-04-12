@@ -84,7 +84,7 @@ androidTests/gradle/wrapper/gradle-wrapper.properties
 androidTests/gradlew
 androidTests/gradlew.bat
 org.tar.gz
-
+*.tar.xz
 *.iml
 
 android/external/[?]*

@@ -10,6 +10,7 @@ APP_ABI ?= [ARCH]
 HOST ?= [HOST]
 NDK_TOOLCHAIN_TARGET ?= [NDK_TOOLCHAIN_TARGET]
 SEQUOIA_ARCH ?= [SEQUOIA_ARCH]
+BOTAN_ARCH ?= [BOTAN_ARCH]
 OPENSSL_ARCHITECTURE ?= [OPENSSL_ARCHITECTURE]
 COMPILER_PREFIX ?= [COMPILER_PREFIX]
 
@@ -157,12 +158,6 @@ uuid/jni/Android.mk: uuid.src.stamp
 
 
 #------------------------------------------------------------------------------#
-# Sequoia
-
-## Build sequoia dependencies
-sequoia-deps-build: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so
-
-#------------------------------------------------------------------------------#
 # OpenSSL
 
 openssl.src.stamp: ../downloads/openssl-$(OPENSSL_VERSION).tar.gz
@@ -257,6 +252,43 @@ nettle-build: nettle/libnettle.so
 ## Install nettle
 nettle-install: $(LOCAL)/lib/libnettle.so
 
+#------------------------------------------------------------------------------#
+# BOTAN
+
+botan.src.stamp: ../downloads/Botan-$(BOTAN_VERSION).tar.xz
+	tar xvf $<
+	mv Botan-$(BOTAN_VERSION) botan
+	touch $@
+
+botan/Makefile: botan.src.stamp
+	cd botan && \
+		AR="$(AR)" CXX="$(CXX)" \
+			./configure.py --os=android --cc="clang" --cpu="$(BOTAN_ARCH)" --prefix="$(LOCAL)"
+
+
+
+botan/.libs/libbotan-2.so: botan/Makefile
+	$(MAKE) -C botan all
+
+$(LOCAL)/lib/libbotan-2.so: botan/.libs/libbotan-2.so
+	$(MAKE) -C botan install
+	ls -l $(LOCAL)/lib/libbotan-2.so
+	touch $@
+
+## Build botan
+botan-build: botan/.libs/libbotan-2.so
+
+## Install botan
+botan-install: $(LOCAL)/lib/libbotan-2.so
+
+#------------------------------------------------------------------------------#
+# Sequoia
+
+## Build sequoia dependencies
+sequoia-deps-build: sequoia-deps-build-$(CRYPTO_LIB_NAME)
+sequoia-deps-build-nettle: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so
+sequoia-deps-build-botan: $(LOCAL)/lib/libbotan-2.so
+
 
 #------------------------------------------------------------------------------#
 # pEpEngineSequoiaBackend
@@ -267,11 +299,11 @@ pEpEngineSequoiaBackend.src.stamp: ../downloads/pEpEngineSequoiaBackend.tar.gz
 	mkdir -p pEpEngineSequoiaBackend
 	cd pEpEngineSequoiaBackend && tar xvf ../$<
 	mkdir -p $(LOCAL)/lib/
-# This is a bad fix, we should move this to a common makefile (but not the .conf one)
 	find -L $(ANDROID_NDK) -name libunwind.a -execdir sh -c 'echo "INPUT(-lunwind)" > $(LOCAL)/lib/libgcc.a' \;
 	touch $@
 
-$(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.a:  pEpEngineSequoiaBackend.src.stamp $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so
+$(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.a:  pEpEngineSequoiaBackend.src.stamp sequoia-deps-build-$(CRYPTO_LIB_NAME)
+	cd pEpEngineSequoiaBackend && cargo update -p sequoia-openpgp --precise 1.14.0 
 	cd pEpEngineSequoiaBackend && PATH=$(TEMP_WORK_PATH) \
 	CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
@@ -280,7 +312,8 @@ $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.a:  pE
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_LIB_DIR="$(LOCAL)/lib" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_INCLUDE_DIR="$(LOCAL)/include" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR="$(LOCAL)/bin" \
-	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --target $(SEQUOIA_ARCH) -p pep_engine_sequoia_backend --release
+	RUSTFLAGS='-L $(LOCAL)/lib' \
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --no-default-features --features sequoia-openpgp/crypto-$(CRYPTO_LIB_NAME) --target $(SEQUOIA_ARCH) -p pep_engine_sequoia_backend --release
 
 $(LOCAL)/lib/libpep_engine_sequoia_backend.a: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.a
 	cp $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.* $(LOCAL)/lib/
@@ -288,7 +321,11 @@ $(LOCAL)/lib/libpep_engine_sequoia_backend.a: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH
 
 pEpEngineSequoiaBackend-build: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.a
 
-pEpEngineSequoiaBackend-install: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libpep_engine_sequoia_backend.a
+pEpEngineSequoiaBackend-install: pEpEngineSequoiaBackend-install-$(CRYPTO_LIB_NAME)
+
+pEpEngineSequoiaBackend-install-nettle: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libpep_engine_sequoia_backend.a
+
+pEpEngineSequoiaBackend-install-botan: $(LOCAL)/lib/libbotan-2.so $(LOCAL)/lib/libpep_engine_sequoia_backend.a
 
 #------------------------------------------------------------------------------#
 # assets for Android app
@@ -343,6 +380,7 @@ clean-all: clean
 	libetpan-build \
 	uuid-build uuid-prebuild \
 	gmp-build  gmp-install \
+	botan-build  botan-install \
 	sequoia-deps-build \
 	openssl-build  openssl-install \
 	nettle-build  nettle-install \
