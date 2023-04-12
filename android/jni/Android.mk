@@ -4,6 +4,7 @@ ENGINE_PATH := $(LOCAL_PATH)/../../../pEpEngine
 LIB_PEP_ADAPTER_PATH:=$(SRC_PATH)/libpEpAdapter
 LIB_PEP_CXX11_PATH:=$(SRC_PATH)/libpEpCxx11
 GPGBUILD:= $(LOCAL_PATH)/../external/output/
+include $(LOCAL_PATH)/../external/Makefile.conf
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libiconv
@@ -14,22 +15,36 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libpep_engine_sequoia_backend
 LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libpep_engine_sequoia_backend.a
 include $(PREBUILT_STATIC_LIBRARY)
+#Crypto lib switch, as we can use Sequoia with multiple crypto backends a switch to see which libs are loaded is required, we assume botan is the alternative, botan  the 'default' temporarily, but having nothing defined will output an error
+ifeq ($(CRYPTO_LIB_NAME), botan)
+    $(warning ==== JNIADAPTER android.mk using BOTAN for pEpEngineSequoiaBackend)
 
-include $(CLEAR_VARS)
-LOCAL_MODULE := libhogweed
-LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libhogweed.so
-include $(PREBUILT_SHARED_LIBRARY)
+    include $(CLEAR_VARS)
+    LOCAL_MODULE := botan
+    LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libbotan-2.a
+    include $(PREBUILT_STATIC_LIBRARY)
 
-include $(CLEAR_VARS)
-LOCAL_MODULE := libgmp
-LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libgmp.so
-include $(PREBUILT_SHARED_LIBRARY)
+else ifeq ($(CRYPTO_LIB_NAME), nettle)
+    $(warning ==== JNIADAPTER android.mk using NETTLE for pEpEngineSequoiaBackend)
+    include $(CLEAR_VARS)
+    LOCAL_MODULE := libhogweed
+    LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libhogweed.so
+    include $(PREBUILT_SHARED_LIBRARY)
 
-include $(CLEAR_VARS)
-LOCAL_MODULE := libnettle
-LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libnettle.so
-include $(PREBUILT_SHARED_LIBRARY)
+    include $(CLEAR_VARS)
+    LOCAL_MODULE := libgmp
+    LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libgmp.so
+    include $(PREBUILT_SHARED_LIBRARY)
 
+    include $(CLEAR_VARS)
+    LOCAL_MODULE := libnettle
+    LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libnettle.so
+    include $(PREBUILT_SHARED_LIBRARY)
+    LOCAL_SHARED_LIBRARIES := libnettle libhogweed libgmp
+
+else
+    $(error No crypto backend given!)
+endif
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libetpan
@@ -44,19 +59,18 @@ $(shell sh $(ENGINE_PATH)/build-android/takeOutHeaderFiles.sh $(ENGINE_PATH))
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
-LOCAL_SHARED_LIBRARIES :=  libnettle libhogweed libgmp
-LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libuuid libiconv pEpAdapter pEpCxx11 libpep_engine_sequoia_backend
+LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libuuid libiconv pEpAdapter pEpCxx11 botan libpep_engine_sequoia_backend
 LOCAL_CPP_FEATURES += exceptions
 LOCAL_CPPFLAGS += -std=c++11 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld
 LOCAL_SRC_FILES  := \
-		  ../../src/cxx/foundation_pEp_jniadapter_AbstractEngine.cc \
-		  ../../src/cxx/foundation_pEp_jniadapter_Engine.cc \
-		  ../../src/cxx/foundation_pEp_jniadapter_Message.cc \
-		  ../../src/cxx/foundation_pEp_jniadapter__Blob.cc \
-		  ../../src/cxx/throw_pEp_exception.cc \
-		  ../../src/cxx/basic_api.cc \
-		  ../../src/cxx/identity_api.cc \
-		  ../../src/cxx/jniutils.cc
+          ../../src/cxx/foundation_pEp_jniadapter_AbstractEngine.cc \
+          ../../src/cxx/foundation_pEp_jniadapter_Engine.cc \
+          ../../src/cxx/foundation_pEp_jniadapter_Message.cc \
+          ../../src/cxx/foundation_pEp_jniadapter__Blob.cc \
+          ../../src/cxx/throw_pEp_exception.cc \
+          ../../src/cxx/basic_api.cc \
+          ../../src/cxx/identity_api.cc \
+          ../../src/cxx/jniutils.cc
 
 LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include
 LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SRC_PATH)/libpEpAdapter
