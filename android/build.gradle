@@ -82,7 +82,7 @@ android {
             buildConfigField "String", "CRYPTO_BACK_END", "\"${CRYPTO_LIB}\""
             externalNativeBuild {
                 ndkBuild {
-                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null', '--output-sync=none', '-B', 'V=1'
+                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null', '--output-sync=none', '-B', 'V=1', "CRYPTO_LIB_NAME=${CRYPTO_LIB}"
                     // arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1'
                 }
             }
