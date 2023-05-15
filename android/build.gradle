@@ -1,13 +1,16 @@
 // Android pEp JNI adapter Aar gradle build script
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
 def libpEpTransportSrc = hasProperty('libpEpTransportSrc') ? libpEpTransportSrc : "../../libpEpTransport"
 def libCxx11Src = hasProperty('libCxx11Src') ? libCxx11Src : "../../libpEpCxx11"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 //CHeck M1 answers the correct thing off .avaialableprocessors here Libetpan seems to break
-def threadsToUse = hasProperty('threadsToUse') ?
-        threadsToUse : Runtime.getRuntime().availableProcessors()
-//def threadsToUse = 1
+def threadsToUse = DefaultNativePlatform.currentArchitecture.arm
+        ? 1 // for the moment only use
+        : (hasProperty('threadsToUse')
+        ? threadsToUse
+        : Runtime.getRuntime().availableProcessors())
 
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 def CRYPTO_LIB = "botan"
