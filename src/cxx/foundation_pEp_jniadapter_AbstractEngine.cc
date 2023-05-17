@@ -13,7 +13,7 @@
 
 namespace pEp {
 using namespace pEp::JNIAdapter;
-using namespace utility;   // for libpEpAdapter locked queue impl.  TODO:rename
+using namespace utility;   // for libPlanckAdapter locked queue impl.  TODO:rename
 
 bool first = true;
 JavaVM *jvm= nullptr;
