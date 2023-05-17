@@ -2,7 +2,7 @@
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
-def libpEpTransportSrc = hasProperty('libpEpTransportSrc') ? libpEpTransportSrc : "../../libpEpTransport"
+def libpEpTransportSrc = hasProperty('libpEpTransportSrc') ? libpEpTransportSrc : "../../libPlanckTransport"
 def libCxx11Src = hasProperty('libCxx11Src') ? libCxx11Src : "../../libPlanckCxx11"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 //CHeck M1 answers the correct thing off .avaialableprocessors here Libetpan seems to break
