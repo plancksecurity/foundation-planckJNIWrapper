@@ -2,7 +2,7 @@ LOCAL_PATH:= $(call my-dir)
 SRC_PATH := $(LOCAL_PATH)/../../../
 ENGINE_PATH := $(LOCAL_PATH)/../../../pEpEngine
 LIB_PEP_ADAPTER_PATH:=$(SRC_PATH)/libPlanckAdapter
-LIB_PEP_CXX11_PATH:=$(SRC_PATH)/libpEpCxx11
+LIB_PEP_CXX11_PATH:=$(SRC_PATH)/libPlanckCxx11
 GPGBUILD:= $(LOCAL_PATH)/../external/output/
 include $(LOCAL_PATH)/../external/Makefile.conf
 
@@ -74,7 +74,7 @@ LOCAL_SRC_FILES  := \
 
 LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include
 LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SRC_PATH)/libPlanckAdapter
-LOCAL_C_INCLUDES += $(LIB_PEP_CXX11_PATH)/build-android/include $(SRC_PATH)/libpEpCxx11
+LOCAL_C_INCLUDES += $(LIB_PEP_CXX11_PATH)/build-android/include $(SRC_PATH)/libPlanckCxx11
 LOCAL_C_INCLUDES += $(ENGINE_PATH)/asn.1
 
 LOCAL_LDFLAGS = -Wl,--allow-multiple-definition
@@ -120,7 +120,7 @@ $(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
 $(warning ==== JNIADAPTER android.mk CALLING import-module libPlanckAdapter
 $(call import-module, libPlanckAdapter/build-android/jni/)
 $(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
-## libpEpCxx11
-$(warning ==== JNIADAPTER android.mk CALLING import-module libpEpCxx11)
-$(call import-module, libpEpCxx11/build-android/jni/)
+## libPlanckCxx11
+$(warning ==== JNIADAPTER android.mk CALLING import-module libPlanckCxx11)
+$(call import-module, libPlanckCxx11/build-android/jni/)
 $(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
