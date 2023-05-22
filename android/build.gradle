@@ -1,7 +1,7 @@
 // Android pEp JNI adapter Aar gradle build script
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
-def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
+def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../planckCoreV3"
 def libpEpTransportSrc = hasProperty('libpEpTransportSrc') ? libpEpTransportSrc : "../../libPlanckTransport"
 def libCxx11Src = hasProperty('libCxx11Src') ? libCxx11Src : "../../libPlanckCxx11"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"

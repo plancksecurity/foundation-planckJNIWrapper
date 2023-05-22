@@ -1,6 +1,6 @@
 LOCAL_PATH:= $(call my-dir)
 SRC_PATH := $(LOCAL_PATH)/../../../
-ENGINE_PATH := $(LOCAL_PATH)/../../../pEpEngine
+ENGINE_PATH := $(LOCAL_PATH)/../../../planckCoreV3
 LIB_PEP_ADAPTER_PATH:=$(SRC_PATH)/libPlanckWrapper
 LIB_PEP_CXX11_PATH:=$(SRC_PATH)/libPlanckCxx11
 GPGBUILD:= $(LOCAL_PATH)/../external/output/
@@ -110,11 +110,11 @@ $(warning ==== CURRENT TARGET OUT: $(TARGET_OUT))
 #$(warning ==== after sleeping 6 seconds)
 ## pEpEngine
 $(warning ==== JNIADAPTER android.mk CALLING import-module pEpEngine)
-$(call import-module, pEpEngine/build-android/jni/)
+$(call import-module, planckCoreV3/build-android/jni/)
 $(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
 #echo "==== INSIDE RECIPE: JNIADAPTER android.mk CALLING import-module pEpEngine"
 $(warning ==== JNIADAPTER android.mk CALLING import-module pEpEngine)
-$(call import-module, pEpEngine/build-android/jni/)
+$(call import-module, planckCoreV3/build-android/jni/)
 $(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
 ## libPlanckWrapper
 $(warning ==== JNIADAPTER android.mk CALLING import-module libPlanckWrapper
