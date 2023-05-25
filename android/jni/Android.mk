@@ -117,7 +117,7 @@ $(warning ==== JNIADAPTER android.mk CALLING import-module pEpEngine)
 $(call import-module, planckCoreV3/build-android/jni/)
 $(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
 ## libPlanckWrapper
-$(warning ==== JNIADAPTER android.mk CALLING import-module libPlanckWrapper
+$(warning ==== JNIADAPTER android.mk CALLING import-module libPlanckWrapper)
 $(call import-module, libPlanckWrapper/build-android/jni/)
 $(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
 ## libPlanckCxx11
