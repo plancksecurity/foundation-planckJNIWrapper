@@ -95,7 +95,7 @@ $(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
 ## uuid
 $(info $(LOCAL_PATH))
 $(warning ==== JNIADAPTER android.mk CALLING import-module uuid)
-$(call import-module, pEpJNIAdapter/android/external/$(TARGET_ARCH_ABI)/uuid/jni)
+$(call import-module, planckJNIWrapper/android/external/$(TARGET_ARCH_ABI)/uuid/jni)
 $(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
 #$(call import-module, libPlanckTransport/build-android/jni/)
 $(warning ==== CURRENT NDK LIBS OUT: $(NDK_LIBS_OUT))

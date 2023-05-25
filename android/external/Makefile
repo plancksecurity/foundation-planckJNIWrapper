@@ -116,5 +116,5 @@ cleanMakefiles:
 refreshMakefiles: cleanMakefiles createMakefiles
 
 include help.mk
-helpHeader='pEpJNIAdapter/android/external Makefile'
+helpHeader='pEpJNIWrapper/android/external Makefile'
 helpPurpose='Cross-compile external dependencies of pEpEngine for the 4 Android archs \(x86, x86_64, arm, arm64\)'
