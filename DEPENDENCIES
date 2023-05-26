@@ -3,4 +3,4 @@
 
 pEpEngine=CORE-15
 libpEpAdapter=CORE-15
-libpEpCxx11=v3.2.0
+libpEpCxx11=CORE-15
