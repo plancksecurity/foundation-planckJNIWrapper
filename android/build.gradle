@@ -1,13 +1,16 @@
 // Android pEp JNI adapter Aar gradle build script
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
-def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../pEpEngine"
-def libpEpTransportSrc = hasProperty('libpEpTransportSrc') ? libpEpTransportSrc : "../../libpEpTransport"
-def libCxx11Src = hasProperty('libCxx11Src') ? libCxx11Src : "../../libpEpCxx11"
+def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../planckCoreV3"
+def libpEpTransportSrc = hasProperty('libpEpTransportSrc') ? libpEpTransportSrc : "../../libPlanckTransport"
+def libCxx11Src = hasProperty('libCxx11Src') ? libCxx11Src : "../../libPlanckCxx11"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 //CHeck M1 answers the correct thing off .avaialableprocessors here Libetpan seems to break
-def threadsToUse = hasProperty('threadsToUse') ?
-        threadsToUse : Runtime.getRuntime().availableProcessors()
-//def threadsToUse = 1
+def threadsToUse = DefaultNativePlatform.currentArchitecture.arm
+        ? 1 // for the moment only use
+        : (hasProperty('threadsToUse')
+        ? threadsToUse
+        : Runtime.getRuntime().availableProcessors())
 
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 def CRYPTO_LIB = "botan"
@@ -37,10 +40,10 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 31
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 30
         targetSdkVersion 31
         versionCode 7
-        versionName "2.1.43"
+        versionName "3.2.0"
 
         externalNativeBuild {
             ndkBuild {
@@ -82,7 +85,7 @@ android {
             buildConfigField "String", "CRYPTO_BACK_END", "\"${CRYPTO_LIB}\""
             externalNativeBuild {
                 ndkBuild {
-                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null', '--output-sync=none', '-B', 'V=1'
+                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null', '--output-sync=none', '-B', 'V=1', "CRYPTO_LIB_NAME=${CRYPTO_LIB}"
                     // arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1'
                 }
             }

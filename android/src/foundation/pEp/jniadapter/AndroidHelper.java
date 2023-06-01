@@ -32,7 +32,7 @@ public class AndroidHelper {
     // TODO : Increment when needed.
     // TODO : Check if this version tracking is really needed and Automatize it
     // TODO : This could be automatically generated as the version is tied to git tag && other files in the JNI part.
-    public static String ENGINE_VERSION_CODE = "v3.2.0-RC3";
+    public static String ENGINE_VERSION_CODE = "v3.2.0";
 
     private static File shareDir;
 
