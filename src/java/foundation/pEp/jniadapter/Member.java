@@ -1,8 +1,10 @@
 package foundation.pEp.jniadapter;
 
 public class Member {
-    Identity ident;
-    boolean joined;
+    public Identity ident;
+    public boolean joined;
+
+    public Member() {}
 
     public Member(_Member member) {
         ident = new Identity(member.ident);
