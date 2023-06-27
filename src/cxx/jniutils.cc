@@ -1,4 +1,5 @@
 #include "jniutils.hh"
+#include "pEp/group.h"
 #include <pEp/pEpLog.hh>
 #include <cassert>
 #include <cstring>
@@ -466,6 +467,17 @@ static void _setStringField(JNIEnv *env,
     }
 }
 
+static void _setBooleanField(JNIEnv *env,
+                            const char *classname,
+                            jobject obj,
+                            const char *name,
+                            const bool value,
+                            const jclass clazz)
+{
+    jfieldID fieldID = getFieldID(env, classname, name, "Z", clazz);
+    env->SetBooleanField(obj, fieldID, static_cast<jboolean>(value));
+}
+
 jobject from_identity(JNIEnv *env,
         pEp_identity *ident)
 {
@@ -497,6 +509,40 @@ jobject from_identity(JNIEnv *env,
 
         jfieldID flags_id = getFieldID(env, classname, "flags", "I");
         env->SetIntField(obj, flags_id, static_cast<jint>(ident->flags));
+    }
+
+    return obj;
+}
+
+static void _setIdentityField(JNIEnv *env,
+                              const char *classname,
+                              jobject obj,
+                              const char *name,
+                              pEp_identity *value,
+                              const jclass clazz)
+{
+    if (value) {
+        jfieldID fieldID = getFieldID(env, classname, name, "[B", clazz);
+        env->SetObjectField(obj, fieldID, static_cast<jobject>(from_identity(env, value)));
+    }
+}
+
+jobject from_member(JNIEnv *env,
+                    pEp_member *member)
+{
+    if (!member) {
+        return (jobject) NULL;
+    }
+
+    static const char *classname = "foundation/pEp/jniadapter/_Member";
+    jclass clazz = findClass(env, classname);
+    jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
+    assert(constructor);
+    jobject obj = env->NewObject(clazz, constructor);
+
+    if (member) {
+        _setIdentityField(env, classname, obj, "ident", member->ident, clazz);
+        _setBooleanField(env, classname, obj, "joined", member->joined, clazz);
     }
 
     return obj;
@@ -538,6 +584,43 @@ jobject from_identity(JNIEnv *env,
     return obj;
 }
 
+jobject from_memberlist(JNIEnv *env,
+                        member_list *ml)
+{
+    if (!ml) {
+        return (jobject) NULL;
+    }
+
+    jclass clazz = findClass(env, "java/util/Vector");
+    jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
+    assert(constructor);
+    jobject obj = env->NewObject(clazz, constructor);
+    assert(obj);
+
+    member_list *_ml;
+    for (_ml = ml; _ml && _ml->member; _ml = _ml->next) {
+        jobject o = from_member(env, _ml->member);
+        callBooleanMethod(env, obj, "add", o);
+    }
+
+    env->DeleteLocalRef(clazz);
+
+    return obj;
+}
+
+static void _setMemberListField(JNIEnv *env,
+                                const char *classname,
+                                jobject obj,
+                                const char *name,
+                                member_list *value,
+                                const jclass clazz)
+{
+    if (value) {
+        jfieldID fieldID = getFieldID(env, classname, name, "[B", clazz);
+        env->SetObjectField(obj, fieldID, static_cast<jobject>(from_memberlist(env, value)));
+    }
+}
+
 char *_getStringField(JNIEnv *env,
         const char *classname,
         jobject obj,
@@ -551,6 +634,26 @@ char *_getStringField(JNIEnv *env,
     env->DeleteLocalRef(fobj);
     return res;
 }
+
+bool _getBooleanField(JNIEnv *env,
+                      const char *classname,
+                      jobject obj,
+                      const char *name)
+{
+    jfieldID fieldID = getFieldID(env, classname, name, "[B");
+    return (bool) env->GetBooleanField(obj, fieldID);
+}
+
+//std::list<pEp_identity> *to_identity_list(JNIEnv *env,
+//                                          jobjectArray array) {
+//    if (!array) {
+//        return NULL;
+//    }
+//
+//    static const char *classname = "foundation/pEp/jniadapter/_Identity";
+//    pEp_identity *ident = new_identity(NULL, NULL, NULL, NULL);
+//    return NULL;
+//}
 
 pEp_identity *to_identity(JNIEnv *env,
         jobject obj)
@@ -584,6 +687,32 @@ pEp_identity *to_identity(JNIEnv *env,
     ident->flags = static_cast<identity_flags_t>(env->GetIntField(obj, flags_id));
 
     return ident;
+}
+
+pEp_identity *_getIdentityField(JNIEnv *env,
+                      const char *classname,
+                      jobject obj,
+                      const char *name)
+{
+    jfieldID fieldID = getFieldID(env, classname, name, "[B");
+    jobject idobj = env->GetObjectField(obj, fieldID);
+    return to_identity(env, idobj);
+}
+
+pEp_member *to_member(JNIEnv *env,
+                          jobject obj)
+{
+    if (!obj) {
+        return NULL;
+    }
+
+    static const char *classname = "foundation/pEp/jniadapter/_Member";
+    pEp_member *member = new_member(NULL);
+
+    member->ident = _getIdentityField(env, classname, obj, "ident");
+    member->joined = _getBooleanField(env, classname, obj, "joined");
+
+    return member;
 }
 
 jobject from_identitylist(JNIEnv *env,
@@ -633,6 +762,58 @@ identity_list *to_identitylist(JNIEnv *env,
     }
 
     return il;
+}
+
+member_list *to_memberlist(JNIEnv *env,
+                               jobject obj)
+{
+    if (!obj) {
+        return NULL;
+    }
+
+    jint size = callIntMethod(env, obj, "size");
+    if (size == 0) {
+        return NULL;
+    }
+
+    member_list *ml = new_memberlist(NULL);
+    member_list *_ml;
+    jint i;
+    for (_ml = ml, i = 0; i < (int) size; i++) {
+        jobject o = callObjectMethod(env, obj, "get", i);
+        pEp_member *member = to_member(env, o);
+        _ml = memberlist_add(_ml, member);
+        env->DeleteLocalRef(o);
+    }
+
+    return ml;
+}
+
+member_list *_getMemberListField(JNIEnv *env,
+                                 const char *classname,
+                                 jobject obj,
+                                 const char *name)
+{
+    jfieldID fieldID = getFieldID(env, classname, name, "[B");
+    jobject mlobj = env->GetObjectField(obj, fieldID);
+    return to_memberlist(env, mlobj);
+}
+
+pEp_group *to_group(JNIEnv *env,
+                    jobject obj)
+{
+    if (!obj) {
+        return NULL;
+    }
+
+    static const char *classname = "foundation/pEp/jniadapter/_Group";
+    pEp_group *group = new_group(NULL, NULL, NULL);
+    group->group_identity = _getIdentityField(env, classname, obj, "group_identity");
+    group->manager = _getIdentityField(env, classname, obj, "manager");
+    group->active = _getBooleanField(env, classname, obj, "active");
+    group->members = _getMemberListField(env, classname, obj, "members");
+
+    return group;
 }
 
 jobject _from_blob(JNIEnv *env,

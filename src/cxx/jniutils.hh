@@ -11,6 +11,7 @@
 #include <pEp/sync_api.h>
 #include <pEp/passphrase_cache.hh>
 #include <pEp/platform.h>
+#include "pEp/group.h"
 
 namespace pEp {
 namespace JNIAdapter {
@@ -111,6 +112,9 @@ jobject from_identity(JNIEnv *env,
 
 pEp_identity *to_identity(JNIEnv *env,
         jobject obj);
+
+pEp_group *to_group(JNIEnv *env,
+                        jobject obj);
 
 jobject from_identitylist(JNIEnv *env,
         identity_list *il);
