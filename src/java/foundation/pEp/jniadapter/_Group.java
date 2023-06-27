@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Vector;
 
 public class _Group {
-    _Identity group_identity;   //!< identity representing this group
-    _Identity manager;          //!< identity of the group manager
-    Vector<_Member> members;           //!< list of members associated with group
-    boolean active;                    //!< boolean true if group is marked as active, else false
+    public _Identity group_identity;   //!< identity representing this group
+    public _Identity manager;          //!< identity of the group manager
+    public Vector<_Member> members;           //!< list of members associated with group
+    public boolean active = false;                    //!< boolean true if group is marked as active, else false
 
 
     public _Group() {
-
+        active = false;
     }
 
     public _Group(Group group) {

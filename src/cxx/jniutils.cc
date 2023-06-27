@@ -808,10 +808,12 @@ pEp_group *to_group(JNIEnv *env,
 
     static const char *classname = "foundation/pEp/jniadapter/_Group";
     pEp_group *group = new_group(NULL, NULL, NULL);
-    group->group_identity = _getIdentityField(env, classname, obj, "group_identity");
-    group->manager = _getIdentityField(env, classname, obj, "manager");
+    //group->group_identity = _getIdentityField(env, classname, obj, "group_identity");
+    //group->manager = _getIdentityField(env, classname, obj, "manager");
     group->active = _getBooleanField(env, classname, obj, "active");
-    group->members = _getMemberListField(env, classname, obj, "members");
+    //jfieldID me_id = getFieldID(env, classname, "active", "Z");
+    //group->active = static_cast<bool>(env->GetBooleanField(obj, me_id));
+    //group->members = _getMemberListField(env, classname, obj, "members");
 
     return group;
 }
