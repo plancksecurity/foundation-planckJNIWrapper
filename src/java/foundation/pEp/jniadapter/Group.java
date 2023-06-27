@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Vector;
 
 public class Group {
-    Identity group_identity;   //!< identity representing this group
-    Identity manager;          //!< identity of the group manager
-    Vector<Member> members;           //!< list of members associated with group
-    boolean active;                    //!< boolean true if group is marked as active, else false
+    public Identity group_identity;   //!< identity representing this group
+    public Identity manager;          //!< identity of the group manager
+    public Vector<Member> members;           //!< list of members associated with group
+    public boolean active;                    //!< boolean true if group is marked as active, else false
 
     public Group() {
 
