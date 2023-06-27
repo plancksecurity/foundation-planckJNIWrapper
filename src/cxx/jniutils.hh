@@ -137,6 +137,9 @@ PEP_enc_format to_EncFormat(JNIEnv *env,
 PEP_CIPHER_SUITE to_CipherSuite(JNIEnv *env,
         jobject obj);
 
+jobject from_group(JNIEnv *env,
+                       pEp_group *group);
+
 sync_handshake_result to_SyncHandshakeResult(JNIEnv *env,
         jobject obj);
 };

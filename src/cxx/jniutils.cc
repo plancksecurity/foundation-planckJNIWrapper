@@ -522,7 +522,7 @@ static void _setIdentityField(JNIEnv *env,
                               const jclass clazz)
 {
     if (value) {
-        jfieldID fieldID = getFieldID(env, classname, name, "[B", clazz);
+        jfieldID fieldID = getFieldID(env, classname, name, "Lfoundation/pEp/jniadapter/_Identity;", clazz);
         env->SetObjectField(obj, fieldID, static_cast<jobject>(from_identity(env, value)));
     }
 }
@@ -543,6 +543,66 @@ jobject from_member(JNIEnv *env,
     if (member) {
         _setIdentityField(env, classname, obj, "ident", member->ident, clazz);
         _setBooleanField(env, classname, obj, "joined", member->joined, clazz);
+    }
+
+    return obj;
+}
+
+jobject from_memberlist(JNIEnv *env,
+                        member_list *ml)
+{
+    if (!ml) {
+        return (jobject) NULL;
+    }
+
+    jclass clazz = findClass(env, "java/util/Vector");
+    jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
+    assert(constructor);
+    jobject obj = env->NewObject(clazz, constructor);
+    assert(obj);
+
+    member_list *_ml;
+    for (_ml = ml; _ml && _ml->member; _ml = _ml->next) {
+        jobject o = from_member(env, _ml->member);
+        callBooleanMethod(env, obj, "add", o);
+    }
+
+    env->DeleteLocalRef(clazz);
+
+    return obj;
+}
+
+static void _setMemberListField(JNIEnv *env,
+                                const char *classname,
+                                jobject obj,
+                                const char *name,
+                                member_list *value,
+                                const jclass clazz)
+{
+    if (value) {
+        jfieldID fieldID = getFieldID(env, classname, name, "java/util/Vector", clazz);
+        env->SetObjectField(obj, fieldID, static_cast<jobject>(from_memberlist(env, value)));
+    }
+}
+
+jobject from_group(JNIEnv *env,
+                    pEp_group *group)
+{
+    if (!group) {
+        return (jobject) NULL;
+    }
+
+    static const char *classname = "foundation/pEp/jniadapter/_Group";
+    jclass clazz = findClass(env, classname);
+    jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
+    assert(constructor);
+    jobject obj = env->NewObject(clazz, constructor);
+
+    if (group) {
+        _setIdentityField(env, classname, obj, "group_identity", group->group_identity, clazz);
+        _setIdentityField(env, classname, obj, "manager", group->manager, clazz);
+        _setMemberListField(env, classname, obj, "members", group->members, clazz);
+        _setBooleanField(env, classname, obj, "active", group->active, clazz);
     }
 
     return obj;
@@ -582,43 +642,6 @@ jobject from_identity(JNIEnv *env,
     }
 
     return obj;
-}
-
-jobject from_memberlist(JNIEnv *env,
-                        member_list *ml)
-{
-    if (!ml) {
-        return (jobject) NULL;
-    }
-
-    jclass clazz = findClass(env, "java/util/Vector");
-    jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
-    assert(constructor);
-    jobject obj = env->NewObject(clazz, constructor);
-    assert(obj);
-
-    member_list *_ml;
-    for (_ml = ml; _ml && _ml->member; _ml = _ml->next) {
-        jobject o = from_member(env, _ml->member);
-        callBooleanMethod(env, obj, "add", o);
-    }
-
-    env->DeleteLocalRef(clazz);
-
-    return obj;
-}
-
-static void _setMemberListField(JNIEnv *env,
-                                const char *classname,
-                                jobject obj,
-                                const char *name,
-                                member_list *value,
-                                const jclass clazz)
-{
-    if (value) {
-        jfieldID fieldID = getFieldID(env, classname, name, "[B", clazz);
-        env->SetObjectField(obj, fieldID, static_cast<jobject>(from_memberlist(env, value)));
-    }
 }
 
 char *_getStringField(JNIEnv *env,
