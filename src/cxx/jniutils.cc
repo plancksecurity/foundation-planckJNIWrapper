@@ -641,7 +641,7 @@ bool _getBooleanField(JNIEnv *env,
                       const char *name)
 {
     jfieldID fieldID = getFieldID(env, classname, name, "Z");
-    return (bool) env->GetBooleanField(obj, fieldID);
+    return static_cast<bool>(env->GetBooleanField(obj, fieldID));
 }
 
 //std::list<pEp_identity> *to_identity_list(JNIEnv *env,
@@ -694,7 +694,7 @@ pEp_identity *_getIdentityField(JNIEnv *env,
                       jobject obj,
                       const char *name)
 {
-    jfieldID fieldID = getFieldID(env, classname, name, "L");
+    jfieldID fieldID = getFieldID(env, classname, name, "Lfoundation/pEp/jniadapter/_Identity;");
     jobject idobj = env->GetObjectField(obj, fieldID);
     return to_identity(env, idobj);
 }
@@ -794,7 +794,7 @@ member_list *_getMemberListField(JNIEnv *env,
                                  jobject obj,
                                  const char *name)
 {
-    jfieldID fieldID = getFieldID(env, classname, name, "L");
+    jfieldID fieldID = getFieldID(env, classname, name, "[Lfoundation/pEp/jniadapter/_Member;");
     jobject mlobj = env->GetObjectField(obj, fieldID);
     return to_memberlist(env, mlobj);
 }
