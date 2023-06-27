@@ -34,6 +34,7 @@ jobject objj = nullptr;
 
 jclass messageClass = nullptr;
 jclass identityClass = nullptr;
+jclass memberClass = nullptr;
 jclass signalClass = nullptr;
 jclass abstractEngineClass = nullptr;
 jclass passphraseTypeClass = nullptr;
@@ -70,6 +71,7 @@ void jni_init() {
 
     messageClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/Message")));
     identityClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/_Identity")));
+    memberClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/_Member")));
     signalClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/SyncHandshakeSignal")));
     passphraseTypeClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/PassphraseType")));
     abstractEngineClass = static_cast<jclass>(_env->NewGlobalRef(findClass(_env, "foundation/pEp/jniadapter/AbstractEngine")));
