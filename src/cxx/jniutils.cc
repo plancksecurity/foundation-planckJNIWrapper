@@ -707,9 +707,9 @@ pEp_member *to_member(JNIEnv *env,
     }
 
     static const char *classname = "foundation/pEp/jniadapter/_Member";
-    pEp_member *member = new_member(NULL);
+    pEp_identity *id = _getIdentityField(env, classname, obj, "ident");
+    pEp_member *member = new_member(id);
 
-    member->ident = _getIdentityField(env, classname, obj, "ident");
     member->joined = _getBooleanField(env, classname, obj, "joined");
 
     return member;
@@ -794,7 +794,7 @@ member_list *_getMemberListField(JNIEnv *env,
                                  jobject obj,
                                  const char *name)
 {
-    jfieldID fieldID = getFieldID(env, classname, name, "[Lfoundation/pEp/jniadapter/_Member;");
+    jfieldID fieldID = getFieldID(env, classname, name, "Ljava/util/Vector;");
     jobject mlobj = env->GetObjectField(obj, fieldID);
     return to_memberlist(env, mlobj);
 }
@@ -805,6 +805,9 @@ pEp_group *to_group(JNIEnv *env,
     if (!obj) {
         return NULL;
     }
+
+    //jclass targetClass = env->FindClass("foundation/pEp/jniadapter/_Group");
+    //jint fieldCount = env->GetFields(targetClass);
 
     static const char *classname = "foundation/pEp/jniadapter/_Group";
     pEp_identity *id = _getIdentityField(env, classname, obj, "group_identity");
