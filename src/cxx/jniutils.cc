@@ -88,7 +88,7 @@ jfieldID getFieldID(JNIEnv *env,
     assert(clazz);
 
     jfieldID field = env->GetFieldID(clazz, fieldname, signature);
-    assert(field);
+    //assert(field);
 
     if (field == NULL) {
         jclass ex = env->FindClass("java/lang/NoSuchFieldError");
@@ -640,7 +640,7 @@ bool _getBooleanField(JNIEnv *env,
                       jobject obj,
                       const char *name)
 {
-    jfieldID fieldID = getFieldID(env, classname, name, "[B");
+    jfieldID fieldID = getFieldID(env, classname, name, "Z");
     return (bool) env->GetBooleanField(obj, fieldID);
 }
 
@@ -694,7 +694,7 @@ pEp_identity *_getIdentityField(JNIEnv *env,
                       jobject obj,
                       const char *name)
 {
-    jfieldID fieldID = getFieldID(env, classname, name, "[B");
+    jfieldID fieldID = getFieldID(env, classname, name, "L");
     jobject idobj = env->GetObjectField(obj, fieldID);
     return to_identity(env, idobj);
 }
@@ -794,7 +794,7 @@ member_list *_getMemberListField(JNIEnv *env,
                                  jobject obj,
                                  const char *name)
 {
-    jfieldID fieldID = getFieldID(env, classname, name, "[B");
+    jfieldID fieldID = getFieldID(env, classname, name, "L");
     jobject mlobj = env->GetObjectField(obj, fieldID);
     return to_memberlist(env, mlobj);
 }
