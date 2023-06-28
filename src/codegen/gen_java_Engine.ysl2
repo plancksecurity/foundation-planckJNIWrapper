@@ -21,6 +21,31 @@ tstylesheet {
             import java.util.Vector;
 
             final public class «$cname» extends AbstractEngine implements EngineInterface {
+                    public Group group_create(
+                            Identity groupIdentity,
+                            Identity manager,
+                            Vector<Identity> memberIdentitiesList) throws pEpException {
+                    _Identity _groupIdentity = new _Identity(groupIdentity);
+                    _Identity _manager = new _Identity(manager);
+                    Vector<_Identity> _members = new Vector<>();
+                    for (Identity identity : memberIdentitiesList) {
+                        _members.add(new _Identity(identity));
+                    }
+                    return new Group(
+                                _group_create(
+                                    _groupIdentity,
+                                    _manager,
+                                    _members
+                                )
+                        );
+                    }
+                    private native _Group _group_create(
+                        _Identity group_identity,
+                        _Identity manager,
+                        Vector<_Identity> member_ident_list
+                    ) throws pEpException;
+
+
                 public «$cname»() throws pEpException { }
                 `` apply "method"
                 `` apply "basic"
