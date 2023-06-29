@@ -74,6 +74,7 @@ namespace pEp {
         enumitem sync_passphrase_required               > 128
         enumitem sync_notify_sole                       > 254
         enumitem sync_notify_in_group                   > 255
+        enumitem distribution_notify_group_invite       > 192
     };
 
     enum CipherSuite {
