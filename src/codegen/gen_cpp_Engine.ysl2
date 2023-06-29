@@ -24,6 +24,7 @@ tstylesheet {
         #include "throw_pEp_exception.hh"
         #include "jniutils.hh"
         #include "passphrase_callback.hh"
+        #include <pEp/group.h>
 
         using pEp::Adapter::session;
         using pEp::passphrase_cache;
