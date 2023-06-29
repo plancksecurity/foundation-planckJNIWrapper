@@ -358,7 +358,7 @@ tstylesheet {
         const "type", "name(*[2])";
         const "name" call "lcase" with "text", "name(*[3])";
 
-        if "$type = 'string' or $type = 'stringlist' or $type = 'identity' or $type = 'identitylist'"
+        if "$type = 'string' or $type = 'stringlist' or $type = 'identity' or $type = 'identitylist'" 
             > _
         > «$name»`if "position()!=last()" > , `
     }
