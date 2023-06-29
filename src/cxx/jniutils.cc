@@ -580,7 +580,7 @@ static void _setMemberListField(JNIEnv *env,
                                 const jclass clazz)
 {
     if (value) {
-        jfieldID fieldID = getFieldID(env, classname, name, "java/util/Vector", clazz);
+        jfieldID fieldID = getFieldID(env, classname, name, "Ljava/util/Vector;", clazz);
         env->SetObjectField(obj, fieldID, static_cast<jobject>(from_memberlist(env, value)));
     }
 }
