@@ -275,7 +275,7 @@ namespace pEp {
                 in identity member
             );
 
-        method cached=false adapter_group_rating(
+        method cached=false group_rating(
                 in identity groupidentity,
                 in identity manager,
                 returns Rating rating
