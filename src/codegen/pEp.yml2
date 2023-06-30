@@ -89,13 +89,6 @@ namespace pEp {
     };
 
     interface Engine {
-        method cached=false group_create(
-                inout identity groupidentity,
-                inout identity manager,
-                inout identitylist memberidentlist,
-                inout group group
-            );
-
         method cached=true encrypt_message(
                 in message src,
                 in stringlist extra,
@@ -157,7 +150,7 @@ namespace pEp {
                 returns Rating rating
             );
 
-        // TODO: WTF is...
+        // TODO: WTF is... Says so on the tin, the key detail messages of a message 
         method cached=true own_message_private_key_details(
                 in message msg,
                 returns identity ident 
@@ -254,6 +247,40 @@ namespace pEp {
             );
 
         method cached=true sync_reinit();
+
+        // Group methods
+        method cached=false group_create(
+                inout identity groupidentity,
+                inout identity manager,
+                inout identitylist memberidentlist,
+                inout group group
+            );
+
+        method cached=false group_join(
+                in identity groupidentity,
+                in identity member,
+            );
+
+        method cached=false group_dissolve(
+                in identity groupidentity,
+                in identity manager,
+            );
+
+        method cached=false group_invite_member(
+                in identity groupidentity,
+                in identity member,
+            );
+
+        method cached=false group_remove_member(
+                in identity groupidentity,
+                in identity member,
+            );
+
+        method cached=false group_rating(
+                in identity groupidentity,
+                in identity manager,
+                returns Rating rating
+            );
 
         // "basic" methods are generated on the java side, but
         // on the C++ side, manually implemented in basic_api.cc
