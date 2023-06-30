@@ -75,7 +75,7 @@ function "toIntermediate" {
         when "$type='bloblist'" > Vector<_Blob>
         when "$type='identity'" > _Identity
         when "$type='identitylist'" > Vector<_Identity>
-        when "$type='group'" > _group
+        when "$type='group'" > _Group
         when "$type='stringlist'" > Vector<byte[]>
         when "$type='stringpairlist'" > ArrayList<Pair<byte[], byte[]>>
 

@@ -94,7 +94,7 @@ namespace pEp {
                 inout identity manager,
                 inout identitylist memberidentlist,
                 inout group group
-        );
+            );
 
         method cached=true encrypt_message(
                 in message src,
