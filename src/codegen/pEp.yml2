@@ -258,22 +258,22 @@ namespace pEp {
 
         method cached=false group_join(
                 in identity groupidentity,
-                in identity member,
+                in identity member
             );
 
         method cached=false group_dissolve(
                 in identity groupidentity,
-                in identity manager,
+                in identity manager
             );
 
         method cached=false group_invite_member(
                 in identity groupidentity,
-                in identity member,
+                in identity member
             );
 
         method cached=false group_remove_member(
                 in identity groupidentity,
-                in identity member,
+                in identity member
             );
 
         method cached=false group_rating(
