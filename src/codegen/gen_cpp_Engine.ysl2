@@ -40,7 +40,7 @@ tstylesheet {
 
     template "method" {
         const "mangled" call "mangle";
-        const "returning", "count(parm/creates|parm/returns|parm/inout)";
+        const "returning", "count(parm/creates|parm/returns)";
         const "CretType" choose {
             when "$returning = 0" > void
             when "$returning = 1"
