@@ -7,8 +7,9 @@
     #ifndef __LP64__
 
         #include <time64.h>
+#include <pEp/group.h>
 
-        #define time_t time64_t
+#define time_t time64_t
         #define timegm timegm64
         #define gmtime_r gmtime64_r
     #endif
@@ -551,6 +552,11 @@ char *_getStringField(JNIEnv *env,
     env->DeleteLocalRef(fobj);
     return res;
 }
+pEp_group *to_group(JNIEnv *env,
+                          jobject obj)
+    {
+        return NULL;
+    }
 
 pEp_identity *to_identity(JNIEnv *env,
         jobject obj)

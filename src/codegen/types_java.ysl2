@@ -10,6 +10,7 @@ function "toJava" {
         when "$type='void'" > void
 
         when "$type='identity'" > Identity
+        when "$type='group'" > Group
         when "$type='message'" > Message
 
         when "$type='bloblist'" > Vector<Blob>
@@ -41,6 +42,7 @@ function "toSig" {
                 when "$type='int'" > java/lang/Integer
 
                 when "$type='identity'" > foundation/pEp/jniadapter/_Identity
+                when "$type='group'" > foundation/pEp/jniadapter/_Group
                 when "$type='message'" > foundation/pEp/jniadapter/Message
 
                 when "$type='bloblist'" > java/util/Vector
@@ -73,6 +75,7 @@ function "toIntermediate" {
         when "$type='bloblist'" > Vector<_Blob>
         when "$type='identity'" > _Identity
         when "$type='identitylist'" > Vector<_Identity>
+        when "$type='group'" > _Group
         when "$type='stringlist'" > Vector<byte[]>
         when "$type='stringpairlist'" > ArrayList<Pair<byte[], byte[]>>
 

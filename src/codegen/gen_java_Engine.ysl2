@@ -108,6 +108,8 @@ tstylesheet {
                     > String 
                 when "name(.) = 'identity'"
                     > Identity 
+                when "name(.) = 'group'"
+                    > Group 
                 when "name(.) = 'identitylist'"
                     > IdentityList 
                 when "name(.) = 'bool'"
@@ -257,7 +259,7 @@ tstylesheet {
 
         if "not($singlereturn) and not($multireturn)" {
             ||
-                _«@name»(`apply "parm[in]", mode=call;`);
+                _«@name»(`apply "parm[in|inout]", mode=call;`);
             ||
         }
         ||
@@ -329,6 +331,13 @@ tstylesheet {
                     _«$name» = new _Identity(«$name»);
                 }
                 ||
+            when "$type = 'group'"
+                ||
+                _Group _«$name» = null; 
+                if («$name» != null) {
+                    _«$name» = new _Group(«$name»);
+                }
+                ||
             when "$type = 'identitylist'"
                 ||
                 Vector<_Identity> _«$name» = new Vector<_Identity>();
@@ -358,7 +367,7 @@ tstylesheet {
         const "type", "name(*[2])";
         const "name" call "lcase" with "text", "name(*[3])";
 
-        if "$type = 'string' or $type = 'stringlist' or $type = 'identity' or $type = 'identitylist'"
+        if "$type = 'string' or $type = 'stringlist' or $type = 'identity' or $type = 'identitylist' or $type = 'group'"
             > _
         > «$name»`if "position()!=last()" > , `
     }
