@@ -45,6 +45,29 @@ tstylesheet {
                         Vector<_Identity> member_ident_list
                     ) throws pEpException;
 
+                    public Vector<Member> group_get_members(Identity group_identity) throws pEpException {
+                        Vector<_Member> _members = _group_get_members(new _Identity(group_identity));
+                        if (_members == null) return null;
+                        Vector<Member> members = new Vector<>();
+                        for (_Member member : _members) {
+                            members.add(new Member(member));
+                        }
+                        return members;
+                    }
+
+                    public Identity group_get_manager(Identity group_identity) throws pEpException {
+                        return new Identity(_group_get_manager(new _Identity(group_identity)));
+                    }
+
+
+                private native Vector<_Member> _group_get_members(
+                        _Identity group_identity
+                ) throws pEpException;
+
+                private native _Identity _group_get_manager(
+                        _Identity group_identity
+                ) throws pEpException;
+
 
                 public «$cname»() throws pEpException { }
                 `` apply "method"

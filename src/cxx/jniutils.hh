@@ -139,6 +139,8 @@ PEP_CIPHER_SUITE to_CipherSuite(JNIEnv *env,
 
 jobject from_group(JNIEnv *env,
                        pEp_group *group);
+jobject from_memberlist(JNIEnv *env,
+                        member_list *ml);
 
 sync_handshake_result to_SyncHandshakeResult(JNIEnv *env,
         jobject obj);

@@ -61,6 +61,56 @@ tstylesheet {
                 return from_group(env, _group);
             }
 
+            JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1group_1get_1members(JNIEnv *env,
+                                                                                                jobject obj,
+                                                                                                jobject group_identity)
+                {
+                    std::mutex *mutex_local = nullptr;
+                    {
+                        std::lock_guard<std::mutex> l(global_mutex);
+                        pEpLog("called with lock_guard");
+                        mutex_local = get_engine_java_object_mutex(env, obj);
+                    }
+                    std::lock_guard<std::mutex> l(*mutex_local);
+
+                    pEp_identity *_group_identity = to_identity(env, group_identity);
+                    member_list* _members = NULL;
+
+
+                    PEP_STATUS status = passphraseWrap(::retrieve_full_group_membership, session(),_group_identity, &_members);
+
+                    if (status != PEP_STATUS_OK) {
+                        throw_pEp_Exception(env, status);
+                        return (jobject) NULL;
+                    }
+                    return from_memberlist(env, _members);
+                }
+
+            JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1group_1get_1manager(JNIEnv *env,
+                                                                                                  jobject obj,
+                                                                                                  jobject group_identity)
+            {
+                std::mutex *mutex_local = nullptr;
+                {
+                    std::lock_guard<std::mutex> l(global_mutex);
+                    pEpLog("called with lock_guard");
+                    mutex_local = get_engine_java_object_mutex(env, obj);
+                }
+                std::lock_guard<std::mutex> l(*mutex_local);
+
+                pEp_identity *_group_identity = to_identity(env, group_identity);
+                pEp_identity * _manager = NULL;
+
+
+                PEP_STATUS status = passphraseWrap(::get_group_manager, session(),_group_identity, &_manager);
+
+                if (status != PEP_STATUS_OK) {
+                    throw_pEp_Exception(env, status);
+                    return (jobject) NULL;
+                }
+                return from_identity(env, _manager);
+            }
+
             JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1group_1invite_1member(JNIEnv *env,
                                                                                                 jobject obj,
                                                                                                 jobject group_identity,
