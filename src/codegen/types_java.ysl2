@@ -15,6 +15,7 @@ function "toJava" {
 
         when "$type='bloblist'" > Vector<Blob>
         when "$type='identitylist'" > Vector<Identity>
+        when "$type='memberlist'" > Vector<Member>
         when "$type='stringlist'" > Vector<String>
         when "$type='stringpairlist'" > ArrayList<Pair<String, String>>
         when "$type='bytearray'" > byte[]
@@ -47,6 +48,7 @@ function "toSig" {
 
                 when "$type='bloblist'" > java/util/Vector
                 when "$type='identitylist'" > java/util/Vector
+                when "$type='memberlist'" > java/util/Vector
                 when "$type='stringlist'" > java/util/Vector
                 when "$type='stringpairlist'" > java/util/ArrayList
 
@@ -75,6 +77,7 @@ function "toIntermediate" {
         when "$type='bloblist'" > Vector<_Blob>
         when "$type='identity'" > _Identity
         when "$type='identitylist'" > Vector<_Identity>
+        when "$type='memberlist'" > Vector<_Member>
         when "$type='group'" > _Group
         when "$type='stringlist'" > Vector<byte[]>
         when "$type='stringpairlist'" > ArrayList<Pair<byte[], byte[]>>

@@ -17,10 +17,14 @@ public class _Group {
 
 	public _Group(Group group) {
 		this.group_identity = new _Identity(group.group_identity);
-		this.manager = new _Identity(group.manager);
-		this.members = new Vector<>();
-		for (Member member : group.members) {
-			members.add(new _Member(member));
+		if (group.manager != null) {
+			this.manager = new _Identity(group.manager);
+		}
+		if (group.members != null) {
+			this.members = new Vector<>();
+			for (Member member : group.members) {
+				members.add(new _Member(member));
+			}
 		}
 		this.active = group.active;
 
