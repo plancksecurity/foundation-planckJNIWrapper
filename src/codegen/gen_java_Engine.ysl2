@@ -70,7 +70,18 @@ tstylesheet {
                 }
                 return ret;
             ||
-            } when "@type = 'bytearray'"
+            } when "@type = 'memberlist'" {
+              ||
+                  Vector<_Member> glist = _«@name»(`apply "parm/*", mode=basic_parm_name`);
+                  Vector<Member> ret = new Vector<Member>();
+                  if(glist != null) {
+                      for (_Identity i : glist) {
+                          ret.add(new Member(i));
+                      }
+                  }
+                  return ret;
+              ||
+              } when "@type = 'bytearray'"
                 |> return _«@name»(`apply "parm/*", mode=basic_parm_name`);
             otherwise
                 |> return Utils.toUTF16(_«@name»(`apply "parm/*", mode=basic_parm_name`));
@@ -111,7 +122,9 @@ tstylesheet {
                 when "name(.) = 'group'"
                     > Group 
                 when "name(.) = 'identitylist'"
-                    > IdentityList 
+                    > IdentityList
+                when "name(.) = 'memberlist'"
+                    > MemberList
                 when "name(.) = 'bool'"
                     > Boolean 
                 when "name(.) = 'bytearray'"
@@ -242,6 +255,18 @@ tstylesheet {
                         }
                         return null;
                     ||
+                when "count(parm[returns]/memberlist) > 0"
+                    ||
+                        Vector<_Member> glist = _«@name»(`apply "parm[in]", mode=call;`);
+                        if(glist != null){
+                            Vector<Member> list = new Vector<Member>();
+                            for (_Member i : glist) {
+                                list.add(new Member(i));
+                            }
+                            return list;
+                        }
+                        return null;
+                    ||
 
                 otherwise
                     |> return _«@name»(`apply "parm[in]", mode=call;`);
@@ -345,6 +370,13 @@ tstylesheet {
                     _«$name».add(new _Identity(i));
                 }
                 ||
+            when "$type = 'memberlist'"
+                ||
+                Vector<_Member> _«$name» = new Vector<_Member>();
+                for (Member i : «$name») {
+                    _«$name».add(new _Member(i));
+                }
+                ||
         }
     }
 
@@ -367,7 +399,7 @@ tstylesheet {
         const "type", "name(*[2])";
         const "name" call "lcase" with "text", "name(*[3])";
 
-        if "$type = 'string' or $type = 'stringlist' or $type = 'identity' or $type = 'identitylist' or $type = 'group'"
+        if "$type = 'string' or $type = 'stringlist' or $type = 'identity' or $type = 'identitylist' or $type = 'memberlist' or $type = 'group'"
             > _
         > «$name»`if "position()!=last()" > , `
     }

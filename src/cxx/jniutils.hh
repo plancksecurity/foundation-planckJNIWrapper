@@ -119,6 +119,9 @@ pEp_identity *to_identity(JNIEnv *env,
 jobject from_identitylist(JNIEnv *env,
         identity_list *il);
 
+jobject from_memberlist(JNIEnv *env,
+                        member_list *ml);
+
 identity_list *to_identitylist(JNIEnv *env,
         jobject obj);
 
