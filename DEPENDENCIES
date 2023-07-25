@@ -2,5 +2,5 @@
 ## Prefer git tags instead of SHA hashes when possible.
 
 pEpEngine=planck_v3.3.0-RC7
-libpEpAdapter=planck_v3.2.0
+libpEpAdapter=planck_v3.2.1-RC1
 libpEpCxx11=planck_v3.2.1
