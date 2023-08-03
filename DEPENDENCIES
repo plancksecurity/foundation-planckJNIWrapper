@@ -1,6 +1,6 @@
 # 1st Party Dependencies
 ## Prefer git tags instead of SHA hashes when possible.
 
-pEpEngine=planck_v3.3.0-RC7
+pEpEngine=planck_v3.3.0-RC8
 libpEpAdapter=planck_v3.2.1-RC1
 libpEpCxx11=planck_v3.2.1
