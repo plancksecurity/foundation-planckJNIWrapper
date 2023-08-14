@@ -249,7 +249,7 @@ namespace pEp {
 
         method cached=true sync_reinit();
 
-        // Group methods
+        // (Adapter) Group methods
         method cached=false adapter_group_create(
                 inout identity groupidentity,
                 inout identity manager,
@@ -276,12 +276,6 @@ namespace pEp {
                 in identity member
             );
 
-        method cached=false group_rating(
-                in identity groupidentity,
-                in identity manager,
-                returns Rating rating
-            );
-
         method cached=false adapter_group_query_groups(
                 returns identitylist groups
             );
@@ -294,6 +288,13 @@ namespace pEp {
         method cached=false adapter_group_query_members(
                 in identity group const,
                 returns identitylist members
+            );
+            
+        // Group.c Methods
+        method cached=false group_rating(
+                in identity groupidentity,
+                in identity manager,
+                returns Rating rating
             );
 
         method cached=false group_create(
