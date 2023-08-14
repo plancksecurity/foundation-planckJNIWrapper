@@ -61,7 +61,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
 LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libuuid libiconv pEpAdapter pEpCxx11 botan libpep_engine_sequoia_backend
 LOCAL_CPP_FEATURES += exceptions
-LOCAL_CPPFLAGS += -std=c++11 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld
+LOCAL_CPPFLAGS += -std=c++14 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld -frtti
 LOCAL_SRC_FILES  := \
           ../../src/cxx/foundation_pEp_jniadapter_AbstractEngine.cc \
           ../../src/cxx/foundation_pEp_jniadapter_Engine.cc \
