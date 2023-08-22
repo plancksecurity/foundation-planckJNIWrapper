@@ -1,3 +1,5 @@
+ext.adb = "$System.env.ANDROID_SDK/platform-tools/adb"
+
 task setpEpJNIAdapterArchs {
 
     description = "Prepare pEpJNIAdapter to build with the first archs of each connected device."
@@ -6,7 +8,7 @@ task setpEpJNIAdapterArchs {
         def serialNos = getConnectedDevicesIds()
         println("Connected devices: $serialNos")
         def abis = serialNos.collect { serialNo ->
-            convertAbiName(execCommand("adb -s ${serialNo} shell getprop ro.product.cpu.abilist", true).trim().split(",")[0])
+            convertAbiName(execCommand("${adb} -s ${serialNo} shell getprop ro.product.cpu.abilist", true).trim().split(",")[0])
         }.toSet()
         def sb = new StringBuilder()
         for (String s : abis) {
@@ -21,7 +23,7 @@ task setpEpJNIAdapterArchs {
 }
 
 private List<String> getConnectedDevicesIds(boolean verbose = false) {
-    def lines = execCommand("adb devices", true, verbose).readLines()
+    def lines = execCommand("${adb} devices", true, verbose).readLines()
     lines.removeIf { it.trim().isEmpty() }
     lines.remove(0)
     if (lines.isEmpty()) return lines
