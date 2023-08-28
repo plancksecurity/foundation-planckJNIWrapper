@@ -305,6 +305,46 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1importKey(JNIE
     return identities_;
 }
 
+JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1importExtraKey(JNIEnv *env,
+                                                                            jobject obj,
+                                                                            jbyteArray key)
+{
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
+
+    size_t _size = static_cast<size_t>(env->GetArrayLength(key));
+    jbyte* _key = env->GetByteArrayElements(key, NULL);
+
+    if(_key == NULL) {
+        throw_pEp_Exception(env, PEP_OUT_OF_MEMORY);
+        return NULL;
+    }
+
+    identity_list* _identities = nullptr;
+    stringlist_t* imported_keys = new_stringlist(NULL);
+    uint64_t* changed_public_keys = NULL;
+
+    PEP_STATUS status = passphraseWrap(::import_extrakey_with_fpr_return, session(), reinterpret_cast<const char*>(_key), _size, &_identities, &imported_keys, changed_public_keys);
+    if (status != PEP_STATUS_OK && status != PEP_KEY_IMPORTED) {
+        throw_pEp_Exception(env, status);
+        return NULL;
+    }
+
+    jobject fprs = NULL;
+    if (imported_keys) {
+        fprs = from_stringlist(env, imported_keys);
+    }
+
+    free_stringlist(imported_keys);
+    env->ReleaseByteArrayElements(key, _key, JNI_ABORT);
+    return fprs;
+}
+
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passive_1mode(JNIEnv *env,
         jobject obj,
