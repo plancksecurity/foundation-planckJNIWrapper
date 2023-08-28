@@ -346,6 +346,7 @@ namespace pEp {
         basic void trustPersonalKey(identity ident);
         basic void trustOwnKey(identity ident);
         basic identitylist importKey(bytearray key);
+        basic stringlist importExtraKey(bytearray key);
         basic void config_passive_mode(bool enable);
         basic void config_unencrypted_subject(bool enable);
         basic string getCrashdumpLog(int maxlines);
