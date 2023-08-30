@@ -263,7 +263,8 @@ namespace pEp {
 
         method cached=false adapter_group_join(
                 in identity groupidentity,
-                in identity member
+                in identity member,
+                in identity manager
             );
 
         method cached=false adapter_group_invite_member(
