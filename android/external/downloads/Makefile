@@ -28,12 +28,11 @@ download-uuid: ossp-uuid_1.6.2.orig-patched.tar.gz
 ## Download sequoia dependencies
 	
 download-sequoia-deps: download-sequoia-deps-$(CRYPTO_LIB_NAME)
-#$(if $(findstring NETTLE,$(CRYPTO_LIB_NAME)), download-sequoia-deps-nettle, download-sequoia-deps-botan)
 
 download-sequoia-deps-nettle: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSION).tar.bz2 \
 						nettle-$(NETTLE_VERSION)-patched.tar.gz
 
-download-sequoia-deps-botan: Botan-$(BOTAN_VERSION).tar.xz
+download-sequoia-deps-botan2: Botan-$(BOTAN_VERSION).tar.xz
 
 ## Download etpan
 download-etpan: libetpan.git.stamp

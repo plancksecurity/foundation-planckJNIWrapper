@@ -13,7 +13,7 @@ def threadsToUse = DefaultNativePlatform.currentArchitecture.arm
         : Runtime.getRuntime().availableProcessors())
 
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
-def CRYPTO_LIB = "botan"
+def CRYPTO_LIB = "botan2"
 ext.archsToCompile = "arm arm64 x86 x86_64"
 
 apply from: 'gradle/plugins/set-pep-jniadapter-archs.gradle'
