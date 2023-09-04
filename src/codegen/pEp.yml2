@@ -284,16 +284,17 @@ namespace pEp {
             );
 
         method cached=false adapter_group_query_groups(
+                in identity manager,
                 returns identitylist groups
             );
 
         method cached=false adapter_group_query_manager(
-                in identity group const,
+                in identity group,
                 returns identity manager
             );
 
         method cached=false adapter_group_query_members(
-                in identity group const,
+                in identity group,
                 returns identitylist members
             );
 
