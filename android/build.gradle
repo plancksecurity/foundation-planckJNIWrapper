@@ -15,6 +15,7 @@ def threadsToUse = DefaultNativePlatform.currentArchitecture.arm
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 def CRYPTO_LIB = "botan2"
 ext.archsToCompile = "arm arm64 x86 x86_64"
+def SEQUOIA_TARGET = findProperty("SEQUOIA_TARGET") ?: "release"
 
 apply from: 'gradle/plugins/set-pep-jniadapter-archs.gradle'
 
@@ -147,7 +148,7 @@ android {
             println("buildExternal for abis: ${project.archsToCompile}")
             exec {
                 workingDir 'external'
-                commandLine 'make', "-j${threadsToUse}", 'build', "archs=${project.archsToCompile}", "CRYPTO_LIB_NAME=${CRYPTO_LIB}"
+                commandLine 'make', "-j${threadsToUse}", 'build', "archs=${project.archsToCompile}", "CRYPTO_LIB_NAME=${CRYPTO_LIB}", "SEQUOIA_TARGET=${SEQUOIA_TARGET}"
             }
         }
     }
