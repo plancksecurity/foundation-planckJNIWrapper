@@ -28,6 +28,7 @@
 .make_in_docker:
   extends: .standard_job
   script:
+    - export
     - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
     - cd scripts/${CI_DISTRO_TARGET}
     - make ${MAKE_TARGET}
