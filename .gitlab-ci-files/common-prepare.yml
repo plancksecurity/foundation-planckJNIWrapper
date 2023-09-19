@@ -31,7 +31,7 @@
     - export
     - echo $env
     - env
-    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - docker login -u ${PLANCK_DOCKER_REGISTRY_USER} -p ${PLANCK_DOCKER_REGISTRY_PASSWORD} ${DOCKER_REGISTRY_HOST}
     - cd scripts/${CI_DISTRO_TARGET}
     - make ${MAKE_TARGET}
 
@@ -42,7 +42,7 @@
     - *add_ssh_keys
     - *verify_ssh_host_keys
   script:
-    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - docker login -u ${PLANCK_DOCKER_REGISTRY_USER} -p ${PLANCK_DOCKER_REGISTRY_PASSWORD} ${DOCKER_REGISTRY_HOST}
     - cd scripts/${CI_DISTRO_TARGET}
     - make ${MAKE_TARGET}
     - pwd
