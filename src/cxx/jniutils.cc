@@ -245,6 +245,13 @@ int to_Integer(JNIEnv *env,
     return _val;
 }
 
+    jboolean from_bool(JNIEnv *env,
+                       bool val)
+{
+    assert(val);
+    return static_cast<jboolean>(val);;
+}
+
 jbyteArray from_string(JNIEnv *env,
         const char *str)
 {

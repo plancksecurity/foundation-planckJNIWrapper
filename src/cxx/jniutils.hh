@@ -79,7 +79,10 @@ jobject from_Integer(JNIEnv *env,
 int to_Integer(JNIEnv *env,
         jobject obj);
 
-jbyteArray from_string(JNIEnv *env,
+    jboolean from_bool(JNIEnv *env,
+                   bool obj);
+
+    jbyteArray from_string(JNIEnv *env,
         const char *str);
 
 char *to_string(JNIEnv *env,

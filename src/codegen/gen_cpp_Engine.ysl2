@@ -21,13 +21,13 @@ tstylesheet {
         #include <pEp/passphrase_cache.hh>
         #include <pEp/group.h>
         #include <pEp/group_internal.h>
+        #include <pEp/Sync_impl.h>
         #include <src/group_manager_api.h>
 
         #include "foundation_pEp_jniadapter_«@name».h"
         #include "throw_pEp_exception.hh"
         #include "jniutils.hh"
         #include "passphrase_callback.hh"
-        #include "pEp/sync_utils.h"
 
         using pEp::Adapter::session;
         using pEp::passphrase_cache;
@@ -177,7 +177,7 @@ tstylesheet {
         param "name", "name(*[3])";
 
         choose {
-            when "$type = 'stringlist' or $type = 'string' or $type = 'sstring' or $type = 'stringpairlist' or $type = 'identity' or $type = 'identitylist' or $type = 'memberlist'"
+            when "$type = 'stringlist' or $type = 'bool' or $type = 'string' or $type = 'sstring' or $type = 'stringpairlist' or $type = 'identity' or $type = 'identitylist' or $type = 'memberlist'"
             {
                 const "jnitype" call "jni_type" with "type", "$type";
                 const "from_type" choose {
@@ -192,10 +192,6 @@ tstylesheet {
                     «$name»_ = «$from_type»(env, _«$name»);
                 }
                 ||
-            }
-            when "$type = 'bool'"
-            {
-                jboolean «$name»_ = static_cast<jboolean>(_«$name»);
             }
             when "ancestor::namespace/child::enum[@name=$type]" {
                 const "ljtype" call "lcase" with "text","$jtype";
@@ -286,6 +282,8 @@ tstylesheet {
                 | char * _«$name»;
                 | size_t _«$name»_size;
             }
+            when "$type='bool'"
+                | bool _«$name»;
             otherwise
                 | √$type *_«$name»;
         }
