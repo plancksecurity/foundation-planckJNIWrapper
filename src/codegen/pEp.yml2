@@ -334,6 +334,10 @@ namespace pEp {
                 returns memberlist members
             );
 
+        method cached=false deviceGrouped(
+                returns bool grouped
+            );
+
 
         // "basic" methods are generated on the java side, but
         // on the C++ side, manually implemented in basic_api.cc

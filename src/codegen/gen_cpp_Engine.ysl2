@@ -27,6 +27,7 @@ tstylesheet {
         #include "throw_pEp_exception.hh"
         #include "jniutils.hh"
         #include "passphrase_callback.hh"
+        #include "pEp/sync_utils.h"
 
         using pEp::Adapter::session;
         using pEp::passphrase_cache;
@@ -191,6 +192,10 @@ tstylesheet {
                     «$name»_ = «$from_type»(env, _«$name»);
                 }
                 ||
+            }
+            when "$type = 'bool'"
+            {
+                jboolean «$name»_ = static_cast<jboolean>(_«$name»);
             }
             when "ancestor::namespace/child::enum[@name=$type]" {
                 const "ljtype" call "lcase" with "text","$jtype";
