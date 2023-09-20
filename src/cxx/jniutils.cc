@@ -248,7 +248,6 @@ int to_Integer(JNIEnv *env,
     jboolean from_bool(JNIEnv *env,
                        bool val)
 {
-    assert(val);
     return static_cast<jboolean>(val);;
 }
 
