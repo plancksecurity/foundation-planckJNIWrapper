@@ -284,7 +284,6 @@ namespace pEp {
             );
 
         method cached=false adapter_group_query_groups(
-                in identity manager,
                 returns identitylist groups
             );
 
