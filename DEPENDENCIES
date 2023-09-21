@@ -3,4 +3,4 @@
 
 pEpEngine=v3.3.3
 libpEpAdapter=develop
-libpEpCxx11=v3.3.0-RC8
+libpEpCxx11=develop
