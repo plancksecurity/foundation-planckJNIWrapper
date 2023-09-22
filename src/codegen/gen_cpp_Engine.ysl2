@@ -87,7 +87,7 @@ tstylesheet {
         }
         ||
 
-            if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) |`> |` status < PEP_STATUS_OK |`> |` status >= PEP_TRUSTWORD_NOT_FOUND) {
+            if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) |`> |` status < PEP_STATUS_OK |`> |` status >= PEP_TRUSTWORD_NOT_FOUND |`> |` status == PEP_DECRYPT_SIGNATURE_DOES_NOT_MATCH) {
                 throw_pEp_Exception(env, status);
                 return «$CretDefault»;
             }
