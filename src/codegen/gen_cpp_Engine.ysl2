@@ -28,6 +28,7 @@ tstylesheet {
         #include "throw_pEp_exception.hh"
         #include "jniutils.hh"
         #include "passphrase_callback.hh"
+        #include <pEp/signature.h>
 
         using pEp::Adapter::session;
         using pEp::passphrase_cache;
@@ -266,6 +267,15 @@ tstylesheet {
                 | unsigned int _«$name» = «$name»;
             when "$type='string'"
                 | const char *_«$name» = to_string(env, «$name»);
+            when "$type='sstring'"{
+                choose {
+                    when "$const"
+                        | const char * _«$name» = to_string(env, «$name»);
+                    otherwise
+                        | char * _«$name» = to_string(env, «$name»);
+                }
+                | size_t _«$name»_size = strlen(_«$name»);
+            }
             otherwise {
                 choose {
                     when "$const"
@@ -317,6 +327,8 @@ tstylesheet {
                 > &_«$name»
             when "$dir = 'inout' and $type='group'"
                 > &_«$name»
+            when "$dir = 'in' and $type='sstring'"
+                > _«$name», _«$name»_size
             otherwise
                 > _«$name»
         }
