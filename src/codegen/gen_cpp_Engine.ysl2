@@ -21,6 +21,7 @@ tstylesheet {
         #include <pEp/passphrase_cache.hh>
         #include <pEp/group.h>
         #include <pEp/group_internal.h>
+        #include <pEp/Sync_impl.h>
         #include <src/group_manager_api.h>
 
         #include "foundation_pEp_jniadapter_«@name».h"
@@ -192,6 +193,12 @@ tstylesheet {
                 }
                 ||
             }
+            when "$type = 'bool'"
+            {
+                ||
+
+                ||
+            }
             when "ancestor::namespace/child::enum[@name=$type]" {
                 const "ljtype" call "lcase" with "text","$jtype";
                 ||
@@ -281,6 +288,8 @@ tstylesheet {
                 | char * _«$name»;
                 | size_t _«$name»_size;
             }
+            when "$type='bool'"
+                | bool «$name»_;
             otherwise
                 | √$type *_«$name»;
         }
@@ -298,6 +307,8 @@ tstylesheet {
                 value "*[3]";
             when "($dir = 'creates' or $dir = 'returns') and $type='sstring'"
                 > &_«$name», &_«$name»_size
+            when "($dir = 'creates' or $dir = 'returns') and $type='bool'"
+                > &«$name»_
             when "$dir = 'creates' or $dir = 'returns'"
                 > &_«$name»
             when "$dir = 'inout' and $type='int'"
