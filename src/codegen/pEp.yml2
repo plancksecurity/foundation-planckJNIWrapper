@@ -338,6 +338,17 @@ namespace pEp {
                 returns bool grouped
             );
 
+        method cached=false signature_for_text(
+                in sstring ptext const,
+                returns sstring stext
+            );
+
+        method cached=false verify_signature(
+                in sstring ptext const,
+                in sstring stext const
+            );
+
+
 
         // "basic" methods are generated on the java side, but
         // on the C++ side, manually implemented in basic_api.cc
