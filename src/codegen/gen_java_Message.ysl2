@@ -245,7 +245,7 @@ tstylesheet {
                 ||
             }
 
-            when "$ctype = 'identitylist' or $ctype = 'bloblist' or $ctype = 'stringlist' or $ctype = 'stringpairlist'" {
+            when "$ctype = 'identitylist' or $ctype = 'memberlist' or $ctype = 'bloblist' or $ctype = 'stringlist' or $ctype = 'stringpairlist'" {
                 const "ename", "substring-after(substring($type,1,string-length($type)-1), '<')";
                 const "iename" choose {
                     when "$ctype = 'stringlist'" > byte[]

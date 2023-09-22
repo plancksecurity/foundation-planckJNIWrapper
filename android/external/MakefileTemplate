@@ -13,6 +13,8 @@ SEQUOIA_ARCH ?= [SEQUOIA_ARCH]
 BOTAN_ARCH ?= [BOTAN_ARCH]
 OPENSSL_ARCHITECTURE ?= [OPENSSL_ARCHITECTURE]
 COMPILER_PREFIX ?= [COMPILER_PREFIX]
+SEQUOIA_TARGET = release
+SEQUOIA_PROFILE = release
 
 # This include is dependent on the *build parameters* defined above and needs to be declared after them
 include ../PerArchMakefile.conf
@@ -43,7 +45,7 @@ LDFLAGS += $(MYLDFLAGS)
 # GNU Tools trickery
 
 # point pkg-config to the .pc files generated from these builds
-export PKG_CONFIG_PATH=$(LOCAL)/lib/src/pEpEngineSequoiaBackend/target/release
+export PKG_CONFIG_PATH=$(LOCAL)/lib/src/pEpEngineSequoiaBackend/target/$(SEQUOIA_TARGET)
 
 # workaround for cross-compiling bug in autoconf
 export ac_cv_func_malloc_0_nonnull=yes
@@ -70,6 +72,8 @@ showsetup:
 	@echo "${YELLOW}RANLIB: $(RANLIB)${RESET}"
 	@echo "${YELLOW}CFLAGS: $(CFLAGS)${RESET}"
 	@echo "${YELLOW}LDFLAGS: $(LDFLAGS)${RESET}"
+	@echo "${YELLOW}SEQUOIA_TARGET: $(SEQUOIA_TARGET)${RESET}"
+	@echo "${YELLOW}SEQUOIA_PROFILE: $(SEQUOIA_PROFILE)${RESET}"
 	@echo "${YELLOW}============================================== CURRENT SETUP END ====================================================${RESET}"
 
 #------------------------------------------------------------------------------#
@@ -253,7 +257,7 @@ nettle-build: nettle/libnettle.so
 nettle-install: $(LOCAL)/lib/libnettle.so
 
 #------------------------------------------------------------------------------#
-# BOTAN
+# BOTAN2
 
 botan.src.stamp: ../downloads/Botan-$(BOTAN_VERSION).tar.xz
 	tar xvf $<
@@ -287,7 +291,7 @@ botan-install: $(LOCAL)/lib/libbotan-2.so
 ## Build sequoia dependencies
 sequoia-deps-build: sequoia-deps-build-$(CRYPTO_LIB_NAME)
 sequoia-deps-build-nettle: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so
-sequoia-deps-build-botan: $(LOCAL)/lib/libbotan-2.so
+sequoia-deps-build-botan2: $(LOCAL)/lib/libbotan-2.so
 
 
 #------------------------------------------------------------------------------#
@@ -302,8 +306,13 @@ pEpEngineSequoiaBackend.src.stamp: ../downloads/pEpEngineSequoiaBackend.tar.gz
 	find -L $(ANDROID_NDK) -name libunwind.a -execdir sh -c 'echo "INPUT(-lunwind)" > $(LOCAL)/lib/libgcc.a' \;
 	touch $@
 
-$(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.a:  pEpEngineSequoiaBackend.src.stamp sequoia-deps-build-$(CRYPTO_LIB_NAME)
-	cd pEpEngineSequoiaBackend && cargo update -p sequoia-openpgp --precise 1.14.0 
+ifeq ($(SEQUOIA_TARGET),debug)
+  SEQUOIA_PROFILE=dev
+else
+  SEQUOIA_PROFILE=release
+endif
+
+$(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/$(SEQUOIA_TARGET)/libpep_engine_sequoia_backend.a:  pEpEngineSequoiaBackend.src.stamp sequoia-deps-build-$(CRYPTO_LIB_NAME)
 	cd pEpEngineSequoiaBackend && PATH=$(TEMP_WORK_PATH) \
 	CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
@@ -313,19 +322,19 @@ $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.a:  pE
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_INCLUDE_DIR="$(LOCAL)/include" \
 	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR="$(LOCAL)/bin" \
 	RUSTFLAGS='-L $(LOCAL)/lib' \
-	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --no-default-features --features sequoia-openpgp/crypto-$(CRYPTO_LIB_NAME) --target $(SEQUOIA_ARCH) -p pep_engine_sequoia_backend --release
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --features crypto-$(CRYPTO_LIB_NAME) --target $(SEQUOIA_ARCH) -p pep_engine_sequoia_backend --profile $(SEQUOIA_PROFILE)
 
-$(LOCAL)/lib/libpep_engine_sequoia_backend.a: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.a
-	cp $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.* $(LOCAL)/lib/
+$(LOCAL)/lib/libpep_engine_sequoia_backend.a: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/$(SEQUOIA_TARGET)/libpep_engine_sequoia_backend.a
+	cp $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/$(SEQUOIA_TARGET)/libpep_engine_sequoia_backend.* $(LOCAL)/lib/
 
 
-pEpEngineSequoiaBackend-build: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/release/libpep_engine_sequoia_backend.a
+pEpEngineSequoiaBackend-build: $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/$(SEQUOIA_TARGET)/libpep_engine_sequoia_backend.a
 
 pEpEngineSequoiaBackend-install: pEpEngineSequoiaBackend-install-$(CRYPTO_LIB_NAME)
 
 pEpEngineSequoiaBackend-install-nettle: $(LOCAL)/lib/libssl.so $(LOCAL)/lib/libnettle.so $(LOCAL)/lib/libpep_engine_sequoia_backend.a
 
-pEpEngineSequoiaBackend-install-botan: $(LOCAL)/lib/libbotan-2.so $(LOCAL)/lib/libpep_engine_sequoia_backend.a
+pEpEngineSequoiaBackend-install-botan2: $(LOCAL)/lib/libbotan-2.so $(LOCAL)/lib/libpep_engine_sequoia_backend.a
 
 #------------------------------------------------------------------------------#
 # assets for Android app

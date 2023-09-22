@@ -71,6 +71,7 @@ namespace pEp {
         enumitem sync_notify_accepted_group_created     > 7
         enumitem sync_notify_accepted_device_accepted   > 8
         enumitem sync_notify_outgoing_rating_change     > 64
+        enumitem distribution_notify_group_invite       > 192
         enumitem sync_passphrase_required               > 128
         enumitem sync_notify_sole                       > 254
         enumitem sync_notify_in_group                   > 255
@@ -150,7 +151,7 @@ namespace pEp {
                 returns Rating rating
             );
 
-        // TODO: WTF is...
+        // TODO: WTF is... Says so on the tin, the key detail messages of a message 
         method cached=true own_message_private_key_details(
                 in message msg,
                 returns identity ident 
@@ -248,6 +249,92 @@ namespace pEp {
 
         method cached=true sync_reinit();
 
+        // Group methods
+        method cached=false adapter_group_create(
+                inout identity groupidentity,
+                inout identity manager,
+                inout identitylist memberidentlist
+            );
+
+        method cached=false adapter_group_dissolve(
+                in identity groupidentity,
+                in identity manager
+            );
+
+        method cached=false adapter_group_join(
+                in identity groupidentity,
+                in identity member,
+                in identity manager
+            );
+
+        method cached=false adapter_group_invite_member(
+                in identity groupidentity,
+                in identity member
+            );
+
+        method cached=false adapter_group_remove_member(
+                in identity groupidentity,
+                in identity member
+            );
+
+        method cached=false group_rating(
+                in identity groupidentity,
+                in identity manager,
+                returns Rating rating
+            );
+
+        method cached=false adapter_group_query_groups(
+                returns identitylist groups
+            );
+
+        method cached=false adapter_group_query_manager(
+                in identity group,
+                returns identity manager
+            );
+
+        method cached=false adapter_group_query_members(
+                in identity group,
+                returns identitylist members
+            );
+
+        method cached=false group_create(
+                inout identity groupidentity,
+                inout identity manager,
+                inout identitylist memberidentlist,
+                inout group group
+            );
+
+        method cached=false group_join(
+                in identity groupidentity,
+                in identity member
+            );
+
+        method cached=false group_dissolve(
+                in identity groupidentity,
+                in identity manager
+            );
+
+        method cached=false group_invite_member(
+                in identity groupidentity,
+                in identity member
+            );
+
+        method cached=false group_remove_member(
+                in identity groupidentity,
+                in identity member
+            );
+
+        method cached=false get_group_manager(
+                in identity group,
+                returns identity manager
+            );
+
+        method cached=false retrieve_full_group_membership(
+                in identity group,
+                returns memberlist members
+            );
+
+
         // "basic" methods are generated on the java side, but
         // on the C++ side, manually implemented in basic_api.cc
 
@@ -260,6 +347,7 @@ namespace pEp {
         basic void trustPersonalKey(identity ident);
         basic void trustOwnKey(identity ident);
         basic identitylist importKey(bytearray key);
+        basic stringlist importExtraKey(bytearray key);
         basic void config_passive_mode(bool enable);
         basic void config_unencrypted_subject(bool enable);
         basic string getCrashdumpLog(int maxlines);

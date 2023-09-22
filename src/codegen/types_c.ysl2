@@ -6,6 +6,8 @@ function "toC" {
         when "$type='string' or $type='sstring'" > char
         when "$type='identity'" > pEp_identity
         when "$type='identitylist'" > identity_list
+        when "$type='memberlist'" > member_list
+        when "$type='group'" > pEp_group
         when "$type='timestamp'" > timestamp
         when "$type='EncFormat'" > PEP_enc_format
         when "$type='bloblist'" > bloblist_t

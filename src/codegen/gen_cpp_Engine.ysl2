@@ -19,6 +19,9 @@ tstylesheet {
         #include <pEp/Adapter.hh>
         #include <pEp/pEpLog.hh>
         #include <pEp/passphrase_cache.hh>
+        #include <pEp/group.h>
+        #include <pEp/group_internal.h>
+        #include <src/group_manager_api.h>
 
         #include "foundation_pEp_jniadapter_«@name».h"
         #include "throw_pEp_exception.hh"
@@ -173,7 +176,7 @@ tstylesheet {
         param "name", "name(*[3])";
 
         choose {
-            when "$type = 'stringlist' or $type = 'string' or $type = 'sstring' or $type = 'stringpairlist' or $type = 'identity' or $type = 'identitylist'"
+            when "$type = 'stringlist' or $type = 'string' or $type = 'sstring' or $type = 'stringpairlist' or $type = 'identity' or $type = 'identitylist' or $type = 'memberlist'"
             {
                 const "jnitype" call "jni_type" with "type", "$type";
                 const "from_type" choose {
@@ -300,6 +303,8 @@ tstylesheet {
             when "$dir = 'inout' and $type='int'"
                 > (unsigned int *) &_«$name»
             when "$dir = 'inout' and $type='stringlist'"
+                > &_«$name»
+            when "$dir = 'inout' and $type='group'"
                 > &_«$name»
             otherwise
                 > _«$name»

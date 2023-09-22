@@ -16,8 +16,8 @@ LOCAL_MODULE := libpep_engine_sequoia_backend
 LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libpep_engine_sequoia_backend.a
 include $(PREBUILT_STATIC_LIBRARY)
 #Crypto lib switch, as we can use Sequoia with multiple crypto backends a switch to see which libs are loaded is required, we assume botan is the alternative, botan  the 'default' temporarily, but having nothing defined will output an error
-ifeq ($(CRYPTO_LIB_NAME), botan)
-    $(warning ==== JNIADAPTER android.mk using BOTAN for pEpEngineSequoiaBackend)
+ifeq ($(CRYPTO_LIB_NAME), botan2)
+    $(warning ==== JNIADAPTER android.mk using BOTAN2 for pEpEngineSequoiaBackend)
 
     include $(CLEAR_VARS)
     LOCAL_MODULE := botan
@@ -61,7 +61,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
 LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libuuid libiconv pEpAdapter pEpCxx11 botan libpep_engine_sequoia_backend
 LOCAL_CPP_FEATURES += exceptions
-LOCAL_CPPFLAGS += -std=c++11 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld
+LOCAL_CPPFLAGS += -std=c++14 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld -frtti
 LOCAL_SRC_FILES  := \
           ../../src/cxx/foundation_pEp_jniadapter_AbstractEngine.cc \
           ../../src/cxx/foundation_pEp_jniadapter_Engine.cc \
