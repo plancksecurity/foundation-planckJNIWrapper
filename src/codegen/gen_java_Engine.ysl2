@@ -347,7 +347,7 @@ tstylesheet {
         const "name" call "lcase" with "text", "name(*[3])";
 
         if "$dir = 'in' or $dir = 'inout'" choose {
-            when "$type = 'string' or $type = 'stringlist'"
+            when "$type = 'string' or $type = 'stringlist' or $type = 'sstring'"
                 | ¡$type _«$name» = Utils.toUTF8(«$name»);
             when "$type = 'identity'"
                 ||
@@ -399,7 +399,7 @@ tstylesheet {
         const "type", "name(*[2])";
         const "name" call "lcase" with "text", "name(*[3])";
 
-        if "$type = 'string' or $type = 'stringlist' or $type = 'identity' or $type = 'identitylist' or $type = 'memberlist' or $type = 'group'"
+        if "$type = 'string' or $type = 'stringlist' or $type = 'identity' or $type = 'identitylist' or $type = 'memberlist' or $type = 'group' or $type = 'sstring'"
             > _
         > «$name»`if "position()!=last()" > , `
     }
