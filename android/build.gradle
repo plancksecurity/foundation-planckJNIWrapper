@@ -16,6 +16,7 @@ def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 def CRYPTO_LIB = "botan2"
 ext.archsToCompile = "arm arm64 x86 x86_64"
 def SEQUOIA_TARGET = findProperty("SEQUOIA_TARGET") ?: "release"
+def CORE_LOG = findProperty("CORE_LOG") ?: ""
 
 apply from: 'gradle/plugins/set-pep-jniadapter-archs.gradle'
 
@@ -98,7 +99,7 @@ android {
             jniDebuggable true
             externalNativeBuild {
                 ndkBuild {
-                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null', '--output-sync=none', '-B', 'V=1', "CRYPTO_LIB_NAME=${CRYPTO_LIB}"
+                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null', "PEP_LOG=${CORE_LOG}", '--output-sync=none', '-B', 'V=1', "CRYPTO_LIB_NAME=${CRYPTO_LIB}"
                    // arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1'
                 }
             }
