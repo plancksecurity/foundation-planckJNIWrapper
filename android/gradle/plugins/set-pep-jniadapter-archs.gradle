@@ -1,6 +1,6 @@
 ext.adb = "$System.env.ANDROID_SDK/platform-tools/adb"
 
-task setpEpJNIAdapterArchs {
+tasks.register('setpEpJNIAdapterArchs') {
 
     description = "Prepare pEpJNIAdapter to build with the first archs of each connected device."
 
