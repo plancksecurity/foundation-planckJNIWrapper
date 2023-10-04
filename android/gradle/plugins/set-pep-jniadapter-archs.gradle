@@ -22,10 +22,8 @@ task setpEpJNIAdapterArchs {
     }
 }
 
-private List<String> getConnectedDevicesIds(boolean verbose = false) {
-    def lines = execCommand("${adb} devices", true, verbose).readLines()
-    lines.removeIf { it.trim().isEmpty() }
-    lines.remove(0)
+private List<String> getConnectedDevicesIds(boolean verbose = true) {
+    def lines = execCommand(['bash', '-c', "${adb} devices | grep -v devices | grep device"], true, verbose).readLines()
     if (lines.isEmpty()) return lines
     return lines.collect { line ->
         line.substring(0, line.indexOf("device")).trim()
@@ -39,12 +37,17 @@ static String convertAbiName(name) {
 }
 
 private String execCommand(String command, boolean captureOutput = false, boolean verbose = false) {
+    List<String> splitCommand = command.split(' ')
+    return execCommand(splitCommand, captureOutput, verbose)
+}
+
+private String execCommand(List<String> command, boolean captureOutput = false, boolean verbose = false) {
     def stdout = captureOutput ? new ByteArrayOutputStream() : null
     exec {
         if (verbose) {
-            println("running command: $command")
+            println("running command: ${command.join(' ')}")
         }
-        commandLine command.split(' ')
+        commandLine = command
         if (stdout != null) {
             standardOutput = stdout
         }
