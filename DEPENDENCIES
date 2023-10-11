@@ -1,6 +1,6 @@
 # 1st Party Dependencies
 ## Prefer git tags instead of SHA hashes when possible.
 
-pEpEngine=v3.3.5
+pEpEngine=EFA-318_elaborate_approach_reinit_sync
 libpEpAdapter=v3.3.0
 libpEpCxx11=v3.3.0-RC8
