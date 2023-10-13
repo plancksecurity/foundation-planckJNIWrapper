@@ -1,3 +1,4 @@
+import org.gradle.process.internal.ExecException
 ext.adb = "$System.env.ANDROID_SDK/platform-tools/adb"
 
 tasks.register('setpEpJNIAdapterArchs') {
@@ -6,6 +7,9 @@ tasks.register('setpEpJNIAdapterArchs') {
 
     doLast {
         def serialNos = getConnectedDevicesIds()
+        if (serialNos.isEmpty()) {
+            return
+        }
         println("Connected devices: $serialNos")
         def abis = serialNos.collect { serialNo ->
             convertAbiName(execCommand("${adb} -s ${serialNo} shell getprop ro.product.cpu.abilist", true).trim().split(",")[0])
@@ -23,7 +27,7 @@ tasks.register('setpEpJNIAdapterArchs') {
 }
 
 private List<String> getConnectedDevicesIds(boolean verbose = true) {
-    def lines = execCommand(['bash', '-c', "${adb} devices | grep -v devices | grep device"], true, verbose).readLines()
+    def lines = execCommand(['bash', '-c', "echo \$(${adb} devices) | grep -v 'devices' | grep 'device'"], true, verbose).readLines()
     if (lines.isEmpty()) return lines
     return lines.collect { line ->
         line.substring(0, line.indexOf("device")).trim()
@@ -43,14 +47,19 @@ private String execCommand(String command, boolean captureOutput = false, boolea
 
 private String execCommand(List<String> command, boolean captureOutput = false, boolean verbose = false) {
     def stdout = captureOutput ? new ByteArrayOutputStream() : null
-    exec {
-        if (verbose) {
-            println("running command: ${command.join(' ')}")
+    try {
+        exec {
+            if (verbose) {
+                println("running command: ${command.join(' ')}")
+            }
+            commandLine = command
+            if (stdout != null) {
+                standardOutput = stdout
+            }
         }
-        commandLine = command
-        if (stdout != null) {
-            standardOutput = stdout
-        }
+    } catch (ExecException e) {
+        System.err.println("COMMAND ${command.join(' ')} FAILED:")
+        e.printStackTrace()
     }
     String out = null
     if (stdout != null) {
