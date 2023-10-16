@@ -27,7 +27,7 @@ tasks.register('setpEpJNIAdapterArchs') {
 }
 
 private List<String> getConnectedDevicesIds(boolean verbose = true) {
-    def lines = execCommand(['bash', '-c', "echo \$(${adb} devices) | grep -v 'devices' | grep 'device'"], true, verbose).readLines()
+    def lines = execCommand(['bash', '-c', "${adb} devices | grep -v 'devices' | grep 'device'"], true, verbose).readLines()
     if (lines.isEmpty()) return lines
     return lines.collect { line ->
         line.substring(0, line.indexOf("device")).trim()
