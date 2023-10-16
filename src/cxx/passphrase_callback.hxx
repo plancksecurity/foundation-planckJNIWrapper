@@ -25,10 +25,14 @@ template<typename... A> PEP_STATUS passphraseWrap(PEP_STATUS f(PEP_SESSION, A...
                 // call the app
                 char *_passphrase = passphraseRequiredCallback(status);
                 pEpLog("callback returned, config_passphrase() with new passphrase");
+                PEP_STATUS inner_status;
                 if (status == PEP_PASSPHRASE_FOR_NEW_KEYS_REQUIRED) {
-                    status = ::config_passphrase_for_new_keys(session, true, _passphrase);
+                    inner_status = ::config_passphrase_for_new_keys(session, true, _passphrase);
                 } else {
-                    status = ::config_passphrase(session, passphrase_cache.add(_passphrase));
+                    inner_status = ::config_passphrase(session, passphrase_cache.add(_passphrase));
+                }
+                if (inner_status == PEP_OUT_OF_MEMORY) {
+                    return inner_status;
                 }
                 retryAgain = true;
                 retryCount++;
