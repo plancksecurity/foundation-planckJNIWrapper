@@ -89,6 +89,17 @@ namespace pEp {
         enumitem pEp_cipher_suite_rsa8k                 > 8
     };
 
+    enum EncryptionFormat {
+        enumitem planck_enc_none                                 > 0
+        enumitem planck_enc_inline                               > 1
+        enumitem planck_enc_S_MIME                               > 2
+        enumitem planck_enc_PGP_MIME                             > 3
+        enumitem planck_enc_PEP                                  > 4
+        enumitem planck_enc_PGP_MIME_Outlook1                    > 5
+        enumitem planck_enc_inline_EA                            > 6
+        enumitem planck_enc_auto                                 > 255
+    };
+
     interface Engine {
         method cached=true encrypt_message(
                 in message src,
