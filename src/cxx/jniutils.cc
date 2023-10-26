@@ -509,6 +509,15 @@ jobject from_identity(JNIEnv *env,
 
         jfieldID flags_id = getFieldID(env, classname, "flags", "I");
         env->SetIntField(obj, flags_id, static_cast<jint>(ident->flags));
+
+        jfieldID major_ver_id = getFieldID(env, classname, "major_ver", "I");
+        env->SetIntField(obj, major_ver_id, static_cast<jint>(ident->major_ver));
+
+        jfieldID minor_ver_id = getFieldID(env, classname, "minor_ver", "I");
+        env->SetIntField(obj, minor_ver_id, static_cast<jint>(ident->minor_ver));
+
+        jfieldID enc_format_id = getFieldID(env, classname, "enc_format", "I");
+        env->SetIntField(obj, enc_format_id, static_cast<jint>(ident->enc_format));
     }
 
     return obj;
@@ -639,6 +648,15 @@ jobject from_identity(JNIEnv *env,
 
         jfieldID flags_id = getFieldID(env, classname, "flags", "I", identityClass);
         env->SetIntField(obj, flags_id, static_cast<jint>(ident->flags));
+
+        jfieldID major_ver_id = getFieldID(env, classname, "major_ver", "I", identityClass);
+        env->SetIntField(obj, major_ver_id, static_cast<jint>(ident->major_ver));
+
+        jfieldID minor_ver_id = getFieldID(env, classname, "minor_ver", "I", identityClass);
+        env->SetIntField(obj, minor_ver_id, static_cast<jint>(ident->minor_ver));
+
+        jfieldID enc_format_id = getFieldID(env, classname, "enc_format", "I", identityClass);
+        env->SetIntField(obj, enc_format_id, static_cast<jint>(ident->enc_format));
     }
 
     return obj;
@@ -697,6 +715,15 @@ pEp_identity *to_identity(JNIEnv *env,
 
     jfieldID flags_id = getFieldID(env, classname, "flags", "I");
     ident->flags = static_cast<identity_flags_t>(env->GetIntField(obj, flags_id));
+
+    jfieldID major_ver_id = getFieldID(env, classname, "major_ver", "I");
+    ident->major_ver = static_cast<unsigned int>(env->GetIntField(obj, major_ver_id));
+
+    jfieldID minor_ver_id = getFieldID(env, classname, "minor_ver", "I");
+    ident->minor_ver = static_cast<unsigned int>(env->GetIntField(obj, minor_ver_id));
+
+    jfieldID enc_format_id = getFieldID(env, classname, "enc_format", "I");
+    ident->enc_format = static_cast<PEP_enc_format>(env->GetIntField(obj, enc_format_id));
 
     return ident;
 }

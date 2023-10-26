@@ -10,6 +10,11 @@ public class _Identity {
     public boolean me;
     public int flags;
 
+    public int major_ver;
+    public int minor_ver;
+
+    public int enc_format;
+
     public _Identity() {
         this.me = false;
     }
@@ -27,6 +32,9 @@ public class _Identity {
         lang = Utils.toUTF8(i.lang);
         me = i.me;
         flags = i.flags;
+        major_ver = i.major_ver;
+        minor_ver = i.minor_ver;
+        enc_format = i.enc_format.value;
     }
 }
 

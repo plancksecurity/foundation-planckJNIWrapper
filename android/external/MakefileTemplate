@@ -151,7 +151,9 @@ uuid/.libs/libuuid.so: uuid/Makefile
 uuid-build: uuid/.libs/libuuid.so
 
 $(LOCAL)/include/uuid.h: uuid/Makefile
-	mkdir -p $(LOCAL)/include && cd uuid && cp uuid.h $(LOCAL)/include
+	rm -f $@
+	mkdir -p $(LOCAL)/include
+	cp uuid/uuid.h $(LOCAL)/include
 
 ## Prebuild uuid
 uuid-prebuild: uuid/jni/Android.mk $(LOCAL)/include/uuid.h
