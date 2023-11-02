@@ -14,14 +14,38 @@ public class Identity implements IdentityInterface, Serializable {
     public boolean me;
     public int flags;
 
+    /**
+     * The major version of this identity.
+     * <p>
+     *     Please note that the original type in C is <code>unsigned int</code>,
+     *     but the assumption is that no version will ever be so big
+     *     as to cause trouble.
+     * </p>
+     */
+    public int major_ver;
+
+    /**
+     * The minor version of this identity.
+     * <p>
+     *     Please note that the original type in C is <code>unsigned int</code>,
+     *     but the assumption is that no version will ever be so big
+     *     as to cause trouble.
+     * </p>
+     */
+    public int minor_ver;
+
+    public EncryptionFormat enc_format;
+
     public Identity() {
         this.me = false;
         comm_type = CommType.PEP_ct_unknown;
+        enc_format = EncryptionFormat.PlanckEncNone;
     }
 
     public Identity(boolean me) {
         this.me = me;
         comm_type = CommType.PEP_ct_unknown;
+        enc_format = EncryptionFormat.PlanckEncNone;
     }
 
     public Identity(_Identity i) {
@@ -33,6 +57,9 @@ public class Identity implements IdentityInterface, Serializable {
         lang = Utils.toUTF16(i.lang);
         me = i.me;
         flags = i.flags;
+        major_ver = i.major_ver;
+        minor_ver = i.minor_ver;
+        enc_format = EncryptionFormat.getByInt(i.enc_format);
     }
 
     public Rating getRating() {
