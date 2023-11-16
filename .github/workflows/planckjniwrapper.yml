@@ -1,0 +1,186 @@
+name: foundation/planckJNIWrapper
+on:
+  push:
+  workflow_dispatch:
+concurrency:
+  group: "${{ github.ref }}"
+  cancel-in-progress: true
+env:
+  DOCKER_AUTH_CONFIG: '{"auths":{"dockerreg.planck.security":{"auth":"cGxhbmNrR2l0bGFiOlEwQlM5UTZqU3Q0REhtTmVFaWhEd1lqNFZiaWtFM2JXZEs1NEYyeHhXWVRkY2pNMU1XQXRqRVZTbGFocg=="}}}'
+  PLANCK_DOCKER_REGISTRY_PASSWORD: "${{ secrets.PLANCK_DOCKER_REGISTRY_PASSWORD }}"
+  PLANCK_DOCKER_REGISTRY_USER: planckGitlab
+  DOCKER_REGISTRY_HOST: dockerreg.planck.security
+jobs:
+  debian10-build:
+    runs-on:
+      - self-hosted
+      - kvm
+    if: ${{ github.ref }}  !~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/
+    timeout-minutes: 60
+    env:
+      MAKE_TARGET: build
+      CI_DISTRO_TARGET: debian10
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+        lfs: true
+    - run: which docker || ( sudo apt-get update -y && sudo apt-get install docker.io -y )
+    - run: docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - run: cd scripts/${CI_DISTRO_TARGET}
+    - run: make ${MAKE_TARGET}
+  debian10-tagged-build:
+    runs-on:
+      - self-hosted
+      - kvm
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         ${{ github.ref }}  =~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/
+    timeout-minutes: 60
+    env:
+      MAKE_TARGET: build
+      CI_DISTRO_TARGET: debian10
+      DEBIAN_FRONTEND: noninteractive
+      TAGGED_BUILD: 'true'
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+        lfs: true
+    - run: which docker || ( sudo apt-get update -y && sudo apt-get install docker.io -y )
+    - run: docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - run: cd scripts/${CI_DISTRO_TARGET}
+    - run: make ${MAKE_TARGET}
+  debian10-java8-build:
+    runs-on:
+      - self-hosted
+      - kvm
+    if: ${{ github.ref }}  !~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/
+    timeout-minutes: 60
+    env:
+      MAKE_TARGET: java8
+      CI_DISTRO_TARGET: debian10
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+        lfs: true
+    - run: which docker || ( sudo apt-get update -y && sudo apt-get install docker.io -y )
+    - run: docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - run: cd scripts/${CI_DISTRO_TARGET}
+    - run: make ${MAKE_TARGET}
+  debian10-java8-tagged-build:
+    runs-on:
+      - self-hosted
+      - kvm
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         ${{ github.ref }}  =~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/
+    timeout-minutes: 60
+    env:
+      CI_DISTRO_TARGET: debian10
+      MAKE_TARGET: java8
+      DEBIAN_FRONTEND: noninteractive
+      TAGGED_BUILD: 'true'
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+        lfs: true
+    - run: which docker || ( sudo apt-get update -y && sudo apt-get install docker.io -y )
+    - run: docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - run: cd scripts/${CI_DISTRO_TARGET}
+    - run: make ${MAKE_TARGET}
+  centos8-build:
+    runs-on:
+      - self-hosted
+      - kvm
+    if: ${{ github.ref }}  !~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/
+    timeout-minutes: 60
+    env:
+      MAKE_TARGET: build
+      CI_DISTRO_TARGET: centos8
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+        lfs: true
+    - run: which docker || ( sudo apt-get update -y && sudo apt-get install docker.io -y )
+    - run: docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - run: cd scripts/${CI_DISTRO_TARGET}
+    - run: make ${MAKE_TARGET}
+  centos8-tagged-build:
+    runs-on:
+      - self-hosted
+      - kvm
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         ${{ github.ref }}  =~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/
+    timeout-minutes: 60
+    env:
+      MAKE_TARGET: build
+      CI_DISTRO_TARGET: centos8
+      TAGGED_BUILD: 'true'
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+        lfs: true
+    - run: which docker || ( sudo apt-get update -y && sudo apt-get install docker.io -y )
+    - run: docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - run: cd scripts/${CI_DISTRO_TARGET}
+    - run: make ${MAKE_TARGET}
+  centos8-rpm:
+    needs: centos8-build
+    runs-on:
+      - self-hosted
+      - kvm
+    if: ${{ github.ref }}  !~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/
+    timeout-minutes: 60
+    env:
+      MAKE_TARGET: rpm
+      CI_DISTRO_TARGET: centos8
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+        lfs: true
+    - run: which docker || ( sudo apt-get update -y && sudo apt-get install docker.io -y )
+    - run: docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - run: cd scripts/${CI_DISTRO_TARGET}
+    - run: make ${MAKE_TARGET}
+  centos8-rpm-tagged-build:
+    needs: centos8-tagged-build
+    runs-on:
+      - self-hosted
+      - kvm
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         ${{ github.ref }}  =~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/
+    timeout-minutes: 60
+    env:
+      MAKE_TARGET: rpm
+      CI_DISTRO_TARGET: centos8
+      TAGGED_BUILD: 'true'
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+        lfs: true
+    - run: which ssh-agent || ( sudo apt-get update -y && sudo apt-get install openssh-client -y )
+    - run: which rsync || ( sudo apt-get update -y && sudo apt-get install rsync -y )
+    - run: which make || ( sudo apt-get update -y && sudo apt-get install make -y )
+    - run: eval $(ssh-agent -s)
+    - run: echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - run: mkdir -p ~/.ssh
+    - run: chmod 700 ~/.ssh
+    - run: echo "${SSH_KNOWN_HOSTS}" >> ~/.ssh/known_hosts
+    - run: chmod 644 ~/.ssh/known_hosts
+    - run: docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - run: cd scripts/${CI_DISTRO_TARGET}
+    - run: make ${MAKE_TARGET}
+    - run: pwd
+    - run: cd out
+    - run: time rsync -avP -e "ssh -p ${PKG_HOST_SSH_PORT}" depot@${PKG_HOST}:files/pkgs/RHEL/8/pEpJNIAdapter/SHA256SUMS || true
+    - run: if sha256sum --ignore-missing --check SHA256SUMS ; then echo "Package already exists... Exiting..." && exit ; else true ; fi
+    - run: sha256sum ./*.rpm | tee --append SHA256SUMS
+    - run: cat ./SHA256SUMS
+    - run: time rsync -azvP -e "ssh -p ${PKG_HOST_SSH_PORT}" --rsync-path="mkdir -p /home/depot/files/pkgs/RHEL/8/pEpJNIAdapter && rsync" ./*.rpm SHA256SUMS depot@${PKG_HOST}:files/pkgs/RHEL/8/pEpJNIAdapter/
