@@ -3,7 +3,7 @@ SRC_PATH := $(LOCAL_PATH)/../../../
 ENGINE_PATH := $(LOCAL_PATH)/../../../planckCoreV3
 LIB_PEP_ADAPTER_PATH:=$(SRC_PATH)/libPlanckWrapper
 LIB_PEP_CXX11_PATH:=$(SRC_PATH)/libPlanckCxx11
-GPGBUILD:= $(LOCAL_PATH)/../external/output/
+GPGBUILD:= $(LOCAL_PATH)/../external/output
 PEP_LOG ?=
 include $(LOCAL_PATH)/../external/Makefile.conf
 
