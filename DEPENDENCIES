@@ -2,5 +2,5 @@
 ## Prefer git tags instead of SHA hashes when possible.
 
 pEpEngine=v3.3.16
-libpEpAdapter=v3.3.16
+libpEpAdapter=CORE-205
 libpEpCxx11=v3.3.16
