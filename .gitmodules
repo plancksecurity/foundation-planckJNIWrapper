@@ -1,0 +1,16 @@
+[submodule "planckCoreV3"]
+	path = submodules/planckCoreV3
+	url = git@github.com:plancksecurity/foundation-planckCoreV3.git
+	branch = develop
+[submodule "libetpan"]
+	path = submodules/libetpan
+	url = git@github.com:plancksecurity/foundation-libetpan.git
+	branch = develop
+[submodule "libPlanckCxx11"]
+	path = submodules/libPlanckCxx11
+	url = git@github.com:plancksecurity/foundation-libPlanckCxx11.git
+	branch = develop
+[submodule "libPlanckWrapper"]
+	path = submodules/libPlanckWrapper
+	url = git@github.com:plancksecurity/foundation-libPlanckWrapper.git
+	branch = develop
