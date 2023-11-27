@@ -17,6 +17,7 @@ def CRYPTO_LIB = "botan2"
 ext.archsToCompile = "arm arm64 x86 x86_64"
 def SEQUOIA_TARGET = findProperty("SEQUOIA_TARGET") ?: "release"
 def LIBETPAN_SRC = findProperty("LIBETPAN_SRC") ?: "../../../submodules/libetpan"
+def SEQUOIA_BACKEND_SRC = findProperty("SEQUOIA_BACKEND_SRC") ?: "../../../submodules/planckCoreV3/submodules/planckCoreSequoiaBackend"
 def CORE_LOG = findProperty("CORE_LOG") ?: ""
 
 apply from: 'gradle/plugins/set-pep-jniadapter-archs.gradle'
@@ -152,7 +153,8 @@ android {
                 workingDir 'external'
                 commandLine 'make', "-j${threadsToUse}", 'build', "archs=${project.archsToCompile}",
                         "CRYPTO_LIB_NAME=${CRYPTO_LIB}", "SEQUOIA_TARGET=${SEQUOIA_TARGET}",
-                        "LIBETPAN_SRC=${LIBETPAN_SRC}"
+                        "LIBETPAN_SRC=${LIBETPAN_SRC}",
+                        "SEQUOIA_BACKEND_SRC=${SEQUOIA_BACKEND_SRC}"
             }
         }
     }

@@ -16,7 +16,7 @@ include ../Makefile.conf
 ## Download all dependencies
 all: downloads.stamp
 
-downloads.stamp: download-iconv download-uuid download-sequoia-deps download-sequoia
+downloads.stamp: download-iconv download-uuid download-sequoia-deps
 	touch $@
 
 ## Download iconv
@@ -33,9 +33,6 @@ download-sequoia-deps-nettle: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSIO
 						nettle-$(NETTLE_VERSION)-patched.tar.gz
 
 download-sequoia-deps-botan2: Botan-$(BOTAN_VERSION).tar.xz
-
-## Download sequoia
-download-sequoia: pEpEngineSequoiaBackend.git.stamp
 
 # Download source and patch it
 libiconv-1.15.tar.gz:
@@ -127,7 +124,7 @@ clean:
 
 .PHONY: all clean download-iconv \
 		download-uuid \
-		download-sequoia-deps download-sequoia
+		download-sequoia-deps
 
 include ../help.mk
 helpPurpose='Download all files and packages needed to compile external dependencies for pEpEngine'
