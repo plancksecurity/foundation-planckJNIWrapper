@@ -110,16 +110,11 @@ libiconv-install: $(LOCAL)/lib/libiconv.a
 
 #------------------------------------------------------------------------------#
 # libetpan
-libetpan.src.stamp: ../downloads/libetpan.tar.gz
-	mkdir -p libetpan
-	cd libetpan && tar xvf ../$<
-	touch $@
-
-libetpan/Makefile: libetpan.src.stamp | $(LOCAL)/lib/libiconv.a
-	cd libetpan/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh $(APP_ABI)
-	cp -r libetpan/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/$(APP_ABI)/lib/* $(LOCAL)/lib/
-	cp -r libetpan/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/include/* $(LOCAL)/include/
-	touch $@
+libetpan/Makefile: $(LOCAL)/lib/libiconv.a
+	cd $(LIBETPAN_SRC)/build-android; ICONV_PREFIX=$(LOCAL) bash ./build.sh $(APP_ABI)
+	cp -r $(LIBETPAN_SRC)/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/$(APP_ABI)/lib/* $(LOCAL)/lib/
+	cp -r $(LIBETPAN_SRC)/build-android/libetpan-android-$(ANDROID_ETPAN_BUILD_VERSION)/include/* $(LOCAL)/include/
+	mkdir -p libetpan && touch $@
 
 ## Build etpan
 libetpan-build: libetpan/Makefile

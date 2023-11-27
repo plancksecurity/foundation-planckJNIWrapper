@@ -16,7 +16,7 @@ include ../Makefile.conf
 ## Download all dependencies
 all: downloads.stamp
 
-downloads.stamp: download-iconv download-uuid download-sequoia-deps download-etpan download-sequoia
+downloads.stamp: download-iconv download-uuid download-sequoia-deps download-sequoia
 	touch $@
 
 ## Download iconv
@@ -33,9 +33,6 @@ download-sequoia-deps-nettle: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSIO
 						nettle-$(NETTLE_VERSION)-patched.tar.gz
 
 download-sequoia-deps-botan2: Botan-$(BOTAN_VERSION).tar.xz
-
-## Download etpan
-download-etpan: libetpan.git.stamp
 
 ## Download sequoia
 download-sequoia: pEpEngineSequoiaBackend.git.stamp
@@ -129,7 +126,7 @@ clean:
 	-rm -rf *.tar.xz
 
 .PHONY: all clean download-iconv \
-		download-uuid download-etpan \
+		download-uuid \
 		download-sequoia-deps download-sequoia
 
 include ../help.mk
