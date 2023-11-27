@@ -385,7 +385,7 @@ clean-all: clean
 	nettle-build  nettle-install \
 	pEpEngineSequoiaBackend-build pEpEngineSequoiaBackend-install \
 	assets \
-    $(EXTERNAL_LOCAL_GITS_UPDATE) $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN) \
+    $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN) \
 	showsetup
 
 #------------------------------------------------------------------------------#

@@ -70,53 +70,8 @@ nettle-$(NETTLE_VERSION).tar.gz:
 	wget -nc https://ftp.gnu.org/gnu/nettle/nettle-$(NETTLE_VERSION).tar.gz
 	md5sum -c nettle-$(NETTLE_VERSION).tar.gz.md5
 
-
-
-#------------------------------------------------------------------------------#
-# Clone update and archive external projects GIT repos
-# Local clone is in external/$project.git while
-# selected commit is archived in external/$project
-
-define per_repo_targets
-$(1).git.stamp:
-	git clone $(2) $(1).git
-	(cd $(1).git; git archive --format=tar $(3)) > $(1).tar.gz
-	touch $(1).git.stamp
-
-$(1).git_update: $(1).git.stamp
-	cd $(1).git; git pull
-	rm -rf $(1).tar.gz
-	(cd $(1).git; git archive --format=tar $(3)) > $(1).tar.gz
-	touch $(1).git.stamp
-
-$(1)-clean:
-	rm -rf $(1)
-	rm -f $(1).src.stamp
-
-EXTERNAL_LOCAL_GITS += $(1).git.stamp
-EXTERNAL_LOCAL_GITS_UPDATE += $(1).git_update
-EXTERNAL_SRCS += $(1)-src
-EXTERNAL_SRCS_CLEAN += $(1)-clean
-endef
-
-define per_repo
-$(call per_repo_targets,\
-    $(1),\
-    $(word 1,$(subst ?, ,$(2))),\
-    $(word 2,$(subst ?, ,$(2))))
-endef
-
-$(foreach repo, $(EXTERNAL_GIT_REPOS), $(eval $(call per_repo,\
-    $(word 1,$(subst |, ,$(repo))),\
-    $(word 2,$(subst |, ,$(repo))))))
-
-git_clones: $(EXTERNAL_LOCAL_GITS)
-
-git_update: $(EXTERNAL_LOCAL_GITS_UPDATE)
-
 #------------------------------------------------------------------------------#
 clean:
-	-rm -rf *.git
 	-rm -rf *.stamp
 	-rm -rf *.tar.gz
 	-rm -rf *.tar.bz2
