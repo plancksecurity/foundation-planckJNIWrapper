@@ -1,8 +1,8 @@
 LOCAL_PATH:= $(call my-dir)
 SRC_PATH := $(LOCAL_PATH)/../../../
-ENGINE_PATH := $(LOCAL_PATH)/../../../planckCoreV3
-LIB_PEP_ADAPTER_PATH:=$(SRC_PATH)/libPlanckWrapper
-LIB_PEP_CXX11_PATH:=$(SRC_PATH)/libPlanckCxx11
+ENGINE_PATH := $(LOCAL_PATH)/../../submodules/planckCoreV3
+LIB_PEP_ADAPTER_PATH:=$(LOCAL_PATH)/../../submodules/libPlanckWrapper
+LIB_PEP_CXX11_PATH:=$(LOCAL_PATH)/../../submodules/libPlanckCxx11
 GPGBUILD:= $(LOCAL_PATH)/../external/output
 PEP_LOG ?=
 include $(LOCAL_PATH)/../external/Makefile.conf
