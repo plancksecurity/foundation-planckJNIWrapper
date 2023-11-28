@@ -1,6 +1,8 @@
 LOCAL_PATH:= $(call my-dir)
-#SRC_PATH := $(LOCAL_PATH)/../../../
+SRC_PATH := $(LOCAL_PATH)/../../../
+SUBMODULES_PATH := $(LOCAL_PATH)/../../submodules/
 ENGINE_PATH := $(LOCAL_PATH)/../../submodules/planckCoreV3
+NESTED_SUBMODULES_PATH := $(ENGINE_PATH)/submodules/
 LIB_PEP_ADAPTER_PATH:=$(LOCAL_PATH)/../../submodules/libPlanckWrapper
 LIB_PEP_CXX11_PATH:=$(LOCAL_PATH)/../../submodules/libPlanckCxx11
 GPGBUILD:= $(LOCAL_PATH)/../external/output
@@ -74,8 +76,8 @@ LOCAL_SRC_FILES  := \
           ../../src/cxx/jniutils.cc
 
 LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include
-LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(LIB_PEP_ADAPTER_PATH)
-LOCAL_C_INCLUDES += $(LIB_PEP_CXX11_PATH)/build-android/include $(LIB_PEP_CXX11_PATH)
+LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SUBMODULES_PATH)/libPlanckWrapper
+LOCAL_C_INCLUDES += $(LIB_PEP_CXX11_PATH)/build-android/include $(SUBMODULES_PATH)/libPlanckCxx11
 LOCAL_C_INCLUDES += $(ENGINE_PATH)/asn.1
 
 LOCAL_LDFLAGS = -Wl,--allow-multiple-definition
@@ -90,7 +92,9 @@ LOCAL_SRC_FILES  := foundation_pEp_jniadapter_AndroidHelper.cc
 
 include $(BUILD_SHARED_LIBRARY)
 
-#$(call import-add-path,$(SRC_PATH))
+$(call import-add-path,$(SRC_PATH))
+$(call import-add-path,$(SUBMODULES_PATH))
+$(call import-add-path,$(NESTED_SUBMODULES_PATH))
 
 $(warning ==== CURRENT LOCAL BUILT MODULE: $(LOCAL_BUILT_MODULE))
 ## uuid
