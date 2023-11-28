@@ -98,3 +98,4 @@ build-windows/pEpJNIAdapter.vcxproj.user
 
 # Default ignored files
 ?idea/
+localConfFiles/**/*.conf

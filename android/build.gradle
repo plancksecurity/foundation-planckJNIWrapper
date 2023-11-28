@@ -21,6 +21,7 @@ def SEQUOIA_BACKEND_SRC = findProperty("SEQUOIA_BACKEND_SRC") ?: "../../../submo
 def CORE_LOG = findProperty("CORE_LOG") ?: ""
 
 apply from: 'gradle/plugins/set-pep-jniadapter-archs.gradle'
+apply from: 'gradle/plugins/prepareCoreBuild.gradle'
 
 buildscript {
     repositories {
@@ -193,6 +194,7 @@ android {
 
     if(buildAutomatic == "true") {
         buildpEpEngineSystemDB.dependsOn(buildExternal)
+        buildExternal.dependsOn(prepareCoreBuild)
     }
     if(isIdeBuild()) {
         buildExternal.dependsOn(setpEpJNIAdapterArchs)
