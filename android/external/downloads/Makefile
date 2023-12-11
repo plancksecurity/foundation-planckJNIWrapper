@@ -70,7 +70,7 @@ nettle-$(NETTLE_VERSION)-patched.tar.gz: nettle-$(NETTLE_VERSION).tar.gz
 	rm -rf nettle-$(NETTLE_VERSION)
 
 botan:
-	git clone git@github.com:plancksecurity/botan.git -b CORE-242
+	git clone git@github.com:plancksecurity/botan.git -b 2.19.3_planck
 
 nettle-$(NETTLE_VERSION).tar.gz:
 	wget -nc https://ftp.gnu.org/gnu/nettle/nettle-$(NETTLE_VERSION).tar.gz
