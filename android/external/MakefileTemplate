@@ -261,9 +261,8 @@ nettle-install: $(LOCAL)/lib/libnettle.so
 #------------------------------------------------------------------------------#
 # BOTAN2
 
-botan.src.stamp: ../downloads/Botan-$(BOTAN_VERSION).tar.xz
-	tar xvf $<
-	mv Botan-$(BOTAN_VERSION) botan
+botan.src.stamp: ../downloads/botan
+	cp -r $< botan
 	touch $@
 
 botan/Makefile: botan.src.stamp
