@@ -261,8 +261,8 @@ nettle-install: $(LOCAL)/lib/libnettle.so
 #------------------------------------------------------------------------------#
 # BOTAN2
 
-botan.src.stamp: ../downloads/botan
-	cp -r $< botan
+botan.src.stamp: ../downloads/botan.src.stamp
+	cp -r ../downloads/botan botan
 	touch $@
 
 botan/Makefile: botan.src.stamp
@@ -272,16 +272,16 @@ botan/Makefile: botan.src.stamp
 
 
 
-botan/.libs/libbotan-2.so: botan/Makefile
+botan/libbotan-2.so: botan/Makefile
 	$(MAKE) -C botan all
 
-$(LOCAL)/lib/libbotan-2.so: botan/.libs/libbotan-2.so
+$(LOCAL)/lib/libbotan-2.so: botan/libbotan-2.so
 	$(MAKE) -C botan install
 	ls -l $(LOCAL)/lib/libbotan-2.so
 	touch $@
 
 ## Build botan
-botan-build: botan/.libs/libbotan-2.so
+botan-build: botan/libbotan-2.so
 
 ## Install botan
 botan-install: $(LOCAL)/lib/libbotan-2.so
