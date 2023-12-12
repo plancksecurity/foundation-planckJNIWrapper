@@ -5,6 +5,7 @@ def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../planckCor
 def libpEpTransportSrc = hasProperty('libpEpTransportSrc') ? libpEpTransportSrc : "../../libPlanckTransport"
 def libCxx11Src = hasProperty('libCxx11Src') ? libCxx11Src : "../../libPlanckCxx11"
 def sequoiaBackendSrc = findProperty("SEQUOIA_BACKEND_SRC") ?: "../../../../planckCoreSequoiaBackend"
+def libetpanSrc = findProperty("LIBETPAN_SRC") ?: "../../../../libetpan"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 //CHeck M1 answers the correct thing off .avaialableprocessors here Libetpan seems to break
 def threadsToUse = DefaultNativePlatform.currentArchitecture.arm
@@ -152,7 +153,8 @@ android {
                 workingDir 'external'
                 commandLine 'make', "-j${threadsToUse}", 'build', "archs=${project.archsToCompile}",
                         "CRYPTO_LIB_NAME=${CRYPTO_LIB}", "SEQUOIA_TARGET=${SEQUOIA_TARGET}",
-                        "SEQUOIA_BACKEND_SRC=${sequoiaBackendSrc}"
+                        "SEQUOIA_BACKEND_SRC=${sequoiaBackendSrc}",
+                        "LIBETPAN_SRC=${libetpanSrc}"
             }
         }
     }
