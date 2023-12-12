@@ -4,6 +4,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../planckCoreV3"
 def libpEpTransportSrc = hasProperty('libpEpTransportSrc') ? libpEpTransportSrc : "../../libPlanckTransport"
 def libCxx11Src = hasProperty('libCxx11Src') ? libCxx11Src : "../../libPlanckCxx11"
+def sequoiaBackendSrc = findProperty("SEQUOIA_BACKEND_SRC") ?: "../../../../planckCoreSequoiaBackend"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 //CHeck M1 answers the correct thing off .avaialableprocessors here Libetpan seems to break
 def threadsToUse = DefaultNativePlatform.currentArchitecture.arm
@@ -149,7 +150,9 @@ android {
             println("buildExternal for abis: ${project.archsToCompile}")
             exec {
                 workingDir 'external'
-                commandLine 'make', "-j${threadsToUse}", 'build', "archs=${project.archsToCompile}", "CRYPTO_LIB_NAME=${CRYPTO_LIB}", "SEQUOIA_TARGET=${SEQUOIA_TARGET}"
+                commandLine 'make', "-j${threadsToUse}", 'build', "archs=${project.archsToCompile}",
+                        "CRYPTO_LIB_NAME=${CRYPTO_LIB}", "SEQUOIA_TARGET=${SEQUOIA_TARGET}",
+                        "SEQUOIA_BACKEND_SRC=${sequoiaBackendSrc}"
             }
         }
     }
