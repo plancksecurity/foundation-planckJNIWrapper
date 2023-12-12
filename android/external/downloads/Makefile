@@ -32,7 +32,7 @@ download-sequoia-deps: download-sequoia-deps-$(CRYPTO_LIB_NAME)
 download-sequoia-deps-nettle: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSION).tar.bz2 \
 						nettle-$(NETTLE_VERSION)-patched.tar.gz
 
-download-sequoia-deps-botan2: botan
+download-sequoia-deps-botan2: botan.src.stamp
 
 ## Download etpan
 download-etpan: libetpan.git.stamp
@@ -69,8 +69,9 @@ nettle-$(NETTLE_VERSION)-patched.tar.gz: nettle-$(NETTLE_VERSION).tar.gz
 	tar -czvf $@ nettle-$(NETTLE_VERSION)
 	rm -rf nettle-$(NETTLE_VERSION)
 
-botan:
-	git clone git@github.com:plancksecurity/botan.git -b 2.19.3_planck
+botan.src.stamp:
+	[ -d botan ] || git clone git@github.com:plancksecurity/botan.git -b 2.19.3_planck
+	touch $@
 
 nettle-$(NETTLE_VERSION).tar.gz:
 	wget -nc https://ftp.gnu.org/gnu/nettle/nettle-$(NETTLE_VERSION).tar.gz
@@ -127,6 +128,7 @@ clean:
 	-rm -rf *.tar.gz
 	-rm -rf *.tar.bz2
 	-rm -rf *.tar.xz
+	-rm -rf botan
 
 .PHONY: all clean download-iconv \
 		download-uuid download-etpan \
