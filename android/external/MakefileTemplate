@@ -302,6 +302,8 @@ else
 endif
 
 $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/$(SEQUOIA_TARGET)/libpep_engine_sequoia_backend.a: sequoia-deps-build-$(CRYPTO_LIB_NAME)
+    mkdir -p $(LOCAL)/lib/
+    find -L $(ANDROID_NDK) -name libunwind.a -execdir sh -c 'echo "INPUT(-lunwind)" > $(LOCAL)/lib/libgcc.a' \;
 	cd $(SEQUOIA_BACKEND_SRC) && PATH=$(TEMP_WORK_PATH) \
 	CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
