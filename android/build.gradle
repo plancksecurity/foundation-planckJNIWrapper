@@ -16,6 +16,7 @@ def threadsToUse = DefaultNativePlatform.currentArchitecture.arm
 
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 def CRYPTO_LIB = "botan2"
+def BOTAN_VERSION = "2.19.4_planck"
 ext.archsToCompile = "arm arm64 x86 x86_64"
 def SEQUOIA_TARGET = findProperty("SEQUOIA_TARGET") ?: "release"
 def CORE_LOG = findProperty("CORE_LOG") ?: ""
@@ -89,7 +90,9 @@ android {
             buildConfigField "String", "CRYPTO_BACK_END", "\"${CRYPTO_LIB}\""
             externalNativeBuild {
                 ndkBuild {
-                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null', '--output-sync=none', '-B', 'V=1', "CRYPTO_LIB_NAME=${CRYPTO_LIB}"
+                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null',
+                            '--output-sync=none', '-B', 'V=1', "CRYPTO_LIB_NAME=${CRYPTO_LIB}",
+                            "BOTAN_VERSION=${BOTAN_VERSION}"
                     // arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1'
                 }
             }
@@ -101,7 +104,9 @@ android {
             jniDebuggable true
             externalNativeBuild {
                 ndkBuild {
-                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null', "PEP_LOG=${CORE_LOG}", '--output-sync=none', '-B', 'V=1', "CRYPTO_LIB_NAME=${CRYPTO_LIB}"
+                    arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null',
+                            "PEP_LOG=${CORE_LOG}", '--output-sync=none', '-B', 'V=1',
+                            "CRYPTO_LIB_NAME=${CRYPTO_LIB}", "BOTAN_VERSION=${BOTAN_VERSION}"
                    // arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1'
                 }
             }
@@ -149,12 +154,14 @@ android {
     task buildExternal(dependsOn: ['genSources']) {
         doLast {
             println("buildExternal for abis: ${project.archsToCompile}")
+
+
             exec {
                 workingDir 'external'
                 commandLine 'make', "-j${threadsToUse}", 'build', "archs=${project.archsToCompile}",
                         "CRYPTO_LIB_NAME=${CRYPTO_LIB}", "SEQUOIA_TARGET=${SEQUOIA_TARGET}",
                         "SEQUOIA_BACKEND_SRC=${sequoiaBackendSrc}",
-                        "LIBETPAN_SRC=${libetpanSrc}"
+                        "LIBETPAN_SRC=${libetpanSrc}", "BOTAN_VERSION=${BOTAN_VERSION}"
             }
         }
     }
