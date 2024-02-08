@@ -13,6 +13,8 @@ include ../Makefile.conf
 #------------------------------------------------------------------------------#
 # Build parameters
 
+BOTAN_VERSION = 2.19.4_planck # default botan version if not provided
+
 ## Download all dependencies
 all: downloads.stamp
 
@@ -64,7 +66,7 @@ nettle-$(NETTLE_VERSION)-patched.tar.gz: nettle-$(NETTLE_VERSION).tar.gz
 	rm -rf nettle-$(NETTLE_VERSION)
 
 botan.src.stamp:
-	[ -d botan ] || git clone git@github.com:plancksecurity/botan.git -b 2.19.3_planck
+	git clone git@github.com:plancksecurity/botan.git -b $(BOTAN_VERSION)
 	touch $@
 
 nettle-$(NETTLE_VERSION).tar.gz:
