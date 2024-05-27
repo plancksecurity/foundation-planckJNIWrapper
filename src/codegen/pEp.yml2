@@ -350,6 +350,22 @@ namespace pEp {
                 returns bool grouped
             );
 
+        method cached=false has_passphrase(
+        in sstring account const,
+                 returns bool hasPassphrase
+            );
+
+        method cached=false unlock_keys_with_passphrase(
+        in sstring accounts const,
+                 returns stringlist errorAccounts
+            );
+
+        method cached=false manage_passphrase(
+        in stringpairlist accountswitholdpassphrases const,
+        in sstring newpassphrase const,
+                 returns stringlist errorAccounts
+            );
+
         method cached=false signature_for_text(
                 in sstring ptext const,
                 returns sstring stext
