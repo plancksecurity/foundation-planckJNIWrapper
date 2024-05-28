@@ -356,7 +356,7 @@ namespace pEp {
             );
 
         method cached=false unlock_keys_with_passphrase(
-        in sstring accounts const,
+        in stringpairlist accountswithpassphrases const,
                  returns stringlist errorAccounts
             );
 
