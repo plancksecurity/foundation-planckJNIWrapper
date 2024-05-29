@@ -351,7 +351,7 @@ namespace pEp {
             );
 
         method cached=false has_passphrase(
-        in sstring account const,
+        in string account const,
                  returns bool hasPassphrase
             );
 
@@ -362,7 +362,7 @@ namespace pEp {
 
         method cached=false manage_passphrase(
         in stringpairlist accountswitholdpassphrases const,
-        in sstring newpassphrase const,
+        in string newpassphrase const,
                  returns stringlist errorAccounts
             );
 
