@@ -58,7 +58,7 @@ public class Utils {
         ArrayList<Pair<byte[], byte[]>> result = new ArrayList<Pair<byte[], byte[]>>(list.size());
 
         for (int i=0; i<list.size(); i++)
-            result.set(i, toUTF8(list.get(i)));
+            result.add(toUTF8(list.get(i)));
 
         return result;
     }
@@ -110,7 +110,7 @@ public class Utils {
         ArrayList<Pair<String, String>> result = new ArrayList<Pair<String, String>>(list.size());
 
         for (int i=0; i<list.size(); i++)
-            result.set(i, toUTF16(list.get(i)));
+            result.add(toUTF16(list.get(i)));
 
         return result;
     }
