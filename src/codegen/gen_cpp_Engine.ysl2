@@ -276,6 +276,14 @@ tstylesheet {
                 }
                 | size_t _«$name»_size = strlen(_«$name»);
             }
+            when "$type='stringpairlist'"{
+                choose {
+                    when "$const"
+                        | const stringpair_list_t* _«$name» = to_stringpairlist(env, «$name»);
+                    otherwise
+                        | stringpair_list_t* _«$name» = to_stringpairlist(env, «$name»);
+                }
+            }
             otherwise {
                 choose {
                     when "$const"
