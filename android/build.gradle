@@ -16,7 +16,7 @@ def threadsToUse = DefaultNativePlatform.currentArchitecture.arm
 
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 def CRYPTO_LIB = "botan2"
-def BOTAN_VERSION = "2.19.4_planck"
+def BOTAN_VERSION = "2.19.6_planck"
 ext.archsToCompile = "arm arm64 x86 x86_64"
 def SEQUOIA_TARGET = findProperty("SEQUOIA_TARGET") ?: "release"
 def CORE_LOG = findProperty("CORE_LOG") ?: ""
