@@ -499,6 +499,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1unlock_1keys_1
             passphrase_cache.add(passphrase);
         }
     }
+    free_stringlist(_errorAccounts);
     return errorAccounts_;
 }
 
@@ -515,7 +516,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1manage_1passph
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
-    const stringpair_list_t* _accountswitholdpassphrases = to_stringpairlist(env, accountswitholdpassphrases);
+    stringpair_list_t* _accountswitholdpassphrases = to_stringpairlist(env, accountswitholdpassphrases);
     const char *_newpassphrase = to_string(env, newpassphrase);
     stringlist_t *_errorAccounts;
 
@@ -535,6 +536,8 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1manage_1passph
             passphrase_cache.add(passphrase);
         }
     }
+    free_stringpair_list(_accountswitholdpassphrases);
+    free_stringlist(_errorAccounts);
     return errorAccounts_;
 }
 
