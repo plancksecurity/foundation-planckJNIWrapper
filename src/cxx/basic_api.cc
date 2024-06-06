@@ -481,7 +481,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1unlock_1keys_1
     std::lock_guard<std::mutex> l(*mutex_local);
 
     const stringpair_list_t* _accountswithpassphrases = to_stringpairlist(env, accountswithpassphrases);
-    stringlist_t *_errorAccounts;
+    stringlist_t *_errorAccounts = nullptr;
 
     PEP_STATUS status = ::unlock_keys_with_passphrase(session(),_accountswithpassphrases,&_errorAccounts);
 
@@ -518,7 +518,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1manage_1passph
 
     stringpair_list_t* _accountswitholdpassphrases = to_stringpairlist(env, accountswitholdpassphrases);
     const char *_newpassphrase = to_string(env, newpassphrase);
-    stringlist_t *_errorAccounts;
+    stringlist_t *_errorAccounts = nullptr;
 
     PEP_STATUS status = ::manage_passphrase(session(),_accountswitholdpassphrases,_newpassphrase,&_errorAccounts);
 
