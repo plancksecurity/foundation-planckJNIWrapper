@@ -485,13 +485,14 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1unlock_1keys_1
 
     PEP_STATUS status = ::unlock_keys_with_passphrase(session(),_accountswithpassphrases,&_errorAccounts);
 
-    if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) || status < PEP_STATUS_OK || status >= PEP_TRUSTWORD_NOT_FOUND || status == PEP_DECRYPT_SIGNATURE_DOES_NOT_MATCH) {
-        throw_pEp_Exception(env, status);
-        return NULL;
-    }
     jobject errorAccounts_ = NULL;
-    if (_errorAccounts) {
-        errorAccounts_ = from_stringlist(env, _errorAccounts);
+    if (status != PEP_STATUS_OK) {
+        if (_errorAccounts) {
+            errorAccounts_ = from_stringlist(env, _errorAccounts);
+        } else {
+            throw_pEp_Exception(env, status);
+            return NULL;
+        }
     } else {
         for (const ::stringpair_list_t *curr = _accountswithpassphrases; curr != nullptr; curr = curr->next) {
             char* passphrase = curr->value->value;
@@ -520,13 +521,14 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1manage_1passph
 
     PEP_STATUS status = ::manage_passphrase(session(),_accountswitholdpassphrases,_newpassphrase,&_errorAccounts);
 
-    if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) || status < PEP_STATUS_OK || status >= PEP_TRUSTWORD_NOT_FOUND || status == PEP_DECRYPT_SIGNATURE_DOES_NOT_MATCH) {
-        throw_pEp_Exception(env, status);
-        return NULL;
-    }
     jobject errorAccounts_ = NULL;
-    if (_errorAccounts) {
-        errorAccounts_ = from_stringlist(env, _errorAccounts);
+    if (status != PEP_STATUS_OK) {
+        if (_errorAccounts) {
+            errorAccounts_ = from_stringlist(env, _errorAccounts);
+        } else {
+            throw_pEp_Exception(env, status);
+            return NULL;
+        }
     } else {
         for (const ::stringpair_list_t *curr = _accountswitholdpassphrases; curr != nullptr; curr = curr->next) {
             char* passphrase = curr->value->value;
