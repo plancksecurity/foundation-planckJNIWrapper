@@ -468,6 +468,74 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
     }
 }
 
+JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1unlock_1keys_1with_1passphrase(JNIEnv *env,
+         jobject obj,
+         jobject accountswithpassphrases)
+{
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
+
+    const stringpair_list_t* _accountswithpassphrases = to_stringpairlist(env, accountswithpassphrases);
+    stringlist_t *_errorAccounts;
+
+    PEP_STATUS status = ::unlock_keys_with_passphrase(session(),_accountswithpassphrases,&_errorAccounts);
+
+    if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) || status < PEP_STATUS_OK || status >= PEP_TRUSTWORD_NOT_FOUND || status == PEP_DECRYPT_SIGNATURE_DOES_NOT_MATCH) {
+        throw_pEp_Exception(env, status);
+        return NULL;
+    }
+    jobject errorAccounts_ = NULL;
+    if (_errorAccounts) {
+        errorAccounts_ = from_stringlist(env, _errorAccounts);
+    } else {
+        for (const ::stringpair_list_t *curr = _accountswithpassphrases; curr != nullptr; curr = curr->next) {
+            char* passphrase = curr->value->value;
+            passphrase_cache.add(passphrase);
+        }
+    }
+    return errorAccounts_;
+}
+
+JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1manage_1passphrase(JNIEnv *env,
+         jobject obj,
+         jobject accountswitholdpassphrases,
+         jbyteArray newpassphrase)
+{
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
+
+    const stringpair_list_t* _accountswitholdpassphrases = to_stringpairlist(env, accountswitholdpassphrases);
+    const char *_newpassphrase = to_string(env, newpassphrase);
+    stringlist_t *_errorAccounts;
+
+    PEP_STATUS status = ::manage_passphrase(session(),_accountswitholdpassphrases,_newpassphrase,&_errorAccounts);
+
+    if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) || status < PEP_STATUS_OK || status >= PEP_TRUSTWORD_NOT_FOUND || status == PEP_DECRYPT_SIGNATURE_DOES_NOT_MATCH) {
+        throw_pEp_Exception(env, status);
+        return NULL;
+    }
+    jobject errorAccounts_ = NULL;
+    if (_errorAccounts) {
+        errorAccounts_ = from_stringlist(env, _errorAccounts);
+    } else {
+        for (const ::stringpair_list_t *curr = _accountswitholdpassphrases; curr != nullptr; curr = curr->next) {
+            char* passphrase = curr->value->value;
+            passphrase_cache.add(passphrase);
+        }
+    }
+    return errorAccounts_;
+}
+
 JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1export_1key (JNIEnv *env,
         jobject obj,
         jbyteArray fpr)
