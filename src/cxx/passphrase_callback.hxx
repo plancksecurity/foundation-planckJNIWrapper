@@ -23,7 +23,7 @@ template<typename... A> PEP_STATUS passphraseWrap(PEP_STATUS f(PEP_SESSION, A...
             pEpLog("none of the cached passphrases worked");
             if (retryCount < maxRetries) {
                 // call the app
-                PassphraseCache::simple_cache_entry entry = passphraseRequiredCallback(status);
+                PassphraseCache::cache_entry entry = passphraseRequiredCallback(status);
                 pEpLog("callback returned, config_passphrase() with new passphrase");
                 PEP_STATUS inner_status;
                 if (status == PEP_PASSPHRASE_FOR_NEW_KEYS_REQUIRED) {

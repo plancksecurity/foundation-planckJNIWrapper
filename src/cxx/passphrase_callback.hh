@@ -6,7 +6,7 @@
 namespace pEp {
 namespace JNIAdapter {
 
-PassphraseCache::simple_cache_entry passphraseRequiredCallback(const PEP_STATUS status);
+PassphraseCache::cache_entry passphraseRequiredCallback(const PEP_STATUS status);
 template<typename... A> PEP_STATUS passphraseWrap(PEP_STATUS f(PEP_SESSION, A...), PEP_SESSION session, A... a);
 
 }
