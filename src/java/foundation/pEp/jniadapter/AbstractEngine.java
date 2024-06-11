@@ -139,11 +139,11 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
         return 0;
     }
 
-    private byte[] passphraseRequiredFromC(final PassphraseType passphraseType) {
-        String ret = "";
+    private PassphraseEntry passphraseRequiredFromC(final PassphraseType passphraseType, final String email) {
+        PassphraseEntry ret = new PassphraseEntry("", "");
         if (passphraseRequiredCallback != null) {
             System.out.println("calling passphraseRequiredCallback on engine ObjID:" + getId());
-            ret = passphraseRequiredCallback.passphraseRequired(passphraseType);
+            ret = passphraseRequiredCallback.passphraseRequired(passphraseType, email);
         } else {
             System.out.println("no callback registered on engine ObjID:" + getId());
             // if this happens (no callback registered
@@ -152,7 +152,7 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
             // this repeats MaxRetries times (currentluy hardcoded to 3)
             // Then the orig call will return with the PEP_STATUS (most likely PEP_PASSPHRASE_REQUIRED)
         }
-        return Utils.toUTF8(ret);
+        return ret;
     }
 
     private int messageToSendCallFromC (Message message) {

@@ -437,12 +437,16 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
     char* _email = to_string(env, email);
     char* _passphrase = to_string(env, passphrase);
 
-    // FIXME CONFIG PASSPHRASE AND PASSPHRASE CALLBACK ARE TO BE GONE.
-    //PEP_STATUS status = ::config_passphrase(session(),passphrase_cache.add(_email, _passphrase));
-    //if (status != 0) {
-    //    throw_pEp_Exception(env, status);
-    //    return;
-    //}
+    PEP_STATUS status = ::config_passphrase(
+            session(),
+            passphrase_cache.add(
+                    pEp::PassphraseCache::cache_entry(_email, _passphrase)
+                    ).passphrase.c_str()
+            );
+    if (status != 0) {
+        throw_pEp_Exception(env, status);
+        return;
+    }
 }
 
 
@@ -498,9 +502,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1unlock_1keys_1
         }
     } else {
         for (const ::stringpair_list_t *curr = _accountswithpassphrases; curr != nullptr; curr = curr->next) {
-            char* passphrase = curr->value->value;
-            char* email = curr->value->key;
-            passphrase_cache.add(email, passphrase);
+            passphrase_cache.add(pEp::PassphraseCache::cache_entry(curr->value->key, curr->value->value));
         }
     }
     free_stringlist(_errorAccounts);
@@ -536,9 +538,7 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1manage_1passph
         }
     } else {
         for (const ::stringpair_list_t *curr = _accountswitholdpassphrases; curr != nullptr; curr = curr->next) {
-            char* passphrase = curr->value->value;
-            char* email = curr->value->key;
-            passphrase_cache.add(email, passphrase);
+            passphrase_cache.add(pEp::PassphraseCache::cache_entry(curr->value->key, curr->value->value));
         }
     }
     free_stringpair_list(_accountswitholdpassphrases);

@@ -23,14 +23,13 @@ template<typename... A> PEP_STATUS passphraseWrap(PEP_STATUS f(PEP_SESSION, A...
             pEpLog("none of the cached passphrases worked");
             if (retryCount < maxRetries) {
                 // call the app
-                char *_passphrase = passphraseRequiredCallback(status);
+                PassphraseCache::cache_entry entry = passphraseRequiredCallback(status, ""); // need to get the email from somewhere, probably core
                 pEpLog("callback returned, config_passphrase() with new passphrase");
                 PEP_STATUS inner_status;
-                if (status == PEP_PASSPHRASE_FOR_NEW_KEYS_REQUIRED) {
-                    inner_status = ::config_passphrase_for_new_keys(session, true, _passphrase);
+                if (status == PEP_PASSPHRASE_FOR_NEW_KEYS_REQUIRED) { // this should never be called now
+                    inner_status = ::config_passphrase_for_new_keys(session, true, entry.passphrase.c_str()); // needs to be changed in core
                 } else {
-                    // FIXME PLEASE NOTE THE WHOLE CALLBACK IS NOT USED ANYMORE. THE WHOLE PASSPHRASE CALLBACK THING IS TO BE GONE.
-                    //inner_status = ::config_passphrase(session, passphrase_cache.add(_passphrase));
+                    inner_status = ::config_passphrase(session, passphrase_cache.add(entry).passphrase.c_str());
                 }
                 if (inner_status == PEP_OUT_OF_MEMORY) {
                     return inner_status;

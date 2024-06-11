@@ -16,7 +16,7 @@ public interface Sync {
     }
 
     interface PassphraseRequiredCallback {
-        String passphraseRequired(final PassphraseType pEpStatus);
+        PassphraseEntry passphraseRequired(final PassphraseType passphraseType, String email);
     }
 
     public class DefaultCallback implements Sync.MessageToSendCallback, Sync.NotifyHandshakeCallback, Sync.NeedsFastPollCallback {

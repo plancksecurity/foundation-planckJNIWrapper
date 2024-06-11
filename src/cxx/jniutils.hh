@@ -113,6 +113,11 @@ jobject from_identity(JNIEnv *env,
 pEp_group *to_group(JNIEnv *env,
                     jobject obj);
 
+jobject from_cache_entry(JNIEnv *env, PassphraseCache::cache_entry entry);
+
+PassphraseCache::cache_entry to_cache_entry(JNIEnv *env,
+                                                jobject obj);
+
 pEp_identity *to_identity(JNIEnv *env,
         jobject obj);
 

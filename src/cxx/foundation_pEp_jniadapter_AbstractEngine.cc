@@ -117,8 +117,8 @@ void jni_init() {
     passphrase_type_field_value = JNISync::env()->GetFieldID(passphraseTypeClass,    "value", "I");
 }
 
-char* JNIAdapter::passphraseRequiredCallback(
-    const PEP_STATUS status)
+PassphraseCache::cache_entry JNIAdapter::passphraseRequiredCallback(
+    const PEP_STATUS status, const char* email)
 {
     pEpLog("called");
     jobject status_ = nullptr;
@@ -147,17 +147,18 @@ char* JNIAdapter::passphraseRequiredCallback(
         }
     }
     assert(objj && passphraseRequiredMethodID);
-
-    jobject ppJO = JNISync::env()->CallObjectMethod(objj, passphraseRequiredMethodID, status_);
+    jobject email_ = from_string(JNISync::env(), email);
+    jobject ppJO = JNISync::env()->CallObjectMethod(objj, passphraseRequiredMethodID, status_, email);
     if (JNISync::env()->ExceptionCheck()) {
         JNISync::env()->ExceptionDescribe();
         JNISync::env()->ExceptionClear();
     }
 
-    jbyteArray ppJBA = static_cast<jbyteArray>(ppJO);
-    char* passphrase_ = to_string( JNISync::env(), ppJBA);
+    //jbyteArray ppJBA = static_cast<jbyteArray>(ppJO);
+    PassphraseCache::cache_entry entry = to_cache_entry(JNISync::env(), ppJO);
+    //char* passphrase_ = to_string( JNISync::env(), ppJBA);
 
-    return passphrase_;
+    return entry;
 }
 
 PEP_STATUS messageToSend(message *msg)
