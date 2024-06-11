@@ -437,11 +437,12 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
     char* _email = to_string(env, email);
     char* _passphrase = to_string(env, passphrase);
 
-    PEP_STATUS status = ::config_passphrase(session(),passphrase_cache.add(_email, _passphrase));
-    if (status != 0) {
-        throw_pEp_Exception(env, status);
-        return;
-    }
+    // FIXME CONFIG PASSPHRASE AND PASSPHRASE CALLBACK ARE TO BE GONE.
+    //PEP_STATUS status = ::config_passphrase(session(),passphrase_cache.add(_email, _passphrase));
+    //if (status != 0) {
+    //    throw_pEp_Exception(env, status);
+    //    return;
+    //}
 }
 
 
