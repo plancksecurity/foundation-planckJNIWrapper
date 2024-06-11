@@ -423,6 +423,7 @@ JNIEXPORT jbyteArray JNICALL Java_foundation_pEp_jniadapter_Engine__1getMachineD
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphrase(JNIEnv * env,
        jobject obj,
+       jbyteArray email,
        jbyteArray passphrase)
 {
     std::mutex *mutex_local = nullptr;
@@ -433,9 +434,10 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
     }
     std::lock_guard<std::mutex> l(*mutex_local);
 
+    char* _email = to_string(env, email);
     char* _passphrase = to_string(env, passphrase);
 
-    PEP_STATUS status = ::config_passphrase(session(),passphrase_cache.add(_passphrase));
+    PEP_STATUS status = ::config_passphrase(session(),passphrase_cache.add(_email, _passphrase));
     if (status != 0) {
         throw_pEp_Exception(env, status);
         return;
@@ -496,7 +498,8 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1unlock_1keys_1
     } else {
         for (const ::stringpair_list_t *curr = _accountswithpassphrases; curr != nullptr; curr = curr->next) {
             char* passphrase = curr->value->value;
-            passphrase_cache.add(passphrase);
+            char* email = curr->value->key;
+            passphrase_cache.add(email, passphrase);
         }
     }
     free_stringlist(_errorAccounts);
@@ -533,7 +536,8 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1manage_1passph
     } else {
         for (const ::stringpair_list_t *curr = _accountswitholdpassphrases; curr != nullptr; curr = curr->next) {
             char* passphrase = curr->value->value;
-            passphrase_cache.add(passphrase);
+            char* email = curr->value->key;
+            passphrase_cache.add(email, passphrase);
         }
     }
     free_stringpair_list(_accountswitholdpassphrases);
