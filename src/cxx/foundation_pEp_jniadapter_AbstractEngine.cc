@@ -118,7 +118,7 @@ void jni_init() {
 }
 
 PassphraseCache::cache_entry JNIAdapter::passphraseRequiredCallback(
-    const PEP_STATUS status, const char* email)
+    const PEP_STATUS status, const char* email = "android04@planck.dev")
 {
     pEpLog("called");
     jobject status_ = nullptr;
