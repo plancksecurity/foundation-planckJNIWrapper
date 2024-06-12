@@ -26,10 +26,14 @@ template<typename... A> PEP_STATUS passphraseWrap(PEP_STATUS f(PEP_SESSION, A...
                 PassphraseCache::cache_entry entry = passphraseRequiredCallback(status, ""); // need to get the email from somewhere, probably core
                 pEpLog("callback returned, config_passphrase() with new passphrase");
                 PEP_STATUS inner_status;
-                if (status == PEP_PASSPHRASE_FOR_NEW_KEYS_REQUIRED) { // this should never be called now
-                    inner_status = ::config_passphrase_for_new_keys(session, true, entry.passphrase.c_str()); // needs to be changed in core
+                if (status == PEP_PASSPHRASE_FOR_NEW_KEYS_REQUIRED) {
+                    if (entry.email == PassphraseCache::PASSPHRASE_FOR_NEW_KEYS_ENTRY) {
+                        inner_status = ::config_passphrase_for_new_keys(
+                                session, true,
+                                passphrase_cache.add_passphrase_for_new_keys(entry.passphrase)); // this one can stay as it is in core
+                    } // else some warning
                 } else {
-                    inner_status = ::config_passphrase(session, passphrase_cache.add(entry).passphrase.c_str());
+                    inner_status = ::config_passphrase(session, passphrase_cache.add(entry).passphrase.c_str()); // needs to be changed in core
                 }
                 if (inner_status == PEP_OUT_OF_MEMORY) {
                     return inner_status;
