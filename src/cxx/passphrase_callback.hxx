@@ -23,6 +23,7 @@ template<typename... A> PEP_STATUS passphraseWrap(PEP_STATUS f(PEP_SESSION, A...
             pEpLog("none of the cached passphrases worked");
             if (retryCount < maxRetries) {
                 // call the app
+                // FIXME THIS EMAIL IS HARDCODED, NEEDS TO BE PROVIDED BY CODE, EITHER AN EMAIL OR LIST OF EMAILS
                 std::string email = status == PEP_PASSPHRASE_FOR_NEW_KEYS_REQUIRED ? PassphraseCache::PASSPHRASE_FOR_NEW_KEYS_ENTRY : "android04@planck.dev";
                 PassphraseCache::cache_entry entry = passphraseRequiredCallback(status, email.c_str()); // need to get the email from somewhere, probably core
                 pEpLog("callback returned, config_passphrase() with new passphrase");
