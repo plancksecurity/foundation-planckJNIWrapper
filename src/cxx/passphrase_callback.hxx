@@ -31,7 +31,7 @@ template<typename... A> PEP_STATUS passphraseWrap(PEP_STATUS f(PEP_SESSION, A...
                     if (entry.email == PassphraseCache::PASSPHRASE_FOR_NEW_KEYS_ENTRY) {
                         inner_status = ::config_passphrase_for_new_keys(
                                 session, true,
-                                passphrase_cache.add_passphrase_for_new_keys(entry.passphrase)); // this one can stay as it is in core
+                                passphrase_cache.add_passphrase_for_new_keys(entry)); // this one can stay as it is in core
                     } // else some warning
                 } else {
                     inner_status = ::config_passphrase(session, passphrase_cache.add(entry).passphrase.c_str()); // needs to be changed in core
