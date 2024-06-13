@@ -139,11 +139,11 @@ abstract class AbstractEngine extends UniquelyIdentifiable implements AbstractEn
         return 0;
     }
 
-    private _PassphraseEntry passphraseRequiredFromC(final PassphraseType passphraseType, final String email) {
+    private _PassphraseEntry passphraseRequiredFromC(final PassphraseType passphraseType, final byte[] email) {
         _PassphraseEntry ret = null;
         if (passphraseRequiredCallback != null) {
             System.out.println("calling passphraseRequiredCallback on engine ObjID:" + getId());
-            ret = new _PassphraseEntry(passphraseRequiredCallback.passphraseRequired(passphraseType, email));
+            ret = new _PassphraseEntry(passphraseRequiredCallback.passphraseRequired(passphraseType, Utils.toUTF16(email)));
         } else {
             System.out.println("no callback registered on engine ObjID:" + getId());
             // if this happens (no callback registered

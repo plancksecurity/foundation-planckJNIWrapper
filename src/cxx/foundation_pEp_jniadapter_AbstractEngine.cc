@@ -97,7 +97,7 @@ void jni_init() {
     passphraseRequiredMethodID = _env->GetMethodID(
             abstractEngineClass,
             "passphraseRequiredFromC",
-            "(Lfoundation/pEp/jniadapter/PassphraseType;Ljava/lang/String;)Lfoundation/pEp/jniadapter/_PassphraseEntry;");
+            "(Lfoundation/pEp/jniadapter/PassphraseType;[B)Lfoundation/pEp/jniadapter/_PassphraseEntry;");
 
     sync_handshake_signal_values = JNISync::env()->GetStaticMethodID(
             signalClass,
@@ -118,7 +118,7 @@ void jni_init() {
 }
 
 PassphraseCache::cache_entry JNIAdapter::passphraseRequiredCallback(
-    const PEP_STATUS status, const char* email = "android04@planck.dev")
+    const PEP_STATUS status, const char* email)
 {
     pEpLog("called");
     jobject status_ = nullptr;
