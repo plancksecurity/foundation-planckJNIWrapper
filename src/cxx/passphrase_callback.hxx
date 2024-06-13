@@ -24,16 +24,17 @@ template<typename... A> PEP_STATUS passphraseWrap(PEP_STATUS f(PEP_SESSION, A...
             if (retryCount < maxRetries) {
                 // call the app
                 // FIXME THIS EMAIL IS HARDCODED, NEEDS TO BE PROVIDED BY CODE, EITHER AN EMAIL OR LIST OF EMAILS
-                std::string email = status == PEP_PASSPHRASE_FOR_NEW_KEYS_REQUIRED ? PassphraseCache::PASSPHRASE_FOR_NEW_KEYS_ENTRY : "android04@planck.dev";
-                PassphraseCache::cache_entry entry = passphraseRequiredCallback(status, email.c_str()); // need to get the email from somewhere, probably core
+                std::string emailFromCore = status == PEP_PASSPHRASE_FOR_NEW_KEYS_REQUIRED ? PassphraseCache::PASSPHRASE_FOR_NEW_KEYS_ENTRY : "android04@planck.dev";
+                PassphraseCache::cache_entry entry = passphraseRequiredCallback(status, emailFromCore.c_str()); // need to get the email from somewhere, probably core
                 pEpLog("callback returned, config_passphrase() with new passphrase");
                 PEP_STATUS inner_status;
                 if (status == PEP_PASSPHRASE_FOR_NEW_KEYS_REQUIRED) {
-                    if (entry.email == PassphraseCache::PASSPHRASE_FOR_NEW_KEYS_ENTRY) {
-                        inner_status = ::config_passphrase_for_new_keys(
-                                session, true,
-                                passphrase_cache.add_passphrase_for_new_keys(entry)); // this one can stay as it is in core
-                    } // else some warning
+                    inner_status = ::config_passphrase_for_new_keys(
+                            session, true,
+                            passphrase_cache.add_passphrase_for_new_keys(entry)); // this one can stay as it is in core...?
+                    if (inner_status == PEP_STATUS_OK && entry.email != PassphraseCache::PASSPHRASE_FOR_NEW_KEYS_ENTRY) { // we are getting an email, this was for account creation
+                        inner_status = ::config_passphrase(session, passphrase_cache.add(entry).passphrase.c_str()); // needs to be changed in core
+                    }
                 } else {
                     inner_status = ::config_passphrase(session, passphrase_cache.add(entry).passphrase.c_str()); // needs to be changed in core
                 }
