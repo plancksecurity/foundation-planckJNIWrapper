@@ -437,12 +437,9 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
     char* _email = to_string(env, email);
     char* _passphrase = to_string(env, passphrase);
 
-    PEP_STATUS status = ::config_passphrase(
-            session(),
-            passphrase_cache.add(
-                    pEp::PassphraseCache::cache_entry(_email, _passphrase)
-                    ).passphrase.c_str()
-            );
+    pEp::PassphraseCache::cache_entry entry = pEp::PassphraseCache::cache_entry(_email, _passphrase);
+    passphrase_cache.add(entry);
+    PEP_STATUS status = ::config_passphrase(session(), entry.email.c_str(), entry.passphrase.c_str());
     if (status != 0) {
         throw_pEp_Exception(env, status);
         return;

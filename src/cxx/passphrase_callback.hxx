@@ -36,7 +36,8 @@ template<typename... A> PEP_STATUS passphraseWrap(PEP_STATUS f(PEP_SESSION, A...
                         inner_status = ::config_passphrase(session, passphrase_cache.add(entry).passphrase.c_str()); // needs to be changed in core
                     }
                 } else {
-                    inner_status = ::config_passphrase(session, passphrase_cache.add(entry).passphrase.c_str()); // needs to be changed in core
+                    passphrase_cache.add(entry);
+                    inner_status = ::config_passphrase(session, entry.email.c_str(), entry.passphrase.c_str()); // needs to be changed in core
                 }
                 if (inner_status == PEP_OUT_OF_MEMORY) {
                     return inner_status;
