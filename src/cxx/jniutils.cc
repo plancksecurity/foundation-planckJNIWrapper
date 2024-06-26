@@ -1,4 +1,5 @@
 #include "jniutils.hh"
+#include "passphrase_entry.hh"
 #include <pEp/pEpLog.hh>
 #include <cassert>
 #include <cstring>
@@ -478,7 +479,7 @@ static void _setBooleanField(JNIEnv *env,
     env->SetBooleanField(obj, fieldID, static_cast<jboolean>(value));
 }
 
-jobject from_passphrase_entry(JNIEnv *env, PassphraseCache::passphrase_entry entry)
+jobject from_passphrase_entry(JNIEnv *env, passphrase_entry entry)
 {
     static const char *classname = "foundation/pEp/jniadapter/_PassphraseEntry";
     jclass clazz = findClass(env, classname);
@@ -698,17 +699,17 @@ bool _getBooleanField(JNIEnv *env,
     return static_cast<bool>(env->GetBooleanField(obj, fieldID));
 }
 
-PassphraseCache::passphrase_entry to_passphrase_entry(JNIEnv *env,
+passphrase_entry to_passphrase_entry(JNIEnv *env,
                           jobject obj)
 {
     if (!obj) {
-        return PassphraseCache::passphrase_entry("", ""); // Return an empty entry
+        return passphrase_entry("", ""); // Return an empty entry
     }
 
     static const char *classname = "foundation/pEp/jniadapter/_PassphraseEntry";
     std::string email = _getStringField(env, classname, obj, "email");
     std::string passphrase = _getStringField(env, classname, obj, "passphrase");
-    return PassphraseCache::passphrase_entry(email, passphrase);
+    return passphrase_entry(email, passphrase);
 }
 
 pEp_identity *to_identity(JNIEnv *env,

@@ -117,7 +117,7 @@ void jni_init() {
     passphrase_type_field_value = JNISync::env()->GetFieldID(passphraseTypeClass,    "value", "I");
 }
 
-PassphraseCache::passphrase_entry JNIAdapter::passphraseRequiredCallback(
+passphrase_entry JNIAdapter::passphraseRequiredCallback(
     const PEP_STATUS status)
 {
     pEpLog("called");
@@ -154,7 +154,7 @@ PassphraseCache::passphrase_entry JNIAdapter::passphraseRequiredCallback(
     }
 
     //jbyteArray ppJBA = static_cast<jbyteArray>(ppJO);
-    PassphraseCache::passphrase_entry entry = to_passphrase_entry(JNISync::env(), ppJO);
+    passphrase_entry entry = to_passphrase_entry(JNISync::env(), ppJO);
     //char* passphrase_ = to_string( JNISync::env(), ppJBA);
 
     return entry;

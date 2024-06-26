@@ -71,7 +71,8 @@ LOCAL_SRC_FILES  := \
           ../../src/cxx/throw_pEp_exception.cc \
           ../../src/cxx/basic_api.cc \
           ../../src/cxx/identity_api.cc \
-          ../../src/cxx/jniutils.cc
+          ../../src/cxx/jniutils.cc \
+          ../../src/cxx/passphrase_entry.cc
 
 LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include
 LOCAL_C_INCLUDES += $(LIB_PEP_ADAPTER_PATH)/build-android/include $(SRC_PATH)/libPlanckWrapper
