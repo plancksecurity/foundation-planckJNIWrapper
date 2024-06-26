@@ -29,12 +29,12 @@ template<typename... A> PEP_STATUS passphraseWrap(PEP_STATUS f(PEP_SESSION, A...
                 pEpLog("callback returned, config_passphrase() with new passphrase");
                 PEP_STATUS inner_status;
                 if (status == PEP_PASSPHRASE_FOR_NEW_KEYS_REQUIRED) {
-                    inner_status = ::config_passphrase_for_new_keys(
-                            session, true,
-                            passphrase_cache.add_passphrase_for_new_keys(entry)); // this one can stay as it is in core...?
-                    if (inner_status == PEP_STATUS_OK && entry.email != PassphraseCache::PASSPHRASE_FOR_NEW_KEYS_ENTRY) { // we are getting an email, this was for account creation
-                        inner_status = ::config_passphrase(session, passphrase_cache.add(entry).passphrase.c_str()); // needs to be changed in core
-                    }
+                    //inner_status = ::config_passphrase_for_new_keys(
+                    //        session, true,
+                    //        passphrase_cache.add_passphrase_for_new_keys(entry)); // this one can stay as it is in core...?
+                    //if (inner_status == PEP_STATUS_OK && entry.email != PassphraseCache::PASSPHRASE_FOR_NEW_KEYS_ENTRY) { // we are getting an email, this was for account creation
+                    //    inner_status = ::config_passphrase(session, passphrase_cache.add(entry).passphrase.c_str()); // needs to be changed in core
+                    //}
                 } else {
                     passphrase_cache.add(entry);
                     inner_status = ::config_passphrase(session, entry.email.c_str(), entry.passphrase.c_str()); // needs to be changed in core
