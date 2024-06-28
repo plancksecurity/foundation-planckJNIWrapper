@@ -469,10 +469,10 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
 }
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphrase_1for_1new_1keys_1by_1email(JNIEnv *env,
-                                                                                                  jobject obj,
-                                                                                                  jboolean enable,
-                                                                                                  jbyteArray email,
-                                                                                                  jbyteArray passphrase)
+          jobject obj,
+          jboolean enable,
+          jbyteArray email,
+          jbyteArray passphrase)
 {
     std::mutex *mutex_local = nullptr;
     {
