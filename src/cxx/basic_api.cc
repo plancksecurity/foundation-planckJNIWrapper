@@ -490,7 +490,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
         passphrase_cache.add(_email, _passphrase);
     }
     else {
-        passphrase_cache.remove(_email, _passphrase);
+        passphrase_cache.remove(_passphrase);
     }
 }
 
@@ -557,9 +557,12 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1manage_1passph
             return NULL;
         }
     } else {
+        passphrase_cache.add(_newpassphrase);
         for (const ::stringpair_list_t *curr = _accountswitholdpassphrases; curr != nullptr; curr = curr->next) {
-            char* passphrase = curr->value->value;
-            passphrase_cache.add(passphrase);
+            // cache the new account/passphrase combinations
+            if (curr->value && curr->value->key) {
+                passphrase_cache.add(curr->value->key, _newpassphrase);
+            }
         }
     }
     free_stringpair_list(_accountswitholdpassphrases);
