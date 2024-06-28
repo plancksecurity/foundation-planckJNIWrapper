@@ -386,7 +386,7 @@ namespace pEp {
         basic string getUserDirectory();
         basic string getMachineDirectory();
         basic void config_passphrase(string email, string passphrase);
-        basic void config_passphrase_for_new_keys(bool enable, string passphrase);
+        basic void config_passphrase_for_new_keys(bool enable);
         basic stringlist unlock_keys_with_passphrase(stringpairlist accountswithpassphrases);
         basic stringlist manage_passphrase(stringpairlist accountswitholdpassphrases, string newpassphrase);
         basic bytearray export_key(string fpr);

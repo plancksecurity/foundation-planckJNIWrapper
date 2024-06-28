@@ -449,8 +449,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
 
 JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphrase_1for_1new_1keys(JNIEnv *env,
         jobject obj,
-        jboolean enable,
-        jbyteArray passphrase)
+        jboolean enable)
 {
     std::mutex *mutex_local = nullptr;
     {
@@ -461,9 +460,8 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
     std::lock_guard<std::mutex> l(*mutex_local);
 
     bool _enable = static_cast<bool>(enable);
-    const char *_passphrase = to_string(env, passphrase);
 
-    PEP_STATUS status = PEP_STATUS_OK;// ::config_passphrase_for_new_keys(session(),_enable,passphrase_cache.add_passphrase_for_new_keys(_passphrase));
+    PEP_STATUS status = ::config_passphrase_for_new_keys(session(),_enable);
     if ((status > PEP_STATUS_OK && status < PEP_UNENCRYPTED) ||
             status < PEP_STATUS_OK ||
             status >= PEP_TRUSTWORD_NOT_FOUND) {
