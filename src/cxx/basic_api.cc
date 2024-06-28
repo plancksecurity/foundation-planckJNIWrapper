@@ -521,8 +521,9 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1unlock_1keys_1
         }
     } else {
         for (const ::stringpair_list_t *curr = _accountswithpassphrases; curr != nullptr; curr = curr->next) {
-            char* passphrase = curr->value->value;
-            passphrase_cache.add(passphrase);
+            if (curr->value && curr->value->key) {
+                passphrase_cache.add(curr->value->key, curr->value->value);
+            }
         }
     }
     free_stringlist(_errorAccounts);
@@ -557,7 +558,6 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1manage_1passph
             return NULL;
         }
     } else {
-        passphrase_cache.add(_newpassphrase);
         for (const ::stringpair_list_t *curr = _accountswitholdpassphrases; curr != nullptr; curr = curr->next) {
             // cache the new account/passphrase combinations
             if (curr->value && curr->value->key) {
