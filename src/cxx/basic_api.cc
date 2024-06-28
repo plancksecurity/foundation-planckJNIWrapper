@@ -468,6 +468,32 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
     }
 }
 
+JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphrase_1for_1new_1keys_1by_1email(JNIEnv *env,
+          jobject obj,
+          jboolean enable,
+          jbyteArray email,
+          jbyteArray passphrase)
+{
+    std::mutex *mutex_local = nullptr;
+    {
+        std::lock_guard<std::mutex> l(global_mutex);
+        pEpLog("called with lock_guard");
+        mutex_local = get_engine_java_object_mutex(env, obj);
+    }
+    std::lock_guard<std::mutex> l(*mutex_local);
+
+    bool _enable = static_cast<bool>(enable);
+    const char *_passphrase = to_string(env, passphrase);
+    const char *_email = to_string(env, email);
+
+    if (_enable) {
+        passphrase_cache.add(_email, _passphrase);
+    }
+    else {
+        passphrase_cache.remove(_email);
+    }
+}
+
 JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1unlock_1keys_1with_1passphrase(JNIEnv *env,
          jobject obj,
          jobject accountswithpassphrases)
@@ -495,8 +521,9 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1unlock_1keys_1
         }
     } else {
         for (const ::stringpair_list_t *curr = _accountswithpassphrases; curr != nullptr; curr = curr->next) {
-            char* passphrase = curr->value->value;
-            passphrase_cache.add(passphrase);
+            if (curr->value && curr->value->key) {
+                passphrase_cache.add(curr->value->key, curr->value->value);
+            }
         }
     }
     free_stringlist(_errorAccounts);
@@ -532,8 +559,10 @@ JNIEXPORT jobject JNICALL Java_foundation_pEp_jniadapter_Engine__1manage_1passph
         }
     } else {
         for (const ::stringpair_list_t *curr = _accountswitholdpassphrases; curr != nullptr; curr = curr->next) {
-            char* passphrase = curr->value->value;
-            passphrase_cache.add(passphrase);
+            // cache the new account/passphrase combinations
+            if (curr->value && curr->value->key) {
+                passphrase_cache.add(curr->value->key, _newpassphrase);
+            }
         }
     }
     free_stringpair_list(_accountswitholdpassphrases);
