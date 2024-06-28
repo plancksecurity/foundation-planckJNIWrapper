@@ -490,7 +490,7 @@ JNIEXPORT void JNICALL Java_foundation_pEp_jniadapter_Engine__1config_1passphras
         passphrase_cache.add(_email, _passphrase);
     }
     else {
-        passphrase_cache.remove(_passphrase);
+        passphrase_cache.remove(_email);
     }
 }
 
