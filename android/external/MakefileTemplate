@@ -367,7 +367,7 @@ clean-install:
 	-rm -rf $(LOCAL)
 
 ## Remove generated artifacts
-clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install libetpan-clean
+clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install
 
 ## Remove generated artifacts and files
 clean-all: clean
@@ -375,15 +375,15 @@ clean-all: clean
 	-rm -rf *.stamp
 #------------------------------------------------------------------------------#
 
-.PHONY = clean clean-install clean-assets libetpan-clean \
+.PHONY = clean clean-install clean-assets \
 	libiconv-build libiconv-install \
 	libetpan-build \
 	uuid-build uuid-prebuild \
-	gmp-build  gmp-install \
-	botan-build  botan-install \
+	gmp-build gmp-install \
+	botan-build botan-install \
 	sequoia-deps-build \
-	openssl-build  openssl-install \
-	nettle-build  nettle-install \
+	openssl-build openssl-install \
+	nettle-build nettle-install \
 	pEpEngineSequoiaBackend-build pEpEngineSequoiaBackend-install \
 	assets \
     $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN) \
