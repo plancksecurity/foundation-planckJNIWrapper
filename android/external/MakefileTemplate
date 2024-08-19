@@ -260,7 +260,17 @@ botan.src.stamp: ../downloads/botan.src.stamp
 	cp -r $(BOTAN_SRC) botan
 	touch $@
 
-botan/Makefile: botan.src.stamp
+## Build jitter
+jitter:
+	$(MAKE) -C $(JITTER_SRC) jitterentropy-static
+	$(MAKE) -C $(JITTER_SRC) jitterentropy-static install-includes PREFIX=$(LOCAL)
+	$(MAKE) -C $(JITTER_SRC) jitterentropy-static install-static PREFIX=$(LOCAL)
+
+## Clean jitter
+jitter-clean:
+	-$(MAKE) -C $(JITTER_SRC) clean
+
+botan/Makefile: botan.src.stamp jitter
 	cd botan && \
 		AR="$(AR)" CXX="$(CXX)" \
 			./configure.py --os=android --cc="clang" --cpu="$(BOTAN_ARCH)" --prefix="$(LOCAL)"
@@ -277,6 +287,10 @@ $(LOCAL)/lib/libbotan-2.so: botan/libbotan-2.so
 
 ## Build botan
 botan-build: botan/libbotan-2.so
+
+## Clean botan
+botan-clean:
+	-$(MAKE) -C botan clean
 
 ## Install botan
 botan-install: $(LOCAL)/lib/libbotan-2.so
@@ -367,7 +381,7 @@ clean-install:
 	-rm -rf $(LOCAL)
 
 ## Remove generated artifacts
-clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install
+clean: $(EXTERNAL_SRCS_CLEAN) clean-assets clean-install botan-clean jitter-clean
 
 ## Remove generated artifacts and files
 clean-all: clean
@@ -380,7 +394,8 @@ clean-all: clean
 	libetpan-build \
 	uuid-build uuid-prebuild \
 	gmp-build gmp-install \
-	botan-build botan-install \
+	botan-build botan-install jitter \
+	botan-clean jitter-clean \
 	sequoia-deps-build \
 	openssl-build openssl-install \
 	nettle-build nettle-install \

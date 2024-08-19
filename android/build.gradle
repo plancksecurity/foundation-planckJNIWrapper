@@ -6,6 +6,7 @@ def libpEpTransportSrc = hasProperty('libpEpTransportSrc') ? libpEpTransportSrc 
 def libCxx11Src = hasProperty('libCxx11Src') ? libCxx11Src : "../../libPlanckCxx11"
 def sequoiaBackendSrc = findProperty("SEQUOIA_BACKEND_SRC") ?: "../../../../planckCoreSequoiaBackend"
 def botanSrc = findProperty("BOTAN_SRC") ?: "../../../../botan"
+def jitterSrc = findProperty("JITTER_SRC") ?: "../../../../jitterentropy-library"
 def libetpanSrc = findProperty("LIBETPAN_SRC") ?: "../../../../libetpan"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 //CHeck M1 answers the correct thing off .avaialableprocessors here Libetpan seems to break
@@ -161,6 +162,7 @@ android {
                         "CRYPTO_LIB_NAME=${CRYPTO_LIB}", "SEQUOIA_TARGET=${SEQUOIA_TARGET}",
                         "SEQUOIA_BACKEND_SRC=${sequoiaBackendSrc}",
                         "BOTAN_SRC=${botanSrc}",
+                        "JITTER_SRC=${jitterSrc}",
                         "LIBETPAN_SRC=${libetpanSrc}"
             }
         }
