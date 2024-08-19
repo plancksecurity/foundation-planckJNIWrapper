@@ -83,7 +83,6 @@ clean:
 	-rm -rf *.tar.gz
 	-rm -rf *.tar.bz2
 	-rm -rf *.tar.xz
-	-rm -rf botan
 
 .PHONY: all clean download-iconv \
 		download-uuid \
