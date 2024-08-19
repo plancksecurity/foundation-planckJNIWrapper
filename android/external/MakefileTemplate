@@ -257,7 +257,7 @@ nettle-install: $(LOCAL)/lib/libnettle.so
 # BOTAN2
 
 botan.src.stamp: ../downloads/botan.src.stamp
-	cp -r ../downloads/botan botan
+	cp -r $(BOTAN_SRC) botan
 	touch $@
 
 botan/Makefile: botan.src.stamp

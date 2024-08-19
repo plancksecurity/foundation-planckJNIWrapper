@@ -5,6 +5,7 @@ def pEpEngineSrc = hasProperty('pEpEngineSrc') ? pEpEngineSrc : "../../planckCor
 def libpEpTransportSrc = hasProperty('libpEpTransportSrc') ? libpEpTransportSrc : "../../libPlanckTransport"
 def libCxx11Src = hasProperty('libCxx11Src') ? libCxx11Src : "../../libPlanckCxx11"
 def sequoiaBackendSrc = findProperty("SEQUOIA_BACKEND_SRC") ?: "../../../../planckCoreSequoiaBackend"
+def botanSrc = findProperty("BOTAN_SRC") ?: "../../../../botan"
 def libetpanSrc = findProperty("LIBETPAN_SRC") ?: "../../../../libetpan"
 def buildAutomatic = hasProperty('buildAutomatic') ? buildAutomatic : "true"
 //CHeck M1 answers the correct thing off .avaialableprocessors here Libetpan seems to break
@@ -16,7 +17,6 @@ def threadsToUse = DefaultNativePlatform.currentArchitecture.arm
 
 def pEpEngineDB = new File(new File(pEpEngineSrc), 'db')
 def CRYPTO_LIB = "botan2"
-def BOTAN_VERSION = "2.19.6_planck"
 ext.archsToCompile = "arm arm64 x86 x86_64"
 def SEQUOIA_TARGET = findProperty("SEQUOIA_TARGET") ?: "release"
 def CORE_LOG = findProperty("CORE_LOG") ?: ""
@@ -91,8 +91,7 @@ android {
             externalNativeBuild {
                 ndkBuild {
                     arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null',
-                            '--output-sync=none', '-B', 'V=1', "CRYPTO_LIB_NAME=${CRYPTO_LIB}",
-                            "BOTAN_VERSION=${BOTAN_VERSION}"
+                            '--output-sync=none', '-B', 'V=1', "CRYPTO_LIB_NAME=${CRYPTO_LIB}"
                     // arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1'
                 }
             }
@@ -106,7 +105,7 @@ android {
                 ndkBuild {
                     arguments "-j${threadsToUse}", 'NDK_LOG=1', 'NDK_DEBUG=1', 'NDEBUG=null',
                             "PEP_LOG=${CORE_LOG}", '--output-sync=none', '-B', 'V=1',
-                            "CRYPTO_LIB_NAME=${CRYPTO_LIB}", "BOTAN_VERSION=${BOTAN_VERSION}"
+                            "CRYPTO_LIB_NAME=${CRYPTO_LIB}"
                    // arguments '-B', 'NDK_DEBUG=1', 'NDEBUG=null', 'NDK_LOG=1'
                 }
             }
@@ -161,7 +160,8 @@ android {
                 commandLine 'make', "-j${threadsToUse}", 'build', "archs=${project.archsToCompile}",
                         "CRYPTO_LIB_NAME=${CRYPTO_LIB}", "SEQUOIA_TARGET=${SEQUOIA_TARGET}",
                         "SEQUOIA_BACKEND_SRC=${sequoiaBackendSrc}",
-                        "LIBETPAN_SRC=${libetpanSrc}", "BOTAN_VERSION=${BOTAN_VERSION}"
+                        "BOTAN_SRC=${botanSrc}",
+                        "LIBETPAN_SRC=${libetpanSrc}"
             }
         }
     }
