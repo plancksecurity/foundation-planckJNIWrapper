@@ -261,7 +261,9 @@ botan.src.stamp: ../downloads/botan.src.stamp
 	touch $@
 
 ## Build jitter
-jitter:
+jitter-build: $(LOCAL)/lib/libjitterentropy.a
+
+$(LOCAL)/lib/libjitterentropy.a:
 	$(MAKE) -C $(JITTER_SRC) jitterentropy-static
 	$(MAKE) -C $(JITTER_SRC) jitterentropy-static install-includes PREFIX=$(LOCAL)
 	$(MAKE) -C $(JITTER_SRC) jitterentropy-static install-static PREFIX=$(LOCAL)
@@ -270,10 +272,12 @@ jitter:
 jitter-clean:
 	-$(MAKE) -C $(JITTER_SRC) clean
 
-botan/Makefile: botan.src.stamp jitter
+botan/Makefile: botan.src.stamp $(LOCAL)/lib/libjitterentropy.a
 	cd botan && \
 		AR="$(AR)" CXX="$(CXX)" \
-			./configure.py --os=android --cc="clang" --cpu="$(BOTAN_ARCH)" --prefix="$(LOCAL)"
+        CXXFLAGS="-I$(LOCAL)/include" \
+        LDFLAGS="-L$(LOCAL)/lib" \
+        ./configure.py --os=android --cc="clang" --cpu="$(BOTAN_ARCH)" --prefix="$(LOCAL)"
 
 
 
@@ -394,7 +398,7 @@ clean-all: clean
 	libetpan-build \
 	uuid-build uuid-prebuild \
 	gmp-build gmp-install \
-	botan-build botan-install jitter \
+	botan-build botan-install jitter-build \
 	botan-clean jitter-clean \
 	sequoia-deps-build \
 	openssl-build openssl-install \
