@@ -11,7 +11,6 @@ HOST ?= [HOST]
 NDK_TOOLCHAIN_TARGET ?= [NDK_TOOLCHAIN_TARGET]
 SEQUOIA_ARCH ?= [SEQUOIA_ARCH]
 BOTAN_ARCH ?= [BOTAN_ARCH]
-OPENSSL_ARCHITECTURE ?= [OPENSSL_ARCHITECTURE]
 COMPILER_PREFIX ?= [COMPILER_PREFIX]
 SEQUOIA_TARGET = release
 SEQUOIA_PROFILE = release
@@ -159,35 +158,6 @@ uuid/jni/Android.mk: uuid.src.stamp
 
 
 #------------------------------------------------------------------------------#
-# OpenSSL
-
-openssl.src.stamp: ../downloads/openssl-$(OPENSSL_VERSION).tar.gz
-	tar xvf $<
-	mv openssl-$(OPENSSL_VERSION) openssl
-	touch $@
-
-openssl/Makefile: openssl.src.stamp
-	cd openssl && \
-	    PATH=$(TEMP_WORK_PATH) ../../configure_openssl.sh ${OPENSSL_ARCHITECTURE} $(ANDROID_API) $(LOCAL)
-openssl/libssl.so: | openssl/Makefile
-	PATH=$(TEMP_WORK_PATH) $(MAKE) -C openssl
-
-$(LOCAL)/lib/libssl.so: openssl/libssl.so
-	mkdir -p $(LOCAL)/lib && cd openssl && \
-		cp libcrypto.so $(LOCAL)/lib && \
-		cp libcrypto.a $(LOCAL)/lib && \
-		cp libssl.so $(LOCAL)/lib && \
-		cp libssl.a $(LOCAL)/lib
-	ls -l $(LOCAL)/lib/libssl.so
-
-## Build openssl
-openssl-build: openssl/libssl.so
-
-## Install openssl
-openssl-install: $(LOCAL)/lib/libssl.so
-
-
-#------------------------------------------------------------------------------#
 # GMP
 
 gmp.src.stamp: ../downloads/gmp-$(GMP_VERSION).tar.bz2
@@ -288,9 +258,6 @@ $(CARGO_TARGET_DIR)/$(SEQUOIA_ARCH)/$(SEQUOIA_TARGET)/libpep_engine_sequoia_back
 	LD_LIBRARY_PATH=$(LOCAL)/lib/ \
 	PKG_CONFIG_PATH=$(LOCAL)/lib/pkgconfig \
 	PKG_CONFIG_ALLOW_CROSS=1 \
-	ARMV7_LINUX_ANDROIDEABI_OPENSSL_LIB_DIR="$(LOCAL)/lib" \
-	ARMV7_LINUX_ANDROIDEABI_OPENSSL_INCLUDE_DIR="$(LOCAL)/include" \
-	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR="$(LOCAL)/bin" \
 	RUSTFLAGS='-L $(LOCAL)/lib' \
 	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo build --features crypto-botan2 --target $(SEQUOIA_ARCH) -p pep_engine_sequoia_backend --profile $(SEQUOIA_PROFILE)
 
@@ -357,7 +324,6 @@ clean-all: clean
 	gmp-build gmp-install \
 	botan-build botan-install jitter-build \
 	botan-clean jitter-clean \
-	openssl-build openssl-install \
 	pEpEngineSequoiaBackend-build pEpEngineSequoiaBackend-install \
 	assets \
     $(EXTERNAL_SRCS) $(EXTERNAL_SRCS_CLEAN) \
