@@ -183,7 +183,7 @@ botan/Makefile: botan $(LOCAL)/lib/libjitterentropy.a
 
 
 botan/libbotan-2.so: botan/Makefile
-	$(MAKE) -C botan all
+	$(MAKE) -C botan libs
 
 $(LOCAL)/lib/libbotan-2.so: botan/libbotan-2.so
 	$(MAKE) -C botan install
