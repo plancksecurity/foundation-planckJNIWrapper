@@ -178,7 +178,7 @@ botan/Makefile: botan $(LOCAL)/lib/libjitterentropy.a
 	cd botan && \
 		AR="$(AR)" CXX="$(CXX)" \
         CXXFLAGS+="-I$(LOCAL)/include -O3" \
-        LDFLAGS+="-L$(LOCAL)/lib -O3" \
+        LDFLAGS+="-L$(LOCAL)/lib" \
         ./configure.py --os=android --cc="clang" --cpu="$(BOTAN_ARCH)" --prefix="$(LOCAL)"
 
 
