@@ -264,7 +264,7 @@ botan.src.stamp: ../downloads/botan.src.stamp
 jitter-build: $(LOCAL)/lib/libjitterentropy.a
 
 $(LOCAL)/lib/libjitterentropy.a:
-	AR="$(AR)" CXX="$(CXX)" CC="$(CC)" CFLAGS+="-O0 -DCRYPTO_CPU_JITTERENTROPY_STAT" CXXFLAGS+="-O0 -DCRYPTO_CPU_JITTERENTROPY_STAT" $(MAKE) -C $(JITTER_SRC) jitterentropy-static
+	AR="$(AR)" CXX="$(CXX)" CC="$(CC)" CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)" $(MAKE) -C $(JITTER_SRC) jitterentropy-static
 	$(MAKE) -C $(JITTER_SRC) jitterentropy-static install-includes PREFIX=$(LOCAL)
 	$(MAKE) -C $(JITTER_SRC) jitterentropy-static install-static PREFIX=$(LOCAL)
 
