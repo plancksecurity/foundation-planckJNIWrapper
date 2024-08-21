@@ -159,9 +159,6 @@ uuid/jni/Android.mk: uuid.src.stamp
 #------------------------------------------------------------------------------#
 # BOTAN2
 
-botan:
-	cp -r $(BOTAN_SRC) botan
-
 ## Build jitter
 jitter-build: $(LOCAL)/lib/libjitterentropy.a
 
@@ -174,7 +171,8 @@ $(LOCAL)/lib/libjitterentropy.a:
 jitter-clean:
 	-$(MAKE) -C $(JITTER_SRC) clean
 
-botan/Makefile: botan $(LOCAL)/lib/libjitterentropy.a
+botan/Makefile: $(LOCAL)/lib/libjitterentropy.a
+	cp -r $(BOTAN_SRC) botan
 	cd botan && \
 		AR="$(AR)" CXX="$(CXX)" \
         ./configure.py --os=android --cc="clang" --cpu="$(BOTAN_ARCH)" --prefix="$(LOCAL)" \
