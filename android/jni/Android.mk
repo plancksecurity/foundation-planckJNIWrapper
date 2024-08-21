@@ -16,36 +16,12 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libpep_engine_sequoia_backend
 LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libpep_engine_sequoia_backend.a
 include $(PREBUILT_STATIC_LIBRARY)
-#Crypto lib switch, as we can use Sequoia with multiple crypto backends a switch to see which libs are loaded is required, we assume botan is the alternative, botan  the 'default' temporarily, but having nothing defined will output an error
-ifeq ($(CRYPTO_LIB_NAME), botan2)
-    $(warning ==== JNIADAPTER android.mk using BOTAN2 for pEpEngineSequoiaBackend)
 
-    include $(CLEAR_VARS)
-    LOCAL_MODULE := botan
-    LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libbotan-2.a
-    include $(PREBUILT_STATIC_LIBRARY)
-
-else ifeq ($(CRYPTO_LIB_NAME), nettle)
-    $(warning ==== JNIADAPTER android.mk using NETTLE for pEpEngineSequoiaBackend)
-    include $(CLEAR_VARS)
-    LOCAL_MODULE := libhogweed
-    LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libhogweed.so
-    include $(PREBUILT_SHARED_LIBRARY)
-
-    include $(CLEAR_VARS)
-    LOCAL_MODULE := libgmp
-    LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libgmp.so
-    include $(PREBUILT_SHARED_LIBRARY)
-
-    include $(CLEAR_VARS)
-    LOCAL_MODULE := libnettle
-    LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libnettle.so
-    include $(PREBUILT_SHARED_LIBRARY)
-    LOCAL_SHARED_LIBRARIES := libnettle libhogweed libgmp
-
-else
-    $(error No crypto backend given!)
-endif
+$(warning ==== JNIADAPTER android.mk using BOTAN2 for pEpEngineSequoiaBackend)
+include $(CLEAR_VARS)
+LOCAL_MODULE := botan
+LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libbotan-2.a
+include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libetpan

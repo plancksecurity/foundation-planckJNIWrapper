@@ -26,13 +26,8 @@ download-iconv: libiconv-1.15.tar.gz
 download-uuid: ossp-uuid_1.6.2.orig-patched.tar.gz
 
 ## Download sequoia dependencies
-	
-download-sequoia-deps: download-sequoia-deps-$(CRYPTO_LIB_NAME)
 
-download-sequoia-deps-nettle: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSION).tar.bz2 \
-						nettle-$(NETTLE_VERSION)-patched.tar.gz
-
-download-sequoia-deps-botan2: botan.src.stamp
+download-sequoia-deps: botan.src.stamp
 
 # Download source and patch it
 libiconv-1.15.tar.gz:
@@ -56,12 +51,6 @@ gmp-$(GMP_VERSION).tar.bz2:
 	wget -nc https://gmplib.org/download/gmp/gmp-$(GMP_VERSION).tar.bz2
 	md5sum -c gmp-$(GMP_VERSION).tar.bz2.md5
 
-nettle-$(NETTLE_VERSION)-patched.tar.gz: nettle-$(NETTLE_VERSION).tar.gz
-	tar -xvf $<
-	-patch -N -p1 --reject-file=- nettle-$(NETTLE_VERSION)/configure.ac  ../nettle-3.4.1-remove-so-versioning.patch
-	-patch -N -p1 --reject-file=- nettle-$(NETTLE_VERSION)/Makefile.in  ../nettle-3.4.1-remove-so-versioning-link.patch
-	tar -czvf $@ nettle-$(NETTLE_VERSION)
-	rm -rf nettle-$(NETTLE_VERSION)
 
 botan.src.stamp:
 # just check the folder exist for the moment, so we use a submodule.
@@ -71,10 +60,6 @@ botan.src.stamp:
 		echo "Error: botan folder does not exist."; \
 		exit 1; \
 	fi
-
-nettle-$(NETTLE_VERSION).tar.gz:
-	wget -nc https://ftp.gnu.org/gnu/nettle/nettle-$(NETTLE_VERSION).tar.gz
-	md5sum -c nettle-$(NETTLE_VERSION).tar.gz.md5
 
 #------------------------------------------------------------------------------#
 clean:
