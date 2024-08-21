@@ -43,10 +43,6 @@ ossp-uuid_1.6.2.orig.tar.gz:
 	wget http://http.debian.net/debian/pool/main/o/ossp-uuid/ossp-uuid_1.6.2.orig.tar.gz
 	md5sum -c ossp-uuid_1.6.2.orig.tar.gz.md5
 
-gmp-$(GMP_VERSION).tar.bz2:
-	wget -nc https://gmplib.org/download/gmp/gmp-$(GMP_VERSION).tar.bz2
-	md5sum -c gmp-$(GMP_VERSION).tar.bz2.md5
-
 
 botan.src.stamp:
 # just check the folder exist for the moment, so we use a submodule.

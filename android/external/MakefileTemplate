@@ -156,39 +156,6 @@ uuid/jni/Android.mk: uuid.src.stamp
 	mkdir -p uuid/jni
 	cp ../libuuid.Android.mk uuid/jni/Android.mk
 
-
-#------------------------------------------------------------------------------#
-# GMP
-
-gmp.src.stamp: ../downloads/gmp-$(GMP_VERSION).tar.bz2
-	tar xvf $<
-	mv gmp-$(GMP_VERSION) gmp
-	touch $@
-
-gmp/Makefile: gmp.src.stamp
-	cd gmp && \
-		CC="$(CC)" LD="$(LD)" AR="$(AR)" AS="$(AS)" RANLIB=$(RANLIB) STRIP="$(STRIP)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-			./configure \
-				--host=$(HOST) \
-				--prefix=$(LOCAL) \
-			    --disable-static[GMP_MAKEFILE_EXTRA]
-
-
-gmp/.libs/libgmp.so: gmp/Makefile
-	$(MAKE) -C gmp
-
-$(LOCAL)/lib/libgmp.so: gmp/.libs/libgmp.so
-	$(MAKE) -C gmp DESTDIR=$(DESTDIR) prefix=$(prefix) install
-	#gmp/libtool --finish $(LOCAL)/lib/
-	ls -l $(LOCAL)/lib/libgmp.so
-	touch $@
-
-## Build gmp
-gmp-build: gmp/.libs/libgmp.so
-
-## Install gmp
-gmp-install: $(LOCAL)/lib/libgmp.so
-
 #------------------------------------------------------------------------------#
 # BOTAN2
 
@@ -321,7 +288,6 @@ clean-all: clean
 	libiconv-build libiconv-install \
 	libetpan-build \
 	uuid-build uuid-prebuild \
-	gmp-build gmp-install \
 	botan-build botan-install jitter-build \
 	botan-clean jitter-clean \
 	pEpEngineSequoiaBackend-build pEpEngineSequoiaBackend-install \
