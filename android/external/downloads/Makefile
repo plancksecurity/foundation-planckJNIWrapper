@@ -16,7 +16,7 @@ include ../Makefile.conf
 ## Download all dependencies
 all: downloads.stamp
 
-downloads.stamp: download-iconv download-uuid download-sequoia-deps
+downloads.stamp: download-iconv download-uuid
 	touch $@
 
 ## Download iconv
@@ -24,10 +24,6 @@ download-iconv: libiconv-1.15.tar.gz
 
 ## Download and patch uuid
 download-uuid: ossp-uuid_1.6.2.orig-patched.tar.gz
-
-## Download sequoia dependencies
-
-download-sequoia-deps: botan.src.stamp
 
 # Download source and patch it
 libiconv-1.15.tar.gz:
@@ -43,16 +39,6 @@ ossp-uuid_1.6.2.orig.tar.gz:
 	wget http://http.debian.net/debian/pool/main/o/ossp-uuid/ossp-uuid_1.6.2.orig.tar.gz
 	md5sum -c ossp-uuid_1.6.2.orig.tar.gz.md5
 
-
-botan.src.stamp:
-# just check the folder exist for the moment, so we use a submodule.
-	@if [ -d $(BOTAN_SRC) ]; then \
-		touch $@; \
-	else \
-		echo "Error: botan folder does not exist."; \
-		exit 1; \
-	fi
-
 #------------------------------------------------------------------------------#
 clean:
 	-rm -rf *.git
@@ -62,8 +48,7 @@ clean:
 	-rm -rf *.tar.xz
 
 .PHONY: all clean download-iconv \
-		download-uuid \
-		download-sequoia-deps
+		download-uuid
 
 include ../help.mk
 helpPurpose='Download all files and packages needed to compile external dependencies for pEpEngine'
