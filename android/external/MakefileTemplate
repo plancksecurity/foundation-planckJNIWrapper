@@ -177,9 +177,8 @@ jitter-clean:
 botan/Makefile: botan $(LOCAL)/lib/libjitterentropy.a
 	cd botan && \
 		AR="$(AR)" CXX="$(CXX)" \
-        CXXFLAGS+="-I$(LOCAL)/include -O3" \
-        LDFLAGS+="-L$(LOCAL)/lib" \
-        ./configure.py --os=android --cc="clang" --cpu="$(BOTAN_ARCH)" --prefix="$(LOCAL)"
+        ./configure.py --os=android --cc="clang" --cpu="$(BOTAN_ARCH)" --prefix="$(LOCAL)" \
+        --extra-cxxflags="-I$(LOCAL)/include -O3" --ldflags="-L$(LOCAL)/lib"
 
 
 
