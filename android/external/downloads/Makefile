@@ -13,12 +13,10 @@ include ../Makefile.conf
 #------------------------------------------------------------------------------#
 # Build parameters
 
-BOTAN_VERSION = 2.19.4_planck # default botan version if not provided
-
 ## Download all dependencies
 all: downloads.stamp
 
-downloads.stamp: download-iconv download-uuid download-sequoia-deps
+downloads.stamp: download-iconv download-uuid
 	touch $@
 
 ## Download iconv
@@ -26,15 +24,6 @@ download-iconv: libiconv-1.15.tar.gz
 
 ## Download and patch uuid
 download-uuid: ossp-uuid_1.6.2.orig-patched.tar.gz
-
-## Download sequoia dependencies
-	
-download-sequoia-deps: download-sequoia-deps-$(CRYPTO_LIB_NAME)
-
-download-sequoia-deps-nettle: openssl-$(OPENSSL_VERSION).tar.gz gmp-$(GMP_VERSION).tar.bz2 \
-						nettle-$(NETTLE_VERSION)-patched.tar.gz
-
-download-sequoia-deps-botan2: botan.src.stamp
 
 # Download source and patch it
 libiconv-1.15.tar.gz:
@@ -50,29 +39,6 @@ ossp-uuid_1.6.2.orig.tar.gz:
 	wget http://http.debian.net/debian/pool/main/o/ossp-uuid/ossp-uuid_1.6.2.orig.tar.gz
 	md5sum -c ossp-uuid_1.6.2.orig.tar.gz.md5
 
-openssl-$(OPENSSL_VERSION).tar.gz:
-	wget -nc https://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
-	md5sum -c openssl-$(OPENSSL_VERSION).tar.gz.md5
-
-gmp-$(GMP_VERSION).tar.bz2:
-	wget -nc https://gmplib.org/download/gmp/gmp-$(GMP_VERSION).tar.bz2
-	md5sum -c gmp-$(GMP_VERSION).tar.bz2.md5
-
-nettle-$(NETTLE_VERSION)-patched.tar.gz: nettle-$(NETTLE_VERSION).tar.gz
-	tar -xvf $<
-	-patch -N -p1 --reject-file=- nettle-$(NETTLE_VERSION)/configure.ac  ../nettle-3.4.1-remove-so-versioning.patch
-	-patch -N -p1 --reject-file=- nettle-$(NETTLE_VERSION)/Makefile.in  ../nettle-3.4.1-remove-so-versioning-link.patch
-	tar -czvf $@ nettle-$(NETTLE_VERSION)
-	rm -rf nettle-$(NETTLE_VERSION)
-
-botan.src.stamp:
-	git clone git@github.com:plancksecurity/botan.git -b $(BOTAN_VERSION)
-	touch $@
-
-nettle-$(NETTLE_VERSION).tar.gz:
-	wget -nc https://ftp.gnu.org/gnu/nettle/nettle-$(NETTLE_VERSION).tar.gz
-	md5sum -c nettle-$(NETTLE_VERSION).tar.gz.md5
-
 #------------------------------------------------------------------------------#
 clean:
 	-rm -rf *.git
@@ -80,11 +46,9 @@ clean:
 	-rm -rf *.tar.gz
 	-rm -rf *.tar.bz2
 	-rm -rf *.tar.xz
-	-rm -rf botan
 
 .PHONY: all clean download-iconv \
-		download-uuid \
-		download-sequoia-deps
+		download-uuid
 
 include ../help.mk
 helpPurpose='Download all files and packages needed to compile external dependencies for pEpEngine'
