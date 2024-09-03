@@ -17,15 +17,16 @@ LOCAL_MODULE := libpep_engine_sequoia_backend
 LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libpep_engine_sequoia_backend.a
 include $(PREBUILT_STATIC_LIBRARY)
 
-$(warning ==== JNIADAPTER android.mk using BOTAN2 for pEpEngineSequoiaBackend)
-include $(CLEAR_VARS)
-LOCAL_MODULE := botan
-LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libbotan-2.a
-include $(PREBUILT_STATIC_LIBRARY)
-
 include $(CLEAR_VARS)
 LOCAL_MODULE := jitterentropy
 LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libjitterentropy.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+$(warning ==== JNIADAPTER android.mk using BOTAN2 for pEpEngineSequoiaBackend)
+include $(CLEAR_VARS)
+LOCAL_MODULE := botan
+LOCAL_STATIC_LIBRARIES := jitterentropy
+LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libbotan-2.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
