@@ -163,20 +163,22 @@ uuid/jni/Android.mk: uuid.src.stamp
 jitter-build: $(LOCAL)/lib/libjitterentropy.a
 
 $(LOCAL)/lib/libjitterentropy.a:
-	$(MAKE) -C $(JITTER_SRC) jitterentropy-static
-	$(MAKE) -C $(JITTER_SRC) jitterentropy-static install-includes PREFIX=$(LOCAL)
-	$(MAKE) -C $(JITTER_SRC) jitterentropy-static install-static PREFIX=$(LOCAL)
+	cp -r $(JITTER_SRC) jitterentropy
+	AR="$(AR)" CXX="$(CXX)" $(MAKE) -C jitterentropy jitterentropy-static
+	$(MAKE) -C jitterentropy jitterentropy-static install-includes PREFIX=$(LOCAL)
+	$(MAKE) -C jitterentropy jitterentropy-static install-static PREFIX=$(LOCAL)
+	touch $@
 
 ## Clean jitter
 jitter-clean:
-	-$(MAKE) -C $(JITTER_SRC) clean
+	-$(MAKE) -C jitterentropy clean
 
 botan/Makefile: $(LOCAL)/lib/libjitterentropy.a
 	cp -r $(BOTAN_SRC) botan
 	cd botan && \
 		AR="$(AR)" CXX="$(CXX)" \
         ./configure.py --os=android --cc="clang" --cpu="$(BOTAN_ARCH)" --prefix="$(LOCAL)" \
-        --extra-cxxflags="-I$(LOCAL)/include -O3" --ldflags="-L$(LOCAL)/lib"
+        --extra-cxxflags="-I$(LOCAL)/include" --ldflags="-L$(LOCAL)/lib -ljitterentropy"
 
 
 
@@ -194,6 +196,8 @@ botan-build: botan/libbotan-2.so
 ## Clean botan
 botan-clean:
 	-$(MAKE) -C botan clean
+	-rm -rf botan/Makefile
+	-rm -rf botan/*.a
 
 ## Install botan
 botan-install: $(LOCAL)/lib/libbotan-2.so
