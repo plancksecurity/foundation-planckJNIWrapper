@@ -164,9 +164,9 @@ jitter-build: $(LOCAL)/lib/libjitterentropy.a
 
 $(LOCAL)/lib/libjitterentropy.a:
 	rsync -av $(JITTER_SRC)/ jitterentropy/
-	AR="$(AR)" CC="$(CC)" $(MAKE) -C jitterentropy jitterentropy-static
-	$(MAKE) -C jitterentropy jitterentropy-static install-includes PREFIX=$(LOCAL)
-	$(MAKE) -C jitterentropy jitterentropy-static install-static PREFIX=$(LOCAL)
+	$(MAKE) -C jitterentropy AR="$(AR)" CC="$(CC)" CXX="$(CXX)" jitterentropy-static
+	$(MAKE) -C jitterentropy AR="$(AR)" CC="$(CC)" CXX="$(CXX)" jitterentropy-static install-includes PREFIX=$(LOCAL)
+	$(MAKE) -C jitterentropy AR="$(AR)" CC="$(CC)" CXX="$(CXX)" jitterentropy-static install-static PREFIX=$(LOCAL)
 	touch $@
 
 ## Clean jitter
