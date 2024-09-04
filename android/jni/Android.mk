@@ -25,12 +25,7 @@ include $(PREBUILT_STATIC_LIBRARY)
 $(warning ==== JNIADAPTER android.mk using BOTAN2 for pEpEngineSequoiaBackend)
 include $(CLEAR_VARS)
 LOCAL_MODULE := botan
-LOCAL_WHOLE_STATIC_LIBRARIES := jitterentropy
 LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libbotan-2.a
-LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include/
-LOCAL_CPPFLAGS += -I$(GPGBUILD)/$(TARGET_ARCH_ABI)/include
-LOCAL_LDFLAGS += -L$(GPGBUILD)/$(TARGET_ARCH_ABI)/lib -ljitterentropy
-LOCAL_LDLIBS += -ljitterentropy
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -46,10 +41,9 @@ $(shell sh $(ENGINE_PATH)/build-android/takeOutHeaderFiles.sh $(ENGINE_PATH))
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
-#LOCAL_WHOLE_STATIC_LIBRARIES := jitterentropy
-LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libuuid libiconv pEpAdapter pEpCxx11 botan libpep_engine_sequoia_backend
+LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libuuid libiconv pEpAdapter pEpCxx11 jitterentropy botan libpep_engine_sequoia_backend
 LOCAL_CPP_FEATURES += exceptions
-LOCAL_CPPFLAGS += -std=c++14 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld -frtti -I$(GPGBUILD)/$(TARGET_ARCH_ABI)/include
+LOCAL_CPPFLAGS += -std=c++14 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld -frtti
 LOCAL_SRC_FILES  := \
           ../../src/cxx/foundation_pEp_jniadapter_AbstractEngine.cc \
           ../../src/cxx/foundation_pEp_jniadapter_Engine.cc \
