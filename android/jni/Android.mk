@@ -27,6 +27,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := botan
 LOCAL_STATIC_LIBRARIES := jitterentropy
 LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libbotan-2.a
+LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include/
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
