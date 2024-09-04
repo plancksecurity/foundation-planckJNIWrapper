@@ -178,7 +178,7 @@ botan/Makefile: $(LOCAL)/lib/libjitterentropy.a
 	cd botan && \
 		AR="$(AR)" CXX="$(CXX)" \
         ./configure.py --os=android --cc="clang" --cpu="$(BOTAN_ARCH)" --prefix="$(LOCAL)" \
-        --extra-cxxflags="-I$(LOCAL)/include" --ldflags="-L$(LOCAL)/lib -ljitterentropy"
+        --extra-cxxflags="-I$(LOCAL)/include -O3" --ldflags="-L$(LOCAL)/lib -ljitterentropy"
 
 
 
@@ -197,7 +197,7 @@ botan-build: botan/libbotan-2.so
 botan-clean:
 	-$(MAKE) -C botan clean
 	-rm -rf botan/Makefile
-	-rm -rf botan/*.a
+	-rm -rf botan/*.a botan/*.so
 
 ## Install botan
 botan-install: $(LOCAL)/lib/libbotan-2.so
