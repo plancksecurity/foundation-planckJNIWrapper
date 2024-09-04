@@ -28,6 +28,8 @@ LOCAL_MODULE := botan
 LOCAL_STATIC_LIBRARIES := jitterentropy
 LOCAL_SRC_FILES := $(GPGBUILD)/$(TARGET_ARCH_ABI)/lib/libbotan-2.a
 LOCAL_C_INCLUDES += $(GPGBUILD)/$(TARGET_ARCH_ABI)/include/
+LOCAL_CPPFLAGS += -I$(GPGBUILD)/$(TARGET_ARCH_ABI)/include
+LOCAL_LDLIBS += -L$(GPGBUILD)/$(TARGET_ARCH_ABI)/lib -ljitterentropy
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -45,7 +47,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE     := pEpJNI
 LOCAL_STATIC_LIBRARIES := pEpEngine libetpan libuuid libiconv pEpAdapter pEpCxx11 jitterentropy botan libpep_engine_sequoia_backend
 LOCAL_CPP_FEATURES += exceptions
-LOCAL_CPPFLAGS += -std=c++14 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld -frtti
+LOCAL_CPPFLAGS += -std=c++14 -DANDROID_STL=c++_shared -DHAVE_PTHREADS -DDISABLE_SYNC -fuse-ld=lld -frtti -I$(GPGBUILD)/$(TARGET_ARCH_ABI)/include
 LOCAL_SRC_FILES  := \
           ../../src/cxx/foundation_pEp_jniadapter_AbstractEngine.cc \
           ../../src/cxx/foundation_pEp_jniadapter_Engine.cc \
@@ -62,7 +64,7 @@ LOCAL_C_INCLUDES += $(LIB_PEP_CXX11_PATH)/build-android/include $(SRC_PATH)/libP
 LOCAL_C_INCLUDES += $(ENGINE_PATH)/asn.1
 
 LOCAL_LDFLAGS = -Wl,--allow-multiple-definition
-LOCAL_LDLIBS    += -llog
+LOCAL_LDLIBS    += -L$(GPGBUILD)/$(TARGET_ARCH_ABI)/lib -ljitterentropy -llog
 
 include $(BUILD_SHARED_LIBRARY)
 
