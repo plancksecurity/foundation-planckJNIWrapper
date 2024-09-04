@@ -163,8 +163,8 @@ uuid/jni/Android.mk: uuid.src.stamp
 jitter-build: $(LOCAL)/lib/libjitterentropy.a
 
 $(LOCAL)/lib/libjitterentropy.a:
-	cp -r $(JITTER_SRC) jitterentropy
-	AR="$(AR)" CXX="$(CXX)" $(MAKE) -C jitterentropy jitterentropy-static
+	rsync -av $(JITTER_SRC)/ jitterentropy/
+	AR="$(AR)" CC="$(CC)" $(MAKE) -C jitterentropy jitterentropy-static
 	$(MAKE) -C jitterentropy jitterentropy-static install-includes PREFIX=$(LOCAL)
 	$(MAKE) -C jitterentropy jitterentropy-static install-static PREFIX=$(LOCAL)
 	touch $@
